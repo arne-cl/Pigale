@@ -109,6 +109,7 @@
 #define  A_ORIENT_BIPAR            (A_ORIENT+4)
 #define  A_ORIENT_SCHNYDER         (A_ORIENT+5)
 #define  A_ORIENT_BIPOLAR          (A_ORIENT+6)
+#define  A_REORIENT_COLOR          (A_ORIENT+7)
 #define  A_ORIENT_END              (A_ORIENT+99)
 
 

@@ -349,6 +349,7 @@ MyWindow::MyWindow()
   orient->insertItem("&Show orientation",   10020);
   orient->setItemChecked(10020,ShowOrientation());
   orient->insertItem("&Orient all edges",     A_ORIENT_E);
+  orient->insertItem("&ReOrient color edges", A_REORIENT_COLOR);
   orient->insertItem("&Inf Orientation",      A_ORIENT_INF);
   orient->insertItem("Planar &3-Con.",        A_ORIENT_TRICON);
   orient->insertItem("Planar &Biparti",       A_ORIENT_BIPAR);

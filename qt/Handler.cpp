@@ -58,6 +58,14 @@ int OrientHandler(int action)
 	   }
 	   ShowOrientation() = true;
 	   break;
+      case A_REORIENT_COLOR:
+	  {short ecol; G.ecolor.getinit(ecol);
+	  for(tedge e = 1; e <= G.ne() ;e++)
+	      if(G.ecolor[e] == ecol)
+		  {G.ReverseEdge(e);eoriented[e] = true;}
+	  }
+	  G.FixOrientation();
+	  break;
       case A_ORIENT_INF:
 	  i = G.InfOrient();
           G.FixOrientation();
