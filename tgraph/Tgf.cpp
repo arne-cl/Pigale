@@ -14,25 +14,21 @@
 #include <TAXI/Tbase.h>
 #include <TAXI/Tgf.h>
 // ios::bin is deprecated
-
+// ios::nocreate does not exists anymore
+/*
 #define GCC_VERSION (__GNUC__ * 10000 \
                               + __GNUC_MINOR__ * 100 \
                               + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION < 30200
+*/
 
-//#if defined(__GNUC__)&&(__GNUC__ == 3)&&(__GNUC_MINOR__ < 2)
-#if defined(__GNUC__)
-
-//#if GCC_VERSION < 30200
 #define BINMODE ios::binary  
-#elif
-#define BINMODE toto
-#endif
 
 int IsFileTgf(char const *name)
   {char ID[4];
   fstream stream;
 
-  stream.open(name,ios::in|ios::nocreate|BINMODE); 
+  stream.open(name,ios::in|BINMODE); 
   if(!stream.is_open())return -1;
   stream.read(ID,4);
   stream.close();
@@ -41,11 +37,20 @@ int IsFileTgf(char const *name)
   }
 int Tgf::open(char const *name,open_mode mode)
   {if(mode == old)
-      stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); 
+      //stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); 
+      {stream.open(name,ios::in|BINMODE); 
+      IsOpen = stream.is_open();
+      if(!IsOpen)return 0;
+      stream.close();
+      stream.open(name,ios::in|ios::out|BINMODE); 
+      IsOpen = stream.is_open();
+      if(!IsOpen)return 0;
+      }
   else
-      stream.open(name,ios::in|ios::out|BINMODE|ios::trunc); 
-  IsOpen = stream.is_open();
-  if(!IsOpen)return 0;
+      {stream.open(name,ios::in|ios::out|BINMODE|ios::trunc); 
+      IsOpen = stream.is_open();
+      if(!IsOpen)return 0;
+      }
   
   if(mode == create)
       {if(!WriteHeader())return 0;
