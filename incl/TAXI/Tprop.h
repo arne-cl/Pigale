@@ -433,12 +433,23 @@ class Prop : public rsvector<T>
        */
     static _svector & get (PSet &X, int num)
     	{if (X(num)==(vProp *)0)
-	    if (X[num]==(_svector *)0) // do not exist
-            X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish()));
-	    else
-            X.reg(num,new vP<T>); // unregistered
-	    return *X[num];
-	    }
+		    if (X[num]==(_svector *)0) // do not exist
+            	X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish()));
+			else
+				{X.reg(num,new vP<T>); // unregistered
+#ifdef TDEBUG
+				if (sizeof(T)!=X[num]->SizeElmt())
+		        	{DPRINTF(("Prop #%d size_elmt (v): %d instead of %d",num,X[num]->SizeElmt(),sizeof(T)))//;
+        			myabort();}
+#endif
+				}
+#ifdef TDEBUG
+		else if (X(num)->size_elmt() != sizeof(T))
+		{DPRINTF(("Prop #%d size_elmt : %d instead of %d",num,X(num)->size_elmt(),sizeof(T)))//;
+        	myabort();}
+#endif
+		return *X[num];
+		}
       //! get a property and assign a default value
       /*! Note: 
        * - if the property does not exist, it is created and filled with default value
@@ -450,12 +461,22 @@ class Prop : public rsvector<T>
        */
     static _svector & get (PSet &X, int num,const T& value)
     	{if (X(num)==(vProp *)0)
-	    if (X[num]==(_svector *)0) // do not exist
-            X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish(),value));
-	    else
-	       	{X.reg(num,new vP<T>); // unregistered
-            X[num]->definit(&value);
-            }
+		    if (X[num]==(_svector *)0) // do not exist
+   	         	X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish(),value));
+		    else
+		       	{X.reg(num,new vP<T>); // unregistered
+   	         	X[num]->definit(&value);
+#ifdef TDEBUG
+				if (sizeof(T)!=X[num]->SizeElmt())
+		        	{DPRINTF(("Prop #%d size_elmt (v): %d instead of %d",num,X[num]->SizeElmt(),sizeof(T)))//;
+        			myabort();}
+#endif
+				}
+#ifdef TDEBUG
+		else if (X(num)->size_elmt() != sizeof(T))
+		{DPRINTF(("Prop #%d size_elmt : %d instead of %d",num,X(num)->size_elmt(),sizeof(T)))//;
+        	myabort();}
+#endif
         //else  X[num]->definit(&value);
 	    return *X[num];
 	    }
