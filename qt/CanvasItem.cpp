@@ -353,13 +353,16 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   int prop = ShowVertex();
   if(prop == -1 || !G.Set(tvertex()).exist(prop))
       t.sprintf("%2.2d",v());
-  else 
+  else if(prop == 0) //label
       {Prop<long> label(G.Set(tvertex()),prop);
       t.sprintf("%2.2ld",label[v()]);
       }
+  else //case 1
+      t = " ";
   QFont font = QFont("lucida",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 6;  int dy =size.height() + 2;
+  if(prop == 1){dx = 8; dy = 8;}
   QRect rect = QRect(x-dx/2,y-dy/2,dx,dy);
   QColor col = color[G.vcolor[v]];
   tp->setWidth(1);tp->setColor(Qt::black); 

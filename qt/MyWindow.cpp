@@ -564,7 +564,8 @@ MyWindow::MyWindow()
   popupLabel->insertItem(comboLabel);
   comboLabel->insertItem("Index");
   comboLabel->insertItem("Label");
-  int current = (ShowVertex() == -1) ? 0 : 1;
+  comboLabel->insertItem("Nothing");
+  int current = ShowVertex();++current;
   comboLabel->setCurrentItem(current);showLabel(current);
   //Embed Settings
   settings->insertSeparator();
@@ -1003,16 +1004,17 @@ void MyWindow::aboutQt()
 void MyWindow::showLabel(int show)
   {//Now We can only show the index of a vertex or a long
   int _show = ShowVertex();
-  switch(show)
-      {case 0:
-	   ShowVertex() = -1;
-	   break;
-      case 1:// PROP_LABEL = 0
-	  ShowVertex() = PROP_LABEL; 
-	  break;
-      default:
-	  return;
-      }
+  ShowVertex() = show -1;
+//   switch(show)
+//       {case 0:
+// 	   ShowVertex() = -1;
+// 	   break;
+//       case 1:// PROP_LABEL = 0
+// 	  ShowVertex() = PROP_LABEL; 
+// 	  break;
+//       default:
+// 	  return;
+//       }
   if(ShowVertex() != _show && GC.nv())gw->update();
   }
 void  MyWindow::distOption(int use)
