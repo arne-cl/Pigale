@@ -161,7 +161,10 @@ void GraphEditor::Spring()
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
   canvas()->update();
-  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+#ifdef  VERSION_ALPHA 
+  if(debug())
+      Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+#endif
   releaseKeyboard(); 
   }
 
@@ -366,7 +369,10 @@ t current tanslation of v0
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
   canvas()->update();
-  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+#ifdef  VERSION_ALPHA 
+  if(debug())
+      Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+#endif
   }
 
 //**************************************************************************************
