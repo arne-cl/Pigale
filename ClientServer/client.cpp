@@ -140,20 +140,31 @@ void Client::socketReadyRead()
 	  QFile file(PngFile);
 	  file.open(IO_ReadWrite);
 	  QDataStream stream(&file);
-	  char *buff;
 	  uint size;
-// 	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
-// 	  clo >> size;
-// 	  char *buff = new char[size+1];
-// 	  Q_ULONG  nb;
+	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
+	  clo >> size;
+	  char *buff = new char[size+1];
+ 	  Q_ULONG  nb;
 // 	  while((nb = socket->bytesAvailable()) < size)
 // 	      {socket->waitForMore(100);qDebug(". %ld",nb);}
 // 	  clo.readRawBytes(buff,size);
-	  clo.readBytes(buff,size);
+	  int i = 1;
+	  Q_ULONG nread = 0;
+	  char *pbuff = buff;
+	  while(nread  < size)
+	      {
+	      nb = socket->bytesAvailable();
+	      nread += nb;
+	      clo.readRawBytes(pbuff,nb);
+	      pbuff += nb;
+	      qDebug("%d %ld (%ld/ %ld)",i,(long)nb,(long)nread,(long)size);
+	      socket->waitForMore(100);  // in millisec
+	      if(++i > 50)return ;
+	      }
 	  stream.writeRawBytes(buff,size);
 	  file.close();
 	  delete [] buff;
-	  //emit WriteToClient("END PNG");
+	  emit WriteToClient("END GETTING PNG");
 	  ActionTreated = true;
 	  }
       else if(str.at(0) == '!')//server has finished
