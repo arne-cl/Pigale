@@ -124,8 +124,8 @@ int ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
-  if(sdebug)cli <<"# '"<<dataAction<<"'"<<endl;
   int action = mw->getActionInt(beg);
+  if(sdebug)cli <<"#debug:'"<<dataAction<<"'-> "<<action<<endl;
   int err = 0;
   if(action == 0)
       {err = ACTION_NOT_INT;
