@@ -35,7 +35,8 @@ If the input is a file:
 - commands may contains arguments separated by ';'
 */
 
-Client::Client(const QString &host, Q_UINT16 port):debug(false)
+Client::Client(const QString &host, Q_UINT16 port)
+    :debug(false)
   {infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
