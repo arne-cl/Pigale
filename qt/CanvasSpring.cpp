@@ -51,7 +51,7 @@ void GraphEditor::Spring()
   double expand = 1.;
   double hw,hw0 = .2*(mhw*mhw)/(n*m);
   int iter,niter = 2000;
-  double dist2,strength,dx,dy;
+  double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
@@ -70,6 +70,7 @@ void GraphEditor::Spring()
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  len += Distance(p0,p);
 	  }
+      len /= m;
       len02 = len*len;
       hw = expand*hw0;
       for(tvertex v0 = 1;v0 <= n;v0++)
@@ -97,7 +98,7 @@ void GraphEditor::Spring()
 	      else
 		  translate[v0].y() += 5.;
 	      }
-	  //v0 is attracted by its neighbours (1/d)
+	  //v0 is attracted or repulsed by its neighbours (1/d)
 	  tbrin b0 = G.pbrin[v0];
 	  tbrin b = b0;
 	  do
@@ -105,9 +106,9 @@ void GraphEditor::Spring()
 	      dist2 = Max(Distance2(p0,p),1.);
 	      strength = Min(sqrt(hw/dist2),.1);
 	      if(dist2 > len02/4)
-		  translate[v0] += (p0-p)*strength*.5;
+		  translate[v0]  -= (p0-p)*strength*.5;
 	      else if(dist2 < 4*len02) 
-		  translate[v0]  += (p-p0)*strength*.5;
+		  translate[v0]  += (p0-p)*strength*.5;
 	      }while((b = G.cir[b]) != b0);
 	  // v0 is attracted by the center (1/d)
 	  dist2 = Max(Distance2(p0,center),1.);
@@ -119,7 +120,7 @@ void GraphEditor::Spring()
 	  }
 
       // update the drawing
-      double dep = .0;
+      dep = .0;
       n_red = 0;
       for(tvertex v = 1;v <= n;v++)
 	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
@@ -143,7 +144,6 @@ void GraphEditor::Spring()
       else if(sizex < sizex0 && sizey < sizey0)
 	  expand *= Max(sizex0/sizex,sizey0/sizey);
       sizex0 = sizex;      sizey0 = sizey;
-      //qDebug("expand=%f hw=%f",expand,hw);
       }
 
   gwp->mywindow->blockInput(false);
@@ -153,7 +153,7 @@ void GraphEditor::Spring()
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
-  Tprintf("Spring-Iter=%d len=%d",iter,(int)len);
+  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f",iter,(int)len,stop,dep);
   }
 /*
 void GraphEditor::Spring()
