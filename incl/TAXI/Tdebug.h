@@ -16,9 +16,9 @@
 bool & debug();
 int& Error();
 void myabort();
-void DebugPuts(char *str);
-void DebugPrintf(char *fmt,...);
-void LogPrintf(char *fmt,...);
+void DebugPuts(const char *str);
+void DebugPrintf(const char *fmt,...);
+void LogPrintf(const char *fmt,...);
 void DebugIndent(int i);
 
 #ifdef TDEBUG

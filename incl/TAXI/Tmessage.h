@@ -14,5 +14,5 @@
 void Tmessage(const char *tstring);
 void Tclear();
 void Twait(const char *txt);
-void Tprintf(char *fmt,...);
+void Tprintf(const char *fmt,...);
 #endif

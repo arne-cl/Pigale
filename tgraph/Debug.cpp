@@ -34,7 +34,7 @@ int& Error()
 void DebugIndent(int i)
   {Indent += i;}
 
-void DebugPuts(char *str)
+void DebugPuts(const char *str)
   {FILE *LogFile;
   if(first)
       {LogFile = fopen(LogName, "w");first = false;}
@@ -45,7 +45,7 @@ void DebugPuts(char *str)
   fclose(LogFile);
   }
 
-void DebugPrintf(char *fmt,...)
+void DebugPrintf(const char *fmt,...)
   {FILE *LogFile;
   va_list arg_ptr;
   char buff[256];
@@ -62,7 +62,7 @@ void DebugPrintf(char *fmt,...)
   Tprintf("%*s%s", Indent*2, "", buff);
   fclose(LogFile);
   }
-void LogPrintf(char *fmt,...)
+void LogPrintf(const char *fmt,...)
   {FILE *LogFile;
   va_list arg_ptr;
   char buff[256];
