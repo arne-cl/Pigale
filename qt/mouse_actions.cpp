@@ -105,12 +105,16 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
     ButtonUndoGrid->setDisabled(true);
 
     ButtonZoom = new QPushButton(this,"ButtonZoom");
-    ButtonZoom->setGeometry(QRect(ox_grid+18,oy_grid+98,48,20));
-    ButtonZoom->setText("Z. in");
+    ButtonZoom->setGeometry(QRect(ox_grid+18,oy_grid+98,32,20));
+    ButtonZoom->setText("Z +");
+
+    ButtonOZoom = new QPushButton(this,"ButtonOZoom");
+    ButtonOZoom->setGeometry(QRect(ox_grid+18+32,oy_grid+98,32,20));
+    ButtonOZoom->setText("Z 0");
 
     ButtonUZoom = new QPushButton(this,"ButtonUZoom");
-    ButtonUZoom->setGeometry(QRect(ox_grid+18+48,oy_grid+98,48,20));
-    ButtonUZoom->setText("Z. out");
+    ButtonUZoom->setGeometry(QRect(ox_grid+18+64,oy_grid+98,32,20));
+    ButtonUZoom->setText("Z -");
 
     // signals and slots connections
     connect(ButtonGroup1,SIGNAL(clicked(int)),SLOT(valueChanged(int)));
@@ -122,6 +126,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
     connect(ButtonForceGrid,SIGNAL(clicked()),gw,SLOT(ForceGrid()));
     connect(ButtonUndoGrid,SIGNAL(clicked()),gw,SLOT(UndoGrid()));
     connect(ButtonZoom,SIGNAL(clicked()),gw,SLOT(zoom()));
+    connect(ButtonOZoom,SIGNAL(clicked()),gw,SLOT(ozoom()));
     connect(ButtonUZoom,SIGNAL(clicked()),gw,SLOT(uzoom()));
     
 }
