@@ -604,7 +604,7 @@ void GraphEditor::print(QPrinter *printer)
 void GraphEditor::png()
   {if(index < 0)return;
   QString FileName = QFileDialog::getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
-  if(FileName.isNull())return; 
+  if(FileName.isEmpty())return; 
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
   gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);

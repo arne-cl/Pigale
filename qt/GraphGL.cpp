@@ -224,7 +224,7 @@ GLWindow::~GLWindow()
 void GLWindow::png()
   {QPixmap pixmap = QPixmap::grabWindow(this->winId());
   QString FileName = QFileDialog::getSaveFileName(glp->mywindow->DirFilePng,"Images(*.png)",this);
-  if(FileName.isNull())return; 
+  if(FileName.isEmpty())return; 
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
   glp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
