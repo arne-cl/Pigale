@@ -114,8 +114,8 @@
 #define PROP_REDUCED          (28)   //!< \c tvertex class in reduced graph
 #define PROP_HYPEREDGE        (29)   //!< \c bool    vertex is an hyperedge
 #define PROP_NLOOPS           (30)   //!< \c int     # of attached loops
-#define PROP_COORD3           (31)   //!< \c Tpoint3 Coord for Embed3d
-#define PROP_EIGEN            (32)   //!< \c double eigenvalues for Embed3d
+#define PROP_COORD3          (PROP_DRAWING+31)   //!< \c Tpoint3 Coord for Embed3d
+#define PROP_EIGEN           (PROP_DRAWING+32)   //!< \c double eigenvalues for Embed3d
 #define PROP_CANVAS_ITEM     (PROP_CANVAS+1)     //!< \c void * NodeItem
 #define PROP_CANVAS_COORD    (PROP_CANVAS+2)     //!< \c Tpoint   Copy Coord for editor
 
