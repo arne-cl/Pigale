@@ -140,9 +140,10 @@ void GraphWidget::update()
       {d->editor = new GraphEditor(d,this);
       d->is_init = true;
       }
+  else if(d->mywindow->MacroLooping)return;
   else
       delete d->pGG;
-  if(d->mywindow->MacroLooping)return;
+  
   d->pGG = new GeometricGraph(d->mywindow->GC);
   d->moving_item = 0;  d->curs_item = 0;  d->info_item = 0; d->moving_subgraph = false;
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
@@ -164,26 +165,32 @@ void GraphWidget::print(QPrinter *printer)
   d->editor->print(printer);
   }
 void GraphWidget::zoom()
-  {d->editor->zoom *= 1.1;
+  {if(d->mywindow->MacroLooping)return;
+  d->editor->zoom *= 1.1;
   d->editor->load(true);
   }
 void GraphWidget::ozoom()
-  {d->editor->zoom = 1;
+  {if(d->mywindow->MacroLooping)return;
+  d->editor->zoom = 1;
   d->editor->load(true);
   }
 void GraphWidget::uzoom()
-  {d->editor->zoom /= 1.1;
+  {if(d->mywindow->MacroLooping)return;
+  d->editor->zoom /= 1.1;
   d->editor->load(true);
   }
 void GraphWidget::showgridChanged(bool show)
-  {d->ShowGrid = show;
+  {if(d->mywindow->MacroLooping)return;
+  d->ShowGrid = show;
   d->editor->showGrid(d->ShowGrid);
   }
 void GraphWidget::fitgridChanged(bool fit)
-  {d->FitToGrid = fit;
+  {if(d->mywindow->MacroLooping)return;
+  d->FitToGrid = fit;
   }
 void GraphWidget::ForceGrid()
-  {d->ForceGrid = true;
+  {if(d->mywindow->MacroLooping)return;
+  d->ForceGrid = true;
   d->ForceGridOk = true;
   //d->OldFitSizeGrid = d->FitSizeGrid;
   d->OldFitToGrid = (d->mywindow->mouse_actions->ButtonUndoGrid->isEnabled()) ? true : false;
@@ -198,13 +205,15 @@ void GraphWidget::ForceGrid()
   if(!d->ForceGridOk)UndoGrid();
   }
 void GraphWidget::UndoGrid()
-  {d->SizeGrid = d->OldFitSizeGrid;
+  {if(d->mywindow->MacroLooping)return;
+  d->SizeGrid = d->OldFitSizeGrid;
   d->editor->UndoGrid();
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(d->OldFitToGrid);
   }
 void GraphWidget::sizegridChanged(int sg)
-  {if(!d->is_init || d->CanvasHidden)return;
+  {if(d->mywindow->MacroLooping)return;
+  if(!d->is_init || d->CanvasHidden)return;
   if(!d->RedrawGrid){d->RedrawGrid = true;return;}
   // should not be called if graph on a rectangular grid unless asked
   d->SizeGrid = sg;
@@ -214,20 +223,24 @@ void GraphWidget::sizegridChanged(int sg)
   d->editor->DrawGrid(true);// draw a square grid
   }
 void GraphWidget::EraseColorVertices()
-  {d->mywindow->UndoSave();
+  {if(d->mywindow->MacroLooping)return;
+  d->mywindow->UndoSave();
    d->editor-> EraseColorVertices();
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   }
 void GraphWidget::EraseColorEdges()
-  {d->mywindow->UndoSave();
+  {if(d->mywindow->MacroLooping)return;
+  d->mywindow->UndoSave();
   d->editor-> EraseColorEdges();
   }
 void GraphWidget::EraseThickEdges()
-  {d->mywindow->UndoSave();
+  {if(d->mywindow->MacroLooping)return;
+  d->mywindow->UndoSave();
   d->editor-> EraseThickEdges();
   }
 void GraphWidget::resizeEvent(QResizeEvent* e)
-  {if(d->editor)d->editor->initialize();
+  {if(d->mywindow->MacroLooping)return;
+  if(d->editor)d->editor->initialize();
   QWidget::resizeEvent(e);
   }
 
@@ -1003,7 +1016,8 @@ void GraphEditor::clear()
   GridDrawn = false;
   }
 void GraphEditor::showEvent(QShowEvent* e)
-  {if(gwp->CanvasHidden)// to assure mouse_action is initialise
+  {if(gwp->mywindow->MacroLooping)return;
+  if(gwp->CanvasHidden)// to assure mouse_action is initialise
       {gwp->mywindow->mouse_actions->LCDNumber->display(gwp->SizeGrid);
       gwp->mywindow->mouse_actions->Slider->setValue(gwp->SizeGrid);
       //Enable load buttons
@@ -1035,7 +1049,8 @@ void GraphEditor::resizeEvent(QResizeEvent* e)
   QCanvasView::resizeEvent(e);
   }
 void GraphEditor::paintEvent(QPaintEvent *e)
-  {QCanvasView::paintEvent(e);
+  {if(gwp->mywindow->MacroLooping)return;
+  QCanvasView::paintEvent(e);
   // Before the first paintEvent,the sizes are wrong
   if(!is_init)
       {is_init = true;//initialize();
