@@ -28,6 +28,7 @@
 #include <setjmp.h>
 #include <math.h>
 #include <assert.h>
+#include <time.h>
 #include <new.h>
 #else
 #include <cstdlib> 
@@ -39,6 +40,7 @@
 #include <fstream>
 #include <csetjmp>
 #include <cmath>
+#include <ctime>
 #include <new>
 #endif
 
