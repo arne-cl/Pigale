@@ -217,9 +217,9 @@ void Graph_Properties::update()
   menu->setItemEnabled(298,!SMALL && NotBigD);                     //Rn embedding
   menu->setItemEnabled(609,!SMALL && NotBigS);                     //sym
   menu->setItemEnabled(606,!SMALL && NotBigS);                     //partition
-  menu->setItemEnabled(603,!P && NotBigS);                         //maxplanar
-  menu->setItemEnabled(604,!P && NotBigS);                         //maxplanar
-  menu->setItemEnabled(252,NotBigD);                               //polair
+  menu->setItemEnabled(603,!P && NotBigS && S);                    //maxplanar
+  menu->setItemEnabled(604,!P && NotBigS && S);                    //maxplanar
+  menu->setItemEnabled(252,C1 && NotBigD);                         //polair
 
   //Augment
   menu->setItemEnabled(101,(G.nv() > 1) && !C1);                   //make connected 
