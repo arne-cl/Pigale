@@ -12,6 +12,7 @@
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
+#include <TAXI/DFSGraph.h>
 // Extends a bipolar oriented partial subgraph of G to G.
 // G is assumed to be 2-connected.
 // The vertices belonging to the bipolarly oriented partial subgraph
@@ -267,4 +268,33 @@ void BipExtendMinor(TopologicalGraph &G, tbrin bst, svector<int> &F)
     } while (v!=0);
   // finish extention
   BipExtend(G,bst,vmark);
+}
+
+int NPBipolar(TopologicalGraph &G, tbrin bst)
+{GraphContainer DFSContainer; 
+ DFSGraph DG(DFSContainer,G,bst);
+ svector<bool> reoriented(DG.ne()); reoriented.SetName("Bipolar reorientation"); reoriented.clear();
+ svector<bool> mark(DG.nv()); mark.SetName("Bipolar mark"); mark.clear();
+ Prop<bool> ireor(G.Set(tedge()),PROP_REORIENTED); ireor.clear();
+ Prop<bool> ior(G.Set(tedge()),PROP_ORIENTED);
+
+ for (tbrin b=1; b<=G.ne(); b++)
+   {ior[b]=true;
+   if (DG.ib(b)<0) G.ReverseEdge(DG.ib(b).GetEdge());
+   }
+ mark[DG.nvin[bst]]=mark[DG.nvin[-bst]]=true;
+ // in what follows, z and b are positive.
+ for (tbrin z=DG.nv(); z<=DG.ne(); z++)
+   {bool re=reoriented[DG.uptree[z]];
+   if (re) {G.ReverseEdge(DG.ie(z())); reoriented[z]=true;}
+   re = !re;
+   tvertex v=DG.nvin[-z];
+   while (!mark[v])
+     { tbrin b=DG.treein(v);
+     mark[v]=true;
+     if (re) {G.ReverseEdge(DG.ie(b())); reoriented[b]=true;}
+     v=DG.nvin[b];
+     }
+   }
+ return 0;
 }
