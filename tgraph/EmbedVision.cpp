@@ -23,20 +23,16 @@ static int ComputeExtremities(TopologicalGraph &G,svector<int> &x,
                               svector<int> &x1,svector<int> &x2,int morg);
 
 int EmbedVision(TopologicalGraph &G)
-  {int ret = G.FindPlanarMap();
-
-  if(ret && ret != 4)
-      {Tprintf("Not Planar Graph");return 1;}
-  
+  {if(G.FindPlanarMap() != 0){Tprintf("Not Planar Graph");return -1;}
   int morg = G.ne();
-  tedge e;
+  if(!G.CheckConnected())G.MakeConnected();
   if(!G.CheckBiconnected())G.Biconnect();
-  
+  tedge e;
   // Find s,t
   tvertex s,t;
   tbrin bs,bt,b;
   int i;
-  bool stadded = false;
+  bool ST_added = false;
   
   int len;
   G.LongestFace(bs,len);
@@ -46,13 +42,13 @@ int EmbedVision(TopologicalGraph &G)
   for(i = 1 ;i <= len; i++)bt = G.cir[-bt];
   t = G.vin[bt];
   // Add, if needed, an edge st
-  stadded = true;
+  ST_added = true;
   b = bs;
   do
-      {if(G.vin[-b] == t){stadded = false;break;}
+      {if(G.vin[-b] == t){ST_added = false;break;}
       }while((b = G.cir[b]) != bs);
   
-  if(stadded)
+  if(ST_added)
       {G.NewEdge(bs,bt);
       bs = (tbrin)G.ne();
       }
@@ -97,7 +93,7 @@ int EmbedVision(TopologicalGraph &G)
       e=(G.acir[b0]).GetEdge();
       b=b0;
       while (b.out())
-          {if(!stadded || b!=bst) 
+          {if(!ST_added || b!=bst) 
               MP->insert(b.GetEdge()(),e(),1);
           b=G.cir[-b];
           }
