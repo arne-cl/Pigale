@@ -20,7 +20,8 @@
 #include <TAXI/graphs.h>
 
 GraphContainer *GenerateGrid(int a, int b)
-{ GraphContainer &GC = *new GraphContainer;
+  {if(debug())DebugPrintf("GenerateGrid");   
+  GraphContainer &GC = *new GraphContainer;
   int n=a*b;
   int m=2*n-a-b;
   GC.setsize(n,m);
@@ -63,7 +64,8 @@ GraphContainer *GenerateGrid(int a, int b)
   return &GC;
 }
 GraphContainer *GenerateCompleteGraph(int a)
-{ GraphContainer &GC = *new GraphContainer;
+  {if(debug())DebugPrintf("GenerateCompleteGraph");   
+  GraphContainer &GC = *new GraphContainer;
   int n=a;
   int m=a*(a-1)/2;
   GC.setsize(n,m);
@@ -78,9 +80,9 @@ GraphContainer *GenerateCompleteGraph(int a)
   tvertex v;
   tedge e;
   vlabel[0]=0;
+  double angle = 2.*acos(-1.)/a;
   for (v=1; v<=n; v++)
     {vlabel[v]=v();
-    double angle = 2.*acos(-1.)/a;
     vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
     }
   for (e=0; e<=m; e++)
@@ -93,7 +95,8 @@ GraphContainer *GenerateCompleteGraph(int a)
   return &GC;
 }
 GraphContainer *GenerateCompleteBiGraph(int a,int b)
-{ GraphContainer &GC = *new GraphContainer;
+  {if(debug())DebugPrintf("GenerateCompleteBiGraph");   
+  GraphContainer &GC = *new GraphContainer;
   int n=a+b;
   int m=a*b;
   GC.setsize(n,m);
@@ -131,7 +134,8 @@ static int random(int range)
   {return (int)( ((rand())&0x7FFFFFFF) %(long)range);
   }
 GraphContainer *GenerateRandomGraph(int a,int b)
-  {GraphContainer &GC = *new GraphContainer;
+  {if(debug())DebugPrintf("GenerateRandomGraph");  
+  GraphContainer &GC = *new GraphContainer;
   int n = a;
   int m = b;
   GC.setsize(n,m);
@@ -143,12 +147,13 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
   Prop<long> vlabel(GC.PV(),PROP_LABEL);
   Prop<long> elabel(GC.PE(),PROP_LABEL);
+
   tvertex v,w;
   tedge e;
   vlabel[0]=0;
+ double angle = 2.*acos(-1.)/n;
   for(v=1; v <= n; v++)
     {vlabel[v]=v();
-    double angle = 2.*acos(-1.)/a;
     vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
     }
   for (e=0; e<=m; e++)
