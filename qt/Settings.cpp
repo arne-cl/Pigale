@@ -13,6 +13,8 @@
 #include <qstatusbar.h>
 #include <qtabwidget.h>
 #include <qspinbox.h>
+#include <qprinter.h>
+
 #if QT_VERSION < 300
 #undef QTextEdit
 #include <qtextview.h>
@@ -89,6 +91,9 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/embed/schnyder longestface",SchnyderLongestFace());
   setting.writeEntry("/pigale/embed/schnyder color",SchnyderColor());
   setting.writeEntry("/pigale/embed/distance dist",useDistance());
+  // Printer
+  setting.writeEntry("/pigale/printer colormode",printer->colorMode());
+  setting.writeEntry("/pigale/printer orientation",printer->orientation());
   // Custom colors
   int r,g,b;
   QColor col = QColor(QColorDialog::customColor(0));

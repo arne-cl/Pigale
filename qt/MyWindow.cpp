@@ -87,6 +87,7 @@ MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose ),
       GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1),IsUndoEnable(true)
   {int id;
+
   // Export some data
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
@@ -94,7 +95,6 @@ MyWindow::MyWindow()
   tmpnam(undofile);
   // Atexit: Erase undo.tgf
   atexit(UndoErase);
-  //LoadSettings();
 #if QT_VERSION >= 300
   LoadSettings();
   QSettings setting;
@@ -105,12 +105,23 @@ MyWindow::MyWindow()
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
   // Create a printer
   printer = new QPrinter;
+#if QT_VERSION >= 300
+  if(setting.readNumEntry("/pigale/printer orientation",QPrinter::Landscape) != QPrinter::Landscape)
+      printer->setOrientation(QPrinter::Portrait); 
+  else
+      printer->setOrientation(QPrinter::Landscape); 
+
+  if(setting.readNumEntry("/pigale/printer colormode",QPrinter::Color) != QPrinter::Color)
+      printer->setColorMode(QPrinter::GrayScale);
+  else
+      printer->setColorMode(QPrinter::Color);
+#else
   printer->setOrientation(QPrinter::Landscape); 
   printer->setColorMode(QPrinter::Color);
+#endif
 
   // Window size
 #if QT_VERSION >= 300
-
   QRect rect = QApplication::desktop()->screenGeometry();
   int MyWindowInitYsize = setting.readNumEntry("/pigale/geometry height",rect.height());
   int MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",817);
@@ -140,8 +151,8 @@ MyWindow::MyWindow()
   graphsym = new GraphSym(tabWidget,"graphsym",this);
 #if QT_VERSION >= 300
   QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
-  browser->mimeSourceFactory()->setFilePath("documentation");
-  browser->setSource("manual.html");
+//   browser->mimeSourceFactory()->setFilePath("documentation");
+//   browser->setSource("manual.html");
 #endif
   tabWidget->addTab(gw,"Graph &Editor");
   tabWidget->addTab(mypaint,"");
@@ -183,12 +194,11 @@ MyWindow::MyWindow()
   QPixmap leftIcon = QPixmap(sleft),   rightIcon = QPixmap(sright);
   QPixmap reloadIcon = QPixmap(sreload);
   QPixmap infoIcon = QPixmap(info), helpIcon = QPixmap(help),printIcon = QPixmap(fileprint);
-  QPixmap xmanIcon = QPixmap(xman), undoLIcon = QPixmap(sleftarrow),undoRIcon = QPixmap(srightarrow);
-  QPixmap undoSIcon = QPixmap(sfilesave);
+  QPixmap xmanIcon = QPixmap(xman), undoLIcon = QPixmap(sleftarrow);
+  QPixmap undoSIcon = QPixmap(sfilesave),undoRIcon = QPixmap(srightarrow);
 
   //ToolBar
   QToolBar *tb = new QToolBar(this,"toolbar" );
-  //QToolButton *fileopen,*filenew,*filesave,*fileprint,*left,*right,*redo,*info;
   QToolButton *fileopen,*filenew,*filesave,*fileprint,*info;
   filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(newgraph()),tb,"New");
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
@@ -208,6 +218,7 @@ MyWindow::MyWindow()
   undoS = new QToolButton(undoSIcon,"Save",QString::null,this,SLOT(UndoSave()),tb,"Save");
   undoR = new QToolButton(undoRIcon,"Redo",QString::null,this,SLOT(Redo()),tb,"Redo");
   tb->addSeparator();
+  //toggle button:    setToggleButton(true); left->isOn()
   (void)QWhatsThis::whatsThisButton(tb);
   tb->addSeparator();
   //PopMenus
@@ -253,13 +264,12 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Remove",remove);
   connect(remove,SIGNAL(activated(int)),SLOT(handler(int)));
   remove->insertItem("&Isolated vertices",   401);
-  //remove->insertItem("&Loops",               402);
   remove->insertItem("&Multiple edges",      403);
   remove->insertItem("Ist&hmus",             404);
   remove->insertSeparator();
-  remove->insertItem("Coloured &vertices",gw, SLOT(EraseColorVertices()));
-  remove->insertItem("Coloured &edges",   gw, SLOT(EraseColorEdges()));
-  remove->insertItem("&Thick edges",      gw, SLOT(EraseThickEdges()));
+  remove->insertItem("Colored &vertices", gw,SLOT(EraseColorVertices()));
+  remove->insertItem("Colored &edges",    gw,SLOT(EraseColorEdges()));
+  remove->insertItem("&Thick edges",      gw,SLOT(EraseThickEdges()));
 
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
@@ -271,11 +281,11 @@ MyWindow::MyWindow()
   embed->insertItem("&Tutte"      ,          203);
   embed->insertItem("Tutte &Circle",         204);
   embed->insertSeparator();
-  embed->insertItem("&Vision",               250);
-  embed->insertItem("FPP Visi&on",           253);
+  embed->insertItem("&Visibility",           250);
+  embed->insertItem("FPP Visi&bility",       253);
   embed->insertItem("&Contact Biparti",      251);
   embed->insertSeparator();
-  embed->insertItem("&Polair",               252);
+  embed->insertItem("&Polar",               252);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",298);
   embed->setWhatsThis(298,embed3d_txt);
@@ -317,7 +327,7 @@ MyWindow::MyWindow()
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
   orient->insertItem("&Show orientation",   10020);
   orient->setItemChecked(10020,ShowOrientation());
-  orient->insertItem("&Orient all adges",     701);
+  orient->insertItem("&Orient all edges",     701);
   orient->insertItem("&Inf Orientation",      702);
   orient->insertItem("Planar &3-Con.",        703);
   orient->insertItem("Planar &Biparti",       704);
@@ -415,10 +425,11 @@ MyWindow::MyWindow()
   //Distance Settings 
   settings->insertItem("&Distance Options",popupDistance);
   popupDistance->insertItem(comboDistance);
-  comboDistance->insertItem("Neigbour");
-  comboDistance->insertItem("Bissect");
-  comboDistance->insertItem("Adjacence");
-  comboDistance->insertItem("Adjacence M");
+  //comboDistance->insertItem("Neigbor");
+  comboDistance->insertItem("Czekanovski-Dice");
+  comboDistance->insertItem("Bisect");
+  comboDistance->insertItem("Incidence");
+  comboDistance->insertItem("Incidence M");
   comboDistance->insertItem("Oriented");
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
@@ -426,7 +437,7 @@ MyWindow::MyWindow()
   settings->insertItem("&Save Settings",popupSave);
   button_save->setText("Save");
   popupSave->insertItem(button_save);
-  connect(button_save,SIGNAL(clicked()),this,SLOT(SaveSettings()));
+  connect(button_save,SIGNAL(clicked()),SLOT(SaveSettings()));
 
   //End of the menuBar():window
   //help
@@ -462,7 +473,32 @@ MyWindow::MyWindow()
   InputFileName = DirFile + QDir::separator() + "a.tgf";
   OutputFileName = InputFileName;
 #endif
-  
+#if QT_VERSION >= 300
+  //Check for documentation repertory
+  QString DocPath = setting.readEntry("/pigale/Documentation dir","documentation");
+  QFileInfo fdoc = QFileInfo(DocPath);
+  if(!fdoc.exists() || !fdoc.isDir())
+      {int rep = QMessageBox::warning(this,"Pigale Editor"
+				      ,"I cannot find the repertory <b>documentation.<br>"
+				      "Load manually ?"
+				      ,QMessageBox::Ok
+				      ,QMessageBox::Cancel);
+      if(rep == 1)
+	  {DocPath = QFileDialog::getExistingDirectory(".",this,"find",
+						       "Choose the documentation directory",TRUE);
+	  if(!DocPath.isEmpty())
+	      {browser->mimeSourceFactory()->setFilePath(DocPath);
+	      browser->setSource("manual.html");
+	      setting.writeEntry("/pigale/Documentation dir",DocPath);
+	      }
+	  }
+      }
+  else
+      {browser->mimeSourceFactory()->setFilePath(DocPath);
+      browser->setSource("manual.html");
+      }
+  setting.writeEntry("/pigale/Documentation dir",DocPath);
+#endif  
   load(0);
   }
 
