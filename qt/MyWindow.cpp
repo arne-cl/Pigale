@@ -826,8 +826,8 @@ void MyWindow::handler(int action)
   else if(action < A_TEST_END)
       {t.start();
       int err = Test(GC,action - A_TEST);
-      if(err) {DebugPrintf("Test param=%d, error=%d",action - A_TEST,err);ret = 1;}
-      ret = 2;
+      if(err < 0)ret = -1;
+      else ret = err;
       }
   else if(action > 10000)
       {if(action == 10010)

@@ -4,10 +4,12 @@
 
 using namespace std;
 
+// Allowed return values of Test 
+//-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
+
 int Test(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
   GeometricGraph GG(GC);
-  int err = 0;
   
   if(action == 1)
       {GG.ComputeGeometricCir();
@@ -21,13 +23,13 @@ int Test(GraphContainer &GC,int action)
 	  t.sprintf("Error bipolar:s=%d t=%d a=%d",ns,nt,(int)acyclic);
 	  setError(-12345,(const char *)t);
 	  }
-      return 0;
+      return 2;
       }
   if(action == 2)
-      {if(G.TestPlanar() != G.TestPlanar2())err = 1;
-      if(err == 1)
-	  {if(getError())DebugPrintf("Planar2!=Planarity:%s",(const char *)getErrorString());
-	  setError(-12345,"is planar"); 
+      {for(int i = 0;i < 1000;i++)
+      if(!G.TestPlanar())
+	  {if(getError())DebugPrintf("TestPlanar:%s",(const char *)getErrorString());
+	  setError(-12345,"planar error"); 
 	  }
       return 0;
       }
