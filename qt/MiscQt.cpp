@@ -221,3 +221,7 @@ class QtGraphDebug : public GraphDebug {
     }
 };
 static QtGraphDebug QtDefaultGraphDebug;
+// Only for windows
+void initGraphDebug()
+  {GraphDebug::gd=&QtDefaultGraphDebug;
+  }
