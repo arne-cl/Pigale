@@ -19,6 +19,8 @@
                               + __GNUC_PATCHLEVEL__)
 #if GCC_VERSION >=  30000
 #include <iostream>
+#else
+#include <iostream.h>
 #endif
 
 using namespace std;
@@ -49,6 +51,7 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect( quit, SIGNAL(clicked()), qApp, SLOT(quit()) );
   // create the socket and connect various of its signals
   socket = new QSocket( this );
+  cls.setDevice(socket);
   connect(socket, SIGNAL(connected()),SLOT(socketConnected()) );
   connect(socket, SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()) );
   connect(socket, SIGNAL(readyRead()),SLOT(socketReadyRead()) );
@@ -83,9 +86,8 @@ void Client::sendToServer()
   }
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)return;
-  QTextStream os(socket);
   //split str -> 1 command per line if not a comment
-  if(str.at(0) == '#'){os <<str << "\n";return;}
+  if(str.at(0) == '#'){cls <<str << "\n";return;}
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
       Translate(fields[i].stripWhiteSpace());
@@ -97,9 +99,11 @@ void Client::Translate(QString str)
   QString str_action = str.left(pos);
   int action = mActions[str_action];
   if(!action)
-      {cout <<"# ERREUR_T '"<<str <<"' -> "<<"UNKNOWN ACTION" << endl;return;}
-  QTextStream os(socket);
-  os << action<<str.mid(pos)<<endl;
+      {QString m =  QString("'%1' UNKNOWN ACTION").arg(str);
+      infoText->append(m);
+      return;
+      }
+  cls << action<<str.mid(pos)<<endl;
   }
 void Client::socketReadyRead()
   {while(socket->canReadLine())

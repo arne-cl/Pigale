@@ -53,6 +53,7 @@ private slots:
 
 private:
   QSocket *socket;
+  QTextStream cls;
   QTextView *infoText;
   QLineEdit *inputText;
   typedef QMap<QString, int> ActionMap;
