@@ -19,15 +19,17 @@
 
 //Augment
 #define  A_AUGMENT                  (100)
-#define  A_AUGMENT_CONNECT          (A_AUGMENT+1)       // CONNECT
-#define  A_AUGMENT_BICONNECT        (A_AUGMENT+2)       // BICONNECT
-#define  A_AUGMENT_BICONNECT_6      (A_AUGMENT+3)       // BICONNECT_6
-#define  A_AUGMENT_BICONNECT_NP     (A_AUGMENT+4)       // BICONNECT_NP
-#define  A_AUGMENT_TRIANGULATE_V    (A_AUGMENT+5)       // TRIANGULATE_V
-#define  A_AUGMENT_TRIANGULATE_ZZ   (A_AUGMENT+6)       // TRIANGULATE_ZZ
-#define  A_AUGMENT_TRIANGULATE_3C   (A_AUGMENT+7)       // TRIANGULATE_3C
-#define  A_AUGMENT_QUADRANGULATE_V  (A_AUGMENT+8)       // QUADRANGULATE_V
-#define  A_AUGMENT_BISSECT_ALL_E    (A_AUGMENT+9)       // BISSECT_ALL_E
+#define  A_AUGMENT_CONNECT                     (A_AUGMENT+1)       // CONNECT
+#define  A_AUGMENT_CONNECT_V                 (A_AUGMENT+2)       // CONNECT_V
+#define  A_AUGMENT_BICONNECT                  (A_AUGMENT+3)       // BICONNECT
+#define  A_AUGMENT_BICONNECT_6              (A_AUGMENT+4)       // BICONNECT_6
+#define  A_AUGMENT_BICONNECT_NP           (A_AUGMENT+5)       // BICONNECT_NP
+#define  A_AUGMENT_BICONNECT_NP_V      (A_AUGMENT+6)       // BICONNECT_NP_V
+#define  A_AUGMENT_TRIANGULATE_V          (A_AUGMENT+7)       // TRIANGULATE_V
+#define  A_AUGMENT_TRIANGULATE_ZZ        (A_AUGMENT+8)       // TRIANGULATE_ZZ
+#define  A_AUGMENT_TRIANGULATE_3C        (A_AUGMENT+9)       // TRIANGULATE_3C
+#define  A_AUGMENT_QUADRANGULATE_V   (A_AUGMENT+10)     // QUADRANGULATE_V
+#define  A_AUGMENT_BISSECT_ALL_E            (A_AUGMENT+11)      // BISSECT_ALL_E
 #define  A_AUGMENT_END              (A_AUGMENT+99)
 
 //Embed

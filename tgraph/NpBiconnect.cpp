@@ -15,11 +15,16 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
 
-int TopologicalGraph::NpBiconnect()
+int TopologicalGraph::NpBiconnectVertex()
+  {return NpBiconnect(true);
+  }
+int TopologicalGraph::NpBiconnect(bool withVertices)
   {if(Set().exist(PROP_BICONNECTED))return 0;
-  MakeConnected();
-  if(CheckPlanar())return Biconnect();
-  if(debug())DebugPrintf("NpBionnected");
+  if(withVertices)MakeConnectedVertex();
+  else MakeConnected();
+
+  if(CheckPlanar() && !withVertices)return Biconnect();
+  if(debug())DebugPrintf("Executing NpBionnected withVertices=%d",withVertices);
   // DFS which computes the articulated edges
   // At the root there is always an articulated edge :
   // 1 an isthmus    -1 a tree edge
@@ -77,7 +82,6 @@ int TopologicalGraph::NpBiconnect()
       b = cir[b];
       }while(1);
   
-
   // Second DFS adding edges
   InTreeBrin.clear();InTreeBrin[v] = 1;
   mm = 0; b = 1; v = vin[b];
@@ -120,7 +124,6 @@ int TopologicalGraph::NpBiconnect()
           }
       b = cir[b];
       }while(1);
-
   // Insert edges around the root
    b = 1;
    v1 = vin[-b];
@@ -132,9 +135,24 @@ int TopologicalGraph::NpBiconnect()
            v1 = v2;
            }
        }
-
+   tedge m0 = ne();
    // Do Insert Edges
    for(int i = 1;i <= k;i++)
        NewEdge(First[i],Second[i]);
+   if(withVertices) // bissect all added edges 
+       { tedge m1 = ne();
+       if(Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
+           {Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
+           for(tedge e  = m0+1; e <= m1;e++ )
+               {tvertex v1 = vin[e];tvertex v2 = vin[-e];
+               tvertex v =  BissectEdge(e);
+               vcoord[v] = (vcoord[v1]  + vcoord[v2])/2.;
+               }
+           }
+       else
+            for(tedge e  = m0+1; e <= m1;e++ )
+                BissectEdge(e);
+       }
    return 0;
   }
+

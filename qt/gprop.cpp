@@ -220,13 +220,16 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_POLAR,C1 && NotBigD);                        //polair
   //Augment
   menu->setItemEnabled(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
+  menu->setItemEnabled(A_AUGMENT_CONNECT_V,(G.nv() > 1) && !C1);               //make connected 
   menu->setItemEnabled(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
   menu->setItemEnabled(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
   menu->setItemEnabled(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
+  menu->setItemEnabled(A_AUGMENT_BICONNECT_NP_V, !SMALL &&!C2);                              //make 2 connected NP  
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
   menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && !MaxBi);    //Quadrangulate
+  menu->setItemEnabled( A_AUGMENT_BISSECT_ALL_E ,G.ne());    //Bissect all edges
   //Embed
   menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
   menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
@@ -243,7 +246,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
   menu->setItemEnabled(A_EMBED_SPRING_PM,NotBigD);                            //springPM
-  menu->setItemEnabled(A_EMBED_CURVES,NotBigD);                               //curves
+  menu->setItemEnabled(A_EMBED_CURVES,!SMALL && NotBigD);                               //curves
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   menu->setItemEnabled(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual

@@ -327,6 +327,11 @@ int AugmentHandler(int action)
 	   if(debug())DebugPrintf("Added %d Edges",i);
 	   title() = "K-" + title();
 	   break;
+      case A_AUGMENT_CONNECT_V: 
+	   i = G.MakeConnectedVertex();
+	   if(debug())DebugPrintf("Added %d Edges",i);
+	   title() = "KV-" + title();
+	   break;
       case A_AUGMENT_BICONNECT:
           G.Set().erase(PROP_BICONNECTED);
           ret = G.Biconnect();
@@ -344,6 +349,12 @@ int AugmentHandler(int action)
           ret = G.NpBiconnect();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "2KNP-" + title();
+	  break;
+      case A_AUGMENT_BICONNECT_NP_V:
+          G.Set().erase(PROP_BICONNECTED);
+          ret = G.NpBiconnectVertex();
+          if(ret != 0){Tprintf("ret=%d",ret);break;}
+          title() = "2KNPV-" + title();
 	  break;
       case A_AUGMENT_TRIANGULATE_V:
 	  ret = G.VertexTriangulate();

@@ -1,5 +1,4 @@
 :D
-S_DEBUG
 # ask to transfer a file from the client and read the third graph
 RC_GRAPH;../../tgf/Sydney.tgf;3
 # get the number of vertices and edges

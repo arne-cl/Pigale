@@ -211,6 +211,7 @@ public :
     bool CheckSerieParallel();
     int BFS(svector<int> &comp);
     int MakeConnected(bool mark_roots=false);
+    int MakeConnectedVertex();
     int FindPlanarMap();
     bool CheckPlanar() // Graph must be connected
        {if(FindPlanarMap()) return false;
@@ -231,7 +232,8 @@ public :
     int Biconnect();
     int Opt6Biconnect();
     // in NpBiconnect.cpp
-    int NpBiconnect();    
+    int NpBiconnect(bool withVertices = false);    
+    int NpBiconnectVertex();    
     // in STList.cpp
     int BipolarPlan(tbrin FirstBrin);
     int PseudoBipolarPlan(tbrin& st_brin,int &NumberOfSinks);

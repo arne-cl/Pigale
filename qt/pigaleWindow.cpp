@@ -289,15 +289,19 @@ pigaleWindow::pigaleWindow()
   QPopupMenu * augment = new QPopupMenu(this);
   menuBar()->insertItem(tr("&Augment"),augment);
   connect(augment,SIGNAL(activated(int)),SLOT(handler(int)));
-  augment->insertItem(xmanIcon,tr("Make &Connected"),        A_AUGMENT_CONNECT);
-  augment->setWhatsThis(A_AUGMENT_CONNECT,tr("Make a graph 2-connected"));
+  augment->insertItem(xmanIcon,tr("Make &Connected (edge)"),        A_AUGMENT_CONNECT);
+  augment->setWhatsThis(A_AUGMENT_CONNECT,tr("Make a graph connected adding edges"));
+  augment->insertItem(xmanIcon,tr("Make &Connected (vertex) "),        A_AUGMENT_CONNECT_V);
+  augment->setWhatsThis(A_AUGMENT_CONNECT_V,tr("Make a graph connected adding a vertex"));
   augment->insertItem(xmanIcon,tr("Make &2-Connected"),      A_AUGMENT_BICONNECT);
   augment->setWhatsThis(A_AUGMENT_BICONNECT,tr("Make a PLANAR graph 2-connected"));
   augment->insertItem(xmanIcon,tr("Make 2-Connected &Opt"),  A_AUGMENT_BICONNECT_6);
   augment->setWhatsThis(A_AUGMENT_BICONNECT_6
 			,tr("Make a PLANAR graph 2-connected\n with a minimal degree increase"));
-  augment->insertItem(xmanIcon,tr("Make 2-Connected &NP"),   A_AUGMENT_BICONNECT_NP);
-  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP,tr("Make a graph 2-connected"));
+  augment->insertItem(xmanIcon,tr("Make 2-Connected &NP (edge)"),   A_AUGMENT_BICONNECT_NP);
+  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP,tr("Make a graph 2-connected adding edges"));
+  augment->insertItem(xmanIcon,tr("Make 2-Connected N&P (vertex)"),   A_AUGMENT_BICONNECT_NP_V);
+  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP_V,tr("Make a graph 2-connected adding vertices"));
   augment->insertItem(xmanIcon,tr("&Vertex Triangulate"),    A_AUGMENT_TRIANGULATE_V);
   augment->setWhatsThis(A_AUGMENT_TRIANGULATE_V,tr("Triangulate a PLANAR graph by adding vertices"));
   augment->insertItem(xmanIcon,tr("&ZigZag Triangulate"),    A_AUGMENT_TRIANGULATE_ZZ);

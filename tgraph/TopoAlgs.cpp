@@ -19,7 +19,6 @@
 int TopologicalGraph::FindPlanarMap()
   {bool Connect= CheckConnected();
   if(ne() <= 2){Prop1<int> map(Set(),PROP_PLANARMAP);return 0;}
-  //if(!CheckConnected())return 4;
   if(Set().exist(PROP_PLANARMAP)) 
       {if(debug())DebugPrintf("  exist PROP_PLANARMAP");
       return 0;
@@ -235,13 +234,83 @@ int TopologicalGraph::BFS(svector<int> &comp)
       }
   return ncc;
   }
+int TopologicalGraph::MakeConnectedVertex()
+//returns the initial number of connected components
+  {if(debug())DebugPrintf("   CheckPropConnected");
+  if(Set().exist(PROP_CONNECTED))return 1;
+  Prop1<int>is_connected(Set(),PROP_CONNECTED);
+  if(!nv()) return 0;
+  if(debug())DebugPrintf("Executing MakeConnectedVertex");
+  int simple = 0,bipartite = 0;
+  if(Set().exist(PROP_SIMPLE))simple= true;
+  if(Set().exist(PROP_BIPARTITE))bipartite= true;
+  tvertex v,w;
+  tbrin b,b0;
+  int ncc = 0;
+  svector<tvertex> stack(1,nv()); stack.SetName("stack");
+  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("Comp");
+  int rank =0;
+  int max_rank = 0;
+  tvertex v0 = 1;
+  tvertex previous_root = 1;
+  int n = nv();
+  int m = ne();
+  tvertex vv = NewVertex();
+  NewEdge(vv,v0); 
+  comp[vv] = v0;
+  while (max_rank < n)
+      {while (comp[v0]!=0) v0++;
+      comp[v0] = v0;
+      ++ncc;
+      if(ncc > 1) NewEdge(vv,v0); 
+      previous_root = v0;
+      ++max_rank;
+      stack[rank + 1] = v0;
+
+      while(rank < max_rank)
+          {v = stack[++rank];
+          b = b0 = pbrin[v];
+          if (b0!=0)
+              do {w = vin[-b];
+              if(!comp[w])
+                  {comp[w] = previous_root;
+                  stack[++max_rank] = w;
+                  }
+              }while((b = cir[b])!= b0);
+          }
+      }
+  if(ne() == m+1)// the graph was connected
+     { DeleteVertex(vv);
+     if(debug())DebugPrintf("End  MakeConnectedVertex  m=%d",ne());
+     return 1;
+     }
+ if(simple)Prop1<int> simple(Set(),PROP_SIMPLE);
+ if(bipartite)Prop1<int> bipartite(Set(),PROP_BIPARTITE);
+ if(Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
+     {Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
+     int deg; 
+     tvertex w;
+     Tpoint p(.0,.0);
+     deg = 0;
+     Forall_adj_brins_of_G(b,vv)
+       {w = vin[-b]; ++deg;
+       p += vcoord[w];
+       }
+     vcoord[vv] = p/(double)deg;
+     }
+  if(debug())DebugPrintf("End  MakeConnectedVertex  m=%d",ne());
+  return ncc - 1;
+  }
 int TopologicalGraph::MakeConnected(bool mark_cc)
 //returns the initial number of connected components
-  {if(debug())DebugPrintf("   CheckConnected");
-  if(Set().exist(PROP_CONNECTED))return true;
+  {if(debug())DebugPrintf("   CheckPropConnected");
+  if(Set().exist(PROP_CONNECTED))return 1;
   Prop1<int>is_connected(Set(),PROP_CONNECTED);
   if(!nv()) return 0;
   if(debug())DebugPrintf("Executing MakeConnected");
+  int simple = 0,bipartite = 0;
+  if(Set().exist(PROP_SIMPLE))simple= true;
+  if(Set().exist(PROP_BIPARTITE))bipartite= true;
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
@@ -273,6 +342,8 @@ int TopologicalGraph::MakeConnected(bool mark_cc)
               }while((b = cir[b])!= b0);
           }
       }
+ if(simple)Prop1<int> simple(Set(),PROP_SIMPLE);
+ if(bipartite)Prop1<int> bipartite(Set(),PROP_BIPARTITE);
   if (mark_cc)
      {Prop<tvertex> rep(Set(tvertex()),PROP_REPRESENTATIVEV);
      comp.Tswap(rep);
@@ -482,7 +553,6 @@ bool TopologicalGraph::CheckConnected()
       {Prop1<int> isconnected(Set(),PROP_CONNECTED);
       return true;
       }
-  Set().erase(PROP_CONNECTED);
   return false;
   }
 void TopologicalGraph::ZigZag(tbrin start)
@@ -702,7 +772,7 @@ int TopologicalGraph::VertexQuadrangulate()
   if(!CheckBipartite(true))return -1;  
   if(!CheckPlanar())return -1;
   if(!CheckConnected())
-      {MakeConnected();
+      {MakeConnectedVertex();
       if(!CheckBipartite(true))return -1; 
       }
   if(debug())DebugPrintf("Executing VertexQuadrangulate");
@@ -799,21 +869,26 @@ int TopologicalGraph::VertexTriangulate()
 // Precondition: simple plane 2-connected  graph
   {if(debug())DebugPrintf("VertexTriangulate");
   if(!CheckSimple())return -1;
-  if(!CheckConnected())MakeConnected();
-  if(!CheckPlanar())return -1;
-  if(!CheckBiconnected())Biconnect();
+  tvertex v,v00 = nv();
+  MakeConnectedVertex();
+  if(!CheckPlanar())
+      {for(v = nv(); v > v00;v--) DeleteVertex(v);
+      return -1;
+      }
+  if(!CheckBiconnected())
+      {NpBiconnectVertex();// add vertices
+      CheckPlanar();// we need a planar map
+      }
   if(debug())DebugPrintf("Executing VertexTriangulate");
   svector<tbrin> & Fpbrin = ComputeFpbrin();
-  tvertex v,v0;
   tbrin nb,b0,b;
   int len;
-  v0 = nv();
+  tvertex v0 = nv();
   int m0 = ne();
   for (int  i=1; i <= Fpbrin.n(); i++)
       {b = b0 = Fpbrin[i];
       len = FaceWalkLength(b0);
-      if(len ==  2)
-          {DebugPrintf("Vertextriangulate:not simple graph ?");return -2;}
+      if(len ==  2) {DebugPrintf("Vertextriangulate:not simple graph ?");return -2;}
       if(len ==  3)continue;
       // Creating a new vertex and an edge incident to it
       v = NewVertex();
@@ -835,10 +910,9 @@ int TopologicalGraph::VertexTriangulate()
       }
   delete &Fpbrin;
   if(ne() != 3*nv() - 6)
-      {for(v = nv(); v > v0;v--)
-          DeleteVertex(v);
-      DebugPrintf("Error 3:Vertextriangulate");
+      {DebugPrintf("Error 3:Vertextriangulate n=%d m=%d",ne(),nv());
       setError(A_ERRORS_VTRIANGULATE);
+      for(v = nv(); v > v00;v--)DeleteVertex(v);
       return -3;    
       }
   if(Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
