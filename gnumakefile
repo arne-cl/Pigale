@@ -1,10 +1,13 @@
-all: libtgraph  libqt
+all: libtgraph  libqt client
 
 libtgraph : tgraph/*.cpp
 	cd tgraph ;make -f gnumakefile -e
 
 libqt : qt/*.cpp
 	cd qt ;make -f gnumakefile -e
+	
+client : ClientServer/*.cpp
+	cd ClientServer ;make -f gnumakefile -e	
 
 clean:
 	cd tgraph ; make -f gnumakefile -e clean

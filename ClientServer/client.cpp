@@ -16,7 +16,7 @@ using namespace std;
 
 //class Client : public QVBox
 Client::Client(const QString &host, Q_UINT16 port)
-    :dbg(false),numPng(0)
+    :ActionsToDo(0),dbg(false),numPng(0)
   {
   infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
@@ -44,13 +44,13 @@ Client::Client(const QString &host, Q_UINT16 port)
 int Client::ChangeActionsToDo(int delta)
   {int i;
   mutex.lock();
-  i=(ActionsToDo+=delta);
+  i=(ActionsToDo += delta);
   mutex.unlock();
   return i;
   }
 void Client::socketConnected()
   {infoText->append("Connected to server");
-  ActionsToDo = 1; // wait server ready
+  ActionsToDo = 1; // wait server answers
   ThreadRead.pclient = this;
   ThreadRead.start();
   }
@@ -58,9 +58,11 @@ void Client::socketConnectionClosed()
   {infoText->append("Connection closed by the server\n");
   stop();
   }
+
 void Client::socketClosed()
   {infoText->append("Connection closed\n");
   }
+
 void Client::socketError(int e)
   {if(e == QSocket::ErrConnectionRefused)
       infoText->append(QString("Connection refused\n"));
@@ -69,19 +71,22 @@ void Client::socketError(int e)
   else
       infoText->append(QString("A read from the socket failed \n"));
   }
+
 void Client::writeToClient(QString str)
   {textEvent *e = new textEvent(str);
   QApplication::postEvent(this,e);
-  //qApp->processEvents (); 
   }
+
 void Client:: customEvent(QCustomEvent * e ) 
   {if( e->type() != TEXT_EVENT ) return;
   textEvent *event  =  (textEvent  *)e;
   infoText->append(event->getString());
   }
+
 void Client::stop()
   {ThreadRead.terminate();ThreadRead.wait();
   }
+
 void Client::closeConnection()
   {socket->close();
   if(socket->state() == QSocket::Closing )
@@ -90,17 +95,18 @@ void Client::closeConnection()
       socketClosed();
   stop();
   }
+
 void Client::sendToServer()
   {if(socket->state() != QSocket::Connected)return;
   QString str = inputText->text();
   sendToServer(str);
   inputText->setText("");
   }
+
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)
       {writeToClient(QString("state:%1").arg(socket->state()));return;}
-  //split str -> 1 command per line if not a comment
-  if(str.at(0) == '#' || str.at(0) == '!')
+  if(str.at(0) == '#' || str.at(0) == '!') //split str -> 1 command per line if not a comment
       {cls << str << endl;
       ChangeActionsToDo(1);
       return;
@@ -111,26 +117,25 @@ void Client::sendToServer(QString &str)
       if(fields[i].contains("RC_GRAPH",true))
           sendToServerGraph(fields[i]);
       else
-          cls << fields[i] << endl;
-      ChangeActionsToDo(1);
+          {cls << fields[i] << endl;
+          ChangeActionsToDo(1);
+          //if(debug())writeToClient(QString(" action:%1 -%2-").arg(ActionsToDo).arg( fields[i]));
+          }
       }
   }
+
 int Client::sendToServerGraph(QString &data)
   {QStringList fields = QStringList::split(PARAM_SEP,data);
-  if(fields.count() < 1)return -1;
+  if(fields.count() < 2){writeToClient("MISSING ARGUMENT");return -1;}
   QString GraphFileName = fields[1].stripWhiteSpace();
   QFileInfo fi = QFileInfo(GraphFileName);
-  if(GraphFileName.isEmpty())
+  if(GraphFileName.isEmpty() || !fi.isFile() || !fi.size())
       {writeToClient(QString("NO FILE:%1").arg(GraphFileName));
       return -1;
       }
+  ChangeActionsToDo(1);
   uint size = fi.size();
-  if(size && debug())
-      writeToClient(QString("SENDING:%1").arg(GraphFileName));
-  else if(!size)
-      {writeToClient("empty file");
-      return -1;
-      }
+  if(debug()) writeToClient(QString("SENDING:%1 %2 bytes").arg(GraphFileName).arg(size));
   cls << data << endl;
   QFile file(GraphFileName);
   file.open(IO_ReadOnly);
@@ -138,9 +143,39 @@ int Client::sendToServerGraph(QString &data)
   char *buff = new char[size];
   stream.readRawBytes(buff,size); 
   clo.writeBytes(buff,size);
-  if(debug())writeToClient(QString("SENT:%1 bytes").arg(size));
   delete [] buff;
   return 0;
+  }
+//uint Client::readBuff(char  * buff)
+uint Client::readBuffer()
+  {uint size;
+  while(socket->bytesAvailable() < 4)socket->waitForMore(10); 
+  clo >> size;
+  buffer = new char[size+1];
+  char *pbuff = buffer;
+  int retry = 0;
+  uint nread = 0;
+  uint size0 = 0;
+  uint nb;
+  while(nread  < size)
+      {socket->waitForMore(10);  // in millisec
+      nb = socket->bytesAvailable();
+      if(nb == 0)
+          {if(++retry > 1000){ writeToClient("TIMEOUT");ChangeActionsToDo(-1);return 0;}
+          continue;
+          }
+      retry = 0;
+      if(nb > size-nread)nb = size-nread;
+      nread += nb;
+      clo.readRawBytes(pbuff,nb);
+      pbuff += nb;
+      if(nread >= size0)
+          {int percent = (int)(nread*100./size + .5);
+          size0 = nread + size/10; // we write when at least 10% more  is read
+          writeToClient(QString("%1 % (%2 / %3)").arg(percent).arg(nread).arg(size));
+          }
+      }
+  return size;
   }
 void Client::socketReadyRead()
   {while(socket->canReadLine())
@@ -149,35 +184,19 @@ void Client::socketReadyRead()
       if(str.at(0) == ':')
           writeToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-          {ChangeActionsToDo(1);
+          {//char * buff = NULL;
+          uint size = readBuffer();
+          if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PngFile = QString("image%1.png").arg(++numPng);
-          QFile file(PngFile);
-          file.open(IO_ReadWrite);
+          QFile file(PngFile);          file.open(IO_ReadWrite);
           QDataStream stream(&file);
-          uint size;
-          while(socket->bytesAvailable() < 4)
-              {socket->waitForMore(100);writeToClient("+");} 
-          clo >> size;
-          char *buff = new char[size+1];
-          Q_ULONG  nb;
-          int i = 1;
-          Q_ULONG nread = 0;
-          char *pbuff = buff;
-          while(nread  < size)
-              {nb = socket->bytesAvailable();
-              nread += nb;
-              clo.readRawBytes(pbuff,nb);
-              pbuff += nb;
-              socket->waitForMore(100);  // in millisec
-              if(++i > 50)return ;
-              }
-          stream.writeRawBytes(buff,size);
+          stream.writeRawBytes(buffer,size);
           file.close();
-          delete [] buff;
+          delete [] buffer;
           writeToClient(QString("GOT:%1").arg(PngFile));
           ChangeActionsToDo(-1);
           }
-      else if(str.at(0) == '!')//server has finished
+      else if(str.at(0) == '!')//server has finished one action
           ChangeActionsToDo(-1);
       else 
           writeToClient(str);
@@ -188,13 +207,12 @@ void threadRead::run()
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
-  //if(pclient->socket->state() != QSocket::Connected)return;
   while(!stream.atEnd())
-      { int i = 0;
-      while(pclient->ChangeActionsToDo(0))
+      {int retry = 0;
+      while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
-          if(++i %100 == 0)
-              pclient-> writeToClient(QString("Waiting %1s (%2)").arg(i/100).arg(pclient->ChangeActionsToDo(0)));
+          if(++retry %100 == 0)
+              pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100).arg(pclient->ChangeActionsToDo(0)));
           }
       str = stream.readLine(); 
       QChar ch = str.at(0);

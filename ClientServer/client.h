@@ -94,6 +94,8 @@ public:
 
 private:
   int sendToServerGraph(QString &str);
+  //  uint readBuff(char  * buff);
+  uint readBuffer();
   QMutex mutex;
   QTextStream cls;
   QDataStream clo;
@@ -101,6 +103,7 @@ private:
   QLineEdit *inputText;
   threadRead ThreadRead;
   int numPng;
+  char *buffer;
 
 public:
   bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
