@@ -615,7 +615,11 @@ MyWindow::MyWindow()
   
   
   //Resize
-  setCaption("Pigale");
+#if TDEBUG
+  setCaption("Pigale Editor 1.2.4 debuggin mode");
+#else
+  setCaption("Pigale Editor 1.2.4");
+#endif
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
   resize(MyWindowInitXsize,MyWindowInitYsize);
   QRect rect_status(0,0,MyWindowInitXsize/2,30);
