@@ -1,45 +1,58 @@
-PIGALEPATH=../../pigale
-# L = name of libray
-L=qt
-# P = prefix name of program
-P=pigale_
+####################### MAY NEED EDITING ########################
+#Compiler options
+CC=g++
+CPU=
+#CPU="-mcpu=i686"
+#CPU=-m686 
+#OPT: if set to dbg > debug version
+#OPT: if set to opt > optimised version
 OPT=opt
-NVERSION=BETA
-AWK=awk
+#PIC if wanted shared dynamic libraries
+PIC=-fpic
+
+#libray paths
 MQTDIR=$(QTDIR)
 #MQTDIR=/usr/local/qt-2.3.2
-MMOC=$(MQTDIR)/bin/moc
-IFLAGS =  -I$(MQTDIR)/include 
-IFLAGS += -I$(PIGALEPATH)/incl
 #One can link with qt or qt-mt (multithread version of qt) 
 #UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
-UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local/lib -lglut -lGL -lGLU  
-#PIGALELIB =  -L$(PIGALEPATH)/lib  -ltgraph$(OPT)  -l$(L)$(OPT)
+UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local/lib -lglut -lGL -lGLU 
+
+#include paths
+IFLAGS =  -I$(MQTDIR)/include 
+IFLAGS += -I$(PIGALEPATH)/incl
+
+#awk 
+AWK=awk
+####################### END EDITING #########################
+PIGALEPATH=../../pigale
+NVERSION=BETA
+# P = prefix name of program
+P=pigale_
+# L = name of libray
+L=qt
+MMOC=$(MQTDIR)/bin/moc
 PIGALELIB =  -L$(PIGALEPATH)/lib    -l$(L)$(OPT) -ltgraph$(OPT)
-PIC=-fpic
-CC=g++
 
 #GENERAL OPTIONS
 .SUFFIXES:.cpp .o
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O3  $(PIC)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
-#CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
+CFLAGSopt = -O3  $(PIC) $(CPU)
+#CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror  -pipe
+CFLAGSopt +=  -fomit-frame-pointer 
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
 #CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
-
 #DEBUGGING OPTIONS
-CFLAGSdbg  =  -g -Wall $(PIC)
+CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 
-
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
-DLIB    =     $(PIGALEPATH)/lib/lib$L$(OPT).so
-FILES  :=  $(wildcard *.cpp)
+DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
+FILES  := $(wildcard *.cpp)
 INCL   := $(wildcard *.h)
 MOC_CPP = $(patsubst %.h,moc_%.cpp, $(INCL))
 FILES_WO_MOC := $(filter-out $(MOC_CPP), $(FILES))
@@ -68,11 +81,10 @@ $(P)$(OPT) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so
 	$(CC)  $(CFLAGS) -o $(P)$(OPT) $(PIGALELIB)  $(UNIXLIB) 
 
 clean:
-	@rm -f $(VPATH)/*.o
-	@rm -f moc_*.cpp
+	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
 
 test:
-	@echo objects=$(ALLOBJ)
+	@echo obj=$(OBJ)
 
 static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 	g++  $(CFLAGS) -o s$(P)$(OPT) $(ALLOBJ)  $(UNIXLIB) 
@@ -81,7 +93,6 @@ moc_cpp:    $(MOC_CPP)
 
 depend:
 	@makedepend -o.o  -fGNUmakefile -I$(PIGALEPATH)/incl  -Y   $(FILES_WO_MOC)  2> /dev/null
-#	@makedepend -o.o  -fGNUmakefile  -Y   *.cpp  2> /dev/null
 
 nodepend:
 	@makedepend -o.o  -fGNUmakefile -Y    2> /dev/null

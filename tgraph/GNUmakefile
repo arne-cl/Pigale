@@ -1,13 +1,19 @@
-####################### TO BE EDITED ########################
-#OPT: if set to dbg > debug version
-#OPT: if set to opt > optimised version
-OPT      =opt
+####################### MAY NEED EDITING ########################
+#Compiler options
+CC=g++
+#CPU="-mcpu=i686"
+#CPU=-m686 
+CPU=
+OPT=opt
 #PIC if wanted shared dynamic libraries
 PIC=-fpic
+
 #Unix libraries to be linked (system dependent)
+#UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
 UNIXLIB = -L/usr/X11R6/lib -lX11
+AWK=awk
 ####################### END EDITING #########################
-PIGALEPATH  = ../../pigale
+PIGALEPATH=../../pigale
 SAMPLING =
 RAN = ranlib
 #SAMPLING = -lc_p
@@ -17,16 +23,14 @@ L = tgraph
 .SUFFIXES:.cpp .c .opt .dbg .o
 IFLAGS = -I$(PIGALEPATH)/incl 
 
-CC=g++
-AWK=awk
-
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O3   $(PIC)
-CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated -pipe
-#CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
+CFLAGSopt = -O3   $(PIC) $(CPU)
+//CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated -pipe
+CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+CFLAGSopt +=  -fomit-frame-pointer
 
 #DEBUGGING OPTIONS (-pg -a for sampling)
-CFLAGSdbg  =  -g -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe $(PIC)
+CFLAGSdbg  =  -g -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe $(PIC) $(CPU)
 CFLAGSdbg +=  -DTDEBUG
 
 DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
@@ -54,8 +58,7 @@ $(DLIB):	$(OBJECTS)
 	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
 clean:
-	rm -f *.$(OPT) $(DLIB) 
-	rm -f *~ *bak $(OBJ) *.flc
+	@rm -f *~ *bak *.flc $(OBJ) *.flc $(DLIB)
 
 depend:
 	@makedepend -o.o -fGNUmakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
@@ -65,6 +68,10 @@ nodepend:
 
 list:
 	../makelist *.cpp >Make.lst
+
+test:
+	@echo OBJ=$(OBJ)
+	@echo OBJECTS=$(OBJECTS)
 
 
 # DO NOT DELETE
