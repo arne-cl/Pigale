@@ -27,6 +27,7 @@
 class MyWindow;
 class QPrinter;
 
+
 class MyPaint : public QWidget 
 {
   //Q_OBJECT

@@ -10,7 +10,7 @@ class RnEmbedding {
   const int facets;
   const int n;
  private:
-  svector<svector<double> *>Space;
+  svector<svector<double> *>Space;   
   int i1,i2,i3;
   bool Coord3ok;
   svector<Tpoint3> Coord3; // normalized coordinates

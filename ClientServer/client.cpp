@@ -16,7 +16,7 @@ using namespace std;
 
 //class Client : public QVBox, QThread
 Client::Client(const QString &host, Q_UINT16 port)
-    :ActionTreated(false),debug(false),numPng(0)
+    :debug(false),numPng(0)
   {infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
@@ -27,7 +27,7 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(close,SIGNAL(clicked()),SLOT(closeConnection()));
   connect(quit,SIGNAL(clicked()),SLOT(stop()));
   connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
-  connect(this,SIGNAL(WriteToClient(QString)),SLOT(writeToClient(QString)));
+  //connect(this,SIGNAL(WriteToClient(QString)),SLOT(writeToClient(QString)));
   // create the socket and connect various of its signals
   socket = new QSocket( this );
   cls.setDevice(socket);
@@ -36,16 +36,16 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
   connect(socket,SIGNAL(error(int)),SLOT(socketError(int)));
+  connect(this,SIGNAL(WriteToClient(QString &)),SLOT(write(QString &)));
   // connect to the server
   infoText->append("Trying to connect to the server\n" );
-  //emit WriteToClient("Trying to connect to the server");
   socket->connectToHost(host,port);
   }
 void Client::socketConnected()
-  {connect(this,SIGNAL(threadSendToServer(QString&)),SLOT(sendToServer(QString&)));
-  start();
-  infoText->append("Connected to server");
-  //emit WriteToClient("Connected to server");
+  {infoText->append("Connected to server");
+  ActionsToDo = 1; // wait server ready
+  ThreadRead.pclient = this;
+  ThreadRead.start();
   }
 void Client::socketConnectionClosed()
   {infoText->append("Connection closed by the server\n");
@@ -57,12 +57,16 @@ void Client::socketClosed()
 void Client::socketError(int e)
   {infoText->append(QString("Error number %1 occurred\n").arg(e));
   }
+void Client::write(QString& str)
+  {infoText->append(str);
+  }
 void Client::writeToClient(QString str)
-  {//infoText->append(str);
-  cout << str << endl;
+  {//emit WriteToClient(str);
+  //qDebug(str);
+  infoText->append(str);
   }
 void Client::stop()
-  {terminate();wait();
+  {ThreadRead.terminate();ThreadRead.wait();
   }
 void Client::closeConnection()
   {socket->close();
@@ -77,16 +81,14 @@ void Client::sendToServer()
   QString str = inputText->text();
   sendToServer(str);
   inputText->setText("");
-  emit WriteToClient("");
   }
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)
-      {qDebug("state:%d",socket->state());return;}
-  //else qDebug("client:%s",(const char *)str);
+      {writeToClient(QString("state:%1").arg(socket->state()));return;}
   //split str -> 1 command per line if not a comment
   if(str.at(0) == '#' || str.at(0) == '!')
       {cls << str << endl;
-      ActionTreated = false;
+      ++ActionsToDo;
       return;
       }
   QStringList fields = QStringList::split(ACTION_SEP,str);
@@ -96,7 +98,7 @@ void Client::sendToServer(QString &str)
 	  sendToServerGraph(fields[i]);
       else
 	  cls << fields[i] << endl;
-      ActionTreated = false;
+      ++ActionsToDo;
       }
   }
 int Client::sendToServerGraph(QString &data)
@@ -105,14 +107,16 @@ int Client::sendToServerGraph(QString &data)
   QString GraphFileName = fields[1].stripWhiteSpace();
   QFileInfo fi = QFileInfo(GraphFileName);
   if(GraphFileName.isEmpty())
-      {emit WriteToClient(QString("NO FILE:%1").arg(GraphFileName));
+      {writeToClient(QString("NO FILE:%1").arg(GraphFileName));
       return -1;
       }
   uint size = fi.size();
-  if(size)
-      emit WriteToClient(QString("SENDING:%1").arg(GraphFileName));
-  else 
-      {emit WriteToClient("empty file");return -1;}
+  if(size && debug)
+      writeToClient(QString("SENDING:%1").arg(GraphFileName));
+  else if(!size)
+      {writeToClient("empty file");
+      return -1;
+      }
   cls << data << endl;
   QFile file(GraphFileName);
   file.open(IO_ReadOnly);
@@ -120,8 +124,7 @@ int Client::sendToServerGraph(QString &data)
   char *buff = new char[size];
   stream.readRawBytes(buff,size); 
   clo.writeBytes(buff,size);
-  emit WriteToClient(QString("SENT:%1 bytes").arg(size));
-  usleep(10);
+  if(debug)writeToClient(QString("SENT:%1 bytes").arg(size));
   delete [] buff;
   return 0;
   }
@@ -130,62 +133,50 @@ void Client::socketReadyRead()
       {QString str = socket->readLine();
       str = str.stripWhiteSpace();
       if(str.at(0) == ':')
-	  //infoText->append(str.mid(1));
-	  emit WriteToClient(str.mid(1));
+	  writeToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-	  {ActionTreated = false;
+	  {++ActionsToDo;
 	  QString PngFile = QString("image%1.png").arg(++numPng);
-	  emit WriteToClient(QString("GETTING:%1").arg(PngFile));
 	  QFile file(PngFile);
 	  file.open(IO_ReadWrite);
 	  QDataStream stream(&file);
 	  uint size;
-	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
+	  while(socket->bytesAvailable() < 4)
+	      {socket->waitForMore(100);writeToClient("+");} 
 	  clo >> size;
 	  char *buff = new char[size+1];
  	  Q_ULONG  nb;
-// 	  while((nb = socket->bytesAvailable()) < size)
-// 	      {socket->waitForMore(100);qDebug(". %ld",nb);}
-// 	  clo.readRawBytes(buff,size);
 	  int i = 1;
 	  Q_ULONG nread = 0;
 	  char *pbuff = buff;
 	  while(nread  < size)
-	      {
-	      nb = socket->bytesAvailable();
+	      {nb = socket->bytesAvailable();
 	      nread += nb;
 	      clo.readRawBytes(pbuff,nb);
 	      pbuff += nb;
-	      qDebug("%d %ld (%ld/ %ld)",i,(long)nb,(long)nread,(long)size);
 	      socket->waitForMore(100);  // in millisec
 	      if(++i > 50)return ;
 	      }
 	  stream.writeRawBytes(buff,size);
 	  file.close();
 	  delete [] buff;
-	  emit WriteToClient("END GETTING PNG");
-	  usleep(10);
-	  ActionTreated = true;
+	  writeToClient(QString("GOT:%1").arg(PngFile));
+	  --ActionsToDo;
 	  }
       else if(str.at(0) == '!')//server has finished
-	  ActionTreated = true;
+	  --ActionsToDo;
       else 
-	  cout << str << endl;
+	  writeToClient(str);
       }
   }
 
-void Client::run() 
+void threadRead::run() 
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
-  if(socket->state() != QSocket::Connected)return;
-  int i = 0;
+  if(pclient->socket->state() != QSocket::Connected)return;
   while(!stream.atEnd())
-      {i = 0;
-      while(!ActionTreated)
-	  {usleep(1000);// microseconds
-	  if(++i%1000 == 0)cout << "." << endl;
-	  }
+      {while(pclient->ActionsToDo)msleep(10);// milliseconds
       str = stream.readLine(); 
       QChar ch = str.at(0);
       if(ch == ':')
@@ -193,22 +184,21 @@ void Client::run()
 	      switch(c)
 		  {case '!':
 		       str = "!";
-		       emit threadSendToServer(str);
+		       pclient->sendToServer(str);
 		       return;
 		  case 'D':
-		      debug = true;
+		      pclient->debug = true;
 		      break;
 		  case 'd':
-		      debug = false;
+		      pclient->debug = false;
 		      break;
 		  default:
 		      break;
 		  }
 	  }
-      else if(debug || ch != '#')
-	  {emit threadSendToServer(str);
-	  continue;
-	  }
+      else if(pclient->debug || ch != '#')
+	  pclient->sendToServer(str);
+      //else if(pclient->debug) qDebug(str);
       }
   }
 

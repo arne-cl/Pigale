@@ -56,39 +56,52 @@ When reading from the server
 otherwise they are output to the terminal 
 */
 
-class Client : public QVBox, QThread
+class Client;
+
+class threadRead : public QThread 
+{
+public:
+  virtual void run();
+  
+  Client* pclient; 
+};
+
+class Client : public QVBox
 {Q_OBJECT
 public:
   Client( const QString &host, Q_UINT16 port);
-  void run(); 
   ~Client(){}
+  void sendToServer(QString& str);
+  void writeToClient(QString str);
 
 signals:
-  void threadSendToServer(QString &str);
-  void WriteToClient(QString str);
+  void WriteToClient(QString& str);
 
 private slots:
   void closeConnection();
   void sendToServer();
-  void sendToServer(QString& str);
   void socketReadyRead();
   void socketConnected();
   void socketConnectionClosed();
   void socketClosed();
   void socketError(int e);
-  void writeToClient(QString str);
   void stop();
+  void write(QString& str);
 
+public:
+  QSocket *socket;
+  int ActionsToDo;
+  bool debug;
+  
 private:
   int sendToServerGraph(QString &str);
-  QSocket *socket;
   QTextStream cls;
   QDataStream clo;
   QTextView *infoText;
   QLineEdit *inputText;
-  bool ActionTreated;
-  bool debug;
+  threadRead ThreadRead;
   int numPng;
 };
+
 
 #endif 
