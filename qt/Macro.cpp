@@ -72,6 +72,7 @@ int MyWindow::getKey()
   }
 void MyWindow::blockInput(bool t)
   {static bool _inputBlocked = false;
+  if(!t && (ServerExecuting || MacroLooping))return;
   if(_inputBlocked == t)return;
   _inputBlocked = t;
   menuBar()->setDisabled(t); 
@@ -201,7 +202,7 @@ void MyWindow::macroHandler(int event)
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
 	      DebugPrintf("END PLAY ERROR iter=%d",j);
-	  blockInput(false);
+	   blockInput(false);
 	  break;
       case 5:// insert a pause
 	  if(MacroRecording)macroRecord(A_PAUSE);

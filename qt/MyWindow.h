@@ -115,7 +115,7 @@ public:
   QPalette LightPalette;
   QString InputFileName;
   QString OutputFileName;
-
+  bool ServerExecuting;
 private:
   QToolBar *tb;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
@@ -131,6 +131,7 @@ private:
   bool MacroExecuting;
   bool MacroWait;
   bool MacroPlay;
+  bool Server;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActionsString;
   typedef QMap<QString,int> StringIntMap;

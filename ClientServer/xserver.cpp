@@ -9,8 +9,8 @@
 **
 *****************************************************************************/
 
-#include "xserver.h"
 
+#include "xserver.h"
 #include <qtextview.h>
 #include <qlabel.h>
 #include <qpushbutton.h>

@@ -28,13 +28,15 @@
 #include "MyWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
-
+ 
+class PigaleServer;
 
 class ClientSocket : public QSocket
 // created each time a client connects
 {Q_OBJECT
 public:
  ClientSocket(int sock,int nid,bool show,QObject *parent=0,const char *name=0);
+ ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
   ~ClientSocket() { }
   
 
@@ -58,6 +60,21 @@ private:
   int sdebug;
   QTextStream cli;
   MyWindow *mw; 
+};
+
+class PigaleServer : public QServerSocket
+// create a ClientSocket each time a client connects
+{Q_OBJECT
+public:
+  PigaleServer(MyWindow *mw,QObject* parent=0);
+    ~PigaleServer() { }
+  void newConnection(int socket);
+  MyWindow *mw;
+  ClientSocket *clientsocket;
+  int nconnections;
+
+public slots:
+  void OneClientClosed();
 };
 
 #endif

@@ -85,14 +85,16 @@ int Test(GraphContainer &GC,int action);
 void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
+int InitPigaleServer(MyWindow *w);
 
 MyWindow::MyWindow()
     :QMainWindow(0,"_Pigale",WDestructiveClose )
-    ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
-    ,UndoIndex(0),UndoMax(0)
-    ,IsUndoEnable(true)
-    ,MacroRecording(false),MacroLooping(false)
-    ,MacroExecuting(false),MacroPlay(false)
+     ,ServerExecuting(false)
+     ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
+     ,UndoIndex(0),UndoMax(0)
+     ,IsUndoEnable(true)
+     ,MacroRecording(false),MacroLooping(false)
+     ,MacroExecuting(false),MacroPlay(false),Server(false)
   {int id;
   // Initialze Error
   setError();
@@ -651,6 +653,7 @@ MyWindow::~MyWindow()
 void MyWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1) 
        macroPlay();
+  if(Server)InitPigaleServer(this); 
   }
 void MyWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));
@@ -947,21 +950,21 @@ int MyWindow::handler(int action)
   else if(ret == 6)
       {blockInput(true);
       gw->update();gw->Spring();
-      if(!MacroExecuting)blockInput(false);
+      blockInput(false);
       }
   else if(ret == 7)
       {blockInput(true);
       gw->update();gw->SpringPreservingMap();
-      if(!MacroExecuting)blockInput(false);
+      blockInput(false);
       }
   else if(ret == 8)
       {blockInput(true);
       gw->update();gw->SpringJacquard();
-      if(!MacroExecuting)blockInput(false);
+      blockInput(false);
       }
 
   double TimeG = t.elapsed()/1000.;
-  if(!MacroLooping && !MacroRecording)
+  if(!MacroLooping && !MacroRecording && !ServerExecuting)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
 	  {Tprintf("Handler Error:%s",(const char *)getErrorString());

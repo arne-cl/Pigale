@@ -12,7 +12,7 @@
 #ifndef XSERVER_H 
 #define XSERVER_H
 
-#include <qapplication.h>
+#include <qapplication.h> 
 #include <qvbox.h>
 #include "ClientSocket.h"
 

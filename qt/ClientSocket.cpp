@@ -25,6 +25,41 @@
 
 void InitPigaleColors();
 void InitPigaleFont();
+int InitPigaleServer(MyWindow *w);
+
+int InitPigaleServer(MyWindow *w)
+  {PigaleServer  *server = new PigaleServer(w,qApp);
+  if(!server->ok())
+      {Tprintf("Server: Init failed");
+      return -1;
+      }
+  else
+      Tprintf("Server: Init");
+  return 0;
+  }
+
+//PigaleServer:public QServerSocket 
+PigaleServer::PigaleServer(MyWindow *w,QObject* parent):
+    QServerSocket(4242,1,parent),mw(w),nconnections(0)
+    { }
+void PigaleServer::newConnection(int socket)
+  {if(nconnections == 0)
+      {clientsocket = new ClientSocket(socket,mw,this,qApp);
+      nconnections = 1;
+      Tprintf("Server: New connection");
+      mw->ServerExecuting = true;
+      mw->blockInput(true);
+      }
+  else
+      Tprintf("Server: already a connection");
+  }
+void PigaleServer::OneClientClosed()
+  {--nconnections;
+   Tprintf("Server: The client disconnects");
+   mw->ServerExecuting = false;
+   mw->blockInput(false);
+   
+  }
 
 //ClientSocket: public QSocket
 ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,const char *name) :
@@ -40,6 +75,15 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   if(!display)mw->showMinimized(); 
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
   }
+ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
+    QSocket(parent,name),sdebug(0),cli(this),mw(p)
+  {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
+  connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
+  connect(this, SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
+  setSocket(sock);
+  prId = 1;
+  line = 1;
+  }
 void ClientSocket::ClientClosed()
   {mw->close();
   }
@@ -49,6 +93,7 @@ void ClientSocket::writeServer(QString& msg)
 void ClientSocket::readClient()
   {while (canReadLine())
       {QString str = cli.readLine();
+      //qDebug("R:%s",(const char *)str);
       if(++line == 10000)line = 0;
       if(str.at(0) == '#')
 	  cli << str << endl;
@@ -114,8 +159,8 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
 	   if(nfield > 1)num = fields[1].toInt(&ok);
 	   if(!ok)return WRONG_PARAMETERS;
 	   if(mw->publicLoad(num) < 0)return READ_ERROR;
-	   msg = QString("R: '%1':%2").arg(mw->InputFileName).arg(num);
-	   writeServer(msg);
+	   //msg = QString("R: '%1':%2").arg(mw->InputFileName).arg(num);
+	   //writeServer(msg);
 	   }
 	   break;
       case  A_INPUT_NEW_GRAPH:

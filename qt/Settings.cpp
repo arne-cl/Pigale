@@ -149,27 +149,33 @@ void MyWindow::LoadSettings()
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
 
   // if pigale was called with arguments, we may modify some values
-  if(qApp->argc() < 3)return;
-  for(int i = 1; i < qApp->argc()-1;i++)
+  if(qApp->argc() < 1)return;
+  int narg = qApp->argc() -1;
+  for(int i = 1; i <= narg;i++)
       {if(QString((const char *)qApp->argv()[i]) == "-fi")
-	  {InputFileName = (const char *)qApp->argv()[i+1];
+	  {if(i == narg)return;
+	  InputFileName = (const char *)qApp->argv()[i+1];
 	  QFileInfo fi = QFileInfo(InputFileName);
 	  if(!fi.exists()) 
 	      qDebug("%s does not exist",(const char *)InputFileName);
 	  i++;
 	  }
       else if(QString((const char *)qApp->argv()[i]) == "-fo")
-	  {OutputFileName =  (const char *)qApp->argv()[i+1];
+	  {if(i == narg)return;
+	  OutputFileName =  (const char *)qApp->argv()[i+1];
 	  i++;
 	  }
       else if(QString((const char *)qApp->argv()[i]) == "-macro")
-	  {MacroFileName =  (const char *)qApp->argv()[i+1];
+	  {if(i == narg)return;
+	  MacroFileName =  (const char *)qApp->argv()[i+1];
 	  MacroPlay = true;
 	  i++;
 	  }
+      else if(QString((const char *)qApp->argv()[i]) == "-server")
+	  Server = true;
       else
 	  {qDebug("%s option not recognized",(const char *)qApp->argv()[i]);
-	  qDebug("valid options: -fi -fo -macro");
+	  qDebug("valid options:\n -fi input\n -fo output\n -macro macro\n -server");
 	  }
       }
   }

@@ -48,6 +48,7 @@ CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
+#CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
