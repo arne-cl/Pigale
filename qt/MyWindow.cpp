@@ -306,6 +306,9 @@ MyWindow::MyWindow()
   embed->insertItem("&Polar",                A_EMBED_POLAR);
   embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
+#ifdef VERSION_ALPHA 
+  embed->insertItem("Spring PM",A_EMBED_SPRING_PM);
+#endif
   embed->insertItem(xmanIcon,"Spring &Jacquard",A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
@@ -545,7 +548,7 @@ MyWindow::MyWindow()
   resize(MyWindowInitXsize,MyWindowInitYsize);
   mainWidget->setFocus();
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
-  if(Error() == -1){Twait("Impossible to write in log.txt");Error() = 0;}
+  if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
   
   
   QFileInfo fi  = QString(getenv("TGF"));
@@ -596,7 +599,7 @@ MyWindow::~MyWindow()
 void MyWindow::load()
   {QString FileName = QFileDialog::
   getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
-  Error() = 0;
+  setError();
   if(FileName.isEmpty())
       newgraph();
   else
@@ -615,7 +618,7 @@ void MyWindow::load()
       }
   }
 void MyWindow::load(int pos)
-  {Error() = 0;
+  {setError();
   QString m;
   if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
       {m.sprintf("file %s does not exist",(const char *)InputFileName);
@@ -722,7 +725,7 @@ void MyWindow::reload()
 void MyWindow::next()
   {load(1);}
 void MyWindow::information()
-  {if(!Error())MessageClear();
+  {if(!getError())MessageClear();
   graph_properties->update();
   }
 void MyWindow::MessageClear()
@@ -757,7 +760,7 @@ void MyWindow::handler(int action)
       ret = RemoveHandler(action);UndoTouch(false);
       }
   else if(action < A_GENERATE_END)
-      {UndoClear();UndoSave();Error() = 0;t.start();
+      {UndoClear();UndoSave();getError();t.start();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       UndoSave();
       }
@@ -819,16 +822,18 @@ void MyWindow::handler(int action)
   else if(ret == 6)
       gw->Spring();
   else if(ret == 7)
+      gw->SpringPreservingMap();
+  else if(ret == 8)
       gw->SpringJacquard();
 
   double TimeG = t.elapsed()/1000.;
   if(!MacroLooping || !MacroRecording)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
-      if(Error())
-	  {Tprintf("Handler Last Error:%d",Error());
+      if(getError())
+	  {Tprintf("Handler Last Error:%d",(int)getError());
 	  if(debug())
 	      {QString m;
-	      m.sprintf("Error:%d",Error());
+	      m.sprintf("Error:%d",(int)getError());
 	      Twait((const char *)m); 
 	      }
 	  }

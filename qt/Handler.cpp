@@ -283,7 +283,9 @@ int EmbedHandler(int action,int &drawing)
 	  break;
       case  A_EMBED_SPRING :ret = 6;
 	  break;
-      case  A_EMBED_JACQUARD:ret = 7;
+      case  A_EMBED_SPRING_PM :ret = 7;
+	  break;
+      case  A_EMBED_JACQUARD:ret = 8;
 	  break;
       default:
 	    return 0;

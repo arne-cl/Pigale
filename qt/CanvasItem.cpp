@@ -79,6 +79,10 @@ void GraphWidget::Spring()
   {if(!d->is_init)return;
   d->editor->Spring();
   }
+void GraphWidget::SpringPreservingMap()
+  {if(!d->is_init)return;
+  d->editor->SpringPreservingMap();
+  }
 void GraphWidget::SpringJacquard()
   {if(!d->is_init)return;
   d->editor->SpringJacquard();

@@ -35,7 +35,8 @@
 #define  A_EMBED_TUTTE_CIRCLE       (A_EMBED+4)         // EMB_TUTTE_C
 #define  A_EMBED_TUTTE              (A_EMBED+5)
 #define  A_EMBED_SPRING             (A_EMBED+6)
-#define  A_EMBED_JACQUARD           (A_EMBED+7)
+#define  A_EMBED_SPRING_PM          (A_EMBED+7)
+#define  A_EMBED_JACQUARD           (A_EMBED+8)
 #define  A_EMBED_VISION             (A_EMBED+50)
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)
 #define  A_EMBED_POLAR              (A_EMBED+52)

@@ -35,6 +35,7 @@ int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,doub
   return 0;
   }
 
+
 void GraphEditor::Spring()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
@@ -50,6 +51,7 @@ void GraphEditor::Spring()
   double expand = 1.;
   double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
   int iter,niter = 2000;
+  //int iter,niter = 10;
   double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p;
@@ -130,6 +132,163 @@ void GraphEditor::Spring()
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
+	  canvas()->update();
+	  }
+      //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
+      stop = (n_red == G.nv())? ++stop : 0;
+      if(stop)force *= .9;
+      if(dep < .25 || stop == 4)break;
+      qApp->processEvents(1);
+      if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      // Compute bounds ro adapt the expand factor (should not be too strong)
+      ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
+      if(sizex > sizex0 && sizey > sizey0)
+	  expand /= Max(sizex/sizex0,sizey/sizey0);
+      else if(sizex < sizex0 && sizey < sizey0)
+	  expand *= Max(sizex0/sizex,sizey0/sizey);
+      sizex0 = sizex;      sizey0 = sizey;
+      }
+
+  gwp->mywindow->blockInput(false);
+  Normalise();
+  // same as load(false) but much faster
+  for(tvertex v = 1;v <= n;v++)
+      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+      nodeitem[v]->moveTo(G.vcoord[v]);
+      }
+  canvas()->update();
+  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+  }
+
+//**************************************************************************************
+void GraphEditor::SpringPreservingMap()
+  {GeometricGraph & G = *(gwp->pGG);
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+  svector<Tpoint> translate(1,G.nv()); translate.clear();
+  DoNormalise = true;
+  int h = gwp->canvas->height();
+  int w = gwp->canvas->width();
+  double mhw = Min(w,h) - 2*BORDER;
+  Tpoint center((w - space - sizerect)/2.,h/2.); 
+  int n_red,n = G.nv(),m =G.ne();
+  double len,len02 = mhw*mhw/n;
+  // during iteration keeep the drawing size
+  double expand = 1.;
+  double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
+  int iter,niter = 2000;
+  double dist2,strength,dx,dy,dep;
+  double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
+  Tpoint p0,p;
+  gwp->mywindow->blockInput(true);
+  double force = 1.;
+  int stop = 0;
+  // Compute bounds
+  ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0); 
+
+  for(iter = 1;iter <= niter;iter++)
+      {translate.clear();
+      if(iter > 50)force *= .99;
+      else if(iter > 100)force *= .98;
+      // Compute mean length of edges
+      len = .0;
+      for(tedge e = 1; e <= m;e++)
+	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
+	  len += Distance(p0,p);
+	  }
+      len /= m;
+      len02 = len*len;
+      hw = expand*hw0;
+      for(tvertex v0 = 1;v0 <= n;v0++)
+	  {p0 = G.vcoord[v0];
+	  // v0 repulse other vertices (1/d²)
+	  for(tvertex v = 1;v <= n;v++) 
+	      {if(v == v0)continue;
+	      p = G.vcoord[v];
+	      dist2 = Max(Distance2(p0,p),1.);
+	      strength = (hw/dist2);
+	      translate[v0]  += (p0 - p)*strength; 
+	      }
+	  // v0 is repulsed by non adjacent edges (1/d²)
+	  for(tedge e = 1; e <= m;e++)
+	      {tvertex v = G.vin[e], w = G.vin[-e];
+	      if(v0 == v || v0 == w)continue;
+	      dist2 = dist_seg(p0,G.vcoord[v],G.vcoord[w],p);
+	      if(dist2 > 2.)
+		  {strength = (hw/dist2); 
+		  translate[v0] += (p0 - p)*strength;
+		  }
+	      else if(G.vcoord[v].y() != G.vcoord[v].y())
+		  translate[v0].x() += 5.;
+	      else
+		  translate[v0].y() += 5.;
+	      }
+	  //v0 is attracted or repulsed by its neighbours (1/d)
+	  tbrin b0 = G.pbrin[v0];
+	  tbrin b = b0;
+	  do
+	      {p = G.vcoord[G.vin[-b]];
+	      dist2 = Max(Distance2(p0,p),1.);
+	      strength = Min(sqrt(hw/dist2),.1);
+	      if(dist2 > len02/4)
+		  translate[v0]  -= (p0-p)*strength*.5;
+	      else if(dist2 < 4*len02) 
+		  translate[v0]  += (p0-p)*strength*.5;
+	      }while((b = G.cir[b]) != b0);
+	  // v0 is attracted by the center (1/d)
+	  dist2 = Max(Distance2(p0,center),1.);
+	  strength = Min(sqrt(hw/dist2),.5)*.5;
+	  translate[v0] -= (p0 - center)*strength;
+	  // update v0
+	  translate[v0] *= force;
+
+	  bool found=false;Tpoint &t=translate[v0];
+	  if (t*t!=0)
+	      {Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+	      
+	      for (tbrin b=1; b<=G.ne(); b++)
+		  {tvertex v1=G.vin[b];
+		  tvertex v2=G.vin[-b];
+		  if (v1==v0 || v2==v0) continue;
+		  Tpoint p1=G.vcoord[v1];
+		  Tpoint p2=G.vcoord[v2];
+		  if ((Determinant(p1-p0,t)*Determinant(p2-p0,t)<=0) 
+		      && (Determinant(p0-p1,p2-p1)*Determinant(p0+t-p1,p2-p1)<=0))
+		      {found=true;break;}
+		  }
+	      if (!found)
+		  {tbrin b0=G.pbrin[v0];
+		  bool dobrk=false;
+		  tbrin b=b0;
+		  do 
+		      {Tpoint pp0=G.vcoord[G.vin[-b]];
+		      for (tvertex z=1; z<G.nv(); z++)
+			  {if (z==v0 || z==G.vin[-b]) continue;
+			  Tpoint p=G.vcoord[z];
+			  if ((Determinant(p0-pp0,p-pp0)*Determinant(p0+t-pp0,p-pp0)<=0) 
+			      && (Determinant(pp0-p0,p-p0)*Determinant(t,p-p0)<=0))
+			      {dobrk=true;break;}
+			  }
+		      if (dobrk) {found=true; break;}
+		      } while ((b=G.cir[b])!=b0);
+		  }
+	      if (found){ t=Tpoint(0,0);G.vcolor[v0] = Blue;}
+	      }
+	  G.vcoord[v0] += translate[v0];
+	  }
+
+      // update the drawing
+      dep = .0;
+      n_red = 0;
+      for(tvertex v = 1;v <= n;v++)
+	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
+	  dep = Max(dep,dx);  dep = Max(dep,dy);
+	  if(dx > 1. || dy > 1.) 
+	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      nodeitem[v]->moveTo(G.vcoord[v]);
+	      }
+	  else
+	      {nodeitem[v]->SetColor(red);++n_red;}
+	  //nodeitem[v]->moveTo(G.vcoord[v]);
 	  canvas()->update();
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
@@ -811,4 +970,70 @@ int GraphEditor::SpringJacquard()
   Normalise();load(false);
   return generations;
   }
+/*
+bool BoundRay(QCanvas *canvas, GeometricGraph &G, const tvertex &v0, const Tpoint &p0, Tpoint &t)
+  { const double epsilon_ray=0.01;
+  bool found=false;
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
 
+  for (tbrin b=1; b<=G.ne(); b++)
+      {tvertex v1=G.vin[b];
+      tvertex v2=G.vin[-b];
+      if (v1==v0||v2==v0) 
+	  continue;
+      Tpoint p1=G.vcoord[v1];
+      Tpoint p2=G.vcoord[v2];
+      Tpoint tt=p2-p1;
+      double ex1=Determinant(p1-p0,t);
+      double ex2=Determinant(p2-p0,t);
+      if (ex1*ex2 > 0) continue;
+      double exb1=Determinant(tt,p0-p1);
+      double exb2=Determinant(tt,p0-p1+t);
+      if (exb1*exb2>0) continue;
+      double d=Determinant(tt,t);
+      if (d!=0)
+	  {qDebug("found intersection");
+	  double alpha=-exb1/d;
+          if (alpha<1) 
+	      {t*=alpha; found=true; 
+	      nodeitem[v0]->SetColor(Red);
+	      edgeitem[b()]->SetColor(Red);
+	      canvas->update();
+	      qDebug("alpha correction 1: %f",alpha);
+	      Twait("");
+	      }
+	  }
+      else
+	  {Tpoint pmin;
+	  qDebug("found alignment");
+	  dist_seg(p0,p1,p2,pmin);
+          double alpha=t*(pmin-t)/(t*t);
+	  if (alpha>0 && alpha<1) {t*=alpha;  qDebug("alpha correction 2: %f",alpha);found=true;}
+	  }
+      }
+  if (found) t *=(1-epsilon_ray);
+  return found;
+  }
+*/
+//       double d=Determinant(tt,t);
+//       if (d!=0)
+// 	  {
+// 	  double alpha=-exb1/d;qDebug("** %f",alpha);
+//           if (alpha<1) 
+// 	      {t*=alpha; found=true; 
+// 	      nodeitem[v0]->SetColor(red);
+// 	      edgeitem[b()]->SetColor(red);
+// 	      canvas()->update();
+// 	      Twait("");
+// 	      }
+// 	  }
+//       else
+// 	  {Tpoint pmin;
+// 	  qDebug("found alignment");
+// 	  dist_seg(p0,p1,p2,pmin);
+//           qDebug("t*t=%f",t*t);
+//           double alpha=(t*(t-pmin))/(t*t);
+// 	  if (alpha>0 && alpha<1) {t*=alpha;  qDebug("alpha correction 2: %f",alpha);found=true;}
+// 	  else qDebug("alpha=%f",alpha);
+// 	  }

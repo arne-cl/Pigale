@@ -32,6 +32,7 @@ public slots:
   void ozoom();
   void uzoom();
   void Spring();
+  void SpringPreservingMap();
   void SpringJacquard();
   void showgridChanged(bool i);
   void fitgridChanged(bool i);
