@@ -934,13 +934,17 @@ int MyWindow::handler(int action)
   }
 void MyWindow::banner()
   {QString m;  
-  QFileInfo fi((const char *)InputFileName);
-  QFileInfo fo((const char *)OutputFileName);
+  //QFileInfo fi((const char *)InputFileName);
+  //QFileInfo fo((const char *)OutputFileName);
   int NumRecords =GetNumRecords((const char *)InputFileName);
   int NumRecordsOut =GetNumRecords((const char *)OutputFileName);
-  m.sprintf("Input file: %s %d/%d  Output file: %s %d Undo:%d/%d",(const char *)fi.fileName()
-	    ,*pGraphIndex,NumRecords,(const char *)fo.fileName(),NumRecordsOut
-      ,UndoIndex,UndoMax);
+  m.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
+	    //,(const char *)fi.fileName()
+	    ,(const char *)InputFileName
+	    ,*pGraphIndex,NumRecords
+	    ,(const char *)OutputFileName
+	    ,NumRecordsOut
+	    ,UndoIndex,UndoMax);
   statusBar()->message(m);
   }
 void MyWindow::about()
