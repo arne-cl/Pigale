@@ -9,9 +9,6 @@
 **
 *****************************************************************************/
 
-#include <stdlib.h> 
-#include <stdio.h> 
-#include <unistd.h>
 
 #include "MyWindow.h"
 #include <TAXI/Tgf.h>
@@ -26,7 +23,7 @@
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
 #include <QT/Action.h>
-#include <QT/MyPaint.h>
+#include <QT/MyPaint.h> 
 #include <QT/MyCanvas.h>
 
 #include <qpopupmenu.h>
@@ -53,6 +50,9 @@
 #include <qpalette.h>
 #include <qcolordialog.h> 
 #include <qprinter.h> 
+#include <qtimer.h>
+#include <qprogressbar.h>
+#include <qrect.h> 
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -82,7 +82,6 @@
 #include "icones/film.xpm"
 
 int Test(GraphContainer &GC,int action);
-void macroRecord(int action);
 void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
@@ -108,9 +107,10 @@ MyWindow::MyWindow()
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
 #if QT_VERSION >= 300
-  LoadSettings();
   QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
+  LoadSettings();
+  
 #endif
   // Define some colors
   QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
@@ -239,6 +239,9 @@ MyWindow::MyWindow()
   (void)QWhatsThis::whatsThisButton(tb);
   tb->addSeparator();
 
+  // Status bar
+  progressBar = new QProgressBar(statusBar(),"progressBar");
+  
   //PopMenus
   QPopupMenu * file = new QPopupMenu( this );
   menuBar()->insertItem( "&File", file );
@@ -360,6 +363,7 @@ MyWindow::MyWindow()
   orient->insertItem("&Show orientation",   10020);
   orient->setItemChecked(10020,ShowOrientation());
   orient->insertItem("&Orient all edges",     A_ORIENT_E);
+  orient->insertItem("&Color Poles",          A_ORIENT_SHOW);
   orient->insertItem("&ReOrient color edges", A_REORIENT_COLOR);
   orient->insertItem("&Inf Orientation",      A_ORIENT_INF);
   orient->insertItem("Planar &3-Con.",        A_ORIENT_TRICON);
@@ -485,6 +489,9 @@ MyWindow::MyWindow()
   //undoEnable
   settings->insertItem("&Undo Enable",10005);
   settings->setItemChecked(10005,IsUndoEnable);
+  // randomSeed 
+  settings->insertItem("&Random Seed",10007);
+  settings->setItemChecked(10007,randomSeed());
   //Pigale colors
   settings->insertItem("&Pigale Colors",10010);
   //Pigale limits
@@ -552,12 +559,16 @@ MyWindow::MyWindow()
   //Resize
   setCaption("Pigale");
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
-
   resize(MyWindowInitXsize,MyWindowInitYsize);
+  QRect rect_status(0,0,MyWindowInitXsize/2,30);
+  progressBar->setGeometry(rect_status); 
+  progressBar->hide();
+
   mainWidget->setFocus();
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
-  
+  randomInit();
+  DebugPrintf("seed:%ld",setSeed());
   
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
@@ -752,6 +763,7 @@ void MyWindow::Message(QString s)
 #endif
   } 
 
+
 void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
@@ -761,7 +773,8 @@ void MyWindow::handler(int action)
   if(action == A_PAUSE)
       {pauseDelay() = macroSpin->value();
       qApp->processEvents();
-      sleep(pauseDelay());
+      MacroWait = true;
+      QTimer::singleShot(1000*pauseDelay(),this,SLOT(timer()));
       return;
       }
   else if(action < A_AUGMENT_END)
@@ -797,7 +810,7 @@ void MyWindow::handler(int action)
   else if(action < A_TEST_END)
       {t.start();
       int err = Test(GC,action - A_TEST);
-      if(err && debug()) DebugPrintf("Test param=%d, error=%d",action - A_TEST,err);
+      if(err) {DebugPrintf("Test param=%d, error=%d",action - A_TEST,err);ret = 1;}
       ret = 2;
       }
   else if(action > 10000)
@@ -814,6 +827,7 @@ void MyWindow::handler(int action)
       SchnyderColor()       =  menuBar()->isItemChecked(10004);
       ShowOrientation()     =  menuBar()->isItemChecked(10020);
       EraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
+      randomSeed()          =  menuBar()->isItemChecked(10007);
       pauseDelay() = macroSpin->value();
       if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
       if(action == 10020)gw->update();

@@ -38,6 +38,7 @@ class QToolButton;
 class QToolBar;
 class QPrinter;
 class LineEditNum;
+class QProgressBar;
 
 class MyWindow: public QMainWindow 
 {Q_OBJECT
@@ -49,6 +50,7 @@ public:
 public slots:
   void load(int pos);
   void banner();
+  void timer();
 
 private slots:
   void newgraph();
@@ -64,6 +66,7 @@ private slots:
   void handler(int action);
   void macroHandler(int action);
   void macroPlay();
+  void macroRecord(int action);
   void about();
   void aboutQt();
   void showLabel(int action);
@@ -94,6 +97,7 @@ public:
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *e;
+  QProgressBar *progressBar;
   MyPaint *mypaint;
   QTabWidget *tabWidget;
   GraphWidget *gw;
@@ -104,7 +108,6 @@ public:
   GraphContainer GC;
   QString DirFilePng;
   bool MacroLooping;
-
  
 private:
   QToolBar *tb;
@@ -118,6 +121,7 @@ private:
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroExecuting;
+  bool MacroWait;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActions;
 };
