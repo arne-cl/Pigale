@@ -11,7 +11,8 @@ MMOC=$(MQTDIR)/bin/moc
 IFLAGS =  -I$(MQTDIR)/include 
 IFLAGS += -I$(PIGALEPATH)/incl
 #One can link with qt or qt-mt (multithread version of qt) 
-UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local -lglut -lGL -lGLU  
+#UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
+UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local/lib -lglut -lGL -lGLU  
 PIGALELIB =  -L$(PIGALEPATH)/lib  -ltgraph$(OPT)  -l$(L)$(OPT)
 PIC=-fpic
 CC=g++
@@ -30,15 +31,16 @@ CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT
 
 CFLAGS  = $(CFLAGS$(OPT))
-VPATH = $(PIGALEPATH)/tmp.$(OPT)
-DLIB   =     $(PIGALEPATH)/lib/lib$L$(OPT).so
-FILES :=  $(wildcard *.cpp)
-INCL := $(wildcard *.h)
-OBJECTS =  $(patsubst %.cpp,%.o, $(FILES))
-OBJ =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES))
-MOC = $(patsubst %.h,moc_%.o, $(INCL))
+VPATH   = $(PIGALEPATH)/tmp.$(OPT)
+DLIB    =     $(PIGALEPATH)/lib/lib$L$(OPT).so
+FILES  :=  $(wildcard *.cpp)
+INCL   := $(wildcard *.h)
 MOC_CPP = $(patsubst %.h,moc_%.cpp, $(INCL))
-OBJECTS += $(MOC)
+FILES_WO_MOC := $(filter-out $(MOC_CPP), $(FILES))
+FILES_W_MOC  := $(FILES_WO_MOC)
+FILES_W_MOC  += $(MOC_CPP)
+OBJECTS       =  $(patsubst %.cpp,%.o, $(FILES_W_MOC))
+OBJ           =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES_W_MOC))
 
 all :   $(P)$(OPT) 
 
@@ -64,7 +66,7 @@ test:
 moc_cpp:    $(MOC_CPP)
 
 depend:
-	@Makedepend -o.o  -fGNUmakefile -I$(PIGALEPATH)/incl  -Y   *.cpp  2> /dev/null
+	@makedepend -o.o  -fGNUmakefile -I$(PIGALEPATH)/incl  -Y   $(FILES_WO_MOC)  2> /dev/null
 #	@makedepend -o.o  -fGNUmakefile  -Y   *.cpp  2> /dev/null
 
 nodepend:
@@ -115,7 +117,7 @@ Macro.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 Macro.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
 Macro.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Macro.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
-Macro.o: ../../pigale/incl/TAXI/Tgf.h GraphWidget.h
+Macro.o: ../../pigale/incl/TAXI/Tgf.h GraphWidget.h mouse_actions.h
 Macro.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/QT/Misc.h
 main.o: MyWindow.h ../../pigale/incl/TAXI/graphs.h
 main.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
@@ -131,22 +133,6 @@ MiscQt.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Tpropio.h
 MiscQt.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 MiscQt.o: ../../pigale/incl/TAXI/Tpoint.h MyWindow.h
 MiscQt.o: ../../pigale/incl/TAXI/Tgf.h
-moc_glcontrolwidget.o: glcontrolwidget.h
-moc_gprop.o: gprop.h
-moc_GraphGL.o: GraphGL.h
-moc_GraphSym.o: GraphSym.h
-moc_GraphWidget.o: GraphWidget.h
-moc_mouse_actions.o: mouse_actions.h
-moc_MyWindow.o: MyWindow.h ../../pigale/incl/TAXI/graphs.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tprop.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tsvector.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tbase.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tdebug.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tpropio.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tstring.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/propdef.h
-moc_MyWindow.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tgf.h
 mouse_actions.o: mouse_actions.h GraphWidget.h GraphGL.h
 MyCanvas.o: MyWindow.h ../../pigale/incl/TAXI/graphs.h
 MyCanvas.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
@@ -184,6 +170,16 @@ MyWindow.o: icones/filesave.xpm icones/info.xpm icones/sleft.xpm
 MyWindow.o: icones/sright.xpm icones/sreload.xpm icones/help.xpm
 MyWindow.o: icones/xman.xpm icones/sleftarrow.xpm icones/srightarrow.xpm
 MyWindow.o: icones/sfilesave.xpm icones/macroplay.xpm
+SchaefferGen.o: ../../pigale/incl/TAXI/Tpoint.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tdebug.h
+SchaefferGen.o: ../../pigale/incl/TAXI/graphs.h
+SchaefferGen.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tprop.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tsvector.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tbase.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tpropio.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tstring.h
+SchaefferGen.o: ../../pigale/incl/TAXI/propdef.h
 Settings.o: MyWindow.h ../../pigale/incl/TAXI/graphs.h
 Settings.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 Settings.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h

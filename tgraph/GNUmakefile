@@ -18,6 +18,7 @@ L = tgraph
 IFLAGS = -I$(PIGALEPATH)/incl 
 
 CC=g++
+AWK=awk
 
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O2 -m486 -fstrength-reduce $(PIC)
@@ -29,21 +30,25 @@ CFLAGSopt += -fomit-frame-pointer
 CFLAGSdbg  =  -g -Wall  $(PIC)
 CFLAGSdbg +=  -DTDEBUG
 
-DLIB   = $(PIGALEPATH)/lib/lib$L$(OPT).so
-LIBS    = -L$(PIGALEPATH)/lib -lleda$(OPT) -ltgraph$(OPT)
+DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
+LIBS    = -L$(PIGALEPATH)/lib -ltgraph$(OPT)
 CFLAGS  = $(CFLAGS$(OPT))
-VPATH = $(PIGALEPATH)/tmp.$(OPT)
-FILES :=  $(wildcard *.cpp)
-OBJECTS =  $(patsubst %.cpp,%.o, $(FILES))
-#include  Make.lst
+VPATH   = $(PIGALEPATH)/tmp.$(OPT)
+FILES   :=  $(wildcard *.cpp)
+SPECIAL := PropName.cpp
+FILES   := $(filter-out $(SPECIAL), $(FILES))
+FILES2  := $(FILES)
+FILES2  += $(SPECIAL)
+OBJECTS =  $(patsubst %.cpp,%.o, $(FILES2))
 OBJ =  $(patsubst %.o,$(VPATH)/%.o, $(OBJECTS))
 
 all :  $(DLIB)
 
+PropName.cpp : $(PIGALEPATH)/incl/TAXI/propdef.h
+	$(AWK) -f propname.awk $(PIGALEPATH)/incl/TAXI/propdef.h > PropName.cpp
 
 .cpp.o: $*.cpp
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o  $(VPATH)/$*.o   $*.cpp
-
 
 $(DLIB):	$(OBJECTS)
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
@@ -54,7 +59,7 @@ clean:
 	rm -f *~ *bak $(OBJ) *.flc
 
 depend:
-	@makedepend -o.o -fGNUmakefile $(IFLAGS)  -Y *.cpp 2> /dev/null
+	@makedepend -o.o -fGNUmakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
 
 nodepend:
 	@makedepend -o.o -fGNUmakefile  -Y  2> /dev/null
@@ -310,7 +315,7 @@ LR-Map.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/graphs.h
 LR-Map.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/bicon.h
 LR-Map.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/DFSGraph.h
 LR-Map.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/embed.h
-LR-Map.o: ../../pigale/incl/TAXI/DFSLow.h
+LR-Map.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/Tmessage.h
 mark.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 mark.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 mark.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
@@ -364,6 +369,7 @@ Planar.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/graphs.h
 Planar.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/DFSGraph.h
 Planar.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/embed.h
 Planar.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/ndfs.h
+Planar.o: ../../pigale/incl/TAXI/Tmessage.h
 PropTgf.o: ../../pigale/incl/TAXI/Tproptgf.h ../../pigale/incl/TAXI/Tprop.h
 PropTgf.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
 PropTgf.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/elmt.h
