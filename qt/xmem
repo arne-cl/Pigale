@@ -1,8 +1,0 @@
-# !/bin/sh
-cd ..
-make && cd qt && memusage -T -t -p log.png ./pigale_$OPT&
-
-
-
-
-
