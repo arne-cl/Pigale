@@ -226,6 +226,28 @@ double dist_seg(const Point2_<T> &p0,const Point2_<T> &p1,const Point2_<T> &p2)
     else
         {return(d_10 - scal*scal/d_12);}     //entre p1 et p2
     }
+template <class T>
+double dist_seg(const Point2_<T> &p0,const Point2_<T> &p1,const Point2_<T> &p2,Point2_<T> &pmin)
+// retourne distance au carre du point p0 au segment (p1,p2)
+// p realize the shortest distance
+    {double scal =  (p1 - p0)*(p1 - p2);
+    double d_12 =  Distance2(p1,p2);
+    double d_10 =  Distance2(p1,p0);
+    pmin = p1;
+    if(p1 == p2 || scal < 0)//distance a p1
+	{return d_10;}  
+    else if(scal > d_12)//distance a p2
+        {pmin = p2;
+	return(d_10 - 2.*scal + d_12);
+	}     
+    else //entre p1 et p2
+        {double a = (scal/d_12);
+	pmin = (p2-p1);
+        pmin =  p1 + a * pmin;
+	return(d_10 - scal*scal/d_12);
+	}     
+    }
+
 typedef Point3_<double> Tpoint3;
 typedef Point2_<double> Tpoint;
 
