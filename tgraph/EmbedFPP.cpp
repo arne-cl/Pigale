@@ -11,159 +11,20 @@
 
 
 #include <TAXI/graphs.h>
- 
+#include <TAXI/SchPack.h>
+//#include<stdio.h> 
+
 #define CONE 0
 #define HOR_LEFT 1
 #define HOR_RIGHT 2
 
-#define RED (char)1
-#define BLUE (char)2
-#define GREEN (char)3
-#define UNVISITED (char)0
-#define VISITED (char)4
-
-
+//in Schnyder.cpp
+bool & SchnyderRect();
 bool & SchnyderLongestFace();
+//in here
+int EmbedFPP_Rect(TopologicalGraph &G);
 
-//***************************************************
-/*    mark[iv] = VISITED adjacent a un sommet traite.
-        color[je] = BLUE  si incidente a un sommet traité.
-        top_saturated,next,previous definissent la pile des sommets satures.
-        n_cones[iv] nombre de cones d'un sommet.
-        iv1,iv2,iv3 definissent la face exterieure.
-        last_left brin de la face exterieure du cone de iv3.
-        nfind nombre de sommets traites +1.
-*/
 
-class ShellingOrder: public TopologicalGraph
-{public:
-  ShellingOrder(Graph &G);
-  ~ShellingOrder();
-  void init(tbrin ee);
-  int findver(tvertex &iv,tbrin &left,tbrin &right);
-
-private:
-  svector<char> mark;
-  svector<char> couleur;
-  svector<tvertex>previous,next;
-  svector<int>n_cones;
-  tvertex top_saturated;
-  tvertex iv3;
-  tbrin last_left,last_right;
-  int nfind;
-
-  void mod_iv(tvertex iv,tbrin &left,tbrin &right);
-  tbrin left_c(tvertex iv);
-  void mod_ee(tbrin ee);
-  int inpile(tvertex iv);
-  void push(tvertex iv);
-  void pop(tvertex iv);
-};
-
-ShellingOrder::~ShellingOrder()
-  {}
-ShellingOrder::ShellingOrder(Graph &G) :
-    TopologicalGraph(G),top_saturated(0),nfind(3)
-  {mark.resize(1,nv());  mark.clear(); mark.SetName("Mark");
-  couleur.resize(1,ne()); //couleur.fill(1,ne(),RED);
-  for(tedge e = 1;e <= ne();e++)couleur[e] = RED;
-  next.resize(0,nv()); next.clear(); next.SetName("next");
-  previous.resize(0,nv()); previous.clear(); previous.SetName("previous");
-  n_cones.resize(1,nv()); n_cones.clear(); n_cones.SetName("n_cones");
-  }
-void ShellingOrder::init(tbrin ee)
-  {iv3 = vin[-acir[ee]];
-  last_left = acir[ee];
-  last_right = cir[-ee];
-  couleur[ee.GetEdge()] = BLUE;
-  tbrin left,right;
-  mod_iv(vin[ee],left,right);
-  mod_iv(vin[-ee],left,right);
-  }
-void ShellingOrder::mod_iv(tvertex iv,tbrin &left,tbrin &right)
-// les aretas rouges incidentes a iv modifient la pile des sommets satures.
-  {tbrin ee = left_c(iv);
-  left = -ee;
-  ee = acir[ee];
-  while(couleur[ee.GetEdge()] == RED)
-      {mod_ee(-ee);ee = acir[ee];}
-  right = -ee;
-  }
-tbrin ShellingOrder::left_c(tvertex iv) 
-  {tbrin ee;
-  ee = pbrin[iv];
-  while(couleur[ee.GetEdge()] != RED)  // recherche d'une arete rouge 
-      ee = acir[ee];
-  while(couleur[ee.GetEdge()] != BLUE) // recherche de la premiere arete bleue 
-      ee = cir[ee];
-  return(ee);
-  }
-void ShellingOrder::mod_ee(tbrin ee)
-// le brin ee en changeant de couleur modifie la pile des sommets satures
-  {// int inpile(); !!!!!
-  char lje_c,rje_c;  // lje_c couleur de l'arete a gauche de ee (rje_c droite)
-  tvertex iv;
-  iv = vin[ee];
-  couleur[ee.GetEdge()] = BLUE;
-  if(mark[iv] == UNVISITED)
-      {mark[iv] = VISITED;
-      n_cones[iv] = 1;
-      return;
-      }
-  // calcul du nouveau nombre de cones de iv
-  lje_c = couleur[cir[ee].GetEdge()];
-  rje_c = couleur[acir[ee].GetEdge()];
-  if(lje_c != rje_c)
-      ;
-  else if(lje_c == BLUE)
-      --n_cones[iv];
-  else
-      ++n_cones[iv];
-  // insertion ou effacement de iv de la pile des satures 
-  if((n_cones[iv] == 1) && (inpile(iv) == 0))
-      push(iv);
-  else if((n_cones[iv] != 1) && inpile(iv))
-      pop(iv);
-  }
-int ShellingOrder::inpile(tvertex iv)
-// indique si iv est dans la pile
-  {return((iv == top_saturated) || (previous[iv] != 0));
-  }
-void ShellingOrder::push(tvertex iv)
-// met le sommet iv dans la pile s'il n'y etait pas 
-  {if(iv == iv3)return;
-  if(top_saturated != 0)previous[top_saturated] = iv;
-  next[iv] =top_saturated;
-  top_saturated = iv;
-  }
-void ShellingOrder::pop(tvertex iv)
-// sort le sommet de la pile 
-  {if(iv == top_saturated)
-      top_saturated = next[iv];
-  else
-      {previous[next[iv]] = previous[iv];
-      next[previous[iv]] = next[iv];
-      }
-  previous[iv] = 0;
-  }
-int ShellingOrder::findver(tvertex &iv,tbrin &left,tbrin &right)
-  {if(top_saturated != 0)
-      {iv = top_saturated;
-      pop(iv);
-      mod_iv(iv,left,right);
-      ++nfind;
-      }
-  else if(nfind == nv())
-      {iv = iv3;
-      left = last_left;
-      right = last_right;
-      }
-  else return -1;
-  return 0;
-  }
-
-//*********************************************************************
-//*********************************************************************
 class Constraints: public TopologicalGraph
 {public:
   Constraints(Graph &G);
@@ -175,6 +36,7 @@ class Constraints: public TopologicalGraph
   int monot_up(tbrin lee,tbrin ree);
   tbrin monot_dwn(tbrin lee,tbrin ree);
   void ComputeCoord(tvertex iv,tvertex iv1,tvertex iv2,int forme);
+  void ComputeCoord_Rect(tvertex iv,tvertex iv1,tvertex iv2,int forme);
 
   svector<int>x,y;
   bool ok;
@@ -196,7 +58,6 @@ Constraints:: Constraints(Graph &G) :
 void Constraints::init(tbrin ee)
   {tvertex iv1,iv2,iv3;
   iv1 = vin[ee];iv2 = vin[-ee];iv3 = vin[-acir[ee]];
-  x[iv1] = 1;x[iv2] = 3;
   push1[iv3] = iv2;push_from[iv2] = iv3;push_by[iv2] = 0;
   }
 void Constraints::add(tbrin ee)
@@ -274,7 +135,22 @@ void Constraints::ComputeCoord(tvertex iv,tvertex iv1,tvertex iv2,int forme)
      y[iv] = (y1 + y2 + x2 -x1)/2;
      }
  }
-
+void Constraints::ComputeCoord_Rect(tvertex iv,tvertex iv1,tvertex iv2,int forme)
+ {int x1,x2,y1,y2;
+ x1 = x[iv1];y1 = y[iv1];x2 = x[iv2];y2 = y[iv2];
+ if(forme == HOR_LEFT)
+     {y[iv] = y2;
+     x[iv] = x1;
+     }
+ else if(forme == HOR_RIGHT)
+     {y[iv] = y1;
+     x[iv] = x2 + y2 -y1;
+     }
+ else
+     {x[iv] = x1;
+     y[iv] = x2 - x1 + y2 ;
+     }
+ }
 //***********************************************************************
 /*    x[iv],y[iv] tableau des coordonnees
         push_by[iv] indique le sommet que l'on place et qui entraine que l'on
@@ -283,8 +159,11 @@ void Constraints::ComputeCoord(tvertex iv,tvertex iv1,tvertex iv2,int forme)
         push_from[iv] est le sommet qui pousse iv
 */
 
+
 int EmbedFPP(TopologicalGraph &G)
-  {int OldNumEdge = G.ne();
+  {if(G.nv() < 3)return -5;
+  if(SchnyderRect())return EmbedFPP_Rect(G);
+  int OldNumEdge = G.ne();
   G.MakeConnected();
   G.Simplify();
   if(!G.CheckPlanar())return -1;
@@ -300,13 +179,16 @@ int EmbedFPP(TopologicalGraph &G)
   tvertex iv,iv1,iv2,iv3;
   tvertex ivl,nivl,ivr,pivr;
   int move_l,move_r,forme;
-
-  ShellingOrder shell(G);   shell.init(ee);
+  //init with the leftmost brin incident to tha last vertxex to be packed
+  SchnyderPacking SP(G,-G.acir[ee]);
+  // Skip first two vertices
+  SP.FindVertex();  SP.FindVertex();
   Constraints cs(G);           cs.init(ee);
-
   iv1 = G.vin[ee];iv2 = G.vin[-ee];iv3 = G.vin[-G.acir[ee]];
+  cs.x[iv1] = 1;cs.x[iv2] = 3;
   for(tvertex ivn = 3;ivn <= G.nv();ivn++)
-      {if(shell.findver(iv,left,right))return -2;
+      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      left = -left; right = -right;
       // sur le front on trouve dans l'ordre: ivl,nivl,pivr,ivr
       ivl = G.vin[left];nivl = G.vin[G.acir[-G.acir[left]]];
       ivr = G.vin[right];pivr = G.vin[G.cir[-G.cir[right]]];
@@ -349,12 +231,95 @@ int EmbedFPP(TopologicalGraph &G)
       cs.add(new_push);cs.add(-left);
       cs.ComputeCoord(iv,G.vin[left],G.vin[right],forme);
       }
-  if(!cs.ok)return -1;
+  if(!cs.ok)return -4;
   Prop<Tpoint> Coord(G.Set(tvertex()),PROP_COORD);
   for(tvertex v = 1;v <= G.nv();v++)
       {Coord[v].x() = cs.x[v];
        Coord[v].y() = cs.y[v];
       }
+  // Erase added edges
+  for(tedge e = G.ne();e > OldNumEdge;e--)G.DeleteEdge(e);
+  return 0;
+  }
+
+int EmbedFPP_Rect(TopologicalGraph &G)
+  {if(G.nv() < 3)return -5;
+  int OldNumEdge = G.ne();
+  G.MakeConnected();
+  G.Simplify();
+  if(!G.CheckPlanar())return -1;
+  bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
+  int len;
+  tbrin ee;
+  if(SchnyderLongestFace() && !MaxPlanar)
+      G.LongestFace(ee,len);
+  else
+      ee = G.extbrin();
+  if(!MaxPlanar && G.ZigZagTriangulate())return -2;
+  tbrin left,right,new_push;
+  tvertex iv,iv1,iv2,iv3;
+  tvertex ivl,nivl,ivr,pivr;
+  int move_l,move_r,forme;
+
+  //init with the leftmost brin incident to tha last vertxex to be packed
+  SchnyderPacking SP(G,-G.acir[ee]);
+  // Skip first two vertices
+  SP.FindVertex();  SP.FindVertex();
+  Constraints cs(G);           cs.init(ee);
+  iv1 = G.vin[ee];iv2 = G.vin[-ee];iv3 = G.vin[-G.acir[ee]];
+  cs.x[iv1] = 1;cs.x[iv2] = 2;
+  cs.y[iv1] = cs.y[iv2] = 1;
+  for(tvertex ivn = 3;ivn <= G.nv();ivn++)
+      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      left = -left; right = -right;
+      // sur le front on trouve dans l'ordre: ivl,nivl,pivr,ivr
+      ivl = G.vin[left];nivl = G.vin[G.acir[-G.acir[left]]];
+      ivr = G.vin[right];pivr = G.vin[G.cir[-G.cir[right]]];
+      move_l = move_r = 0;
+      forme = CONE;
+      /* determination de la forme du front */
+      if(cs.y[nivl] > cs.y[ivl])
+	  {new_push = G.acir[-G.acir[left]];
+	  move_l = 1;
+	  if((cs.y[pivr] < cs.y[ivr]) && cs.monot_up(left,right))
+	      forme = HOR_LEFT;
+	  else if(cs.y[pivr] > cs.y[ivr])
+	      move_r = 1;
+	  }
+      else if(cs.y[nivl] < cs.y[ivl])
+	  {if((new_push = cs.monot_dwn(left,right)) == right)
+	      forme = HOR_RIGHT;
+	  if(cs.y[pivr] > cs.y[ivr])
+	      move_r = 1;
+	  }
+      else if((cs.y[pivr] < cs.y[ivr]) && cs.monot_up(left,right))
+	  {forme = HOR_LEFT;new_push = cs.monot_dwn(left,right);
+	  }
+      else
+	  {if(cs.y[pivr] > cs.y[ivr])
+	      move_r = 1;
+	  new_push = cs.monot_dwn(left,right);
+	  }
+
+      /* calcul du deplacement des sommets */
+      move_r += move_l;
+      //printf("add:%d L=%d R=%d\n",iv(),move_l,move_r);
+      if(move_r)cs.deplace(ivr,move_r,iv);
+      if(move_l)cs.deplace(nivl,move_l,iv);
+      /* modification des pousseurs (cet ordre est capital) */
+      cs.add(new_push);cs.add(-left);
+      cs.ComputeCoord_Rect(iv,G.vin[left],G.vin[right],forme);
+      //printf("x=%d y=%d\n",cs.x[iv],cs.y[iv]);
+      }
+  //printf("******************************\n");
+  if(!cs.ok)return -4;
+  Prop<Tpoint> Coord(G.Set(tvertex()),PROP_COORD);
+  for(tvertex v = 1;v <= G.nv();v++)
+      {//printf("%d x=%d y=%d\n",v(),cs.x[v],cs.y[v]);
+      Coord[v].x() = cs.x[v];
+      Coord[v].y() = cs.y[v];
+      }
+  //printf("******************************\n");
   // Erase added edges
   for(tedge e = G.ne();e > OldNumEdge;e--)G.DeleteEdge(e);
   return 0;
@@ -536,7 +501,8 @@ int Recti::lrver(void)
 
 
 int EmbedFPPRecti(TopologicalGraph &G)
-  {int OldNumEdge = G.ne();
+  {if(G.nv() < 3)return -5;
+  int OldNumEdge = G.ne();
   G.MakeConnected();
   G.Simplify();
   if(!G.CheckPlanar())return -1;
@@ -550,7 +516,10 @@ int EmbedFPPRecti(TopologicalGraph &G)
   if(!MaxPlanar && G.ZigZagTriangulate())return -2;
   tvertex iv,iv1,iv2,iv3;
 
-  ShellingOrder shell(G);   shell.init(ee);
+  //init with the leftmost brin incident to tha last vertxex to be packed
+  SchnyderPacking SP(G,-G.acir[ee]);
+  // Skip first two vertices
+  SP.FindVertex();  SP.FindVertex();
   Recti recti(G);              
   recti.m_origin = OldNumEdge;
   recti.iv1 = iv1 = G.vin[ee];iv2 = G.vin[-ee];iv3 = G.vin[-G.acir[ee]];
@@ -559,7 +528,8 @@ int EmbedFPPRecti(TopologicalGraph &G)
   tbrin left,nleft,pright,right;
   tvertex ivl,nivl,pivr,ivr;
   for(int i = 3;i <= G.nv();i++)
-      {if(shell.findver(iv,left,right) != 0)return -2;
+      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      left = -left; right = -right;
       ivl = G.vin[left];nleft = G.acir[-G.acir[left]];nivl = G.vin[nleft];
       ivr = G.vin[right];pright = G.cir[-G.cir[right]];pivr = G.vin[pright];
       // calcul de la hauteur du nouveau sommet iv 
