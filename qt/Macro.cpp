@@ -11,19 +11,23 @@
 
 #include "MyWindow.h"
 #include "GraphWidget.h"
+#include "mouse_actions.h"
 #include <TAXI/graphs.h> 
 #include <TAXI/Tgf.h> 
 #include <TAXI/Tmessage.h> 
 #include <QT/Misc.h> 
 #include <qapplication.h> 
 #include <qspinbox.h> 
-#include <qstatusbar.h> 
+#include <qslider.h> 
+
 
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
+static int volatile escape = 0;
+static bool looping = false;
 
-void MacroRecord(int action)
+void macroRecord(int action)
   {if(action > 10000)return;
   MacroActions(++MacroNumActions) = action;
   GeometricGraph G(GetMainGraph());
@@ -32,8 +36,7 @@ void MacroRecord(int action)
   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
 void MyWindow::macroHandler(int event)
-  {int repeat = spinMacro->value();
-  QString m;
+  { int repeat = spinMacro->value();
   switch(event)
       {case 1://start recording
 	   if(debug())LogPrintf("\nRecord macro\n");
@@ -47,12 +50,16 @@ void MyWindow::macroHandler(int event)
 	  MacroRecording = true;
 	  break; 
       case 4:// play repeat times
+	  looping = true;
 	  for(int i = 1;i <= repeat;i++)
-	      {m.sprintf("Executing: %d/%d",i,repeat);
-	      //statusBar()->message(m);
-	      statusBar()->clear();
+	      {if(escape)break;
+	      if(i == repeat)looping = false;
 	      macroPlay();
+	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
+	      mouse_actions->Slider->setValue((int)(i*100./repeat));
 	      }
+	  escape = 0;
+	  looping = false;
 	  break;
       default:
 	  break;
@@ -67,7 +74,6 @@ void macroDefColors(int record)
 void MyWindow::macroPlay()
   {if(debug())LogPrintf("\nPlay macro:%d records",MacroNumActions);
   MacroRecording = false;
-  
   if(MacroNumActions == 0){load(1);return;}
   MacroExecuting = true;
   int record = 1;
@@ -75,13 +81,17 @@ void MyWindow::macroPlay()
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
-      if(MacroExecuting && record == MacroNumActions)
+      if(MacroExecuting && record == MacroNumActions && !looping)
 	  {MacroExecuting = false;
-	  // Call editor if last action is an embedding
-	  if(MacroActions[record] > 205 && MacroActions[record] < 300 )
+	  // Call editor if last action is an embedding not in graph editor
+	  if(MacroActions[record] > 205 && MacroActions[record] < 300)
 	      gw->update();
 	  }
       handler(MacroActions[record++]);
       }
-  information();
+  if(!looping)information();
+  }
+void MyWindow::keyPressEvent(QKeyEvent *k)
+  {if(k->key() == Qt::Key_Escape)
+      escape = 1;
   }
