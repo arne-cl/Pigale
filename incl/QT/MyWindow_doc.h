@@ -9,8 +9,8 @@
 **
 *****************************************************************************/
 
-const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>
-	A <em>.txt</em> file contains only <b>One</b> graph <br>
+const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>\
+	A <em>.txt</em> file contains only <b>One</b> graph <br>\
 	A <em>.tgf</em> file contains a <b>collection</b> of graphs";
 const char * left_txt = "Opens <b>previous</b> graph from  the current <em>tgf</em> file";
 const char * redo_txt = "Reload the <b>current</b> graph from the current  opened <em>tgf</em> file";
@@ -18,70 +18,64 @@ const char * right_txt = "Opens <b>next</b> graph of the current opened <em>tgf<
 
 const char * fpp_txt = "The original Fraysseix Pach Pollack algorithm to produce a Fary drawing";
 const char * jacquard_txt ="Jacquard spring embedder which preserves planarity\nTutte circle may give better results\nESC to stop";
-const char *schnyder_txt ="<qt>
-The original Schnyder algorithm to produce a Fary drawing
-<ul>
-<li> <b>Schnyder</b> triangulates the graph by adding edges.
-<li> <b>Schnyder V</b> triangulates the graph by adding vertices.
-<li>If the option <b>longest face</b> is selected, the exterior face will be the longest face.
-<li>The shape of the exterior face is defined in the options menu <b>Schnyder: Rect</b>.
-<li>The edges will be colored <b>R G B</b> if the options menu <b>Schnyder: Color Edges</b> is set.
-</ul>
-";
+const char *schnyder_txt ="<qt>\
+The original Schnyder algorithm to produce a Fary drawing\
+<ul>\
+<li> <b>Schnyder</b> triangulates the graph by adding edges.\
+<li> <b>Schnyder V</b> triangulates the graph by adding vertices.\
+<li>If the option <b>longest face</b> is selected, the exterior face will be the longest face.\
+<li>The shape of the exterior face is defined in the options menu <b>Schnyder: Rect</b>.\
+<li>The edges will be colored <b>R G B</b> if the options menu <b>Schnyder: Color Edges</b> is set.\
+</ul>";
 const char * tutte_circle_txt="The resulting embedding is similar to traditional spring embedders";
 const char * spring_txt ="General spring embedder\nESC to stop";
 const char * springPM_txt ="Spring embedder which preserves the map and the crossings\nESC to stop";
-const char * embed3d_txt ="<qt>
-The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored
-<b>Red</b>,<b>Green</b>,<b>Blue</b>
-<H2><b>Mouse Action</b></H2>
-<ul>
-<li><b>Left button:</b>
- <ul>
-  <li>Moving along X axis -> Rotate along Y
-  <li>Moving along Y axis -> Rotate along X
-  <li>Double Click -> Start/Stop Rotate (depends on vertical slider)
- </ul>
-<li><b>Right button:</b> 
- Moving along X axis -> Rotate along Z
- <li><b>Middle:</b>
-    Translate
-<li><b>Wheel:</b> 
-   Zoom
-</ul>
-<H2>Buttons</H2>
-The spin boxes let you select the coordinates to display.
-The <b>facet</b> button triangulate the graph, if it is planar, and draw the faces.
-</qt>
-"; 
+const char * embed3d_txt ="<qt>\
+The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored\
+<b>Red</b>,<b>Green</b>,<b>Blue</b>\
+<H2><b>Mouse Action</b></H2>\
+<ul>\
+<li><b>Left button:</b>\
+ <ul>\
+  <li>Moving along X axis -> Rotate along Y\
+  <li>Moving along Y axis -> Rotate along X\
+  <li>Double Click -> Start/Stop Rotate (depends on vertical slider)\
+ </ul>\
+<li><b>Right button:</b> \
+ Moving along X axis -> Rotate along Z\
+ <li><b>Middle:</b>\
+    Translate\
+<li><b>Wheel:</b> \
+   Zoom\
+</ul>\
+<H2>Buttons</H2>\
+The spin boxes let you select the coordinates to display.\
+The <b>facet</b> button triangulate the graph, if it is planar, and draw the faces.\
+</qt>"; 
 const char * dual_g_txt ="The dual graph without the vertex corresponding to the outer face";
 const char * angle_g_txt ="The angle graph without the vertex corresponding to the outer face";
-
-const char * license ="
- <HTML>
- <HEAD>
-    <TITLE>PIGALE copyright and license</TITLE>
- </HEAD>
- <BODY>
-
- <H1><CENTER>PIGALE copyright and license</CENTER></H1>
-
- The PIGALE Toolkit is Copyright (C) 1994-2001:
- <br> Hubert de Fraysseix, Patrice Ossona de Mendez
- PIGALE is available under the GPL.
- You may use, distribute and copy the PIGALE Toolkit under the terms of
- GNU General Public License version 2, which is displayed below.
-
- <HR>
- <H2>GNU GENERAL PUBLIC LICENSE</H2>
- Version 2, June 1991
- <PRE>Copyright (C) 1989, 1991 Free Software Foundation, Inc.&nbsp;&nbsp;
- 59 Temple Place - Suite 330, Boston, MA&nbsp; 02111-1307, USA
-
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.</PRE>
-
- <H2>Preamble</H2>
+const char * license ="see attached license";
+/*
+const char * license ="\
+ <HTML>\
+ <HEAD>\
+    <TITLE>PIGALE copyright and license</TITLE>\
+ </HEAD>\
+ <BODY>\
+ <H1><CENTER>PIGALE copyright and license</CENTER></H1>\
+ The PIGALE Toolkit is Copyright (C) 1994-2001:\
+ <br> Hubert de Fraysseix, Patrice Ossona de Mendez\
+ PIGALE is available under the GPL.\
+ You may use, distribute and copy the PIGALE Toolkit under the terms of\
+ GNU General Public License version 2, which is displayed below.\
+ <HR>\
+ <H2>GNU GENERAL PUBLIC LICENSE</H2>\
+ Version 2, June 1991\
+ <PRE>Copyright (C) 1989, 1991 Free Software Foundation, Inc.&nbsp;&nbsp;\
+ 59 Temple Place - Suite 330, Boston, MA&nbsp; 02111-1307, USA\
+ Everyone is permitted to copy and distribute verbatim copies\
+ of this license document, but changing it is not allowed.</PRE>\
+ <H2>Preamble</H2>\
  The licenses for most software are designed to take away your freedom to
  share and change it. By contrast, the GNU General Public License is intended
  to guarantee your freedom to share and change free software--to make sure
@@ -317,3 +311,4 @@ const char * license ="
  </BODY>
  </HTML>
  ";
+*/

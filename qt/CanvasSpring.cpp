@@ -20,6 +20,8 @@
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
 
+using namespace std;
+
 int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax
 		  ,double & dx,double & dy)
   {G.MinMaxCoords(xmin,xmax,ymin,ymax);
@@ -176,13 +178,13 @@ t current tanslation of v0
   int h = gwp->canvas->height(),w = gwp->canvas->width();
   double mhw = Min(w,h) - 2*BORDER;
   int n_red,n = G.nv(),m =G.ne();
-  double len,len02 = mhw*mhw/n;
+  double len=.0,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
   double expand = 1.;
   double hw,hw0 = .1*(mhw*mhw)/(n*m);//.25
   //double hw,hw0 = .5*(mhw*mhw)/(n*m);//.5
   int iter,niter = 2000;
-  double dist2,strength,dx,dy,dep;
+  double dist2,strength,dx,dy,dep = .0;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p,t,tt,center((w - space - sizerect)/2.,h/2.);
   gwp->mywindow->blockInput(true);
@@ -371,7 +373,7 @@ t current tanslation of v0
 
 //******************** JACQUARD SPRING EMBEDDER 
 //  ****************** VARIABLES D'EQUILIBRAGE
-int isinf (double x)
+int isInf (double x)
   {if ( x <= 0.0000001 )return 1;
   return 0;
   }
@@ -875,8 +877,8 @@ static double tryMove(tvertex v, svector<Tpoint> &sumDep, tk &k, TopologicalGrap
       if (fabs(diff.y())<1E-6) diff.y()=0;      
       tmp1 = Distance(diff,ZERO);
       if (tmp1 < 1E-6) {return 0;}
-      if (isinf(diff.x())) {mov = -(double)isinf(diff.x()) * xplusun;}
-      else if (isinf(diff.y())) {mov = -(double)isinf(diff.y()) * yplusun;}
+      if (isInf(diff.x())) {mov = -(double)isInf(diff.x()) * xplusun;}
+      else if (isInf(diff.y())) {mov = -(double)isInf(diff.y()) * yplusun;}
       else mov = ( -diff / tmp1);
       scale = 1;
       tmp = MinPot;

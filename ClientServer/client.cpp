@@ -14,6 +14,15 @@
 #include <QT/Action_def.h>
 #include <QT/Action.h>
 
+#define GCC_VERSION (__GNUC__ * 10000 \
+                              + __GNUC_MINOR__ * 100 \
+                              + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION >=  30000
+#include <iostream>
+#endif
+
+using namespace std;
+
 /* 
 If the input is a file:
 - lines starting by '#' are treated as comments
