@@ -25,15 +25,15 @@
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
-static int volatile escape = 0;
-static int volatile key = 0;
+static int  escape = 0;
+static int  key = 0;
 
 void MyWindow::keyPressEvent(QKeyEvent *k)
   {if(k->key() == Qt::Key_Escape)
       escape = 1;
   key = k->key();
-  //qDebug("k=%d",key);
-  //QWidget::keyPressEvent(k);
+  //qDebug("k:%d",k->key());
+  QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;
