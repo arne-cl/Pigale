@@ -142,18 +142,18 @@ void GraphWidget::update()
       }
   else
       delete d->pGG;
-  d->mywindow->tabWidget->showPage(this);
 
   d->pGG = new GeometricGraph(d->mywindow->GC);
   d->moving_item = 0;  d->curs_item = 0;  d->info_item = 0; d->moving_subgraph = false;
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   d->SizeGrid = d->FitSizeGrid = d->OldFitSizeGrid = 100;
-
   d->ForceGrid =false;
   d->OldFitToGrid =false;
   d->RedrawGrid =true;
+  d->editor->zoom = 1.;
   d->editor->initialize();
+  d->mywindow->tabWidget->showPage(this);
   }
 void GraphWidget::refresh()
   {if(!d->is_init)return;
@@ -214,14 +214,17 @@ void GraphWidget::sizegridChanged(int sg)
   d->editor->DrawGrid(true);// draw a square grid
   }
 void GraphWidget::EraseColorVertices()
-  {d->editor-> EraseColorVertices();
+  {d->mywindow->UndoSave();
+   d->editor-> EraseColorVertices();
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   }
 void GraphWidget::EraseColorEdges()
-  {d->editor-> EraseColorEdges();
+  {d->mywindow->UndoSave();
+  d->editor-> EraseColorEdges();
   }
 void GraphWidget::EraseThickEdges()
-  {d->editor-> EraseThickEdges();
+  {d->mywindow->UndoSave();
+  d->editor-> EraseThickEdges();
   }
 void GraphWidget::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize();
@@ -999,34 +1002,29 @@ void GraphEditor::clear()
       if(*it)delete *it;
   GridDrawn = false;
   }
-void GraphEditor::showEvent(QShowEvent*)
-  {if(!gwp->canvas)
-      {resize(sizeHint());
-      gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
-      }
-  initialize();
-  if(gwp->CanvasHidden)// to assure mouse_action is initialise
+void GraphEditor::showEvent(QShowEvent* e)
+  {if(gwp->CanvasHidden)// to assure mouse_action is initialise
       {gwp->mywindow->mouse_actions->LCDNumber->display(gwp->SizeGrid);
       gwp->mywindow->mouse_actions->Slider->setValue(gwp->SizeGrid);
       //Enable load buttons
-      gwp->mywindow->left->setEnabled(true);
-      gwp->mywindow->right->setEnabled(true);
-      gwp->mywindow->redo->setEnabled(true);
+//       gwp->mywindow->left->setEnabled(true);
+//       gwp->mywindow->right->setEnabled(true);
+//       gwp->mywindow->redo->setEnabled(true);
       }
-  gwp->CanvasHidden = false;
-  }
-void GraphEditor::hideEvent(QHideEvent*)
-  {
-  if(!gwp->CanvasHidden)//Disable load buttons
-      {gwp->mywindow->left->setDisabled(true);
-      gwp->mywindow->right->setDisabled(true);
-      gwp->mywindow->redo->setDisabled(true);
-      }
-  gwp->CanvasHidden = true;
-  if(gwp->canvas)return;
-  resize(sizeHint());
-  gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
+  // need initialize in case size changed
   initialize();
+  gwp->CanvasHidden = false;
+  QCanvasView::showEvent(e);
+  }
+void GraphEditor::hideEvent(QHideEvent* e)
+  {
+//   if(!gwp->CanvasHidden)//Disable load buttons
+//       {gwp->mywindow->left->setDisabled(true);
+//       gwp->mywindow->right->setDisabled(true);
+//       gwp->mywindow->redo->setDisabled(true);
+//       }
+  gwp->CanvasHidden = true;
+  QCanvasView::hideEvent(e);
   }
 QSize GraphEditor::sizeHint() const
   {return QSize(gwp->GW->width(),gwp->GW->height());
@@ -1039,20 +1037,24 @@ void GraphEditor::resizeEvent(QResizeEvent* e)
 void GraphEditor::paintEvent(QPaintEvent *e)
   {QCanvasView::paintEvent(e);
   // Before the first paintEvent,the sizes are wrong
-  if(!is_init){is_init = true;initialize();}
+  if(!is_init)
+      {is_init = true;//initialize();
+      resize(sizeHint());
+      if(gwp->canvas == 0)
+	  gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
+      if(!canvas())setCanvas(gwp->canvas);
+      canvas()->update();
+      initialize();
+      }
   } 
 void GraphEditor::initialize()
-  {resize(sizeHint()); 
-  if(gwp->canvas == 0)
-      gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
-  if(!canvas())setCanvas(gwp->canvas);
-  if(!is_init){canvas()->update();return;}
+  {if(!is_init)return; 
+  // very important to set here in case size was modified while hidden
+  resize(sizeHint());
   //Compute the font size
   int fs = (int)((double)QMIN(gwp->canvas->width(),gwp->canvas->height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   gwp->fontsize = fs; 
-  zoom = 1.;
- 
   load();
   }
 void GraphEditor::refresh()
@@ -1063,14 +1065,13 @@ void GraphEditor::refresh()
   canvas()->update(); 
   }
 void GraphEditor::load(bool initgrid) 
-  {if(gwp->CanvasHidden)return;
+  {//if(gwp->CanvasHidden)return;
   clear();// delete all items
   canvas()->update();
-  
-  GeometricGraph & G = *(gwp->pGG);
   int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
-  if(G.nv() > nmaxdisplay)
-      {Tprintf("Too big graph nv= %d (>%d)",G.nv(),nmaxdisplay);return;}
+  if(gwp->pGG->nv() > nmaxdisplay)
+      {Tprintf("Too big graph nv= %d (>%d)",gwp->pGG->nv(),nmaxdisplay);return;}
+  GeometricGraph & G = *(gwp->pGG);
   if(initgrid)
       {Normalise();
       InitGrid();

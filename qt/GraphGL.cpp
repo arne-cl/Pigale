@@ -358,10 +358,13 @@ void GLWindow::hideEvent(QHideEvent*)
   }
 void GLWindow::showEvent(QShowEvent*)
   {if(glp->isHidden)
-      {glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
+      {glp->isHidden = false;
+      //as now we may load a graph while this window is active
+      // we have to reset the speed
+      glp->idelay = 2;
+      glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
       glp->mywindow->mouse_actions->Slider->setValue(glp->idelay);
       }
-  glp->isHidden = false;
   }
 QSize GLWindow::sizeHint() const
   {return QSize(glp->GL->width(),glp->GL->height());
