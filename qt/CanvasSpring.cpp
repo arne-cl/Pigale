@@ -130,7 +130,7 @@ void GraphEditor::Spring()
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
-	  
+	  canvas()->update();
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
       stop = (n_red == G.nv())? ++stop : 0;
@@ -154,6 +154,7 @@ void GraphEditor::Spring()
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
+  canvas()->update();
   Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
   }
 

@@ -423,7 +423,6 @@ void NodeItem::moveTo(Tpoint &p)
 	  ei->setToPoint((int)x,(int)y);   
 	  }
       }
-  canvas()->update();
   }
 void NodeItem::moveBy(double dx, double dy)
 //Move the left upper part of the item and
