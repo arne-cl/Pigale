@@ -273,16 +273,17 @@ void BipExtendMinor(TopologicalGraph &G, tbrin bst, svector<int> &F)
 int NPBipolar(TopologicalGraph &G, tbrin bst)
 {GraphContainer DFSContainer; 
  DFSGraph DG(DFSContainer,G,bst);
- svector<bool> reoriented(DG.ne()); reoriented.SetName("Bipolar reorientation"); reoriented.clear();
- svector<bool> mark(DG.nv()); mark.SetName("Bipolar:mark"); mark.clear();
+ svector<bool> reoriented(1,DG.ne()); reoriented.SetName("Bipolar reorientation"); reoriented.clear();
+ svector<bool> mark(1,DG.nv()); mark.SetName("Bipolar:mark"); mark.clear();
  Prop<bool> ireor(G.Set(tedge()),PROP_REORIENTED); ireor.clear();
  Prop<bool> ior(G.Set(tedge()),PROP_ORIENTED);
 
  for (tbrin b=1; b<=G.ne(); b++)
-   {ior[b]=true;
-   if (DG.ib(b)<0) G.ReverseEdge(DG.ib(b).GetEdge());
+   {tedge ee=DG.ib(b).GetEdge();
+   ior[b]=true;
+   if (DG.ib(b)<0) G.ReverseEdge(ee);
    }
- mark[DG.nvin[bst]]=mark[DG.nvin[-bst]]=true;
+ mark[1]=mark[2]=true;
  // in what follows, z and b are positive.
  for (tbrin z=DG.nv(); z<=DG.ne(); z++)
    {bool re=reoriented[DG.uptree[z]];
