@@ -15,6 +15,7 @@
 <li> <A HREF="manual.html#GE">Using the Editor</A> 
 <li> <A HREF="manual.html#macro">Using Macros</A> 
 <li> <A HREF="manual.html#tgf">Input files:TGF and ASCII formats</A> 
+<li> <A HREF="manual.html#gen">Generating graphs</A> 
 <li> <A HREF="manual.html#3d">Embedding a graph  in space</A>
 </ul>
 
@@ -70,6 +71,7 @@ To come back to the original colors, you only need to erase that file
 <ul>
 <li> all the settings of this menu,
 <li> the generator settings
+<li> the macro playback settings
 <li> the input and output tgf files,
 <li> the location of the documentation repertory,
 <li> the geometry and colors of the screen,
@@ -163,7 +165,7 @@ of the current file.
 The user have the choice among the following distances:
 <ul>
 <li> Czekanovski-Dice has been shown effective for graph partitioning,
-<li> Bisect is such that the isometries of the graph are in a one to one correspondance with its
+<li> Bisect is such that the isometries of the graph are in a one to one correspondence with its
 automorphisms,
 <li> Incidence is not an Euclidean distance,
 <li> Incidence M is a modification of the previous one and might be Euclidean,
@@ -194,16 +196,31 @@ provided you have clicked on the drawing.
 <br><A HREF="manual.html#home"><em>top</em></A>
 
 
+<HR><H2> <A NAME="gen">G</A>enerating graphs </H2> 
+The planar graph generators are based on the algorithms of Gilles Schaeffer.
+They produce random planar graphs with prescribed properties.<br>
+The size input of these algorithms is either the number of edges The program automatically
+ modified this value if unacceptable (e.g.  a cubic graph has a number
+of edges  divisible by three).<br>
+Depending on the prescribed properties, the algorithms, consume more or less memory and time.
+To get reasonable performance, we allow the algoritms to generate graphs with slightly different size
+than the prescribed one.<br>
+Loops are always erased (1-connected graphs get less edges than asked).<br>
+If the option <b> Erase multiple edges</b> is on, we erase multiple edges
+after the generation process, therefore we do not maintain the degree propertie.
+<br><A HREF="manual.html#home"><em>top</em></A>
+
 <HR><H2> <A NAME="tgf">T</A>gf and ASCII files </H2> 
 We use a general proprietary format <b>TGF</b>.<br> 
 A TGF file contains records, here corresponding to graphs.
 Each record consisting of a variable number of fields.<br>
 One of its main advantage is that we can write and read any complex data structure.
 But it is dependent of the processor type (Low or High indian etc).<br><br>
-We use very simple <b>ASCII</b> files to store graphs. <br>
+We use a very simple <b>ASCII</b> file structure to store graphs. <br>
 For example, the following file defines a graph called <tt>Triangle</tt> 
 with three vertices labeled <tt>10,20,30</tt>
-and three edges. The last line indicates the end of file.
+and three edges. The first 0 at the last line indicates the end of the list of edges,
+the second one indicates the end of the graph datas.
 <tt><br>
 Triangle<br>
 10 20<br>
