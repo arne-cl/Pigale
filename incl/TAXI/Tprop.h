@@ -387,6 +387,8 @@ class PSet
             else out << "unregistred"<<T_STD  endl;
             }
 	}
+      /*!< \param out output stream
+       */
 };
 /*! \relates PSet
  * stream printing of a property set
@@ -415,7 +417,11 @@ class vP : public vProp
            out <<"}"<<T_STD  endl;
            }
         }
-
+      //!< prints the element (debugging purpose)
+    /*!
+      \param out output stream
+      \param p vector to print
+    */
     };
 //! Vector property
 template<class T>
@@ -532,7 +538,7 @@ class vProp1
     virtual _svector * Export(const void *elmt) const = 0;
     //!< Exports the element (for TGF file)
     /*!< \param elmt element to export
-     *   \param raw \c _svector encoding the element
+     *   \return \c _svector encoding of the element
      */    
     virtual vProp1* dup() const = 0; //!< duplicates the access
     virtual void * edup(void *elmt) const = 0; //!< duplicates an element
@@ -550,13 +556,23 @@ class vP1 : public vProp1
       void destroy(void *p) const {delete (T*)p;}
       
       void affiche(T_STD  ostream&out, const void *p) const {out << *(T*)p << T_STD  endl;}
-      
+    //!< prints the property (debugging purpose)
+    /*!< \param out output stream
+     *   \param p vector to print
+     */       
      _svector * Export(const void *p) const
         { return TypeHandler<T>::Export(p);}
-
+    //!< exports an element
+    /*!<
+     *   \param p pointer to the element to export
+     */  
      void * edup(void *p) const
          { return (void *) new T(*(T *)p);
          }
+    //!< duplicates an element
+    /*!<
+     *   \param p pointer to the element to duplicate
+     */  
     };
 //! Set of single properties
 /*!

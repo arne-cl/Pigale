@@ -69,18 +69,20 @@ void DrawPolar(QPainter *p,MyPaint *paint)
       DrawNode(Vcoord[v],label[v()],Yellow);
   */
   }
-
 void DrawPolyline(QPainter *p,MyPaint *paint)
   {GeometricGraph G(paint->GCP);
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
   Prop<Tpoint> Ebend(G.Set(tedge()),PROP_DRAW_POINT_3);
+
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+
   int m = G.ne(); 
   int n = G.nv(); 
   QPen pn = p->pen();pn.setWidth(2);
+  QPointArray bez(4);
 
   for (tedge ee=1; ee<=m; ee++)
       {if (Ebend[ee] != Tpoint(-1, -1)) {
@@ -99,6 +101,48 @@ void DrawPolyline(QPainter *p,MyPaint *paint)
       else
  	  t.sprintf("%2.2ld",G.vlabel[v()]);
       paint->DrawText(p,Vcoord[v],t,vcolor[v],1);
+      }
+  }
+
+void DrawCurves(QPainter *p,MyPaint *paint)
+  {GeometricGraph G(paint->GCP);
+  Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> Epoint3(G.Set(tedge()),PROP_DRAW_POINT_3);
+  Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  int m = G.ne(); 
+  int n = G.nv(); 
+  QPen pn = p->pen();pn.setWidth(2);
+  QPointArray bez(7);
+
+  for (tedge ee=1; ee<=m; ee++)
+    {if (Epoint2[ee]!=Tpoint(0,0)) {
+       bez.setPoint(0,paint->to_x(vcoord[G.vin[ee]].x()),paint->to_y(vcoord[G.vin[ee]].y()));
+       bez.setPoint(1,paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
+       bez.setPoint(2,paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
+       bez.setPoint(3,paint->to_x(Epoint2[ee].x()),paint->to_y(Epoint2[ee].y()));
+       bez.setPoint(4,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
+       bez.setPoint(5,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
+       bez.setPoint(6,paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
+       p->drawCubicBezier(bez,0);
+       p->drawCubicBezier(bez,3);
+       //paint->DrawRect(p,Epoint1[ee],3,3,Red);
+       //paint->DrawRect(p,Epoint3[ee],3,3,Red);
+     }
+    else
+      paint->DrawSeg(p, vcoord[G.vin[ee]], vcoord[G.vin[-ee]] , ecolor[ee]);
+      }
+  // Draw the vertices
+  p->setFont(QFont("lucida",Min((int)(10*Min(paint->xscale,paint->yscale) + .5),13)));
+  QString t;
+  for(tvertex v = 1;v <= n;v++) 
+      {if(ShowVertex() == -1)
+	  t.sprintf("%2.2d",v());
+      else
+ 	  t.sprintf("%2.2ld",G.vlabel[v()]);
+      paint->DrawText(p,vcoord[v],t,vcolor[v],1);
       }
   }
 
@@ -369,6 +413,7 @@ static DrawThing DrawFunctions[] =
     {DrawPolar,QT_TRANSLATE_NOOP("MyPaint","Polar")},
     {DrawTContact,QT_TRANSLATE_NOOP("MyPaint","T Contact")}, 
     {DrawPolyline,QT_TRANSLATE_NOOP("MyPaint", "Polyline")},
+    {DrawCurves,QT_TRANSLATE_NOOP("MyPaint", "Curves")},
     {0,QT_TRANSLATE_NOOP("MyPaint"," ")}  
     };
 const int border = 20;

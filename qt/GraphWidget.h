@@ -41,6 +41,7 @@ public slots:
   void UndoGrid();
 private:
   void resizeEvent(QResizeEvent*);
+ public:
   GraphWidgetPrivate* d;
 };
 

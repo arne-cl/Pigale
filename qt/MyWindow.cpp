@@ -344,7 +344,8 @@ MyWindow::MyWindow()
   embed->insertItem(tr("&T Contact"),            A_EMBED_T_CONTACT);
   embed->insertItem(tr("&Contact Biparti"),      A_EMBED_CONTACT_BIP);
   embed->insertItem(tr("&Polyline"),             A_EMBED_POLYLINE);  
-  embed->insertSeparator();
+  embed->insertItem(tr("&Curves")  ,             A_EMBED_CURVES);  
+ embed->insertSeparator();
 #if VERSION_ALPHA
   embed->insertItem(tr("&Polar"),                A_EMBED_POLAR);
   embed->insertItem(xmanIcon,"Sprin&g",      A_EMBED_SPRING);
@@ -438,7 +439,7 @@ MyWindow::MyWindow()
   //popupQuadric->insertItem("connected (M)",             A_GENERATE_P_4R_C);
   popupQuadric->insertItem(tr("4-regular 2-connected (M)"),   A_GENERATE_P_4R_2C);
   popupQuadric->insertItem(tr("4-regular 3-connected (M)"),   A_GENERATE_P_4R_3C);
-  popupQuadric->insertItem(tr("4-regular bipartite (N1)"),     A_GENERATE_P_4R_BIP);
+  popupQuadric->insertItem(tr("4-regular bipartite (M)"),     A_GENERATE_P_4R_BIP);
   generate->insertItem(tr("Planar &bipartite"),popupBipar);
   popupBipar->insertItem(tr("Bipartite (M)"),                  A_GENERATE_P_BIP);
   popupBipar->insertItem(tr("Bipartite cubic 2-connected (M)"),A_GENERATE_P_BIP_2C );
@@ -473,7 +474,7 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
   macroSpin = new QSpinBox(0,60,1,macroMenu,"macroSpin");
-  macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
+  macroSpin->setValue(pauseDelay());macroSpin->setPrefix(tr("Seconds: "));
   macroMenu->insertItem(tr("Start recording"),1);
   macroMenu->insertItem(tr("Stop  recording"),2);
   macroMenu->insertItem(tr("Continue recording"),3);

@@ -249,6 +249,22 @@ double dist_seg(const Point2_<T> &p0,const Point2_<T> &p1,const Point2_<T> &p2,P
 	return(d_10 - scal*scal/d_12);
 	}     
     }
+//! Computes a,b such that x+au=y+bv (x,y are points, u,v are vectors). returns true if a solution exists
+/*
+ * Princip: if x+au=y+bv, then x^v + a u^v = y^v (as v^v=0). Thus, a=[y-x,v,k]/[u,v,k]
+ *                             u^x = u^y + b u^v. Thus, b=[y-x,u,k]/[u,v,k]
+ */
+
+template <class T>
+inline bool intersect(const Point2_<T> &x,const Point2_<T> &u,
+		      const Point2_<T> &y,const Point2_<T> &v,
+		      double &a, double &b)
+    { double det=Determinant(u,v);
+    if (det==0) return false;
+    a = Determinant(y-x,v)/det;
+    b = Determinant(y-x,u)/det;
+    return true;
+    }
 
 typedef Point3_<double> Tpoint3;
 typedef Point2_<double> Tpoint;

@@ -19,6 +19,7 @@ static _Action actions[]={
 {"SPRING_PM",(A_EMBED+7)},
 {"JACQUARD",(A_EMBED+8)},
 {"POLYLINE",(A_EMBED+9)},
+{"CURVES",(A_EMBED+10)},
 {"VISION",(A_EMBED+50)},
 {"CONTATC_BIPARTI",(A_EMBED+51)},
 {"POLAR",(A_EMBED+52)},

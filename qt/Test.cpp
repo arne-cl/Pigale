@@ -1,6 +1,10 @@
 #include "MyWindow.h" 
 #include <QT/Misc.h> 
+#include <QT/Action_def.h> 
 #include <qapplication.h>
+#include "GraphWidget.h"
+#include <QT/MyCanvas.h>
+#include <QT/GraphWidgetPrivate.h>
 
 #ifndef _WINDOWS
 using namespace std;
@@ -9,29 +13,16 @@ using namespace std;
 // Allowed return values of Test 
 //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
 
+inline double abs(double x) {if(x>=0) return x; else return -x;}
 int Test(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
   GeometricGraph GG(GC);
   
   if(action == 1)
-      {GG.ComputeGeometricCir();
-      NPBipolar(G,1); 
-      G.FixOrientation();
-      int ns,nt;
-      bool acyclic = G.CheckAcyclic(ns,nt);
-      ColorPoles(GG);
-      if(ns !=1 || nt !=1 || !acyclic)
-	  {static QString t;
-	  t.sprintf("Error bipolar:s=%d t=%d a=%d",ns,nt,(int)acyclic);
-	  setError(-12345,(const char *)t);
-	  }
-      return 2;
-      }
-  if(action == 2)
-      {for(int i = 0;i < 1000;i++)
-	  G.TestPlanar();  
-      return 0;
-      }
+    {for (int i=1; i<=10000; i++)
+      GG.ComputeGeometricCir();
+    return 0;
+    }
   if(action == 3) 
       // display  the properties of the current graph that would be saved in a tgf file.
     {qDebug("Vertices:");

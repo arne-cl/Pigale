@@ -162,6 +162,10 @@
         <source>Polyline</source>
         <translation>Lignes Brisées</translation>
     </message>
+    <message>
+        <source>Curves</source>
+        <translation>Courbes</translation>
+    </message>
 </context>
 <context>
     <name>MyWindow</name>
@@ -514,7 +518,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>4-regular bipartite (N1)</source>
-        <translation>4-regulier biparti (N1)</translation>
+        <translation type="obsolete">4-regulier biparti (N1)</translation>
     </message>
     <message>
         <source>Bipartite (M)</source>
@@ -775,6 +779,18 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Q-distance</source>
         <translation>Q-distance</translation>
+    </message>
+    <message>
+        <source>&amp;Curves</source>
+        <translation>&amp;Courbes</translation>
+    </message>
+    <message>
+        <source>4-regular bipartite (M)</source>
+        <translation>4-regulier biparti (M)</translation>
+    </message>
+    <message>
+        <source>Seconds: </source>
+        <translation>Secondes: </translation>
     </message>
 </context>
 </TS>

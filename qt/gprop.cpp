@@ -244,6 +244,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
   menu->setItemEnabled(A_EMBED_SPRING_PM,NotBigD);                            //springPM
+  menu->setItemEnabled(A_EMBED_CURVES,NotBigD);                               //curves
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   menu->setItemEnabled(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual
@@ -269,9 +270,9 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   RBSimple->setChecked(S);
   RBPlanar->setChecked(P);
   RBMxPlanar->setChecked(T);
+  RBBipartite->setChecked(B);
   if(B)
-      {RBBipartite->setChecked(B);
-      if(MaxBi)RBBipartite->setText("Max. Bipartite");
+      {if(MaxBi)RBBipartite->setText("Max. Bipartite");
       else     RBBipartite->setText("Bipartite");
       }
   RBAcyclic->setChecked(A);

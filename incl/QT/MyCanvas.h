@@ -164,7 +164,7 @@ class GraphEditor : public QCanvasView
   void ToGrid(QPoint &p);
   void Zoom(int dir);
   void Spring();
-  void SpringPreservingMap();
+  void SpringPreservingMap(bool draw=true);
   int SpringJacquard();
   int FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge);
   int FindItem(QPoint &p,EdgeItem* &edge);

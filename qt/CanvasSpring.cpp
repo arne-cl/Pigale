@@ -19,6 +19,7 @@
 #include <QT/MyCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
+#include <qprogressbar.h>
 
 #ifndef _WINDOWS
 using namespace std;
@@ -169,13 +170,18 @@ void GraphEditor::Spring()
   }
 
 //**************************************************************************************
-void GraphEditor::SpringPreservingMap()
+void GraphEditor::SpringPreservingMap(bool draw)
 /*
 t current tanslation of v0
 */
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
+  MyWindow *mw = GetMyWindow();
+  mw->progressBar->setTotalSteps(G.nv());
+  mw->progressBar->setProgress(0);
+  mw->progressBar->show();
+  if (! draw) Normalise();
   DoNormalise = true;
   //int option = Twait("option");
   int h = gwp->canvas->height(),w = gwp->canvas->width();
@@ -259,9 +265,9 @@ t current tanslation of v0
 	      }while((b = G.cir[b]) != b0);
 
 	  // v0 is attracted by the center (1/d)
-	  dist2 = Max(Distance2(p0,center),1.);
-	  strength = Min(sqrt(hw/dist2),.5)*.5;
-	  t -= (p0 - center)*strength;
+ 	  dist2 = Max(Distance2(p0,center),1.);
+ 	  //strength = Min(sqrt(hw/dist2),.5)*.5;
+ 	  //t -= (p0 - center)*strength;
 
 	  // v0 is repulsed by non adjacent edges (1/d²)
 	  Tpoint p00 = p0 + t;
@@ -333,19 +339,23 @@ t current tanslation of v0
 	      {G.vcoord[v0] += t; 
 	      dx = Abs(t.x()); dy = Abs(t.y());
 	      dep = Max(dep,dx,dy);  
-	      if(dx > 1. || dy > 1.)
-		  nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
+	      if (dx > 30./n || dy > 30./n)
+		{if (draw) nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
 	      else
-		  {nodeitem[v0]->SetColor(red);++n_red;}
-	      nodeitem[v0]->moveTo(G.vcoord[v0],3.);
+		  {if (draw) nodeitem[v0]->SetColor(red);
+		  ++n_red;
+		  }
+	      if (draw) nodeitem[v0]->moveTo(G.vcoord[v0],3.);
 	      }
 	  else
-	      {nodeitem[v0]->SetColor(blue);++n_red;}
-	  
+	    { if (draw) nodeitem[v0]->SetColor(blue);
+	    ++n_red;
+	    }
 	  }
 
       // update the drawing
-      if(iter%2 == 0)canvas()->update();
+      mw->progressBar->setProgress(n_red);
+      if(iter%2 == 0 && draw)canvas()->update();
 
       stop = (n_red == G.nv())? ++stop : 0;
       //if(stop)force *= .95;
@@ -360,14 +370,17 @@ t current tanslation of v0
 	  expand *= Max(sizex0/sizex,sizey0/sizey);
       sizex0 = sizex;      sizey0 = sizey;
       }
-
   Normalise();
-  // same as load(false) but much faster
-  for(v = 1;v <= n;v++)
+  mw->progressBar->hide();
+  if (draw) 
+    {
+    // same as load(false) but much faster
+    for(v = 1;v <= n;v++)
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
-  canvas()->update();
+    canvas()->update();
+    }
 #ifdef  VERSION_ALPHA 
   if(debug())
       Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
