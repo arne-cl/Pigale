@@ -375,7 +375,8 @@ LMCShelling::LMCShelling(Graph &G0, tbrin bref) : KantShelling(G0, bref), LeftBr
   stack<tvertex>  OuterFace; // List of vertices of on the outerface
 
   // for each vertex v, the list of set-index such that it is its rightvertex
-  IntList RightVertexSets[G0.nv()+1];
+  //IntList RightVertexSets[G0.nv()+1];
+  IntList * RightVertexSets = new  IntList[G0.nv()+1];
 
   for(i = 1; i <= nb_sets; i++) {
     RightVertex = G.vin[-RightBrin[i]];
@@ -410,7 +411,7 @@ LMCShelling::LMCShelling(Graph &G0, tbrin bref) : KantShelling(G0, bref), LeftBr
   }
   assert (new_current == 0);
   current=1;
-
+  delete [] RightVertexSets;
 }
 
 int LMCShelling::FindNext(tbrin &left, tbrin &right) {
