@@ -15,7 +15,7 @@
 // as now we do not link with /pigale/lib/libqt
 void DrawGraph(Graph &G) {}
 void DrawGraph(void) {}
-void Twait(const char *) {}
+int Twait(const char *) {return 0;}
 void Tprintf(const char *,...) {}
 
 //ClientSocket: public QSocket

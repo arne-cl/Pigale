@@ -13,6 +13,6 @@
 #define _TMESSAGE_H_INCLUDED_
 void Tmessage(const char *tstring);
 void Tclear();
-void Twait(const char *txt);
+int Twait(const char *txt);
 void Tprintf(const char *fmt,...);
 #endif
