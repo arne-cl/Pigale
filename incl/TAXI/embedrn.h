@@ -20,8 +20,8 @@ class RnEmbedding {
     min1 = max1 = x(1);
     min2 = max2 = y(1);
     min3 = max3 = z(1);
-    
-    for(int i = 2;i <= n;i++)
+    int i;
+    for(i = 2;i <= n;i++)
       {min1 = Min(min1, x(i)); max1 = Max(max1,x(i));
        min2 = Min(min2, y(i)); max2 = Max(max2,y(i));
        min3 = Min(min3, z(i)); max3 = Max(max3,z(i));
@@ -30,7 +30,7 @@ class RnEmbedding {
     double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
     double alpha = Max(-min123,max123);
     alpha = (alpha < 1.E-12) ? .0 : 1./alpha;
-    for(int i = 1;i <= n;i++)
+    for(i = 1;i <= n;i++)
       {Coord3[i].x() = alpha * x(i);
       Coord3[i].y() = alpha * y(i);
       Coord3[i].z() = alpha * z(i);
@@ -89,5 +89,5 @@ struct RnEmbeddingPtr
   RnEmbeddingPtr(const RnEmbeddingPtr &p) : ptr(0) {} // no copy!
   ~RnEmbeddingPtr() { if (ptr!=0) delete ptr;}
 };
-std::ostream& operator <<(std::ostream &os,const RnEmbeddingPtr &x);
+T_STD  ostream& operator <<(T_STD  ostream &os,const RnEmbeddingPtr &x);
 #endif

@@ -21,8 +21,9 @@
 #include  <TAXI/color.h>
 #include  <TAXI/Tmessage.h>
 
+#ifndef _WINDOWS
 using namespace std;
-
+#endif
 // tags for TGF file format
 #define  TAG_NAME         512
 #define  TAG_N            513
@@ -293,7 +294,7 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
 int ReadGraphAscii(GraphContainer& G,tstring filename)
   { // Lecture d'une liste d'aretes
   FILE *stream;
-  if((stream = fopen(~filename,"r")) == NULL)return -1;
+  if((stream = fopen(~filename,"rb")) == NULL)return -1;
   char titre[80];
   int i,ch,iv1,iv2;
 
@@ -333,6 +334,7 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
       }
   if(fin == EOF)return 1;
   G.setsize(n,m);
+  
   Prop<long> vlabel(G.PV(),PROP_LABEL);
   Prop<long> elabel(G.PE(),PROP_LABEL);
   Prop<tvertex> vin(G.PB(),PROP_VIN);

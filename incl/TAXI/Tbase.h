@@ -18,7 +18,13 @@
                               + __GNUC_PATCHLEVEL__)
 #endif
 
-#if GCC_VERSION < 30000
+#if defined(_WINDOWS)
+#define T_STD
+#else
+#define T_STD std::
+#endif
+
+#ifdef _WINDOWS
 #include <stdlib.h> 
 #include <stdio.h> 
 #include <stdarg.h>
@@ -30,6 +36,20 @@
 #include <assert.h>
 #include <time.h>
 #include <new.h>
+
+#elif GCC_VERSION < 30000
+#include <stdlib.h> 
+#include <stdio.h> 
+#include <stdarg.h>
+#include <string.h>
+#include <iostream.h>
+#include <fstream.h>
+#include <setjmp.h>
+#include <math.h>
+#include <assert.h>
+#include <time.h>
+#include <new.h>
+
 #else
 #include <cstdlib> 
 #include <cstdio> 

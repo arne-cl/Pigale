@@ -17,7 +17,7 @@
 static Locals *l;
 
 int & useDistance()
-  {static int _dist = 1;
+  {static int _dist = 4;
   return _dist;
   }
 
@@ -32,7 +32,8 @@ int Embed3d(TopologicalGraph &G0)
   min1 = max1 = G.Coords[1][1];
   min2 = max2 = G.Coords[1][2];
   min3 = max3 = G.Coords[1][3];
-  for(int i = 2;i <= G.nv();i++)
+  int i;
+  for(i = 2;i <= G.nv();i++)
       {min1 = Min(min1, G.Coords[i][1]); max1 = Max(max1,G.Coords[i][1]);
        min2 = Min(min2, G.Coords[i][2]); max2 = Max(max2,G.Coords[i][2]);
        min3 = Min(min3, G.Coords[i][3]); max3 = Max(max3,G.Coords[i][3]);
@@ -42,13 +43,13 @@ int Embed3d(TopologicalGraph &G0)
   double alpha = Max(-min123,max123);
   alpha = (alpha < 1.E-12) ? .0 : 1./alpha;
   Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
-  for(int i = 1;i <= G.nv();i++)
+  for(i = 1;i <= G.nv();i++)
       {Coord3[i].x() = alpha*G.Coords[i][1];
        Coord3[i].y() = alpha*G.Coords[i][2];
        Coord3[i].z() = alpha*G.Coords[i][3];
       }
   Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);
-  for(int i = 1;i <= G.nv();i++)
+  for(i = 1;i <= G.nv();i++)
       EigenValues[i] = G.EigenValues[i];
   return 0;
   }
@@ -61,13 +62,14 @@ int Embed3dbis(TopologicalGraph &G0)
   Prop1<RnEmbeddingPtr> embedp(G.Set(),PROP_RNEMBED);
   if (embedp().ptr!=0) delete embedp().ptr;
   embedp().ptr=&em;
-  for (int i=1; i<=em.dmax;i++)
+  int i;
+  for (i = 1; i<=em.dmax;i++)
     for (int v=1; v<= G0.nv(); v++)
       em.vector(i)[v]=G.Coords[v][i];
   Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
   Coord3.vector()=em.Coord();
   Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);
-  for(int i = 1;i <= G.nv();i++)
+  for(i = 1;i <= G.nv();i++)
       EigenValues[i] = G.EigenValues[i];
   return 0;
   }
@@ -120,12 +122,13 @@ void EmbedRnGraph::init()
   {EigenValues.resize(1,nv());
   // Allocation du tableau Distances
   Distances = new double*[nv() + 1];
-  for(int i = 1; i <= nv(); i++)	
+  int i;
+  for(i = 1; i <= nv(); i++)	
       Distances[i] = new double[nv() + 1];
 
   // Allocation du tableau Coords
   Coords = new double*[nv() + 1];
-  for(int i = 1; i <= nv(); i++)	
+  for(i = 1; i <= nv(); i++)	
       Coords[i] = new double[nv() + 1];
 
   if(debug()) 
@@ -168,12 +171,13 @@ void EmbedRnGraph::init()
   }
 void EmbedRnGraph::release()
   {// Desallocation du tableau Distances
-  for(int i = 1; i <= nv() ; i++)
+  int i;	
+  for(i = 1; i <= nv() ; i++)
       delete [] Distances[i];
   delete [] Distances;
 
   // Desallocation du tableau Coords
-  for(int i = 1; i <= nv() ; i++)
+  for(i = 1; i <= nv() ; i++)
       delete [] Coords[i];
   delete [] Coords;
   }
@@ -186,7 +190,8 @@ int EmbedRnGraph::ComputeOrientDistances()
   // Compute inList and outList
   ComputeInOutList();
   // Fill distances
-  for(int i = 1;i <= nv();i++)
+  int i;
+  for(i = 1;i <= nv();i++)
       Distances[i][i] = .0;
 
   int vertex1,vertex2;
@@ -198,7 +203,7 @@ int EmbedRnGraph::ComputeOrientDistances()
 	  }
 
   // Release inList and outList
-  for(int i = 1; i<= nv(); i++)
+  for(i = 1; i<= nv(); i++)
       {delete [] inList[i];delete [] outList[i];}
   delete [] inList;  delete [] outList;
   return 0;
@@ -211,11 +216,12 @@ int EmbedRnGraph::ComputeInOutList()
   svector<tbrin> outBrin(1,nv()); outBrin.clear(); outBrin.SetName("outBrin");
   // Allocate inList and outList
   inList  = new int*[nv() + 1];
-  for(int i = 1;i <= nv();i++)
+  int i;
+  for(i = 1;i <= nv();i++)
       inList[i] = new int[indegree[i] + 2];
 
   outList  = new int*[nv() + 1];
-  for(int i = 1;i <= nv();i++)
+  for(i = 1;i <= nv();i++)
       outList[i] = new int[outdegree[i] + 2];
 
   // Compute OrderCir
@@ -351,11 +357,12 @@ int EmbedRnGraph::ComputeAdjacenceMatrix()
 int EmbedRnGraph::ComputeBisectDistances()
   {// Compute degrees
   degree.resize(1,nv()); 
+  
   for(tvertex v = 1 ;v <= nv();v++)
       degree[v()] = Degree(v);
-
-  for(int i = 1;i <= nv();i++)
-      for(int j = 1;j <= nv();j++)
+  int i,j;	
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
 	  Distances[i][j] = 1.;
   double d;
   for(tedge e = 1;e <= ne();e++)
@@ -364,7 +371,7 @@ int EmbedRnGraph::ComputeBisectDistances()
       d = (degree[v] + degree[w])/(double)(degree[v] + degree[w] + 2);
       Distances[v()][w()] = Distances[w()][v()] = d;
       }
-  for(int i = 1;i <= nv();i++)
+  for(i = 1;i <= nv();i++)
       Distances[i][i] = .0;
   return 0;
   }
@@ -429,7 +436,7 @@ int EmbedRnGraph::ComputeCzekanovskiDistances()
 
   // Allocation du tableau d'adjacence vvadj
   vvadj  = new int*[nv() + 1];
-  for(int i = 1;i <= nv();i++)
+  for(i = 1;i <= nv();i++)
       vvadj[i] = new int[degree[i] + 2];
   // Fill vvadj
   ComputeAdjacenceMatrix();
@@ -445,7 +452,7 @@ int EmbedRnGraph::ComputeCzekanovskiDistances()
 	  }
 
   //Release vvadj
-  for(int i = 1; i<= nv(); i++)
+  for(i = 1; i<= nv(); i++)
       delete [] vvadj[i];
   delete [] vvadj;
   return 0;
@@ -596,18 +603,19 @@ void SplitGraph::Optimize(int dimension,int& worst,double& inertie)
   }
 
 void SplitGraph::ComputeBarycenters(int dimension)
-  {for(int i = 0; i < CurrentNumberOfClasses; i++)
-    for(int d = 0; d < dimension; d++) 
+  {int i,d;
+   for(i = 0; i < CurrentNumberOfClasses; i++)
+    for(d = 0; d < dimension; d++) 
       l->BaryCoord(i,d) = 0;
   
-  for(int i = 0; i < nv(); i++)
-    for(int d = 0; d < dimension;d++) 
+  for(i = 0; i < nv(); i++)
+    for(d = 0; d < dimension;d++) 
       l->BaryCoord(l->Part.Class[i],d) += Coords[i+1][d+1];
 
   int ii = 0;
-  for(int i = 0; i < CurrentNumberOfClasses; i++)
+  for(i = 0; i < CurrentNumberOfClasses; i++)
     {if(l->Part.Cardinal[i])
-      {for(int d = 0; d < dimension; d++)
+      {for(d = 0; d < dimension; d++)
 	l->BaryCoord(i,d) /= l->Part.Cardinal[ii];
       ++ii;
       }
@@ -619,7 +627,8 @@ void SplitGraph::ComputeBarycenters(int dimension)
 double SplitGraph::TotalInertia(double& ClassVarianceNumber)
   {//card_max: nombre max d'elements d'une classe
   int card_max = l->Part.Cardinal[0];
-  for(int i = 1;i < NumberOfClasses;i++)
+  int i;
+  for(i = 1;i < NumberOfClasses;i++)
       card_max = Max(card_max,l->Part.Cardinal[i]);
 
   // cluster[i*cardmax] -> cluster[i*card_max +cardmax] : elements de la classe i
@@ -628,7 +637,7 @@ double SplitGraph::TotalInertia(double& ClassVarianceNumber)
   svector<int> cluster_index(0,NumberOfClasses);  cluster_index.clear();
   int index;
   // l->Part.Class[vertex-1] = classe d'un sommet
-  for(int i = 0; i < nv(); i++)
+  for(i = 0; i < nv(); i++)
       {index = cluster_index[l->Part.Class[i]];
       cluster[l->Part.Class[i] * card_max + index] = i;
       cluster_index[l->Part.Class[i]] += 1;
@@ -637,12 +646,13 @@ double SplitGraph::TotalInertia(double& ClassVarianceNumber)
   // calcul de l' inertie de chaque classe cluster
   double inert_glob = 0.0;
   double inert;
+  int il,j;
   int ii; //first index of the class il
-  for(int il = 0; il < NumberOfClasses;il++)
+  for(il = 0; il < NumberOfClasses;il++)
       {inert = 0.0;
       ii = il * card_max; 
-      for(int i = 0; i < l->Part.Cardinal[il]; i++)
-          for(int j = 0; j < i; j++) 
+      for(i = 0; i < l->Part.Cardinal[il]; i++)
+          for(j = 0; j < i; j++) 
               inert += Distances[1+cluster[ii+i]] [1+cluster[ii+j]];
       if(l->Part.Cardinal[il]) inert /= l->Part.Cardinal[il];
       inert_glob += inert;
@@ -652,12 +662,12 @@ double SplitGraph::TotalInertia(double& ClassVarianceNumber)
 
   // Calcul du nombre moyen d'elements d'une classe
   double ClassMeanNumber = .0;
-  for(int il = 0; il < NumberOfClasses;il++)
+  for(il = 0; il < NumberOfClasses;il++)
       ClassMeanNumber += l->Part.Cardinal[il];
   ClassMeanNumber /= NumberOfClasses;
   // Calcul de la variance du nombre d'elements
   ClassVarianceNumber = .0;
-  for(int il = 0; il < NumberOfClasses;il++)
+  for(il = 0; il < NumberOfClasses;il++)
       ClassVarianceNumber += (l->Part.Cardinal[il] - ClassMeanNumber)
       *(l->Part.Cardinal[il] - ClassMeanNumber);
   ClassVarianceNumber /= NumberOfClasses;
@@ -733,9 +743,10 @@ int SplitGraph::Segment()
           {critere_opt = critere_glob;
 	  dim_opt = dimension;
           ClassVarianceNumber_opt = ClassVarianceNumber;
-	  for(int i = 1;i <= nv();i++)
+      int i;
+	  for(i = 1;i <= nv();i++)
 	      ClassNumber[i] = l->Part.Class[i-1]+1;
-	  for(int i = 1;i <= NumberOfClasses;i++)
+	  for(i = 1;i <= NumberOfClasses;i++)
 	      NumberElementsInClass[i] = l->Part.Cardinal[i-1];
           }
       }
@@ -746,10 +757,11 @@ int SplitGraph::Segment()
   if(debug())
       {LogPrintf("\nOptimal Dimension : %d ", dim_opt);
       LogPrintf("\nClasses");
-      for(int i = 1;i <= NumberOfClasses;i++)
+	  int i;
+      for(i = 1;i <= NumberOfClasses;i++)
           LogPrintf("\n Class (%d):%d",i,NumberElementsInClass[i]);
       LogPrintf("\n Final Affectations");
-      for(int i = 1;i <= nv();i++)
+      for(i = 1;i <= nv();i++)
           LogPrintf("\n vertex:%d class:%d",i,ClassNumber[i]);
      }
 

@@ -430,7 +430,7 @@ pm_edge *pmNextSeed(void)
 /* this function initialize the random generator */
 /******************************/
 int pmInitRND(pmMethod *Meth){
-  srand48(Meth->seed); printvf("# Seed: %ld\n",Meth->seed);
+  //srand48(Meth->seed); printvf("# Seed: %ld\n",Meth->seed);
   return(PMTRUE);
 }
 
@@ -503,7 +503,7 @@ long pmLuka2 (long l, long DgArr[], char LkWrd[] )
   /* construction du mot trie */
   for (i=0 ; i<l; i++){
     while (!(DgArr[k]--)) k++;
-    LkWrd[i]='a'+k;
+    LkWrd[i]='a'+(char)k;
   }    
   /* permutation */
   /* pour i de 1 a l on multiplie par (i,k) avec k<=i */
@@ -1548,7 +1548,8 @@ void pmC3kernel(pm_edge *Root){
     while(pmIsSeed()){
       Edge = pmNextSeed();
       if (Edge->from->label == level - 1 &&
-	  Edge->oppo->from->label == 0);
+		  //Edge->oppo->from->label == 0);  //hub supp ;
+		  Edge->oppo->from->label == 0) 
       Edge->oppo->from->label = level;
     }
     pmFirstSeed();
@@ -1667,7 +1668,8 @@ void pmTri3kernel(pm_edge *Root){
     while(pmIsSeed()){
       Edge = pmNextSeed();
       if (Edge->from->label == level - 1 &&
-	  Edge->oppo->from->label == 0);
+	  //Edge->oppo->from->label == 0); //hub
+	  Edge->oppo->from->label == 0)
       Edge->oppo->from->label = level;
     }
     pmFirstSeed();
@@ -1821,7 +1823,8 @@ void pmTri4kernel(pm_edge *Root){
     while(pmIsSeed()){
       Edge = pmNextSeed();
       if (Edge->from->label == level - 1 &&
-	  Edge->oppo->from->label == 0);
+	  //Edge->oppo->from->label == 0); hub
+	  Edge->oppo->from->label == 0)
       Edge->oppo->from->label = level;
     }
     pmFirstSeed();
@@ -1947,7 +1950,8 @@ void pmSimplekernel(pm_edge *Root){
     while(pmIsSeed()){
       Edge = pmNextSeed();
       if (Edge->from->label == level - 1 &&
-	  Edge->oppo->from->label == 0);
+	  //hub Edge->oppo->from->label == 0);
+	  Edge->oppo->from->label == 0)
       Edge->oppo->from->label = level;
     }
     pmFirstSeed();

@@ -18,9 +18,9 @@
 
 
 #define BINMODE ios::binary   
-
+#ifndef _WINDOWS
 using namespace std; 
-
+#endif
 int IsFileTgf(const char *name)
   {char ID[4];
   fstream stream;

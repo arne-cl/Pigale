@@ -131,9 +131,9 @@ class tstring
   friend int operator != (char const *x, tstring const &y)
       {return strcmp(x, y.p->s);}
    
-  friend std::ostream& operator <<(std::ostream &os,const tstring &x)
-      {return os << x.p->s << std::endl;}
-  friend std::istream& operator >> (std::istream &is, tstring & x)
+  friend T_STD ostream& operator <<(T_STD ostream &os,const tstring &x)
+      {return os << x.p->s << T_STD endl;}
+  friend T_STD istream& operator >> (T_STD istream &is, tstring & x)
       {char buff[256];
       is >> buff;
       x = buff;

@@ -296,14 +296,15 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       short vcol;  G.vcolor.getinit(vcol);
-      G.vcolor.definit((vcol+1)%16);
+      G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
       Tpoint translate(this->width()/2.,0);
       int n = G.nv();
       svector<tvertex> newvertex(1,n);
-      for(tvertex v = 1; v <= n;v++)//translate all the graph
+	  tvertex v;
+      for(v = 1; v <= n;v++)//translate all the graph
 	  G.vcoord[v] /= 2.;
-      for(tvertex v = 1; v <= n;v++)
+      for(v = 1; v <= n;v++)
 	  {if(G.vcolor[v] != vcol)continue;
 	  newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
 	  }
@@ -326,14 +327,15 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       short vcol;  G.vcolor.getinit(vcol);
-      G.vcolor.definit((vcol+1)%16);
+      G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
       Tpoint translate(this->width()/2.,0);
       int n = G.nv();
       svector<tvertex> newvertex(1,n);
-      for(tvertex v = 1; v <= n;v++)//translate all the graph
+	  tvertex v;
+      for(v = 1; v <= n;v++)//translate all the graph
 	  G.vcoord[v] /= 2.;
-      for(tvertex v = 1; v <= n;v++)
+      for(v = 1; v <= n;v++)
 	  {if(G.vcolor[v] != vcol)continue;
 	  newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
 	  }
@@ -344,7 +346,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
 	      G.NewEdge(newvertex[v1],newvertex[v2]);
 	  }
-      for(tvertex v = 1; v <= n;v++)
+      for(v = 1; v <= n;v++)
 	  {if(G.vcolor[v] != vcol)continue;
 	  G.NewEdge(v,newvertex[v]);
 	  }
@@ -417,7 +419,8 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       NodeItem * node;
       // Find a vertex of the subgraph
       tvertex mv = 0;
-      for(tvertex v = 1; v <= G.nv();v++)
+	  tvertex v;
+      for(v = 1; v <= G.nv();v++)
 	  {node =(NodeItem *)nodeitem[v];
 	  if(G.vcolor[node->v] != vcol)continue;
 	  else {mv = v;break;}
@@ -428,7 +431,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       ToGrid(mv);
       double dx =  G.vcoord[mv].x() - prev_x;
       double dy =  G.vcoord[mv].y() - prev_y;
-      for(tvertex v = 1;v <= G.nv();v++)
+      for(v = 1;v <= G.nv();v++)
 	  {node =(NodeItem *)nodeitem[v];
 	  if(G.vcolor[node->v] != vcol)continue;
 	  node->moveBy(dx,-dy);
@@ -508,9 +511,13 @@ void GraphEditor::paintEvent(QPaintEvent *e)
       }
   } 
 void GraphEditor::initialize()
-  {if(!is_init)return; 
+  {
   // very important to set here in case size was modified while hidden
   resize(sizeHint());
+  if(gwp->canvas == 0)
+	  gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
+  if(!canvas())setCanvas(gwp->canvas);
+  canvas()->update();
   //Compute the font size
   int fs = (int)((double)QMIN(gwp->canvas->width(),gwp->canvas->height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
@@ -521,7 +528,8 @@ void GraphEditor::initialize()
 void GraphEditor::load(bool initgrid) 
 // by default initgrid = true
 // when editng (erasing edges, vertices) initgrig = false
-  {clear();// delete all items
+  {if(!is_init)return;
+  clear();// delete all items
   canvas()->update();
   //if(debug())DebugPrintf("Graph_Editor:load:%d",(int)initgrid);
   int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
@@ -545,7 +553,7 @@ void GraphEditor::load(bool initgrid)
   nodeitem.SetName("nodeitem");edgeitem.SetName("edgeitem");
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
 
-   for(tvertex v = 1;v <= G.nv();v++)
+  for(tvertex v = 1;v <= G.nv();v++)
        nodeitem[v] =  CreateNodeItem(v,gwp);
   for(tedge e = 1;e <= G.ne();e++)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
@@ -565,10 +573,8 @@ void GraphEditor::print(QPrinter *printer)
 				  ,gwp->canvas->height()),&pp,FALSE);
       }
   }
-
 void GraphEditor::png()
-  {if(index < 0)return;
-  QString FileName;
+  {QString FileName;
   if(!gwp->mywindow->ServerExecuting)
       {FileName = QFileDialog::
       getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
@@ -579,9 +585,9 @@ void GraphEditor::png()
       }
   else
       FileName = QString("/tmp/server%1.png").arg(gwp->mywindow->ServerClientId);
-  QPixmap pixmap = QPixmap::grabWidget(this,2,2,gwp->canvas->width()-space-sizerect-1
-				       ,gwp->canvas->height()); 
-  pixmap.save(FileName,"PNG");
+  QPixmap pixmap = QPixmap::grabWidget(
+      this,2,2,gwp->canvas->width()-space-sizerect-1,gwp->canvas->height()); 
+  pixmap.save(FileName,"PNG",0);
   }
 int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
   {int rtt;

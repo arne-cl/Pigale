@@ -20,7 +20,7 @@ GraphContainer & QuotientGraph(TopologicalGraph &G, bool geom)
   int m=G.ne();
   Prop1<int> ncv(G.Set(),PROP_NCV);
   if (! G.Set(tedge()).exist(PROP_NCE))
-      {bool hastype=G.Set(tedge()).exist(PROP_TYPE);
+      {int hastype = G.Set(tedge()).exist(PROP_TYPE);
       Prop<int> colore(G.Set(tedge()),PROP_TYPE);
       if (!hastype) colore.clear();
       ComputeEClasses(G);

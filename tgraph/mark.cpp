@@ -34,7 +34,7 @@ bool MarkBloc(TopologicalGraph &G,
   
   tvertex v;
   
-  bool ret = bicon(n,m,nvin,Bicon,low);
+  int ret = bicon(n,m,nvin,Bicon,low);
   if (ret)
       for (v=1;v<=n;v++)
           mark[v]=marked;
@@ -119,7 +119,7 @@ int MarkVClasses(TopologicalGraph &G)
   // Init V classes
 
   int nclassv=0;
-  bool ExistVClass = G.Set(tvertex()).exist(PROP_CLASSV);
+  int ExistVClass = G.Set(tvertex()).exist(PROP_CLASSV);
   Prop<tvertex> classv(G.Set(tvertex()),PROP_CLASSV);
   classv[0]=0;
   if (!ExistVClass)

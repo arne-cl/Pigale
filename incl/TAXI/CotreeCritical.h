@@ -173,7 +173,7 @@ public:
     bool IsDownEdgeEqualOk(tedge e)
         {return ((down_edge_equal!=0) &&(ancestor[nvin[-e]] > branch)); }
     bool IsNPEdgeOk(tedge e)
-        {return (nvin[e] < ancestor[nvin[-np]]); }
+        {return (bool)(nvin[e] < ancestor[nvin[-np]]); }
     
     tedge FindLowEdge(tedge e)
         {tvertex vason = ancestor_son[nvin[-e]];

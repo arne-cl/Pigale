@@ -29,6 +29,7 @@
 #include <qtabbar.h> 
 #include <qcursor.h> 
 #include <qmessagebox.h> 
+#include <qtextstream.h>
 
 #include <TAXI/Tgf.h> 
 
@@ -85,7 +86,11 @@ void MyWindow::blockInput(bool t)
   if(!EventEater)EventEater = new eventEater();
   if(t)
       {qApp->installEventFilter(EventEater);
+#if QT_VERSION >= 300
       qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
+#else
+	   qApp->setOverrideCursor(QCursor(WaitCursor));	
+#endif
       }
   else 
       {qApp->removeEventFilter(EventEater);
@@ -153,7 +158,7 @@ void MyWindow::macroHandler(int event)
   double Time;
   QTime t0;
   QString msg0,msg1;
-  int repeat0;
+  int repeat0,record;
   switch(event)
       {case 1://start recording
 	   if(debug())LogPrintf("\nRecord macro\n");
@@ -177,7 +182,11 @@ void MyWindow::macroHandler(int event)
 	  MessageClear();
 	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
 	  t0.start();
+#ifndef _WINDOWS
 	  msg0 = QString("Macro started at %1").arg(t0.toString(Qt::TextDate));
+#else
+	  msg0 = "Macro started";
+#endif
 	  DebugPrintf("%s",(const char *)msg0); 
 	  t0.restart();
 	  repeat0 = (repeat == 0) ? 1000 : repeat;
@@ -198,7 +207,11 @@ void MyWindow::macroHandler(int event)
 	  MacroLooping = MacroExecuting = MacroWait = false;
 	  Time = t0.elapsed()/1000.;
 	  t0.restart();
+#ifndef _WINDOWS
 	  msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
+#else
+	  msg1 ="Macro stopped"; 
+#endif
 	  if(EditNeedUpdate)gw->update(-1);
 	  if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
@@ -215,7 +228,7 @@ void MyWindow::macroHandler(int event)
 	  break;
       case 6:// display
 	  MessageClear();
-	  for(int record = 1;record <= MacroNumActions;record++)
+	  for(record = 1;record <= MacroNumActions;record++)
 	      {Tprintf("Action (%d/%d):%s",record,MacroNumActions
 		       ,(const char *)getActionString(MacroActions[record]));
 	      }
@@ -237,7 +250,7 @@ void MyWindow::macroHandler(int event)
 	      } 
 	  FILE *out = fopen((const char *)FileName,"wt");
 	  fprintf(out,"Macro Version:2\n");
-	  for(int record = 1;record <= MacroNumActions;record++)
+	  for(record = 1;record <= MacroNumActions;record++)
 	      fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
 	  fclose(out);
 	  }

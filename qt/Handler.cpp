@@ -210,7 +210,7 @@ int AlgoHandler(int action,int nn)
 	  tvertex v0,v1;
 	  int planar,m;
 	  m = G.ne();
-	  for(tedge e = m; e >= 1;e--)
+	  for(e = m; e >= 1;e--)
 	      {v0 = G.vin[e]; v1 = G.vin[-e];
 	      G.DeleteEdge(e);
 	      planar = G.TestPlanar();
@@ -394,6 +394,8 @@ int RemoveHandler(int action)
   {TopologicalGraph G(GetMainGraph());
   GeometricGraph GG(GetMainGraph());
   int n;
+  tvertex v;
+  tedge e;
   switch(action)
       {case A_REMOVE_ISOLATED_V:
 	   n = G.RemoveIsolatedVertices();
@@ -409,17 +411,17 @@ int RemoveHandler(int action)
 	  break;
       case A_REMOVE_COLOR_V://Erase Color Vertices
 	  short vcol; GG.vcolor.getinit(vcol);
-	  for(tvertex v= GG.nv() ;v > 0;v--)
+	  for(v= GG.nv() ;v > 0;v--)
 	      if(GG.vcolor[v] == vcol)GG.DeleteVertex(v);
 	  break;
       case A_REMOVE_COLOR_E://Erase Color Edges
 	  short ecol; GG.ecolor.getinit(ecol);
-	  for(tedge e = GG.ne() ;e > 0;e--)
+	  for(e = GG.ne() ;e > 0;e--)
 	      if(GG.ecolor[e] == ecol)GG.DeleteEdge(e);
 	  break;
       case A_REMOVE_THICK_E://Erase Thick Edges
 	  int ewidth; GG.ewidth.getinit(ewidth);
-	  for(tedge e = GG.ne() ;e > 0;e--)
+	  for(e = GG.ne() ;e > 0;e--)
 	      if(GG.ewidth[e] == ewidth)GG.DeleteEdge(e);
 	  break;
       default:

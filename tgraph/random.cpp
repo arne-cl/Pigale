@@ -12,6 +12,10 @@
 
 #include <TAXI/Tbase.h>
 
+#ifdef _WINDOWS
+#define srand48 srand
+#define lrand48 rand
+#endif
 
 bool & randomEraseMultipleEdges()
 // if true the generators generate simple graphs

@@ -43,9 +43,11 @@ bool  Graph::CheckBiconnected()
 
 void  TopologicalGraph::init()
   {cir.SetName("cir"); acir.SetName("acir"); vin.SetName("vin");
+  pbrin.SetName("pbrin"); 	
   pbrin.clear();
   tvertex v;
   vin[0]=0;
+
   for (tbrin b = -ne(); b <= ne(); b++)
       {v = vin[b];
       if(pbrin[v] == 0)
@@ -77,7 +79,7 @@ tedge TopologicalGraph::NewEdge(const tbrin &ref1,const  tbrin &ref2)
   Set().erase(PROP_SYM);
   if (Set().exist(PROP_HYPERGRAPH))
       { Prop<bool> ise(Set(tvertex()),PROP_HYPEREDGE);
-      if (ise[vin[b]]^ise[vin[-b]]==false)
+      if ((ise[vin[b]]^ise[vin[-b]])==false)
           { Set().erase(PROP_HYPERGRAPH);
           Set().erase(PROP_BIPARTITE);
           }
@@ -93,7 +95,7 @@ tvertex TopologicalGraph::ContractEdge(const tedge &e)
   tvertex x=vin[b];
   tvertex y=vin[-b];
   if (x==y) return x;
-  bool connected = Set().exist(PROP_CONNECTED);
+  int connected = Set().exist(PROP_CONNECTED);
   tbrin px = acir[b];
   if (px==b) //terminal edge
       {DeleteVertex(x);
@@ -188,7 +190,7 @@ tedge TopologicalGraph::NewEdge(const tvertex &vv1,const tvertex &vv2,tedge e0)
   Set().erase(PROP_SYM);
   if (Set().exist(PROP_HYPERGRAPH))
       { Prop<bool> ise(Set(tvertex()),PROP_HYPEREDGE);
-      if (ise[v1]^ise[v2]==false)
+      if ((ise[v1]^ise[v2])==false)
           { Set().erase(PROP_HYPERGRAPH);
           Set().erase(PROP_BIPARTITE);
           }
@@ -225,7 +227,7 @@ void TopologicalGraph::MoveBrin(const tbrin &b, const tvertex &to)
   Set().erase(PROP_SYM);
   if (Set().exist(PROP_HYPERGRAPH))
       { Prop<bool> ise(Set(tvertex()),PROP_HYPEREDGE);
-      if (ise[vin[b]]^ise[vin[-b]]==false)
+      if ((ise[vin[b]]^ise[vin[-b]])==false)
           { Set().erase(PROP_HYPERGRAPH);
           Set().erase(PROP_BIPARTITE);
           }
@@ -262,7 +264,8 @@ void TopologicalGraph::SwitchOrientations()
 void TopologicalGraph::ReverseEdge(const tedge &e)
   {PrivateReverseEdge(e);
   Prop<bool> reoriented(Set(tedge()),PROP_REORIENTED,false);
-  reoriented[e]^=true;
+  //reoriented[e]^=true;
+  reoriented[e] = reoriented[e] ? false : true;
   }
 void TopologicalGraph::FixOrientation()
   {Prop<bool> reoriented(Set(tedge()),PROP_REORIENTED); 
@@ -420,6 +423,11 @@ bool TopologicalGraph::CheckNoLoops()
       {Prop1<int> nloops(Set(),PROP_NLOOPS);
       return (nloops() == 0) ? true : false;
       }
+  else if(ne() == 0)
+  {Prop1<int> nloops(Set(),PROP_NLOOPS);
+  nloops() = 0;
+  return true;
+  }		
   if(debug())DebugPrintf("  Executing CheckNoLoops");
   Prop1<int> nloops(Set(),PROP_NLOOPS);
   int n = 0;
@@ -433,9 +441,15 @@ int TopologicalGraph::RemoveLoops()
        {Prop1<int> numloops(Set(),PROP_NLOOPS);
        return numloops();
        }
+  else if(ne() == 0)
+  {Prop1<int> numloops(Set(),PROP_NLOOPS);
+  numloops() = 0;
+  return 0;
+  }		
   if(debug())DebugPrintf("  Executing RemoveLoops");
   int n = 0;
   Prop<int> nloops(Set(tvertex()),PROP_NLOOPS); nloops.clear();
+  nloops.SetName("loops");
   for(tedge e = ne();e >= 1;e--)
       if(vin[e] == vin[-e]){++n; ++nloops[vin[e]]; DeleteEdge(e);}
   Prop1<int> numloops(Set(),PROP_NLOOPS);

@@ -366,8 +366,8 @@ int Embed3dSchnyder(TopologicalGraph &G0)
   return 0;
 }
 
-std::ostream& operator <<(std::ostream &os,const RnEmbeddingPtr &x)
-{return os << x.ptr << std::endl;}
+T_STD  ostream& operator <<(T_STD  ostream &os,const RnEmbeddingPtr &x)
+{return os << x.ptr << T_STD  endl;}
 
   
 

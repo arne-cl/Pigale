@@ -17,6 +17,7 @@
 #include <TAXI/Tsvector.h>
 #include <TAXI/Tstring.h>
 
+
 // Par defaut, export/import par copie
 //
 

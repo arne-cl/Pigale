@@ -65,11 +65,13 @@ void PigaleServer::OneClientClosed()
 
 //ClientSocket: public QSocket
 ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,const char *name) :
-    QSocket(parent,name),line(0),prId(id),sdebug(0),cli(this),clo(this)
+    QSocket(parent,name),line(0),prId(id),sdebug(0)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   
   setSocket(sock);
+  cli.setDevice(this);
+  clo.setDevice(this);
   InitPigaleFont(); 
   InitPigaleColors();
   mw = new MyWindow();
@@ -82,11 +84,13 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
   }
 ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
-    QSocket(parent,name),sdebug(0),cli(this),clo(this),mw(p)
+    QSocket(parent,name),sdebug(0),mw(p)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this, SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
   setSocket(sock);
+  cli.setDevice(this);
+  clo.setDevice(this);
   prId = 1;
   line = 1;
   mw->ServerClientId = prId;
@@ -185,16 +189,16 @@ int ClientSocket::ReadRemoteGraph(QString &dataParam)
   file.open(IO_ReadWrite);
   QDataStream stream(&file);
   uint size = 0;
-  Q_ULONG  nb = bytesAvailable();
+  uint nb = bytesAvailable();
   while(bytesAvailable() < 4){waitForMore(100);qDebug(".");} 
   qDebug("READING GRAPH");
-  if(sdebug)qDebug("nbytes=%ld",nb);
+  if(sdebug)qDebug("nbytes=%ud",nb);
   clo >>  size;
   if(size <= 0)return -1;
   if(sdebug)qDebug("should read:%d bytes",size);
   char *buff  = new char[size+1];
   int i = 0;
-  Q_ULONG nread = 0;
+  uint nread = 0;
   char *pbuff = buff;
   while(nread  < size)
       {waitForMore(100);  // in millisec

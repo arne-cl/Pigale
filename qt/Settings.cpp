@@ -145,9 +145,35 @@ void MyWindow::LoadSettings()
 				    + QDir::separator() 
 				    + QString("a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+}
 
+int GetPigaleColors()
+  {QSettings setting;
+  setting.insertSearchPath(QSettings::Windows,"/pigale");
+  QColor col;
+  int r,g,b;
+  r = setting.readNumEntry("/pigale/colors/Background r",170);
+  g = setting.readNumEntry("/pigale/colors/Background g",187);
+  b = setting.readNumEntry("/pigale/colors/Background b",203);
+  col.setRgb(r,g,b);QColorDialog::setCustomColor(0,col.rgb());
+  r = setting.readNumEntry("/pigale/colors/Base r",248);
+  g = setting.readNumEntry("/pigale/colors/Base g",238);
+  b = setting.readNumEntry("/pigale/colors/Base b",224);
+  col.setRgb(r,g,b);QColorDialog::setCustomColor(1,col.rgb());
+  r = setting.readNumEntry("/pigale/colors/LightBackground r",180);
+  g = setting.readNumEntry("/pigale/colors/LightBackground g",210);
+  b = setting.readNumEntry("/pigale/colors/LightBackground b",241);
+  col.setRgb(r,g,b);QColorDialog::setCustomColor(2,col.rgb());
+  r = setting.readNumEntry("/pigale/colors/GreenBackground r",165);
+  g = setting.readNumEntry("/pigale/colors/GreenBackground g",210);
+  b = setting.readNumEntry("/pigale/colors/GreenBackground b",180);
+  col.setRgb(r,g,b);QColorDialog::setCustomColor(3,col.rgb());
+  return 0;
+  }
+#endif
+void MyWindow::ParseArguments()
   // if pigale was called with arguments, we may modify some values
-  if(qApp->argc() < 1)return;
+  {if(qApp->argc() < 1)return;
   int narg = qApp->argc() -1;
   for(int i = 1; i <= narg;i++)
       {if(QString((const char *)qApp->argv()[i]) == "-fi")
@@ -177,31 +203,6 @@ void MyWindow::LoadSettings()
 	  }
       }
   }
-int GetPigaleColors()
-  {QSettings setting;
-  setting.insertSearchPath(QSettings::Windows,"/pigale");
-  QColor col;
-  int r,g,b;
-  r = setting.readNumEntry("/pigale/colors/Background r",170);
-  g = setting.readNumEntry("/pigale/colors/Background g",187);
-  b = setting.readNumEntry("/pigale/colors/Background b",203);
-  col.setRgb(r,g,b);QColorDialog::setCustomColor(0,col.rgb());
-  r = setting.readNumEntry("/pigale/colors/Base r",248);
-  g = setting.readNumEntry("/pigale/colors/Base g",238);
-  b = setting.readNumEntry("/pigale/colors/Base b",224);
-  col.setRgb(r,g,b);QColorDialog::setCustomColor(1,col.rgb());
-  r = setting.readNumEntry("/pigale/colors/LightBackground r",180);
-  g = setting.readNumEntry("/pigale/colors/LightBackground g",210);
-  b = setting.readNumEntry("/pigale/colors/LightBackground b",241);
-  col.setRgb(r,g,b);QColorDialog::setCustomColor(2,col.rgb());
-  r = setting.readNumEntry("/pigale/colors/GreenBackground r",165);
-  g = setting.readNumEntry("/pigale/colors/GreenBackground g",210);
-  b = setting.readNumEntry("/pigale/colors/GreenBackground b",180);
-  col.setRgb(r,g,b);QColorDialog::setCustomColor(3,col.rgb());
-  return 0;
-  }
-#endif
-
 void MyWindow::SetPigaleColors()
   {QColor  initial = QColor(248,238,224);
   QColorDialog::getColor(initial,this); 

@@ -38,4 +38,3 @@ int main(int argc,char ** argv)
   int result = a.exec();
   return result;
   }
-

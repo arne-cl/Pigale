@@ -158,10 +158,12 @@ int Graph::Planarity()//BUG in PrepDFS if not connected
   }
 */
 int TopologicalGraph::Planarity()
-  {if(debug())DebugPrintf("Executing Planarity");
-  if(debug()  && !DebugCir())
+  {if(!ne())return 1;
+  if(debug())DebugPrintf("Executing Planarity");
+#ifdef TDEBUG
+  if(!DebugCir())
       {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-  if(!ne())return 1;
+#endif
   int m_origin = ne();
   MakeConnected();
   int m = ne();
@@ -240,12 +242,11 @@ int TopologicalGraph::Planarity()
   return ret;
   }
 int TopologicalGraph::TestPlanar()
-  {if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
-  int m = ne();
+  {int m = ne();
   int n = nv();
   int m_origin = m;
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
-
+  if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
   svector<tvertex> nvin(-m,m);nvin.SetName("nvin TestPlanar");
   // DFS calls GDFS after some initializations
   if(!DFS(nvin)) //Not connected graph
@@ -272,6 +273,7 @@ int TopologicalGraph::TestPlanar()
   _FastHist Hist(m);
   int ret = fastlralgo(n,m,nvin,Bicon,LrSort,Hist);
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
+  if(debug())DebugPrintf("END TopologicalGraph:TestPlanar");
   return ret;
   }
 int TopologicalGraph::TestPlanar2()
@@ -423,16 +425,17 @@ int TopologicalGraph::KKuratowski()
   return 0;
   }
 int TestOuterPlanar(TopologicalGraph &G)
-  {
+  {if(G.ne() < 6)return true;
+  if(debug())DebugPrintf("Executing OuterPlanar");
   tvertex v0 = G.NewVertex();
   for(tvertex v = 1; v < v0;v++)
-      {G.NewEdge(v,v0);}
+	  G.NewEdge(v,v0);
   int OuterPlanar = G.TestPlanar();
   G.DeleteVertex(v0);
+  if(debug())DebugPrintf("END OuterPlanar");
   return OuterPlanar;
   }
-
- int FindOuterPlanar(TopologicalGraph &G, int depth)
+int FindOuterPlanar(TopologicalGraph &G, int depth)
  {
  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
  tedge e;

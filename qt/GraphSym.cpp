@@ -80,14 +80,15 @@ void Rotate(GeometricGraph &G,int rotate)
       double maxrho = xcoord[1]*xcoord[1] + ycoord[1]*ycoord[1];
       double xy;
       int iymax = 1; // point le plus eloigne ayant un y max
-      for(int i = 2;i <= G.nv();i++)
+	  int i;
+      for(i = 2;i <= G.nv();i++)
           {xy = xcoord[i]*xcoord[i] + ycoord[i]*ycoord[i];
           if(Less(maxrho,xy)){maxrho = xy;iymax = i;}
           }
       int nrho = 0;
       iymax = 1;
       double ymax = -1;
-      for(int i = 1;i <= G.nv();i++)
+      for(i = 1;i <= G.nv();i++)
           {xy = xcoord[i]*xcoord[i] + ycoord[i]*ycoord[i];
           if(Equal(maxrho,xy))
               {++nrho;
@@ -100,7 +101,7 @@ void Rotate(GeometricGraph &G,int rotate)
       double cosinus = cos(theta*2.*PI);
       double sinus   = sin(theta*2.*PI);
       double x,y;
-      for(int i = 1;i <= G.nv();i++)
+      for(i = 1;i <= G.nv();i++)
           {x = cosinus*xcoord[i] + sinus*ycoord[i];
           y = - sinus*xcoord[i] + cosinus*ycoord[i];
           xcoord[i] = x; ycoord[i] = y;
@@ -108,12 +109,12 @@ void Rotate(GeometricGraph &G,int rotate)
       }
   else if(rotate == 2) // POM
       {double xmax = .0;
-      int ixmax = 0;
-      for(int i = 1;i <= G.nv();i++)
+      int i,ixmax = 0;
+      for(i = 1;i <= G.nv();i++)
           if(Less(xmax,xcoord[i])){xmax = xcoord[i];ixmax = i;}
       double xmin = xcoord[1];
       int ixmin = 1;
-      for(int i = 2;i <= G.nv();i++)
+      for(i = 2;i <= G.nv();i++)
           if(Less(xcoord[i],xmin)){xmin = xcoord[i];ixmin = i;}
       if (Null(ycoord[ixmax]-ycoord[ixmin])) return;
       Tpoint p(xcoord[ixmax]-xcoord[ixmin],ycoord[ixmax]-ycoord[ixmin]);
@@ -121,7 +122,7 @@ void Rotate(GeometricGraph &G,int rotate)
       double cosinus = cos((theta*2.+.5)*PI);
       double sinus   = sin((theta*2.+.5)*PI);
       double x,y;
-      for(int i = 1;i <= G.nv();i++)
+      for(i = 1;i <= G.nv();i++)
           {x = cosinus*xcoord[i] + sinus*ycoord[i];
           y = - sinus*xcoord[i] + cosinus*ycoord[i];
           xcoord[i] = x; ycoord[i] = y;
@@ -154,15 +155,15 @@ void Rotate(GeometricGraph &G,int rotate)
       {// Count nrho = # of extremal points
       double maxrho = ycoord[1]*ycoord[1] + zcoord[1]*zcoord[1];
       double yz;
-      int izmax = 1; // point le plus eloigne ayant un z max
-      for(int i = 2;i <= G.nv();i++)
+      int i,izmax = 1; // point le plus eloigne ayant un z max
+      for(i = 2;i <= G.nv();i++)
           {yz = ycoord[i]*ycoord[i] + zcoord[i]*zcoord[i];
           if(Less(maxrho,yz)){maxrho = yz;izmax = i;}
           }
       int nrho = 0;
       izmax = 1;
       double zmax = -1;
-      for(int i = 1;i <= G.nv();i++)
+      for(i = 1;i <= G.nv();i++)
           {yz = ycoord[i]*ycoord[i] + zcoord[i]*zcoord[i];
           if(Equal(maxrho,yz))
               {++nrho;
@@ -175,7 +176,7 @@ void Rotate(GeometricGraph &G,int rotate)
       double cosinus = cos(theta*2.*PI);
       double sinus   = sin(theta*2.*PI);
       double y,z;
-      for(int i = 1;i <= G.nv();i++)
+      for(i = 1;i <= G.nv();i++)
           {y = cosinus*ycoord[i] + sinus*zcoord[i];
           z = - sinus*ycoord[i] + cosinus*zcoord[i];
           ycoord[i] = z; zcoord[i] = y;
@@ -233,7 +234,8 @@ int ComputeRotation(GeometricGraph &G,int i1,int i2,double &theta)
   // Compute max distance from origin
   double xy;
   double maxrho = xcoord[1]*xcoord[1] + ycoord[1]*ycoord[1];
-  for(int i = 2;i <= G.nv();i++)
+  int i;
+  for(i = 2;i <= G.nv();i++)
       {xy = xcoord[i]*xcoord[i] + ycoord[i]*ycoord[i];
       if(Less(maxrho,xy))maxrho = xy;
       }
@@ -245,7 +247,7 @@ int ComputeRotation(GeometricGraph &G,int i1,int i2,double &theta)
   angles= new double[G.nv()+1];
   Tpoint p;
   double angle;
-  for(int i = 1;i <= G.nv();i++)
+  for(i = 1;i <= G.nv();i++)
       {xy = xcoord[i]*xcoord[i] + ycoord[i]*ycoord[i];
       if(Equal(maxrho,xy))
           {p.x() = xcoord[i]; p.y() = ycoord[i];
@@ -259,7 +261,7 @@ int ComputeRotation(GeometricGraph &G,int i1,int i2,double &theta)
   p.x() = xcoord[ixmax]; p.y() = ycoord[ixmax];
   double theta0 = Angle(p);
   //Sort extremal points according to their angle (0,+1)
-  for(int i = 1;i <= nrho;i++)
+  for(i = 1;i <= nrho;i++)
       {angles[i] -= theta0;
       if(angles[i] < .0)angles[i] += 1.;
       }
@@ -269,7 +271,7 @@ int ComputeRotation(GeometricGraph &G,int i1,int i2,double &theta)
   //Remove extremal points with the same angle
   bool success = false;
   double theta1= .0;
-  int i,k;
+  int k;
   int iter = (nrho == 2) ?  2 : (nrho+1)/2;
   for(i = 1;i < iter;i++)
       {k = heap[i] + 1;
@@ -650,7 +652,7 @@ int CheckSymmetry(GeometricGraph &G,int MaxLabel)
           }
       }
   int ret = 1;
-  for(tvertex v = 1; v <= G.nv();v++)
+  for(v = 1; v <= G.nv();v++)
       if(G.vcolor[v] == Grey1){G.vcolor[v] = Ivory;++ret;}
   if(ret > 1)--ret;
   return ret;
@@ -761,8 +763,7 @@ void GraphSym::print(QPrinter *printer)
   d->editor->print(printer);
   }
 void GraphSym::png()
-  {if(index < 0)return;
-  qApp->processEvents();
+  {qApp->processEvents();
   QString FileName;
   if(!d->mywindow->ServerExecuting)
       {FileName = QFileDialog::
@@ -992,7 +993,8 @@ void SymWindow::Normalise()
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   max_used_x = min_used_x = xcoord[1]; 
   max_used_y = min_used_y = ycoord[1];
-  for (int i = 2;i <= n;i++)
+  int i;
+  for (i = 2;i <= n;i++)
       {min_used_x = Min(min_used_x,xcoord[i]);
       max_used_x = Max(max_used_x,xcoord[i]);
       min_used_y = Min(min_used_y,ycoord[i]);
@@ -1016,7 +1018,7 @@ void SymWindow::Normalise()
       {ymul = 1.;
       ytr = (y_max + y_min)/2.-min_used_y;
       }
-  for (int i = 1;i <= n;i++)
+  for (i = 1;i <= n;i++)
       {xcoord[i] = xmul*xcoord[i] + xtr;
        ycoord[i] = ymul*ycoord[i] + ytr;
       }

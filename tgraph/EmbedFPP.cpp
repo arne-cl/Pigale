@@ -667,8 +667,8 @@ int EmbedTContact(TopologicalGraph &G)
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
   Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
   // Compute horizontals
-  int x1,x2,xv;
-  for(int v = 1;v <= n;v++)
+  int x1,x2,xv,v;
+  for(v = 1;v <= n;v++)
       {if(v == iv2()){hp1[v].x() = -1.;continue;} // no horizontal
        xv = Ver[v];
       hp1[v].y() =  hp2[v].y() = (double)Hor[v];
@@ -704,7 +704,7 @@ int EmbedTContact(TopologicalGraph &G)
   // Compute verticals and text position
   double y1,y2;
   tvertex hv;
-  for(int v = 1;v <= n;v++)
+  for(v = 1;v <= n;v++)
       {xv = Ver[v]; y1 = Hor[v]; y2 = Hor2[v];
       hv = T_vertex[v].hvertex;
       if(v == iv3())

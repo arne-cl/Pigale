@@ -91,11 +91,11 @@ void GLControlWidget::wheelEvent(QWheelEvent *e)
 void GLControlWidget::keyPressEvent( QKeyEvent *k )
   {if(k->key() == Qt::Key_Up)
       {if(scale > 10.)return;
-      scale *=1.1;
+      scale *= (float)1.1;
       }
   else if(k->key() == Qt::Key_Down)
       {if(scale < .1)return;
-      scale /=1.1;
+      scale /= (float)1.1;
       }
   setScale(scale); 
   }

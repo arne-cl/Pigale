@@ -192,8 +192,8 @@ private:
   GraphWidgetPrivate* gwp;
   bool DoNormalise;
   bool is_init;
-  int color_node;
-  int color_edge;
+  short color_node;
+  short color_edge;
   int width_edge;
   double xepsilon,yepsilon;
   double min_used_x,max_used_x;

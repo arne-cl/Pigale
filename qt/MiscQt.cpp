@@ -154,7 +154,8 @@ bool CheckCoordNotOverlap(GeometricGraph & G)
   {bool ok = true;
   int n = G.nv();
   int *heap = new int[n+1];xcoord = new double[n+1];ycoord = new double[n+1];
-  for(int i = 1;i <= n;i++)
+  int i;
+  for(i = 1;i <= n;i++)
       {xcoord[i] = G.vcoord[i].x();
       ycoord[i] = G.vcoord[i].y();
       }
@@ -162,7 +163,7 @@ bool CheckCoordNotOverlap(GeometricGraph & G)
   double pos,prevpos;
   prevpos = G.vcoord[heap[0] + 1].x();
   int i0 = 0;
-  for(int i = 1;i < n;i++)
+  for(i = 1;i < n;i++)
       {pos = G.vcoord[heap[i] + 1].x();
       if(Equal(pos,prevpos) &&  G.vcoord[heap[i] + 1].y() == G.vcoord[heap[i0] + 1].y())
 	  {ok = false;   

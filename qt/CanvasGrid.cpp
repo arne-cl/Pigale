@@ -302,7 +302,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
   double  maxused_x,maxused_y;
   maxused_x = G.vcoord[1].x(); 
   maxused_y = G.vcoord[1].y();
-  for (int i = 2;i <= G.nv();i++)
+  for (i = 2;i <= G.nv();i++)
       {maxused_x = Max(maxused_x,G.vcoord[i].x());
       maxused_y = Max(maxused_y,G.vcoord[i].y());
       }
@@ -401,7 +401,8 @@ void GraphEditor::Normalise()
 
   max_used_x = min_used_x = G.vcoord[1].x(); 
   max_used_y = min_used_y = G.vcoord[1].y();
-  for (int i = 2;i <= G.nv();i++)
+  int i;
+  for (i = 2;i <= G.nv();i++)
       {min_used_x = Min(min_used_x,G.vcoord[i].x());
       max_used_x = Max(max_used_x,G.vcoord[i].x());
       min_used_y = Min(min_used_y,G.vcoord[i].y());
@@ -446,7 +447,7 @@ void GraphEditor::Normalise()
  
   max_used_x = min_used_x=G.vcoord[1].x()= xmul*G.vcoord[1].x() + xtr;
   max_used_y = min_used_y=G.vcoord[1].y()= ymul*G.vcoord[1].y() + ytr;
-  for (int i = 2;i <= G.nv();i++)
+  for (i = 2;i <= G.nv();i++)
       {G.vcoord[i].x() = xmul*G.vcoord[i].x() + xtr;
       G.vcoord[i].y() = ymul*G.vcoord[i].y() + ytr;
       min_used_x = Min(min_used_x,G.vcoord[i].x());

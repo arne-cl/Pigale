@@ -76,16 +76,16 @@ void DrawTContact(QPainter *p,MyPaint *paint)
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
   Prop<Tpoint> postxt(G.Set(tvertex()),PROP_DRAW_POINT_5);
   Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
-
+  tvertex v;	
   // Draw horizontals and verticals
-  for(tvertex v = 1;v <= G.nv();v++)
+  for(v = 1;v <= G.nv();v++)
       {if(hp1[v].x() > .0)paint->DrawSeg(p,hp1[v],hp2[v],Black);
       if(vp1[v].x() > .0)paint->DrawSeg(p,vp1[v],vp2[v],Black);
       }
   // Draw text
   p->setFont(QFont("lucida",Min((int)(sizetext() * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
-  for(tvertex v=1; v <= G.nv();v++)
+  for(v=1; v <= G.nv();v++)
       {if(ShowVertex() == -1)
 	  t.sprintf("%2.2d",v());
       else
@@ -115,7 +115,8 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
   dy = Min(12,paint->height()/(pmax().y()+1)-2);
   QFont font = QFont("lucida",dy);
   p->setFont(font);
-  for(tvertex v = 1;v <= G.nv();v++)
+  tvertex v;
+  for(v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.45:-.45;
       if(G.vcolor[v] == Red)
 	  {if(h1[v] != h2[v])
@@ -142,7 +143,7 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
       }
   
   pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
-  for(tvertex v = 1;v <= G.nv();v++)
+  for(v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.9:-.9;
       if(G.vcolor[v] == Red)
 	  {if(h1[v] != h2[v])
@@ -367,7 +368,7 @@ void MyPaint::png()
   else
       FileName = QString("/tmp/server%1.png").arg(father->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (this); 
-  pixmap.save(FileName,"PNG");
+  pixmap.save(FileName,"PNG",0);
   }
 void MyPaint::drawIt(QPainter *p)
   {if(index < 0)return;

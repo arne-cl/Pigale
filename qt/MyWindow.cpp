@@ -58,6 +58,9 @@
 #undef QTextEdit
 #include <qtextview.h>
 #define QTextEdit QTextView
+#if _WINDOWS
+#include <qtextbrowser.h>
+#endif
 #else
 #include <qtextedit.h>
 #include <qtextbrowser.h>
@@ -84,7 +87,14 @@
 int Test(GraphContainer &GC,int action);
 void UndoErase();
 void SaveSettings();
-static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
+//static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
+
+#ifndef _WINDOWS
+static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
+#else
+static char undofile[L_tmpnam] = "_undo.tgf" ;
+#endif
+
 int InitPigaleServer(MyWindow *w);
 
 MyWindow::MyWindow()
@@ -107,7 +117,7 @@ MyWindow::MyWindow()
   mapActionsInit();
 
   // Create an  undofile name
-  mkstemp(undofile);
+  //mkstemp(undofile);
 
   // Create a tgf file with no records
   {Tgf undo_tgf;
@@ -122,8 +132,8 @@ MyWindow::MyWindow()
   {QString DirFile;
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
-  else {Twait("The variable TGF should point on a valid directory");exit(1);}
-  InputFileName = DirFile + QDir::separator() + "a.tgf";
+  DirFile = ".";
+  InputFileName = DirFile + QDir::separator() + "a.txt";
   OutputFileName = InputFileName;
   }
 #else
@@ -139,6 +149,8 @@ MyWindow::MyWindow()
       }
   }
 #endif
+  // Modify settings according to passed arguments
+   ParseArguments();
 
   // Init random generator
   randomInitSeed();
@@ -196,20 +208,25 @@ MyWindow::MyWindow()
   graphgl  = new GraphGL(tabWidget,"graphgl",this);
   graphgl->setPalette(LightPalette);
   graphsym = new GraphSym(tabWidget,"graphsym",this);
-#if QT_VERSION >= 300
-  QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
-//   browser->mimeSourceFactory()->setFilePath("documentation");
-//   browser->setSource("manual.html");
-#endif
+
   tabWidget->addTab(gw,"Graph Editor");
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
 #if QT_VERSION >= 300
+  QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
+  tabWidget->addTab(browser,"User Guide"); 
+  QPalette bop(QColorDialog::customColor(3));
+  browser->setPalette(bop);
+#elif _WINDOWS
+  QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
+  browser->mimeSourceFactory()->setFilePath("Doc");
+  browser->setSource("manual.html");
   tabWidget->addTab(browser,"User Guide"); 
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
 #endif
+ 
  
    // rightLayout
   QGridLayout *rightLayout = new  QGridLayout(topLayout,2,4,-1,"rightLayout");
@@ -226,8 +243,12 @@ MyWindow::MyWindow()
   graph_properties->setMinimumSize(MyEditorMinXsize,170);
   graph_properties->setMaximumSize(MyEditorMinXsize,190);
   QLabel *lab0 = new QLabel(mainWidget);
+#ifdef _WINDOWS
+  lab0->setText("<center>Messages</center>");
+#else
   lab0->setText("<center><b>Messages</b></center><br>");
-  lab0->setTextFormat(Qt::RichText);
+#endif
+  lab0->setTextFormat(Qt::RichText);	
   lab0->setMinimumSize(MyEditorMinXsize,20);  
   lab0->setMaximumSize(MyEditorMinXsize,25);
   rightLayout->addMultiCellWidget(lab0,1,1,1,2);
@@ -466,6 +487,7 @@ MyWindow::MyWindow()
 #endif
   spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
+  spin_N1->setFocusPolicy(QWidget::ClickFocus); 
   spin_N2 = new QSpinBox(0,100000,1,generate,"spinN2");
   spin_N2->setValue(Gen_N2);     spin_N2->setPrefix("N2: ");
   spin_M = new QSpinBox(0,300000,1,generate,"spinM");
@@ -487,7 +509,7 @@ MyWindow::MyWindow()
   int macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
   int macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
 #else
-  int macroRepeat = 100;
+  int macroRepeat = 1;
   int macroMul = 0;
 #endif
   macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
@@ -538,6 +560,9 @@ MyWindow::MyWindow()
   connect(popupEmbed,SIGNAL(activated(int)),SLOT(handler(int)));
   settings->insertTearOffHandle();
   //debug()
+#ifdef TDEBUG
+	debug() = 1;
+#endif
   settings->insertItem("&Debug",10001);
   settings->setItemChecked(10001,debug());
   //undoEnable
@@ -616,7 +641,7 @@ MyWindow::MyWindow()
   
   //Resize
 #if TDEBUG
-  setCaption("Pigale Editor 1.2.4 debuggin mode");
+  setCaption("Pigale Editor 1.2.4 Debug Mode");
 #else
   setCaption("Pigale Editor 1.2.4");
 #endif
@@ -626,7 +651,7 @@ MyWindow::MyWindow()
   progressBar->setGeometry(rect_status); 
   progressBar->hide();
 
-  mainWidget->setFocus();
+  mainWidget->setFocus(); 
   if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   DebugPrintf("Init seed:%ld",randomSetSeed());
@@ -658,12 +683,8 @@ MyWindow::MyWindow()
       }
   setting.writeEntry("/pigale/Documentation dir",DocPath);
 #endif  
-  // gw->update();
-  // if no load check pgraphindex
-  if(Server)
-      gw->update();
-  else
-      load(0);
+  gw->update();
+  if(!Server)load(0);
   }
 
 MyWindow::~MyWindow()
@@ -672,7 +693,9 @@ MyWindow::~MyWindow()
 void MyWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1) 
        macroPlay();
+#ifndef _WINDOWS
   if(Server)InitPigaleServer(this); 
+#endif
   }
 void MyWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));
@@ -711,7 +734,9 @@ void MyWindow::load()
 int MyWindow::publicLoad(int pos)
   {setError();
   QString m;
-  if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
+  //if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
+   QFileInfo fi(InputFileName);
+   if(!fi.exists() || fi.size() == 0)
       {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
       statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
@@ -739,11 +764,13 @@ int MyWindow::publicLoad(int pos)
 int MyWindow::load(int pos)
   {setError();
   QString m;
-  if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
+  QFileInfo fi(InputFileName);
+  if(!fi.exists() || fi.size() == 0)
+  //if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
       {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
       statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
-      gw->update();
+      //gw->update();
       return -1;
       }      
   UndoClear();UndoSave();

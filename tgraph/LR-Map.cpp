@@ -87,12 +87,13 @@ int Embed::LowerSideUpperSide()
 void Embed::PrintLowerSideUpperSide()
   {if(m == n - 1)return;
   printf("planar original representation\n ej       Left       Right\n");
-  for(tbrin ej = 1;ej < n;++ej)
+  tbrin ej;
+  for(ej = 1;ej < n;++ej)
       printf("T:%4d %4d\n",vin[ej](),vin[-ej]());
-  for(tbrin ej = n;ej <= m;++ej)
+  for(ej = n;ej <= m;++ej)
     printf("CT:%4d %4d\n",vin[ej](),vin[-ej]());
 
-  for(tbrin ej = n;ej <= m;++ej)
+  for(ej = n;ej <= m;++ej)
       {switch(Side.dwn[ej]*2 + Side.up[ej])
           {case 0 :
               printf("%4d%7d\n%11d\n",ej(),vin[-ej](),vin[ej]());break;

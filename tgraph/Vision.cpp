@@ -233,7 +233,7 @@ int Vision(TopologicalGraph &xG,int morg)
 
   Prop<int> y(xG.Set(tvertex()),PROP_DRAW_INT_5); y.clear();
   MaxPath *MP=new MaxPath(n,m);
-  for (e=1; e<=m; e++)
+  for (e=1; e <= m; e++)
       MP->insert(G.vin[e.firsttbrin()](),G.vin[e.secondtbrin()](),1);
   MP->solve(y);
   delete MP;
@@ -266,7 +266,7 @@ int Vision(TopologicalGraph &xG,int morg)
   if (BipPlanarize(G,topin,order,orig,bst)!=0)
     return -3;
   // move orig for added edges
-  for (tedge e=morg+1; e<=m; e++)
+  for (e = morg+1; e<=m; e++)
     {orig[m]=G.vin[m]; orig[-m]=G.vin[-m];}
     
 #ifdef TDEBUG

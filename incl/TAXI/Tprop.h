@@ -120,7 +120,7 @@ class vProp
     {
     public:
       virtual int size_elmt() const = 0; //!< size of element
-      virtual void affiche(std::ostream& out,const _svector *v) const =0; 
+      virtual void affiche(T_STD  ostream& out,const _svector *v) const =0; 
       
       //!< prints the element (debugging purpose)
       /*!< \param out output stream
@@ -378,13 +378,13 @@ class PSet
         }
     //! printing function (debugging purpose)
   
-    void affiche(std::ostream & out=std::cout) const
-        {out <<"PSet ("<<_start<<","<<_finish<<") "<<std::endl;
+    void affiche(T_STD  ostream & out=T_STD  cout) const
+        {out <<"PSet ("<<_start<<","<<_finish<<") "<<T_STD  endl;
         int i = -1;
         while ((i=nextindx[i])>=0)
             {out <<i<< " : ";
             if (vtab[i] != (vProp *)0) vtab[i]->affiche(out,tab[i]);
-            else out << "unregistred"<<std::endl;
+            else out << "unregistred"<<T_STD  endl;
             }
 	}
 };
@@ -392,7 +392,7 @@ class PSet
  * stream printing of a property set
  */
 
-inline std::ostream & operator<<(std::ostream & out, const PSet &X)
+inline T_STD  ostream & operator<<(T_STD  ostream & out, const PSet &X)
     {X.affiche(out); return out;}
 
 //! Template class for virtual access point to vector properties
@@ -403,16 +403,16 @@ class vP : public vProp
       int size_elmt() const { return sizeof(T);}
       vProp * dup() const {return new vP<T>;}
       
-    void affiche(std::ostream &out, const _svector *p) const
+    void affiche(T_STD  ostream &out, const _svector *p) const
      	{if (p->origin()==(void *)0)
-            {out << " undefined"<<std::endl;
+            {out << " undefined"<<T_STD  endl;
             return;
 	    }
        else
            {out<<"{ ";
            for (int i = p->starti(); i<p->stopi(); i++)
                out << (const T &)(*(svector<T> *)p)[i] << " ";
-           out <<"}"<<std::endl;
+           out <<"}"<<T_STD  endl;
            }
         }
 
@@ -523,7 +523,7 @@ class vProp1
     virtual int size_elmt() const = 0;//!< size of element
     virtual void destroy(void *) const = 0;//!< destroy an element
      
-    virtual void affiche(std::ostream& out, const void *elmt) const = 0; 
+    virtual void affiche(T_STD  ostream& out, const void *elmt) const = 0; 
      
     //!< prints the element (debugging purpose)
     /*!< \param out output stream
@@ -549,7 +549,7 @@ class vP1 : public vProp1
       vProp1 * dup() const {return new vP1<T>;}
       void destroy(void *p) const {delete (T*)p;}
       
-      void affiche(std::ostream&out, const void *p) const {out << *(T*)p << std::endl;}
+      void affiche(T_STD  ostream&out, const void *p) const {out << *(T*)p << T_STD  endl;}
       
      _svector * Export(const void *p) const
         { return TypeHandler<T>::Export(p);}
@@ -706,13 +706,13 @@ class PSet1
     int PEnd() const {return tab.stopi();}
     //! printing function (debugging purpose)
   
-    void affiche(std::ostream &out=std::cout) const
+    void affiche(T_STD  ostream &out=T_STD  cout) const
         { for (int i=tab.starti(); i<tab.stopi(); i++)
 	    if (tab[i]!=(void *)0)
 	        { out <<i<< " : ";
 	        if (vtab[i] != (vProp1 *)0)
 		    vtab[i]->affiche(out,tab[i]);
-		else out << "unregistred"<<std::endl;
+		else out << "unregistred"<<T_STD  endl;
 		}
 	}
 };
@@ -804,6 +804,6 @@ class Prop1
  * stream printing of a property set
  */
 
-inline std::ostream & operator<<(std::ostream & out, const PSet1 &X) {X.affiche(out); return out;}
+inline T_STD  ostream & operator<<(T_STD  ostream & out, const PSet1 &X) {X.affiche(out); return out;}
 
 #endif

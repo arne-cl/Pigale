@@ -231,7 +231,7 @@ void DFSGraph::DeleteCotreeEdge(tedge e)
   }
 void DFSGraph::ShrinkCotree()
   {tedge e;
-  tedge newe;
+  tedge newe = 0;
   Prop<bool> mark(Set(tedge()),PROP_MARK,true);
   for (e=nv();e<=ne();e++)
       if (mark[e])

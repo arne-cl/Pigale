@@ -88,7 +88,9 @@ void GraphWidget::SpringPreservingMap()
 void GraphWidget::SpringJacquard()
   {if(!d->is_init)return;
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+#ifndef _WINDOWS
   d->editor->SpringJacquard();
+#endif
   }
 void GraphWidget::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize();
@@ -172,8 +174,9 @@ void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
 
   int x = gwp->canvas->width() - sizerect -space;
   int y = space;
+  int i;
   // ColorItems for vertices
-  for(int i = 1;i <= 16;i++)
+  for(i = 1;i <= 16;i++)
       {QRect rect(x,y,sizerect,sizerect);
       if(i == color_node)
 	  coloritem = new ColorItem(gwp,rect,i,i,true);
@@ -185,7 +188,7 @@ void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
   // ColorItems for edges
   //y = gwp->canvas->height() - 16*(sizerect + space);
   y = gwp->canvas->height() - 20*(sizerect + space);
-  for(int i = 1;i <= 16;i++)
+  for(i = 1;i <= 16;i++)
       {QRect rect(x,y,sizerect,sizerect);
       if(i == color_edge)
 	  coloritem = new ColorItem(gwp,rect,i,i,false);

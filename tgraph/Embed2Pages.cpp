@@ -192,12 +192,14 @@ int EmbedContactBip(GeometricGraph &G)
   h.clear();
   CalcTotalOrder(G,FirstBrin);
   int n_quadrangulate = G.nv();
-  for(tvertex v = G.nv();v > n_origin();v--)
+  tvertex v;
+  for(v = G.nv();v > n_origin();v--)
   	G.DeleteVertex(v);
   // computes extremities of vertices
   Prop<int> h1(G.Set(tvertex()),PROP_DRAW_INT_2); 
   Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3); 
-  for(tvertex v = 1;v <= G.nv();v++)
+  
+  for(v = 1;v <= G.nv();v++)
       {h1[v] = n_quadrangulate+1 ;h2[v] = -1;
       }
   tvertex v1,v2;
@@ -207,7 +209,7 @@ int EmbedContactBip(GeometricGraph &G)
       h1[v2] = Min(h1[v2],h[v1]); h2[v2] = Max(h2[v2],h[v1]);
       }
   int xymax = h[1];  int xymin = h[1];
-  for(tvertex v = 2;v <= G.nv();v++)
+  for(v = 2;v <= G.nv();v++)
       {xymax = Max(xymax,h[v]);
       xymin = Min(xymin,h[v]);
       }

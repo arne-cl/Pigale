@@ -46,8 +46,8 @@ class Graph : public GraphAccess
              svector<tbrin> &tb, svector<int> &dfsnum);
     int GDFS(const svector<tbrin> &cir, svector<tvertex> &nvin)
         {int n = nv();
-        svector<tbrin> tb(0,n);
-        svector<int> dfsnum(0,n);
+        svector<tbrin> tb(0,n);         tb.SetName("GDFS:tb");
+        svector<int> dfsnum(0,n);       dfsnum.SetName("GDFS:dfsnum");
         return GDFS(cir,nvin,tb,dfsnum);
         }
     int GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin);

@@ -86,39 +86,44 @@ int Graph::GDFS(const svector<tbrin> &cir, svector<tvertex>&nvin,
   tb.clear();
   nvin[0]=0;
   tbrin b=b0;
-  tedge y=1;
-  tedge z=m;
+  tedge y = 1;
+  tedge z = m;
   tvertex w;
-  tvertex newv=1;
+  tvertex newv = 1;  
   v = vin[b0];
-  tb[v]=(tbrin)b0;
-  dfsnum[v]=1;
+  tb[v] = (tbrin)b0;
+  dfsnum[v] = 1;
+  //int i;
+  //for(i = 1;i <= m ;i++) DebugPrintf("GDFS input:%d %d",vin[i](),vin[-i]());
+  //DebugPrintf("N=%d  M=%d",n,m);
   do
-      {w=vin[-b];
-      if (tb[w]!=0)            // w deja connu ?
-          {if (b==tb[v])    // on descend sur l'abre ?
-              { b.cross();
-              newv = dfsnum[v=w];
+      {w=vin[-b];            // w current vertex  
+      if (tb[w]!=0)         // w known
+          {if (b==tb[v])    // backtraking on the tree
+              {b.cross();
+              v = w; 	
+              newv = dfsnum[v];
               }
-          else if (newv<dfsnum[w]) // coarbre bas ?
+          else if(newv<dfsnum[w]) // creating cotree edges
               {
               nvin[-z]=dfsnum[w];
               nvin[z--]=newv;
               }
           }
-      else                    // arbre bas ?
-          {if (w==0) break;
-          b.cross();
-          tb[w]=b;
-          nvin[y]=newv;
-          y=newv()=nvin[-y]()=dfsnum[v=w]=++y();
+      else                    // creating tree edges
+          {if(w==0) break;
+          b.cross();          // opposite half edge
+          tb[w] = b;
+          nvin[y] = newv;       // low vertex in DFS numerotation
+	  newv() = nvin[-y]() = dfsnum[w] = y() + 1;
+          ++y(); v = w;
           }
       b = cir[b];
       } while(1);
 
-  //for(int i = 1;i <= m ;i++) DebugPrintf("%d %d",nvin[i](),nvin[-i]());
-
-  if(y != n) return 0;
+  //for(i = 1;i < y() ;i++) DebugPrintf("%d %d",nvin[i](),nvin[-i]());
+  if(debug())DebugPrintf("END Graph:GDFS");
+  if(y != n) return 0; // graph not connected
   else return 1;
   }
 

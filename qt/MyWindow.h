@@ -89,6 +89,7 @@ private:
   void mapActionsInit();
   int  macroLoad(QString FileName);
   void macroRecord(int action);
+  void ParseArguments(); 
 public:
   void whenReady();
   void Message(QString s);

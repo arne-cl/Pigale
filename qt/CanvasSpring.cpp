@@ -20,7 +20,9 @@
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
 
+#ifndef _WINDOWS
 using namespace std;
+#endif
 
 int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax
 		  ,double & dx,double & dy)
@@ -193,7 +195,8 @@ t current tanslation of v0
   // Compute bounds
   ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0);
   // Compute degrees;
-  for(tvertex v = 1;v <= n;v++)
+  tvertex v;
+  for(v = 1;v <= n;v++)
       degree[v] = G.Degree(v);
 
   for(iter = 1;iter <= niter;iter++)
@@ -360,7 +363,7 @@ t current tanslation of v0
 
   Normalise();
   // same as load(false) but much faster
-  for(tvertex v = 1;v <= n;v++)
+  for(v = 1;v <= n;v++)
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
@@ -375,6 +378,7 @@ t current tanslation of v0
 
 //******************** JACQUARD SPRING EMBEDDER 
 //  ****************** VARIABLES D'EQUILIBRAGE
+#ifndef _WINDOWS
 int isInf (double x)
   {if ( x <= 0.0000001 )return 1;
   return 0;
@@ -1025,6 +1029,7 @@ int GraphEditor::SpringJacquard()
   Normalise();load(false);
   return generations;
   }
+#endif
 /*
 bool BoundRay(QCanvas *canvas, GeometricGraph &G, const tvertex &v0, const Tpoint &p0, Tpoint &t)
   { const double epsilon_ray=0.01;

@@ -23,6 +23,7 @@
 
 // Vector resizes by an increment of half the current size but at least 32.
 #define TSVECTOR_INCREMENT (Max((finish-start)>>1,32))
+//#define _CONSTRUCTOR
 
 //! Simple dynamic scalar vector [start:finish-1].
 /*! A scalar vector handles data types without constructor or destructor,
@@ -53,7 +54,7 @@ class _svector
   void* buff;                   // container of elements + 2 extra
   int _start;                   // lowest allocated index
   int _finish;                  // 1 past-end of highest allocated index
-  std::size_t size_elmt;        // size in bytes of an element
+  T_STD size_t size_elmt;       // size in bytes of an element
   void* init;                   // initial value for the elements (&buff[0])
   char name[16];                // name identifying this vector
 
@@ -104,7 +105,12 @@ class _svector
   {
     // Actual buffer size: (nr. elements + 2) * size_elmt
     unsigned int nsize = (unsigned int) (_finish - _start)*size_elmt;
+#ifndef _CONSTRUCTOR
     char* nbuff = (char*) ::operator new (nsize);
+#else
+	char* nbuff = new char[nsize];
+	//DebugPrintf("NEW0:%p",nbuff);
+#endif
 
     if (start != finish) { // vector is not empty
       memcpy((void*) (nbuff+(start-_start)*size_elmt), begin(), getsize());
@@ -113,7 +119,12 @@ class _svector
       memcpy((void*) nbuff, buff, size_elmt);
       init = nbuff;
     }
-    delete (char*) buff;
+#ifndef _CONSTRUCTOR
+	delete (char *) buff;
+#else
+    //DebugPrintf("DEL0 %s:%p",name,buff);
+	delete [] (char *) buff;
+#endif
     buff = (void*) nbuff;
     ptr0 = (void*) (nbuff - _start*size_elmt);
   }
@@ -141,13 +152,19 @@ class _svector
    * will still be valid. It is hence copied, should a reallocation occur.
    * Otherwise, default value is unset.
    */
-  void vreserve(int s, int f, std::size_t nsize_elmt)
+  void vreserve(int s, int f, T_STD size_t nsize_elmt)
   {
     unsigned int osize = (unsigned int) (_finish-_start)*size_elmt;
     unsigned int nsize = (unsigned int) (f-s)*nsize_elmt;
 
     if (nsize > osize) {
-      char* nbuff = (char*) ::operator new(nsize);
+#ifndef _CONSTRUCTOR
+    char* nbuff = (char*) ::operator new (nsize);
+#else
+	char* nbuff = new char[nsize];
+	//DebugPrintf("NEW1:%p",nbuff);
+#endif
+      
 
       if (init)
         if (nsize_elmt == size_elmt) {
@@ -156,7 +173,14 @@ class _svector
         }
         else
           init = 0;
-      delete (char*) buff;
+
+#ifndef _CONSTRUCTOR
+	delete (char *) buff;
+#else
+    //DebugPrintf("DEL1:%p",nbuff);
+	delete [] (char *) buff;
+#endif
+	
       buff = (void*) nbuff;
     }
     ptr0 = (void*) ((char*) buff-s*nsize_elmt);
@@ -195,7 +219,14 @@ public:
     unsigned int sizebuff = getsize()+2*size_elmt;
 
     if (sizebuff)
-      buff = ::operator new (sizebuff);
+	{
+#ifndef _CONSTRUCTOR
+    buff = (char*) ::operator new (sizebuff);
+#else
+	buff = new char [sizebuff];
+	//DebugPrintf("NEW2:%p",buff);
+#endif
+	}
     else
       buff = 0;
     _start  = start-2;
@@ -213,7 +244,16 @@ public:
     name[sizeof(name)-1]='\0';
     copy(s); 
   }
-  ~_svector() {delete (char*) buff;}
+  ~_svector() 
+	{
+#ifndef _CONSTRUCTOR
+	delete (char *) buff;
+#else
+    //DebugPrintf("DESTRUCTOR:%s %p",name,buff);
+	delete [] (char *) buff;
+#endif
+	 
+  }	
 
   //! Tests whether vector is empty (no elements).
   int empty() const {return start==finish;}
@@ -431,7 +471,10 @@ public:
     ((T*) ptr0)[--finish]= ((T*) ptr0)[i];
   }
   void Tswap(svector<T>& v)
-      {me().Tswap(v.me());}
+     {if(me().SizeElmt() != v.me().SizeElmt())
+		{DebugPrintf("TWAP ERROR_SIZE");myabort();}
+	  me().Tswap(v.me());
+	 }
   //! swaps two elements
   void SwapIndex(int a, int b) {
     T& ra = (*this)[a]; T& rb = (*this)[b]; T tmp=ra; ra=rb; rb=tmp;
@@ -475,7 +518,11 @@ public:
   const T* end() const {return (T*) v.end();}
   void clear() {v.clear();}
   void fill(int from, int to, char byte=0) {v.fill(from, to, byte);}
-  void Tswap(_svector &s) {v.Tswap(s);}
+  void Tswap(_svector &s) 
+	{if(v.SizeElmt() != s.SizeElmt())
+		{DebugPrintf("TWAP ERROR_SIZE");myabort();}
+	  v.Tswap(s);
+	}
   rsvector &operator=(const _svector &s) {v=s; return *this;}
   rsvector &operator=(const rsvector &s) {v=s.v; return *this;}
   rsvector &operator=(const svector<T> &s) {v=s; return *this;}

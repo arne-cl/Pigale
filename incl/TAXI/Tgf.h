@@ -191,7 +191,7 @@ class Tgf {
         enum open_mode {old=0,create};
         StructTagList TagList;            //tous les tags du record sur lequel on est
         char SubHeader[17];
-        std::fstream stream;
+        T_STD  fstream stream;
 
         Tgf() : IfdOffset(0L)
             {IsGood = IsOpen = 0;

@@ -58,13 +58,13 @@ bool TopologicalGraph::CheckBiconnected()
   int m = ne();
   int n = nv();
   if (m==0) return true;
-  svector<tvertex> nvin(-m,m);
-  svector<tvertex> low(0,n);
+  svector<tvertex> nvin(-m,m);   nvin.SetName("TG:Bicon:nvin");
+  svector<tvertex> low(0,n);     low.SetName("TG:Bicon:low"); 
 
-  if (!DFS(nvin)) // not connected ...
+  if(!DFS(nvin)) // not connected ...
       return false;
   _Bicon Bicon(n);
-  bool ret = bicon(n,m,nvin,Bicon,low);
+  int ret = bicon(n,m,nvin,Bicon,low);
   if(ret)
       {Prop1<int> isbicon(Set(),PROP_BICONNECTED);
       Prop1<int> is_con(Set(),PROP_CONNECTED);
@@ -162,9 +162,10 @@ int TopologicalGraph::ExpandEdges()
 bool TopologicalGraph::CheckSimple()
   {if(debug())DebugPrintf("   CheckSimple");
   if(Set().exist(PROP_SIMPLE))return true;
+  if(ne() <= 1){Prop1<int> simple(Set(),PROP_SIMPLE);return true;}
   if(debug())DebugPrintf("Executing CheckSimple");
   if(!CheckNoLoops())return false;
-  if(ne() <= 1){Prop1<int> simple(Set(),PROP_SIMPLE);return true;}
+  
   svector<tedge>link(1,ne()); link.clear();
   svector<tedge>top1(1,nv()); top1.clear();
   svector<tedge>top2(1,nv()); top2.clear();
@@ -279,11 +280,12 @@ int TopologicalGraph::MakeConnected(bool mark_cc)
   return ncc - 1;
   }
 bool TopologicalGraph::CheckBipartite(bool Color)
-  {if(debug())DebugPrintf("   CheckBipartite Color=%d",(int)Color);
+  {if(debug())DebugPrintf("    CheckBipartite Color=%d",(int)Color);
   if(Set().exist(PROP_BIPARTITE) && !Color)return true;
-  if(!nv()) return false;
+  if(!nv()) return false; 
+  if((nv() == 1) || !ne() || (!Color && ne() <= 3))
+  {Prop1<int>is_bipartite(Set(),PROP_BIPARTITE);return true;}
   if(debug())DebugPrintf("Executing CheckBipartite");
-  if(nv() == 1)return true;
   svector<tvertex> stack(1,nv()); stack.SetName("stack");
   svector<bool> vcol(1,nv()); vcol.SetName("vcol");
   svector<int> comp(1,nv()); comp.clear(); comp.SetName("Comp");
@@ -338,6 +340,7 @@ bool TopologicalGraph::CheckBipartite(bool Color)
   nblue()=nv()-nred();
   
   Prop1<int>is_bipartite(Set(),PROP_BIPARTITE);
+  if(debug())DebugPrintf("END   CheckBipartite");
   return true;
   }
 // Checks a connected graph is bipartite and make it a hypergraph
@@ -817,7 +820,7 @@ int TopologicalGraph::VertexTriangulate()
   }
 
 bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
-  {if(ne() <= 1)return true;
+{if(ne() <= 1){ns = nt = 0;return true;}
   if(debug())DebugPrintf("Executing CheckAcyclic");
   ns=nt=0;
   svector<int> din(1,nv());             din.SetName("Acyclic:din");
@@ -854,6 +857,7 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
           } while(b!=b0);
       if (sink) nt++;
       }
+  if(debug())DebugPrintf("END CheckAcyclic");
   return (num==nv());
   }
 
@@ -1308,11 +1312,13 @@ bool TopologicalGraph::CheckSerieParallel()
   {//prerequisit : G  planaire
   if(debug())DebugPrintf("Executing CheckSerieParallel");
     
-  svector<bool> save_oriented(0,ne());
+  svector<bool> save_oriented(0,ne()); save_oriented.SetName("SerieP:save_oriented");
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
+  oriented.SetName("Serie //:Orient");
   save_oriented.Tswap(oriented);
   tbrin first = 1;
   int nsinks;
+
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
       {setError(-1);save_oriented.Tswap(oriented); RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
@@ -1329,15 +1335,17 @@ bool TopologicalGraph::CheckSerieParallel()
 
   // G is plane and biconnected
   Prop1<int> isbicon(Set(),PROP_BICONNECTED);
-
   bool res;
   GraphContainer &DGC = *AngleGraph();
   {TopologicalGraph DG(DGC);
   int ns,nt;
   res = DG.CheckAcyclic(ns,nt);
   }
+
   delete &DGC;
   save_oriented.Tswap(oriented); RestoreOrientation();
+  if(debug())DebugPrintf("END CheckSerieParallel");
+
   return res;
   }
 
