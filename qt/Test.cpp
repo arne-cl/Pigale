@@ -29,13 +29,23 @@ int Test(GraphContainer &GC,int action)
   else if(action == 2)return Test2(GC);
   return Test3(GC);
   }
-int Test3(GraphContainer &GC)
+int Test2(GraphContainer &GC)
+  {TopologicalGraph G(GC);
+  //int m0 =  G.ne();
+  int err = G.TriconTriangulate();
+  int diff = G.ne() - 3*G.nv() +6;
+  //qDebug("err:%d diff:%d     %d -> %d",err,diff,m0,G.ne());
+  if(diff)err = -2;
+  if(err){setError(-1,"TriconTriangulate Error");return -1;}
+  return 0;
+  }
+int Test1(GraphContainer &GC)
   {GeometricGraph GG(GC);
   for (int i=1; i<=1000; i++)
       GG.TestPlanar();
   return 0;
   }
-int Test1(GraphContainer &GC)
+int Test3(GraphContainer &GC)
 // display  the properties of the current graph that would be saved in a tgf file.
   {TopologicalGraph G(GC);
   qDebug("Vertices:");
@@ -70,26 +80,14 @@ int Test1(GraphContainer &GC)
   return 0;
   }
 
-//#include <TAXI/KantShel.h>
-int Test2(GraphContainer &GC)
-  {TopologicalGraph G(GC);
-  //int m0 =  G.ne();
-  int err = G.TriconTriangulate();
-  int diff = G.ne() - 3*G.nv() +6;
-  //qDebug("err:%d diff:%d     %d -> %d",err,diff,m0,G.ne());
-  if(diff)err = -2;
-  if(err){setError(-1,"TriconTriangulate Error");return -1;}
-  return 2;
-  }
-//#include <TAXI/KantShel.h>
-//   tbrin fb = G.extbrin();
-//  KantShelling KS(G,fb);
-//  tbrin left,right;
-//  while (KS.FindNext(left,right) != 0)
-//      ;
-//  int err = KS.Error();
-//  if(err)
-//      {qDebug("KS ERROR:%d",err);
-//      setError(-1,"KS Error");
-//      }
-//   return err;
+
+
+
+
+
+
+
+
+
+
+
