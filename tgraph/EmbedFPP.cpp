@@ -569,6 +569,7 @@ int EmbedFPPRecti(TopologicalGraph &G)
 
 typedef struct  {tvertex lvertex;
                 tvertex rvertex;
+                tvertex hvertex; // the highest vertex incident
                 }Tcontact;
 
 int EmbedTContact(TopologicalGraph &G)
@@ -600,8 +601,8 @@ int EmbedTContact(TopologicalGraph &G)
   svector<int> Hor(1,n);  Hor.clear();  Hor.SetName("Tcontact:Hor");
   svector<int> Hor2(1,n); Hor2.clear(); Hor2.SetName("Tcontact:Hor2");
   svector<int> Ver(1,n); Ver.clear(); Ver.SetName("Tcontact:Ver");
-  Hor[iv1] = Hor[iv2] = 1;  Ver[iv1] = 1;
-  Hor2[iv1] = Hor2[iv2] = 1;  
+  Hor[iv1] = 1; Hor[iv2] = 0;  Ver[iv1] = 1;
+  Hor2[iv1] = Hor2[iv2] = 1; 
   MaxPath vertical(n,2*n-4);
 
   // use the Schnyder packing to add constraints between verticals
@@ -612,7 +613,7 @@ int EmbedTContact(TopologicalGraph &G)
       b = left;
       Hor[iv] = Hor2[iv] = Max(Hor[iv],Hor[G.vin[-b]()] + 1);
       vertical.insert(G.vin[-b](),iv(),1);
-      T_vertex[iv].lvertex =  T_vertex[iv].rvertex =  0;
+      T_vertex[iv].lvertex =  T_vertex[iv].rvertex =  T_vertex[iv].hvertex = 0;
       if(b.GetEdge() <= morg) {T_vertex[iv].lvertex = T_vertex[iv].rvertex = G.vin[-b];}    
  
       while((b = G.cir[b]) != G.cir[right]) // for packed b incident to iv 
@@ -620,6 +621,7 @@ int EmbedTContact(TopologicalGraph &G)
 	    if(b.GetEdge() <= morg)
 		{T_vertex[iv].rvertex = G.vin[-b];
 		if(T_vertex[iv].lvertex == 0)T_vertex[iv].lvertex = G.vin[-b];
+		T_vertex[G.vin[-b]].hvertex = iv;
 		}
             }
 
@@ -642,6 +644,8 @@ int EmbedTContact(TopologicalGraph &G)
   // Modifications for drawing
   T_vertex[iv1].lvertex = iv1;  T_vertex[iv1].rvertex = iv2;  
   T_vertex[iv2].lvertex = iv2;  T_vertex[iv2].rvertex = iv2;  
+  T_vertex[iv1].hvertex = 0;    T_vertex[iv2].hvertex = iv3;
+
   // Erase triangulation edges
   for(tedge e = G.ne(); e > morg;e--)G.DeleteEdge(e);
   // define the boundaries
@@ -650,10 +654,10 @@ int EmbedTContact(TopologicalGraph &G)
   Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
 
   double epsilon = .1;    // free distance for contacts
-  double yminsize = .55;  // minsize of verticals 
-  double xminsize = .25;  // minsize of horizontals
-  sizetext() = .5;        // maximal textsize
-  pmin() = Tpoint(1.0-xminsize,1.0);
+  double yminsize = .25;  // minsize of verticals above horizontals
+  double xminsize = .0;   // minsize of horizontals (.125)
+  sizetext() = .5;        // maximal textsize 
+  pmin() = Tpoint(1.-xminsize,.0);
   pmax() = Tpoint(Ver[iv2] + sizetext()/2,Hor[iv3] + sizetext());
 
   // compute horizontals and verticals
@@ -699,20 +703,27 @@ int EmbedTContact(TopologicalGraph &G)
       }
   // Compute verticals and text position
   double y1,y2;
+  tvertex hv;
   for(int v = 1;v <= n;v++)
       {xv = Ver[v]; y1 = Hor[v]; y2 = Hor2[v];
+      hv = T_vertex[v].hvertex;
       if(v == iv3())
 	  vp1[v].x() = -1.;
       else
 	  {vp1[v].x() = vp2[v].x() = (double)xv;
 	  vp1[v].y() = (double)y1;
-	  vp2[v].y() = (y1 != y2) ? (double)y2 - epsilon :(double)y2 + yminsize; 
+	  if(y1 == y2)
+	      vp2[v].y() = (double)y2;
+	  //vp2[v].y() = (double)y2 + yminsize;
+	  else if(hv != 0  && hp1[hv].x() <=(double) xv &&  hp2[hv].x() >= (double)xv)
+	      vp2[v].y() = (double)y2 - epsilon;
+	  else
+	      vp2[v].y() = (double)y2 + yminsize;
 	  }
       // Text
       txt[v].x() = (double)xv;   txt[v].y() = (double)y1;
       }
+  // special cases
   txt[iv3].x() = (hp1[iv3].x() + hp2[iv3].x())/2 ;
-  txt[iv2].y() += epsilon;
-
   return 0;
   }

@@ -410,7 +410,7 @@ void MyPaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col)
   {QPen pn = p->pen();
   QPoint ps = QPoint(to_x(a.x()),to_y(a.y()));
   QPoint pt = QPoint(to_x(b.x()),to_y(b.y()));
-  pn.setColor(color[col]); pn.setWidth(2);
+  pn.setColor(color[col]); pn.setWidth(1);
   p->setPen(pn);
   p->drawLine(ps,pt);
   }
@@ -428,16 +428,18 @@ void MyPaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
 // center=0 horizontal
   {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
-  int nx = size.width() + 4; int ny = size.height();
+  double nx = size.width() + 4; double ny = size.height();
   QRect rect;
+  //if pn.setWidth() > 1 => rect increase
   if(center)
       rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny/2+.5),(int)(nx+.5),(int)(ny+.5));
   else
-      rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny+.5),(int)(nx+.5),(int)(ny+.5));
+      rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny+1.),(int)(nx+.5),(int)(ny+.5));
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   pb.setColor(color[col]);p->setBrush(pb);
+  pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
-  if(ny >= 6)p->drawText(rect,Qt::AlignCenter,t);
+  if(ny >= 6){ pn.setWidth(1);p->setPen(pn);p->drawText(rect,Qt::AlignCenter,t);}
   }
 void MyPaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QString &t,int col)
 // draw centered text in rectangle left at x,y of size: nx,ny
@@ -446,7 +448,7 @@ void MyPaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QString
   QRect rect = QRect(to_x(x),to_y(y),(int)(nx+.5),(int)(ny+.5));
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   pb.setColor(color[col]);p->setBrush(pb);
-  pn.setWidth(2);p->setPen(pn);
+  pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   pn.setWidth(1);p->setPen(pn);
   p->drawText(rect,Qt::AlignCenter,t);
