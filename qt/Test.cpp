@@ -21,7 +21,7 @@ static int Test3(GraphContainer &GC);
 void initMenuTest()
   {pigaleWindow *mw =  GetpigaleWindow();
   mw->setUserMenu(1,"TestPlanar x1000");
-  mw->setUserMenu(2,"KS test");
+  mw->setUserMenu(2,"3-Con Triangulate");
   mw->setUserMenu(3,"Properties");
   }
 int Test(GraphContainer &GC,int action)
@@ -70,23 +70,26 @@ int Test1(GraphContainer &GC)
   return 0;
   }
 
-#include <TAXI/KantShel.h>
+//#include <TAXI/KantShel.h>
 int Test2(GraphContainer &GC)
-  {GeometricGraph G(GC);
-  G.CheckTriconnected();
-  if(!G.Set().exist(PROP_TRICONNECTED)){qDebug("NOT 3-connected");return -1;}
-//   pigaleWindow *mw =  GetpigaleWindow();
-//   mw->handler(A_EMBED_SCHNYDER_E);
-  tbrin fb = G.extbrin();
-  cout << " extbrin  = " << G.vin[fb] << " " << G.vin[-fb] << "***********************" << endl;
- KantShelling KS(G,fb);
- tbrin left,right;
- while (KS.FindNext(left,right) != 0)
-     ;
- int err = KS.Error();
- if(err)
-     {qDebug("KS ERROR:%d",err);
-     setError(-1,"KS Error");
-     }
-  return err;
+  {TopologicalGraph G(GC);
+  //int m0 =  G.ne();
+  int err = G.TriconTriangulate();
+  int diff = G.ne() - 3*G.nv() +6;
+  //qDebug("err:%d diff:%d     %d -> %d",err,diff,m0,G.ne());
+  if(diff)err = -2;
+  if(err){setError(-1,"TriconTriangulate Error");return -1;}
+  return 2;
   }
+//#include <TAXI/KantShel.h>
+//   tbrin fb = G.extbrin();
+//  KantShelling KS(G,fb);
+//  tbrin left,right;
+//  while (KS.FindNext(left,right) != 0)
+//      ;
+//  int err = KS.Error();
+//  if(err)
+//      {qDebug("KS ERROR:%d",err);
+//      setError(-1,"KS Error");
+//      }
+//   return err;
