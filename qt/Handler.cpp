@@ -37,6 +37,9 @@ GraphContainer *GenerateGrid(int a, int b);
 GraphContainer *GenerateCompleteGraph(int a);
 GraphContainer *GenerateCompleteBiGraph(int a,int b);
 GraphContainer *GenerateRandomGraph(int a,int b);
+//Schaeffer algo
+GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
+
 // in MyCanvas.cpp
 bool & ShowOrientation();
 //in here
@@ -266,16 +269,16 @@ int EmbedHandler(int action,int &drawing)
           if(err)Tprintf("ret=%d",err);
 	  break;
       case 203:ret = 1;
-          G0.Tutte();
-	  Tprintf("Tutte");
+	  err = EmbedFPP(G);
+	  if(err)Tprintf("ret=%d",err);
 	  break;
       case 204:ret = 1;
           EmbedTutteCircle(G);
 	  Tprintf("Tutte circle");
 	  break;
       case 205:ret = 1;
-	  err = EmbedFPP(G);
-	  if(err)Tprintf("ret=%d",err);
+          G0.Tutte();
+	  Tprintf("Tutte");
 	  break;
       case 250:ret = 3;
 	  err = EmbedVision(G);
@@ -337,7 +340,7 @@ int AugmentHandler(int action)
 	  break;
       case 106:
 	  ret = G.ZigZagTriangulate();
-          if(ret != 0){Tprintf("ret=%d",ret);break;}
+          if(ret < 0){Tprintf("ret=%d",ret);break;}
           title() = "ZZ-" + title();
 	  break;
       case 107:
@@ -435,17 +438,57 @@ int RemoveHandler(int action)
 int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
   {GraphContainer *GC=(GraphContainer *)0;
   switch(action)
-      {case 503:
+      {case 501:
 	   GC = GenerateGrid(n1_gen,n2_gen);
 	   break;
-      case 504:
+      case 502:
 	   GC = GenerateCompleteGraph(n1_gen);
 	   break;
-      case 505:
+      case 503:
 	   GC = GenerateCompleteBiGraph(n1_gen,n2_gen);
 	   break;
+      case 504:
+	  GC = GenerateRandomGraph(n1_gen,m_gen);
+	   break;
+	   // Schaeffer generator
+      case 505:
+	   GC = GenerateSchaeffer(m_gen,1,1);
+	   break;
       case 506:
-	   GC = GenerateRandomGraph(n1_gen,m_gen);
+	   GC = GenerateSchaeffer(m_gen,1,2);
+	   break;
+      case 507:
+	   GC = GenerateSchaeffer(m_gen,1,3);
+	   break;
+      case 510:
+	   GC = GenerateSchaeffer(n1_gen,3,2);
+	   break;
+      case 511:
+	   GC = GenerateSchaeffer(n1_gen,3,3);
+	   break;
+      case 512:
+	   GC = GenerateSchaeffer(n1_gen,3,4);
+	   break;
+      case 513:
+	   GC = GenerateSchaeffer(n1_gen,4,2);
+	   break;
+      case 514:
+	   GC = GenerateSchaeffer(n1_gen,4,4);
+	   break;
+      case 515:
+	   GC = GenerateSchaeffer(n1_gen,4,6);
+	   break;
+      case 516:
+	   GC = GenerateSchaeffer(n1_gen,4,0);
+	   break;
+      case 517:
+	   GC = GenerateSchaeffer(m_gen,2,1);
+	   break;
+      case 518:
+	   GC = GenerateSchaeffer(n1_gen,2,2);
+	   break;
+      case 519:
+	   GC = GenerateSchaeffer(n1_gen,2,3);
 	   break;
       default:
 	  return 0;
@@ -454,6 +497,7 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
       {GetMainGraph().swap(*GC);
       GeometricGraph GG(GetMainGraph());
       }
+  else {Tprintf("Error generating");LogPrintf("Error generating:%d",action);}
   delete GC;
   return 2;
   }

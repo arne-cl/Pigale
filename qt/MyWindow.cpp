@@ -167,6 +167,7 @@ MyWindow::MyWindow()
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
 #endif
+ 
    // rightLayout
   QGridLayout *rightLayout = new  QGridLayout(topLayout,2,4,-1,"rightLayout");
   e = new QTextEdit(mainWidget,"informations");
@@ -191,7 +192,6 @@ MyWindow::MyWindow()
   rightLayout->addMultiCellWidget(e,2,2,1,2);
   rightLayout->addMultiCellWidget(graph_properties,3,3,1,2);
   rightLayout->addMultiCellWidget(mouse_actions,4,4,1,2);
-   
 
   //Pixmaps
   QPixmap openIcon = QPixmap(fileopen),newIcon = QPixmap(filenew),saveIcon = QPixmap(filesave);
@@ -229,6 +229,7 @@ MyWindow::MyWindow()
   //toggle button:    setToggleButton(true); left->isOn()
   (void)QWhatsThis::whatsThisButton(tb);
   tb->addSeparator();
+
   //PopMenus
   QPopupMenu * file = new QPopupMenu( this );
   menuBar()->insertItem( "&File", file );
@@ -285,11 +286,11 @@ MyWindow::MyWindow()
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
-  embed->insertItem("&FPP Fary",             205);
+  embed->insertItem("&FPP Fary",             203);
   embed->insertItem("&Schnyder",             201);
   embed->insertItem("Schnyder &V ",          202);
   embed->insertSeparator();
-  embed->insertItem("&Tutte"      ,          203);
+  embed->insertItem("&Tutte"      ,          205);
   embed->insertItem("Tutte &Circle",         204);
   embed->insertSeparator();
   embed->insertItem("&Visibility",           250);
@@ -345,16 +346,39 @@ MyWindow::MyWindow()
   orient->insertItem("Planar &Schnyder",      705);
   orient->insertItem("B&ipolarOrient Planar", 706);
 
-  QPopupMenu *generate = new QPopupMenu( this );
+  QPopupMenu *generate      = new QPopupMenu( this );
+  QPopupMenu *popupCubic    = new QPopupMenu(this);
+  QPopupMenu *popupQuadric  = new QPopupMenu(this);
+  QPopupMenu *popupBipar    = new QPopupMenu(this);
+  QPopupMenu *popupPlan     = new QPopupMenu(this);
   menuBar()->insertItem("&Generate",generate);
   connect(generate,SIGNAL(activated(int)),SLOT(handler(int)));
-  //generate->insertItem("&Max.Planaire",     501);
-  //generate->insertItem("&Planaire",         502);
-  generate->insertItem("&Grid",               503);
+  connect(popupCubic,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(popupQuadric,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(popupBipar,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
+  generate->insertItem("&Planar",popupPlan);
+  popupPlan->insertItem("connnected (M)",           505);
+  popupPlan->insertItem("2-connnected (M)",         506);
+  popupPlan->insertItem("3-connnected (M)",         507);
+  generate->insertItem("&Planar cubic",popupCubic);
+  popupCubic->insertItem("dual:2 connnected (N1)",  510);
+  popupCubic->insertItem("dual:3 connnected (N1)",  511);
+  popupCubic->insertItem("dual:4 connnected (N1)",  512);
+  generate->insertItem("&Planar quadric",popupQuadric);
+  popupQuadric->insertItem("dual:1 connnected (N1)",513);
+  popupQuadric->insertItem("dual:2 connnected (N1)",514);
+  popupQuadric->insertItem("dual:3 connnected (N1)",515);
+  popupQuadric->insertItem("Bi-Quadric (N1)"       ,516);
+  generate->insertItem("&Planar bipartite",popupBipar);
+  popupBipar->insertItem("Bipartite (M)"           ,517);
+  popupBipar->insertItem("Bipartite cubic dual:2 connected (N1)",518);
+  popupBipar->insertItem("Bipartite cubic dual:3 connected (N1)",519);
+  generate->insertItem("&Grid (N1,N2)",             501);
   generate->insertSeparator();
-  generate->insertItem("&Complete",           504);
-  generate->insertItem("&Bipartite",          505);
-  generate->insertItem("&Random",             506);
+  generate->insertItem("&Complete (N1)",            502);
+  generate->insertItem("&BipartiteComplete (N1,N2)",503);
+  generate->insertItem("&Random (N1,M)",            504);
   generate->insertSeparator();
 #if QT_VERSION >= 300
   int Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
@@ -378,9 +402,14 @@ MyWindow::MyWindow()
   QPopupMenu *macroMenu = new QPopupMenu( this );
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
+  spinMacro = new QSpinBox(1,1000,1,macroMenu,"spinMacro");
+  spinMacro->setValue(1);spinMacro->setPrefix("Repeat: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
   macroMenu->insertItem("Continue recording",3);
+  macroMenu->insertSeparator();
+  macroMenu->insertItem(spinMacro);
+  macroMenu->insertItem("Repeat macro",4);
 
   QPopupMenu *userMenu = new QPopupMenu( this );
   menuBar()->insertItem("&UserMenu",userMenu);
@@ -426,7 +455,7 @@ MyWindow::MyWindow()
   int MaxNS = 500;
   int MaxND = 500;
 #endif
-  spin_MaxNS->setValue(MaxNS);      
+  spin_MaxNS->setValue(MaxNS);    
   spin_MaxNS->setPrefix("Slow algorithms: ");
   popupLimits->insertItem(spin_MaxNS);
   popupLimits->insertItem("for displaying graph");
@@ -453,7 +482,6 @@ MyWindow::MyWindow()
   //Distance Settings 
   settings->insertItem("&Distance Options",popupDistance);
   popupDistance->insertItem(comboDistance);
-  //comboDistance->insertItem("Neigbor");
   comboDistance->insertItem("Czekanovski-Dice");
   comboDistance->insertItem("Bisect");
   comboDistance->insertItem("Incidence");
@@ -478,7 +506,6 @@ MyWindow::MyWindow()
   help->insertItem("About &Qt", this, SLOT(aboutQt()));
   help->insertSeparator();
   help->insertItem(helpIcon,"What is ?",this,SLOT(whatsThis()),SHIFT+Key_F1);
-
   //Resize
   setCaption("Pigale");
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
@@ -783,7 +810,7 @@ void MyWindow::showLabel(int show)
       default:
 	  return;
       }
-  if(ShowVertex() != _show)gw->update();
+  if(ShowVertex() != _show && GC.nv())gw->update();
   }
 void  MyWindow::distOption(int use)
   {useDistance() = use;
