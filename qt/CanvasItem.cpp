@@ -34,7 +34,8 @@ GraphWidget::GraphWidget(QWidget *parent,const char *name,MyWindow *mywindow)
   d->GW = this;
   }
 GraphWidget::~GraphWidget()
-  {delete d->pGG;   delete d;}
+  {delete d->pGG;   delete d;
+  }
 void GraphWidget::update(int compute)
 // called when loading a graph compute = 1 or -1
 // if we only have erased edges and/or vertice compute = 0

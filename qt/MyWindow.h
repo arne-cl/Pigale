@@ -56,20 +56,18 @@ public slots:
 
 private slots:
   void newgraph();
-  void ChangeDirectory();
   void load();
   void previous();
   void reload();
   void next();
   void save();
   void save_ascii();
-  void outputfile();
+  void saveAs();
   void deleterecord();
   void switchInputOutput();
   int  handler(int action);
   void macroHandler(int action);
   void macroPlay();
-  void macroRecord(int action);
   void about();
   void aboutQt();
   void showLabel(int action);
@@ -89,8 +87,10 @@ public slots:
   void png();
 private:
   void mapActionsInit();
-
+  int  macroLoad(QString FileName);
+  void macroRecord(int action);
 public:
+  void whenReady();
   void Message(QString s);
   void MessageClear();
   void UndoTouch(bool save=false);
@@ -122,13 +122,15 @@ private:
   QPrinter *printer;
   QString InputFileName;
   QString OutputFileName;
-  QString DirFile,DirFileMacro;
+  QString DirFileMacro;
+  QString MacroFileName;
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroLooping;
   bool MacroExecuting;
   bool MacroWait;
+  bool MacroPlay;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActionsString;
   typedef QMap<QString,int> StringIntMap;

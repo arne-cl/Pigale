@@ -106,6 +106,31 @@ void macroDefColors(int record)
   G.ewidth.definit(MacroEwidth[record]);
   }
 */
+int MyWindow::macroLoad(QString FileName)
+  {if(FileName.isEmpty())return -1;
+  if(QFileInfo(FileName).isReadable() == FALSE)return -1; 
+  QFile file( FileName);
+  file.open(IO_ReadOnly);
+  QTextStream stream(&file);
+  QString str = stream.readLine();
+  
+  if(str == "Macro Version:1")
+      stream.readLine();
+  else if(str != "Macro Version:2")
+      {Tprintf("Wrong Macro File -%s-",(const char *)str);return -1;}
+  if(stream.atEnd())return -1;
+  MacroNumActions = 0;
+  int action;
+  while(!stream.atEnd())
+      {str = stream.readLine();
+      action = getActionInt(str);
+      if(action < 99 || action > A_TEST_END)
+	  {Tprintf("Unknown action:%s",(const char *)str);continue;}
+      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str);
+      MacroActions(++MacroNumActions) = action;
+      }
+  return 0;
+  }
 
 void MyWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
@@ -203,44 +228,20 @@ void MyWindow::macroHandler(int event)
 			    ,QMessageBox::Cancel);
 	      if(rep == 2)break;
 	      } 
-	  bool ok = TRUE;
-	  QString titre("name");
-	  titre = QInputDialog::getText("Pigale","Enter the macro name",
-						QLineEdit::Normal,titre, &ok, this );
-	  if(!ok)break;
 	  FILE *out = fopen((const char *)FileName,"wt");
-	  fprintf(out,"Macro Version:1\n");
-	  fprintf(out,"%s\n",(const char *)titre);
+	  fprintf(out,"Macro Version:2\n");
 	  for(int record = 1;record <= MacroNumActions;record++)
 	      fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
 	  fclose(out);
 	  }
 	  break;
       case 8:// read
-	  {QString FileName = QFileDialog::getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
-	  if(FileName.isEmpty())break;
-	  if(QFileInfo(FileName).isReadable() == FALSE)return; 
-	  QFile file( FileName);
-	  file.open(IO_ReadOnly);
-	  QTextStream stream(&file);
-	  QString str = stream.readLine();
-	  if(str != "Macro Version:1")
-	      {Tprintf("Wrong Macro File -%s-",(const char *)str);break;}
+	  {QString FileName = QFileDialog::
+	  getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
 	  MessageClear();
-	  if(stream.atEnd())break;
-	  Tprintf("%s",(const char *)stream.readLine());
-	  MacroNumActions = 0;
-	  int action;
-	  while(!stream.atEnd())
-	      {str = stream.readLine();
-	      action = getActionInt(str);
-	      if(action < 99 || action > A_TEST_END)
-		  {Tprintf("Unknown action:%s",(const char *)str);continue;}
-	      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str);
-	      MacroActions(++MacroNumActions) = action;
-	      }
-	  }
+	  if(macroLoad(FileName) == -1)break;
 	  MacroWait = false;
+	  }
 	  break;
       default:
 	  break;

@@ -64,7 +64,7 @@ int GetPigaleColors()
 void MyWindow:: SaveSettings()
   {QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
-  setting.writeEntry("/pigale/TgfFile dir",DirFile);
+  //setting.writeEntry("/pigale/TgfFile dir",DirFile);
   setting.writeEntry("/pigale/TgfFile input",InputFileName);
   setting.writeEntry("/pigale/TgfFile output",OutputFileName);
   setting.writeEntry("/pigale/geometry width",this->width());
@@ -139,48 +139,38 @@ void MyWindow::LoadSettings()
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
   pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
   randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
-  DirFile = setting.readEntry("/pigale/TgfFile dir"," ");
+  //DirFile = setting.readEntry("/pigale/TgfFile dir"," ");
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
-  InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
+  InputFileName = setting.readEntry("/pigale/TgfFile input"
+				    ,QString("!_!") 
+				    + QDir::separator() 
+				    + QString("a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+
   // if pigale was called with arguments, we may modify some values
   if(qApp->argc() < 3)return;
-  bool DirFileModified = false;
-  bool InputModified = false;
-  bool OutputModified = false;
-  for(int i = 1; i < qApp->argc()-1;i++)
-      {if(QString((const char *)qApp->argv()[i]) == "-fd")
-	  {QString FileName = (const char *)qApp->argv()[i+1];
-	   QFileInfo fi = QFileInfo(FileName);
-	   //if(fi.exists() && fi.isDir())DirFile = fi.fileName();
-	   if(fi.exists() && fi.isDir())
-	       {DirFile = FileName;DirFileModified = true;}
-	   else qDebug("%s is not a valid directory",(const char *)FileName);
-	  }
-      }
   for(int i = 1; i < qApp->argc()-1;i++)
       {if(QString((const char *)qApp->argv()[i]) == "-fi")
-	  {InputFileName =  DirFile + QDir::separator()
-	  +(const char *)qApp->argv()[i+1];
-	  InputModified = true;
+	  {InputFileName = (const char *)qApp->argv()[i+1];
 	  QFileInfo fi = QFileInfo(InputFileName);
 	  if(!fi.exists()) 
 	      qDebug("%s does not exist",(const char *)InputFileName);
+	  i++;
 	  }
-      if(QString((const char *)qApp->argv()[i]) == "-fo")
-	  {OutputFileName =  DirFile + QDir::separator()
-	  +(const char *)qApp->argv()[i+1];
-	  OutputModified = true;
+      else if(QString((const char *)qApp->argv()[i]) == "-fo")
+	  {OutputFileName =  (const char *)qApp->argv()[i+1];
+	  i++;
 	  }
-      }
-  if(DirFileModified && !InputModified)
-      {QFileInfo fi = QFileInfo(InputFileName);
-      InputFileName = DirFile + QDir::separator() + fi.fileName();
-      }
-  if(DirFileModified && !OutputModified)
-      {QFileInfo fi = QFileInfo(OutputFileName);
-      OutputFileName = DirFile + QDir::separator() + fi.fileName();
+      else if(QString((const char *)qApp->argv()[i]) == "-macro")
+	  {MacroFileName =  (const char *)qApp->argv()[i+1];
+	  MacroPlay = true;
+	  i++;
+	  }
+      else
+	  {qDebug("%s option not recognized",(const char *)qApp->argv()[i]);
+	  qDebug("valid options: -fi -fo -macro");
+	  }
       }
   }
 int GetPigaleColors()

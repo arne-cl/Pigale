@@ -86,13 +86,13 @@ void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
-
 MyWindow::MyWindow()
-    : QMainWindow(0,"_Pigale",WDestructiveClose )
-      ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
-      ,UndoIndex(0),UndoMax(0)
-      ,IsUndoEnable(true)
-      ,MacroRecording(false),MacroLooping(false),MacroExecuting(false)
+    :QMainWindow(0,"_Pigale",WDestructiveClose )
+    ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
+    ,UndoIndex(0),UndoMax(0)
+    ,IsUndoEnable(true)
+    ,MacroRecording(false),MacroLooping(false)
+    ,MacroExecuting(false),MacroPlay(false)
   {int id;
   // Initialze Error
   setError();
@@ -114,26 +114,28 @@ MyWindow::MyWindow()
 
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
-  // Load settings
+
+  // Load settings, input and output filenames
 #if QT_VERSION < 300
-  // Check tgf
+  {QString DirFile;
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
-  else {Twait("The variable TGF should point on a tgf directory");exit(1);}
+  else {Twait("The variable TGF should point on a valid directory");exit(1);}
   InputFileName = DirFile + QDir::separator() + "a.tgf";
   OutputFileName = InputFileName;
+  }
 #else
   QSettings setting;
-  LoadSettings();
-  // Check tgf
-  QFileInfo fi = QFileInfo(DirFile);
-  if(fi.exists() && fi.isDir())
-      DirFile = fi.filePath();
-  else
-      {DirFile = QFileDialog::
+  {LoadSettings();
+  QFileInfo fi0 =  QFileInfo(InputFileName);
+  QFileInfo fi = QFileInfo(fi0.dirPath());
+  if(!fi.exists() || !fi.isDir())
+      {QString DirFile = QFileDialog::
       getExistingDirectory(".",this,"find","Choose the TGF directory",TRUE);
-      setting.writeEntry("/pigale/TgfFile dir",DirFile);
+      InputFileName = DirFile + QDir::separator() + fi0.fileName();
+      OutputFileName = InputFileName;
       }
+  }
 #endif
 
   // Init random generator
@@ -277,13 +279,12 @@ MyWindow::MyWindow()
   file->insertItem(newIcon,"&New Graph",this, SLOT(newgraph()));
   id = file->insertItem(openIcon,"&Open",this, SLOT(load()));
   file->setWhatsThis(id,fileopen_txt);
-  file->insertItem("Save &as ...", this, SLOT(outputfile()));
+  file->insertItem("Save &as ...", this, SLOT(saveAs()));
   file->insertItem(saveIcon,"&Save", this, SLOT(save()));
   file->insertItem(saveIcon,"Save Asc&ii", this, SLOT(save_ascii()));
   file->insertSeparator();
   file->insertItem("&Delete current record",this,SLOT(deleterecord()));
   file->insertItem("S&witch Input/Output files",this,SLOT(switchInputOutput()));
-  file->insertItem("&Change TGF directory",this,SLOT(ChangeDirectory()));
   file->insertSeparator();
   file->insertItem(printIcon,"&Print",this, SLOT(print()));
   file->insertSeparator();
@@ -639,12 +640,17 @@ MyWindow::MyWindow()
       }
   setting.writeEntry("/pigale/Documentation dir",DocPath);
 #endif  
+  // gw->update();
   // if no load check pgraphindex
   load(0);
   }
 
 MyWindow::~MyWindow()
   {delete printer;
+  }
+void MyWindow::whenReady()
+  {if(MacroPlay && macroLoad(MacroFileName) != -1) 
+       macroPlay();
   }
 void MyWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));
@@ -659,13 +665,10 @@ QString MyWindow::getActionString(int action)
 int MyWindow::getActionInt(QString action_str)
   {return mapActionsInt[action_str];
   }
-void MyWindow::ChangeDirectory()
-  {DirFile = QFileDialog::
-      getExistingDirectory(DirFile,this,"find","Choose the TGF directory",TRUE);
-  }
 void MyWindow::load()
-  {QString FileName = QFileDialog::
-  getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
+  {QFileInfo fi =  QFileInfo(InputFileName);
+  QString FileName = QFileDialog::
+  getOpenFileName(fi.filePath(),"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
   setError();
   if(!FileName.isEmpty())
       {InputFileName = FileName;
@@ -681,6 +684,7 @@ void MyWindow::load()
 	  }
       else load(0);
       }
+
   }
 void MyWindow::load(int pos)
   {setError();
@@ -736,7 +740,9 @@ void MyWindow::save_ascii()
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok)return;
-  QString FileName = QFileDialog::getSaveFileName(DirFile,"Txt Files(*.txt)",this);
+  QFileInfo fi0 =  QFileInfo(OutputFileName);
+  QString FileName = QFileDialog::
+  getSaveFileName(fi0.dirPath(),"Txt Files(*.txt)",this);
   if(FileName.isEmpty())return; 
   if(QFileInfo(FileName).extension(false) != (const char *)"txt")
       FileName += (const char *)".txt";
@@ -752,8 +758,10 @@ void MyWindow::save_ascii()
       } 
   SaveGraphAscii(G,(const char *)OutputAsciiFile);
   }
-void MyWindow::outputfile()
-  {QString FileName = QFileDialog::getSaveFileName(DirFile,"Tgf Files(*.tgf)",this);
+void MyWindow::saveAs()
+  {QFileInfo fi =  QFileInfo(OutputFileName);
+  QString FileName = QFileDialog::
+  getSaveFileName(fi.filePath(),"Tgf Files(*.tgf)",this);
   if(FileName.isEmpty())return;
   if(QFileInfo(FileName).extension(false) != (const char *)"tgf")
       FileName += (const char *)".tgf";
