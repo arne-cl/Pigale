@@ -67,7 +67,7 @@ void PigaleServer::OneClientClosed()
 
 //ClientSocket: thread reading and writing on a socket
 ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
-    QSocket(parent,name),sdebug(0),mw(p)
+    QSocket(parent,name),sdebug(0),getRemoteGraph(false),mw(p)
   {connect(this,SIGNAL(readyRead()),SLOT(readClient()));
   connect(this,SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
@@ -75,7 +75,6 @@ ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject
   setSocket(sock);
   cli.setDevice(this);
   clo.setDevice(this);
-  getRemoteGraph = false;
   line = 1;
   start();
   mw->ServerClientId = prId = sock;
@@ -98,35 +97,26 @@ void ClientSocket::readClient()
   {run();
   }
 void ClientSocket::run()
-  {if(!getRemoteGraph)
-      while (canReadLine())
-          {QString str = cli.readLine();
-          if(++line == 10000)line = 0;
-          if(str.at(0) == '#')
-              {cli << str << endl;
-              cli << "!" << endl;
-              }
-          else if(str.at(0) == '!')
-              {cli << ":END OF FILE" << endl;
-              cli << "!" << endl;
-              }
-          else 
-              {textEvent *event = new textEvent(str);
-              QApplication::postEvent(this,event);
-              }
+  {while (canReadLine())
+      {QString str = cli.readLine();
+      if(++line == 10000)line = 0;
+      if(str.at(0) == '#')
+          {cli << str << endl;
+          cli << "!" << endl;
           }
-  else
-      {GetRemoteGraph();
-      getRemoteGraph = false;
-      cli << ":READ GRAPH" <<endl;
-      cli << "!" << endl;
+      else if(str.at(0) == '!')
+          {cli << ":END OF FILE" << endl;
+          cli << "!" << endl;
+          }
+      else 
+          xhandler(str);
       }
   }
 void ClientSocket::customEvent( QCustomEvent * e )
-  {if( e->type() != TEXT_EVENT) return;
-  textEvent *event  =  (textEvent  *)e;
-  QString msg = event->getString();
-  xhandler(msg);
+  {if(e->type() == CLIENT_EVENT) 
+    {clientEvent  *event  =  (clientEvent  *)e;
+    handlerInput(event->getAction(),event-> getParamString());
+    }
   }
 
 int ClientSocket::xhandler(const QString& dataAction)
@@ -134,17 +124,16 @@ int ClientSocket::xhandler(const QString& dataAction)
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
-  if(sdebug)cli <<"#DEBUG: "<<dataAction<<endl;
   Tprintf("%s",(const char *)dataAction);
-  // call the right handler
-  int err = 0;
-
+ // call the right handler
   if(action == 0)
-      err = ACTION_NOT_INT;
+      setError( UNKNOWN_COMMAND,"unknown command");
   else if(action > A_INFO && action < A_INFO_END)
-      err =  handlerInfo(action);
+      handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
-      err =  handlerInput(action,dataParam);
+      {clientEvent *event = new clientEvent(action,dataParam);
+      QApplication::postEvent(this,event);
+      }
   else if(action > A_AUGMENT && action < A_TEST_END)
       {if(mw->graph_properties->actionAllowed(action))
           mw->handler(action);
@@ -152,90 +141,95 @@ int ClientSocket::xhandler(const QString& dataAction)
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
   else if(action > A_TRANS && action < A_TRANS_END)
-      {if(action == A_TRANS_PNG)
-          err = Png();
-      else if(action == A_TRANS_GRAPH_GET)
+      {if(action == A_TRANS_PNG) // send a png
+          Png();
+      else if(action == A_TRANS_GRAPH_GET) // get a graph
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
           indexRemoteGraph = 1;
-          bool ok;
+          bool ok =true;
           if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
-          if(!ok)return WRONG_PARAMETERS;
-          getRemoteGraph = true;
-          return 0;
+          if(!ok)setError(WRONG_PARAMETERS,"Wrong parameters");
+          else   GetRemoteGraph();
           }
       }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
   else
-      err = UNKNOWN_COMMAND;
-  if(getError())err = getError();
-  if(err)
-      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> " << mw->getActionString(err)<<endl;
-      cli <<": " <<dataAction<< endl;
+      setError( UNKNOWN_COMMAND,"unknown command");
+
+  int err = 0;
+  if(getError())
+      {err = getError();
+      if(strlen(getErrorMsg()))
+          cli << ":ERROR "<< getErrorMsg() <<endl;
+      else
+          {cli <<":ERROR '"<<mw->getActionString(action)<<"' -> " << mw->getActionString(err)<<endl;
+          cli <<": " <<dataAction<< endl;
+          }
       }
+
   cli << "!" << endl;
   return err; 
   }
-int ClientSocket::GetRemoteGraph()
-  {QString GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
-  QString msg;
-  QFile file(GraphFileName);
-  file.remove();
-  file.open(IO_ReadWrite);
-  QDataStream stream(&file);
-  cli << ":Server: receiving graph" << endl;
-  Tprintf("Receiving graph");
-  uint size = 0;
+uint ClientSocket::readBuffer(char  *  &buffer)
+  {uint size = 0;
   uint nb = bytesAvailable();
   while(bytesAvailable() < 4)waitForMore(10);
   clo >>  size;
-  if(size <= 0)return -1;
+  if(size <= 0)return 0;
   uint size0 = 0;
-  char *buff  = new char[size+1];
+  buffer  = new char[size+1];
   int retry = 0;
   uint nread = 0;
-  char *pbuff = buff;
+  char *pbuff = buffer;
   while(nread  < size)
-      {waitForMore(20);  // in millisec
+      {waitForMore(10);  // in millisec
       nb = bytesAvailable();
       if(nb == 0)
-          {if(++retry > 500){setError(-1,"Timeout");delete [] buff;return READ_ERROR;}
-           continue;
+          {if(++retry > 1000) {setError(-1,"Timeout");  cli << ":Server: receiving graph TIMEOUT" << endl; return 0; }
+          continue;
           }
       retry = 0;
       if(nb > size-nread)nb = size-nread;
       nread += nb;
       clo.readRawBytes(pbuff,nb);
       pbuff += nb;
-      if(nread >= size0)
+      if(nread >= size0 && sdebug)
           {int percent = (int)(nread*100./size + .5);
           size0 = nread + size/10; // we write when at least 10% more  is read
-          cli << QString(":Server:%1 % (%2 / %3)").arg(percent).arg(nread).arg(size) << endl;
+           if(sdebug)cli << QString(":Server:%1 % (%2 / %3)").arg(percent).arg(nread).arg(size) << endl;
           Tprintf(" %d % (%d)",percent,size);
           }
       }
-  stream.writeRawBytes(buff,size);
+  return size;
+  }
+int ClientSocket::GetRemoteGraph()
+  {if(sdebug)cli << ":Server: receiving graph" << endl;
+  Tprintf("Receiving graph");
+  char *buffer = NULL;
+  uint size = readBuffer(buffer);
+  if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return READ_ERROR;}
+  QString GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
+  QFile file(GraphFileName);
+  file.remove();
+  file.open(IO_ReadWrite);
+  QDataStream stream(&file);
+  stream.writeRawBytes(buffer,size);
   file.close();
-  delete [] buff;
-  if(sdebug)cli << QString(":%1:%2 bytes").arg(GraphFileName).arg(size) << endl;
-  QFileInfo fi = QFileInfo(GraphFileName);
-  if(fi.size() !=  size)return READ_ERROR;
+  delete [] buffer;
+  if(sdebug)cli << QString(":GOT %1:%2 bytes").arg(GraphFileName).arg(size) << endl;
   mw->InputFileName = GraphFileName;
-  if(mw->publicLoad(indexRemoteGraph) < 0)return READ_ERROR;
+  if(mw->publicLoad(indexRemoteGraph) < 0)setError(READ_ERROR,"could not read file");
   return 0;
   }
 int ClientSocket::ReadRemoteGraph(QString &dataParam)
-  {// Read the graph
+  {// Read a graph on the server side
   QStringList fields = QStringList::split(PARAM_SEP,dataParam);
   int num = 1;
   bool ok;
   if(fields.count() > 1)num = fields[1].toInt(&ok);
   if(!ok)return WRONG_PARAMETERS;
-  if(mw->publicLoad(num) < 0)return READ_ERROR;
-  if(sdebug)
-      {TopologicalGraph G(mw->GC);
-      qDebug("n=%d m=%d",G.nv(),G.ne());
-      }
+  if(mw->publicLoad(num) < 0)setError(READ_ERROR,"coud not read file");
   return 0;
   }
 
@@ -244,7 +238,7 @@ int ClientSocket::Png()
   QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
   QFileInfo fi = QFileInfo(PngFileName);
   if(PngFileName.isEmpty())
-      {cli << ":NO PNG FILE" << endl;return -1;}
+      {setError(-1,"no png file");return -1;}
   else if(sdebug)
       cli << ":SENDING:" << PngFileName << endl;
   uint size = fi.size();
@@ -267,12 +261,12 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
   bool ok;
   switch(action)
       {case A_INPUT_READ_GRAPH:
-           {if(nfield == 0)return WRONG_PARAMETERS;
+          {if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
            mw->InputFileName = fields[0];
            int num = 1;
            if(nfield > 1)num = fields[1].toInt(&ok);
            if(!ok)return WRONG_PARAMETERS;
-           if(mw->publicLoad(num) < 0)return READ_ERROR;
+           if(mw->publicLoad(num) < 0){setError(READ_ERROR,"read error");return READ_ERROR;}
            }
            break;
       case  A_INPUT_NEW_GRAPH:
@@ -282,26 +276,27 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
           {int n = 1;
           if(nfield > 0)
               {n = fields[0].toInt(&ok);
-              if(!ok)return WRONG_PARAMETERS; 
+              if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
               }
           TopologicalGraph G(mw->GC);
           for(int i = 0;i < n;i++)G.NewVertex();
           }
           break;
       case A_INPUT_NEW_EDGE:
-          {if(nfield < 2)return WRONG_PARAMETERS; 
+          {if(nfield < 2){setError(WRONG_PARAMETERS,"need 2 vertices");return WRONG_PARAMETERS;}
           int v1 = fields[0].toInt(&ok);
-          if(!ok)return WRONG_PARAMETERS; 
+          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
           int v2 = fields[1].toInt(&ok);
-          if(!ok)return WRONG_PARAMETERS;
+          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
           TopologicalGraph G(mw->GC);
-          if(v1 > G.nv() || v2 > G.nv() || v1 == v2)return WRONG_PARAMETERS;
+          if(v1 > G.nv() || v2 > G.nv() || v1 == v2)
+              {setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
           G.NewEdge((tvertex)v1,(tvertex)v2);
           mw->gw->update();
           }
           break;
       default:
-          return  UNKNOWN_COMMAND;
+          setError( UNKNOWN_COMMAND,"unknown command");return  UNKNOWN_COMMAND;
           break;
       }
   return 0;
@@ -374,7 +369,7 @@ int ClientSocket::handlerInfo(int action)
           }
           break;
       default:
-          return  UNKNOWN_COMMAND;
+          setError( UNKNOWN_COMMAND,"unknown command");
           break;
       }
   return 0;

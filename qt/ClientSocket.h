@@ -15,6 +15,7 @@
 #include <config.h>
 #include <qsocket.h>
 #include <qserversocket.h>
+#include <qmutex.h>
 #include <qapplication.h>
 #include <qvbox.h>
 #include <qtextview.h>
@@ -61,6 +62,7 @@ private:
   int GetRemoteGraph();
   int handlerInfo(int action);
   int handlerInput(int action,const QString& data);
+  uint readBuffer(char  *  &buff);
   int line;
   int prId;
   int sdebug;
@@ -69,6 +71,7 @@ private:
   QTextStream cli;
   QDataStream clo;
   pigaleWindow *mw; 
+  QMutex mutexA;
 };
 
 class PigaleServer : public QServerSocket

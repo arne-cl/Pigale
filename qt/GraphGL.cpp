@@ -301,7 +301,7 @@ GLuint GLWindow::load(bool init)
 
       if(G.ecolor[e] == Black && WithFaces)glColor3f(.5,.5,.5);
       else if(G.ecolor[e] == Black)glColor3f(1.,1.,.8);
-      else qglColor(color[G.ecolor[e]]);
+      else qglColor(color[bound(G.ecolor[e],1,16)]);
       glVertex3f(x0,y0,z0);      glVertex3f(x1,y1,z1);
       }
   glEnd();
