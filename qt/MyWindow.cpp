@@ -164,14 +164,15 @@ MyWindow::MyWindow()
   tabWidget->setPalette(LightPalette);
   mypaint =  new MyPaint(tabWidget,"paint",this);
   gw = new  GraphWidget(tabWidget,"graphwidget",this);
-  graphgl  = new GraphGL(tabWidget,"graphgl",this);graphgl->setPalette(LightPalette);
+  graphgl  = new GraphGL(tabWidget,"graphgl",this);
+  graphgl->setPalette(LightPalette);
   graphsym = new GraphSym(tabWidget,"graphsym",this);
 #if QT_VERSION >= 300
   QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
 //   browser->mimeSourceFactory()->setFilePath("documentation");
 //   browser->setSource("manual.html");
 #endif
-  tabWidget->addTab(gw,"Graph &Editor");
+  tabWidget->addTab(gw,"Graph Editor");
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
@@ -472,7 +473,6 @@ MyWindow::MyWindow()
   macroMenu->insertItem(macroSliderM);
   connect(macroSlider,SIGNAL(valueChanged(int)),macroLine,SLOT(setNum(int)));
   connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
-
   macroMenu->insertItem("Repeat macro",4);
  
   QPopupMenu *userMenu = new QPopupMenu( this );
@@ -586,7 +586,6 @@ MyWindow::MyWindow()
   mainWidget->setFocus();
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
-  //randomInitSeed();
   DebugPrintf("Init seed:%ld",randomSetSeed());
   
   QFileInfo fi  = QString(getenv("TGF"));
@@ -930,7 +929,7 @@ void MyWindow::banner()
   statusBar()->message(m);
   }
 void MyWindow::about()
-  {QMessageBox::about(this,"Pigale Editor 1-2.3", 
+  {QMessageBox::about(this,"Pigale Editor 1.2.3", 
 		      "<b>Copyright (C) 2001</b>"
 		      "<br>Hubert de Fraysseix"
 		      "<br>Patrice Ossona de Mendez "
