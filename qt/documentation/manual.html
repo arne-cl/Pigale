@@ -25,8 +25,16 @@ graphs coded either as <A HREF="manual.html#tgf"><b>tgf</b></A> files or
 <A HREF="manual.html#tgf"><b>ascii</b></A> files.
 When  <b>Pigale</b> is started,the file <tt>a.tgf</tt> is opened for reading and writing.
 And the first graph is loaded and displayed.<br>
-While in the graph editor,The arrows of the toolbar let you load the next
- or previous graph of the current tgf file.<br>
+While in the graph editor,the arrows of the toolbar let you load the next
+ or previous graph of the current tgf file:<br>
+
+<table>
+<tr>
+<td><IMG SRC="../icones/sleft.xpm"></td>
+<td><IMG SRC="../icones/reload.xpm"></td>
+<td><IMG SRC="../icones/sright.xpm"></td>
+</tr>
+</table>
 On the lowest band of the main window is displayed the current tgf input and output file.<br>
 
 In Pigale there always one active graph which is displayed in the <b>Graph editor</b> window.
@@ -50,6 +58,7 @@ in real time.
 Among other things, the <b>Settings</b> menu allows you to:
 <ul>
 <li> be in <b>debug</b> mode to increase the verbosity of Pigale and print more messages in <tt>log.txt</tt>
+<li> enable or disable the <A HREF="#undo"><b>undo</b></A> feature
 <li> define the <b>Pigale colors</b> used by Pigale. These colors are save in a file <tt>settings.txt</tt>.
 To come back to the original colors, you only need to erase that file
 <li> define the <b>limits</b> of pigale: i.e. define the maximum number of vertices above which graph are not displayed and slow algorithms are not performed.
@@ -72,7 +81,6 @@ If the <b>shift</b> is pressed, the actions are toggled the following way:
 <li> Add <b>\</b> Del </li>
 <li> Move a vertex <b>\</b> Move all vertices of a given colour </li>
 <li> Bissection <b>\</b> Contraction </li>
-<li> Zoom in <b>\</b> Zoom out </li>
 </ul>
 Other actions:
 <ul>
@@ -103,6 +111,22 @@ checking overlapping of vertices and checking, only if the graph is connected,
 The <b>undo G</b> button, let you come back to the previous state.
 When you click on <b>Fit grid</b>, you are only enable to
 move or create vertices on grid points.
+
+<h3> <A NAME="undo"> Undo/Redo</A></h3>
+If this function is enable, a copy of the current graph is appended each time a program
+(except the editor) adds or delete edges. All the copies are destroyed when a new graph is loaded.<br>
+The save icon let you manually append a copy.
+<table>
+<tr>
+<td><IMG SRC="../icones/sleftarrow.xpm"></td>
+<td><IMG SRC="../icones/sfilesave.xpm"></td>
+<td><IMG SRC="../icones/srightarrow.xpm"></td>
+</tr><tr>
+<td><b>Undo</b></td> <td><b>Save</b></td> <td><b>Redo</b></td> 
+</tr>
+</table>
+There is no limit of the number of copies which are placed in the tgf file undo.tgf.
+
 <br><A HREF="manual.html#home"><em>top</em></A>
 
 <HR><H2> <A NAME="3d">E</A>mbedding a graph  in space </H2> 

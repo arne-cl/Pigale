@@ -100,9 +100,9 @@ int GraphGL::update()
       spin_X = new QSpinBox(1,100,1,this,"spinX");
       spin_Y = new QSpinBox(1,100,1,this,"spinY");
       spin_Z = new QSpinBox(1,100,1,this,"spinZ");
-      spin_X->setValue(1);     spin_X->setPrefix("X = ");
-      spin_Y->setValue(2);     spin_Y->setPrefix("Y = ");
-      spin_Z->setValue(3);     spin_Z->setPrefix("Z = ");
+      spin_X->setValue(1);     spin_X->setPrefix("X: ");
+      spin_Y->setValue(2);     spin_Y->setPrefix("Y: ");
+      spin_Z->setValue(3);     spin_Z->setPrefix("Z: ");
       hb->addWidget(spin_X); hb->addWidget(spin_Y); hb->addWidget(spin_Z);
       d->is_init = true;
       connect(spin_Edge,SIGNAL(valueChanged(int)),SLOT(EdgeWidth(int)));

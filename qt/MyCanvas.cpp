@@ -203,7 +203,7 @@ void GraphWidget::UndoGrid()
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(d->OldFitToGrid);
   }
 void GraphWidget::sizegridChanged(int sg)
-  {if(d->CanvasHidden)return;
+  {if(!d->is_init || d->CanvasHidden)return;
   if(!d->RedrawGrid){d->RedrawGrid = true;return;}
   // should not be called if graph on a rectangular grid unless asked
   d->SizeGrid = sg;
