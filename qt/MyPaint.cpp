@@ -334,12 +334,12 @@ struct DrawThing {
 
 DrawThing DrawFunctions[] = 
     {
-    {DrawVisibility,"&Visibility"},
-    {DrawFPPVisibility,"&FPP Visibility"},
-    {DrawGeneralVisibility,"&General Visibility"},
-    {DrawBipContact,"&Contact"},
-    {DrawPolar,"&Polar"},
-    {DrawTContact,"&T Contact"},
+    {DrawVisibility,"Visibility"},
+    {DrawFPPVisibility,"FPP Visibility"},
+    {DrawGeneralVisibility,"General Visibility"},
+    {DrawBipContact,"Contact"},
+    {DrawPolar,"Polar"},
+    {DrawTContact,"T Contact"},
     {0,0} 
     };
 const int border = 20;
