@@ -13,19 +13,26 @@
 
 #include <TAXI/Tbase.h>
 #include <TAXI/Tgf.h>
+// ios::bin is deprecated
 
+#define GCC_VERSION (__GNUC__ * 10000 \
+                              + __GNUC_MINOR__ * 100 \
+                              + __GNUC_PATCHLEVEL__)
 
-#ifdef _MSC_VER
-#define BINMODE ios::binary
-#else
-#define BINMODE ios::bin
+//#if defined(__GNUC__)&&(__GNUC__ == 3)&&(__GNUC_MINOR__ < 2)
+#if defined(__GNUC__)
+
+//#if GCC_VERSION < 30200
+#define BINMODE ios::binary  
+#elif
+#define BINMODE toto
 #endif
 
 int IsFileTgf(char const *name)
   {char ID[4];
   fstream stream;
 
-  stream.open(name,ios::in|ios::nocreate|BINMODE); //TM
+  stream.open(name,ios::in|ios::nocreate|BINMODE); 
   if(!stream.is_open())return -1;
   stream.read(ID,4);
   stream.close();
@@ -34,9 +41,9 @@ int IsFileTgf(char const *name)
   }
 int Tgf::open(char const *name,open_mode mode)
   {if(mode == old)
-      stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); //TM
+      stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); 
   else
-      stream.open(name,ios::in|ios::out|BINMODE|ios::trunc); //TM
+      stream.open(name,ios::in|ios::out|BINMODE|ios::trunc); 
   IsOpen = stream.is_open();
   if(!IsOpen)return 0;
   
