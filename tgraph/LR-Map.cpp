@@ -17,6 +17,7 @@
 #include <TAXI/bicon.h>
 #include <TAXI/lralgo.h>
 #include <TAXI/embed.h>
+#include <TAXI/Tmessage.h>
 
 int Embed::LowerSideUpperSide()
   {tedge ej,je;
@@ -39,8 +40,7 @@ int Embed::LowerSideUpperSide()
   // 0 and tree edges have been initialized to GAUCHE
 
   Side.up.fill(n,m,AUTRE|DROITE);
-  Side.up[0] = GAUCHE;
-
+  Side.dwn[0] = Side.up[0] = GAUCHE;
   for(i = n;i <= m;++i)
       {if(!(Side.up[i] & AUTRE))continue;
       j = 0;
@@ -53,6 +53,7 @@ int Embed::LowerSideUpperSide()
       // if(ej == 0) ++Side.blk_num[0]; /* Un nouveau bloc */
       do
           {Side.up[tab[j]] = (char)( ((int)Side.up[tab[j + 1]]) ^ Hist.Dus[tab[j]] );
+
           /* restoration of flipping index of each erased edge */
           if(Hist.Flip[tab[j]] == -1)
               Hist.Flip[tab[j]] = Hist.Flip[tab[j+1]] ^ Hist.Dus[tab[j]];
@@ -182,7 +183,7 @@ void Embed::FillUpperHalfEdges()
                       ins_bot(ee,botrif,toprif);
                       break;
 
-                  default:DPRINTF(("default"));
+                  default:DPRINTF(("default ej:%d %d %d",ej(),Side.dwn[ej],Side.up[ej]));
                       break;
                   }
               }while((ej = LrSort.linkt[ej]) != 0);

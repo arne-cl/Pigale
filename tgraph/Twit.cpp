@@ -25,12 +25,12 @@ int _Twit::DeleteLeft(tvertex vi)
           }
       else if (Twin().NotEmpty(TW_RIGHT)) // gauche non vide
           {Hist.Link[Twin().ltop()] = Twin().rbot();
-          Hist.Dus[Twin().ltop()] = (int)!(Hist.Flip[Twin().ltop()] ^ Hist.Flip[Twin().rbot()]);
+          Hist.Dus[Twin().ltop()] = (int)( 1 ^ Hist.Flip[Twin().ltop()] ^ Hist.Flip[Twin().rbot()]);
           Twin().ltop() = Twin().lbot() = 0;
           break;
           }
       else
-          {Hist.Dus[Twin().ltop()]=0;
+          {Hist.Dus[Twin().ltop()] = 0;
           if(--_current)return AGAIN;
           return FIN;
           }
@@ -40,13 +40,13 @@ int _Twit::DeleteLeft(tvertex vi)
 int _Twit::DeleteRight(tvertex vi)
   {while(vi <= vin[Twin().rtop()])
       {if(Twin().MoreThanOne(TW_RIGHT)) // droite a > 1 arete
-          { Hist.Dus[Twin().rtop()] = Hist.Flip[Twin().rtop()] ^ Hist.Flip[Hist.Link[Twin().rtop()]];
+          {Hist.Dus[Twin().rtop()] = Hist.Flip[Twin().rtop()] ^ Hist.Flip[Hist.Link[Twin().rtop()]];
           Twin().rtop() = Hist.Link[Twin().rtop()]; // pop Hist.Link ?
           continue;
           }
       else if (Twin().NotEmpty(TW_LEFT)) // gauche non vide
-          { Hist.Link[Twin().rtop()] = Twin().lbot();
-          Hist.Dus[Twin().rtop()] = (int)!(Hist.Flip[Twin().rtop()] ^ Hist.Flip[Twin().lbot()]);
+          {Hist.Link[Twin().rtop()] = Twin().lbot();
+          Hist.Dus[Twin().rtop()] = (int)(1 ^ Hist.Flip[Twin().rtop()] ^ Hist.Flip[Twin().lbot()]);
           Twin().rtop() = Twin().rbot() = 0;
           break;
           }
@@ -55,6 +55,7 @@ int _Twit::DeleteRight(tvertex vi)
           if(--_current)return AGAIN;
           return FIN;
           }
+      if(Hist.Dus[Twin().ltop()] < 0)DebugPrintf("\nB");
       }
   return STOP;
   }
@@ -134,7 +135,7 @@ void _Twit::Flipe(tedge ej) // toujours k=pile   bj=brin correspondant … ej
   {do
       {Hist.Link[PrevTwin().rbot()] = PrevTwin().ltop();
       PrevTwin().rbot() = PrevTwin().ltop();
-      Hist.Flip[PrevTwin().ltop()]=(int)!Hist.Flip[PrevTwin().ltop()];
+      Hist.Flip[PrevTwin().ltop()]=(int)(1 ^ Hist.Flip[PrevTwin().ltop()]);
       PrevTwin().ltop()=Hist.Link[PrevTwin().ltop()];
       Hist.Link[PrevTwin().rbot()] = 0;
       }while(vin[ej] < vin[PrevTwin().ltop()]);
@@ -159,26 +160,22 @@ void _Twit::Efnp(tedge ej)  // toujours k=pile;
 void _Twit::Thin(tedge ej)
   {int flipin;
 
-  //printf("Thin with %d\n",ej); //POM
   flipin = Hist.Flip[ej];
-
-  for (; _current> _fork; _current--)
-      {
-      if (Twin().lbot()==tedge(0))
+  for (; _current > _fork; _current--)
+      {if (Twin().lbot() == tedge(0))
           Align(Twin().rtop(),flipin,ej);
-      else if (Twin().rbot() == flipin)
+      else if (Twin().rbot() == tedge(0))
           Align(Twin().ltop(),flipin,ej);
       else
-          {
-          Align(Twin().rtop(),flipin+1,ej);
+          {Align(Twin().rtop(),(int)(1 ^ flipin),ej);
           Align(Twin().ltop(),flipin,ej);
           }
       }
-
   NewTwin(ej);
   }
 
 void _Twit::Align(tedge je,int flipin,tedge ej)
+//erase and link all edge je up to ej excluded
   {tedge jje;
 
   do
@@ -212,7 +209,7 @@ void _Twit::Drop()
   isnotplanar=1;
   Twin().rtop() = Hist.Link[rtp];
   Hist.Link[rtp] = lbt;
-  Hist.Dus[rtp] =  (int)!(Hist.Flip[rtp] ^ Hist.Flip[lbt]);
+  Hist.Dus[rtp] =  (int)(1 ^ Hist.Flip[rtp] ^ Hist.Flip[lbt]);
   Hist.Flip[rtp] = -1;
   }
 
@@ -222,13 +219,13 @@ void _Twit::Mflip()
   lbt = Twin().lbot();
   rtp = Twin().rtop();
   if(vin[rtp] == vin[lbt])                                /* effacement en cas d'egalite */
-      {Hist.Dus[rtp] = (int)!(Hist.Flip[rtp] ^ Hist.Flip[lbt]);
+      {Hist.Dus[rtp] = (int)(1 ^ Hist.Flip[rtp] ^ Hist.Flip[lbt]);
       Hist.Flip[rtp] = -1;
       Twin().rtop() = Hist.Link[rtp];
       Hist.Link[rtp] = lbt;
       }
   else                                                    /* flipping de rtp sous lbt  */
-      {Hist.Flip[rtp] = (int)!Hist.Flip[rtp];
+      {Hist.Flip[rtp] = (int)(1 ^ Hist.Flip[rtp]);
       Twin().lbot() = rtp;
       Twin().rtop() = Hist.Link[rtp];
       Hist.Link[lbt] = rtp;
