@@ -642,7 +642,8 @@ int EmbedTContact(TopologicalGraph &G)
   // Modifications for drawing
   T_vertex[iv1].lvertex = iv1;  T_vertex[iv1].rvertex = iv2;  
   T_vertex[iv2].lvertex = iv2;  T_vertex[iv2].rvertex = iv2;  
- 
+  // Erase triangulation edges
+  for(tedge e = G.ne(); e > morg;e--)G.DeleteEdge(e);
   // define the boundaries
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
@@ -661,15 +662,23 @@ int EmbedTContact(TopologicalGraph &G)
   Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
   Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
-  
-  int x1,x2,xv;
   // Compute horizontals
+  int x1,x2,xv;
+  printf("********\n");
   for(int v = 1;v <= n;v++)
       {if(v == iv2()){hp1[v].x() = -1.;continue;} // no horizontal
        xv = Ver[v];
       hp1[v].y() =  hp2[v].y() = (double)Hor[v];
-      if(T_vertex[v].lvertex == 0)
-	  {hp1[v].x() = (double)xv - xminsize;  hp2[v].x() = (double)xv + xminsize;continue;}
+      if(T_vertex[v].lvertex == 0)// optimization of verticals
+	  {if( G.Degree(v) == 1) 
+	      {tvertex w = G.vin[-G.FirstBrin(v)];
+	      if(Hor2[w] < Hor[v])Hor2[v] =  Hor2[w] + 1;
+	      else if(Hor[v] < Hor[w])Hor[v] = Hor[w] - 1;
+	      printf("mod %d w=%d\n",v,w());
+	      hp1[v].y() =  hp2[v].y() = (double)Hor[v];
+	      }
+	  hp1[v].x() = (double)xv - xminsize;  hp2[v].x() = (double)xv + xminsize;continue;
+	  }
       x1 = Ver[T_vertex[v].lvertex]; x2 = Ver[T_vertex[v].rvertex];
       if(v == iv3())
 	  {if(x1 != x2)
@@ -678,12 +687,16 @@ int EmbedTContact(TopologicalGraph &G)
 	      {hp1[v].x() = (double)x2 - xminsize; hp2[v].x() = (double)x2 + xminsize;}
 	  continue;
 	  }
+      // Optimizations of vertices represented by an horizontal
+      if(Hor[v] == Hor2[v]  && x1 == x2)
+	  {if(x1 < xv)Ver[v] = xv = x1 + 1;
+	  else if(xv < x2)Ver[v] = xv = x2 -1;
+	  }
       // general case
       x1 = Min(x1,xv); x2 = Max(x2,xv);
       hp1[v].x() = (x1 != xv) ? (double)x1 + epsilon :(double) x1 - xminsize;
       hp2[v].x() = (x2 != xv) ? (double)x2 - epsilon : (double)x2 + xminsize;
       }
-
   // Compute verticals and text position
   double y1,y2;
   for(int v = 1;v <= n;v++)
@@ -698,10 +711,8 @@ int EmbedTContact(TopologicalGraph &G)
       // Text
       txt[v].x() = (double)xv;   txt[v].y() = (double)y1;
       }
-
   txt[iv3].x() = (hp1[iv3].x() + hp2[iv3].x())/2 ;
   txt[iv2].y() += epsilon;
-  // Erase triangulation edges
-  for(tedge e = G.ne(); e > morg;e--)G.DeleteEdge(e);
+
   return 0;
   }
