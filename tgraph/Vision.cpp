@@ -380,8 +380,8 @@ int Vision(TopologicalGraph &xG)
   Prop1<int> maxy(xG.Set(),PROP_DRAW_INT_2);
   maxx()=maxxval;
   maxy()=maxyval;
-  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
-  Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+  Prop1<Tpoint> pmin(xG.Set(),PROP_POINT_MIN);
+  Prop1<Tpoint> pmax(xG.Set(),PROP_POINT_MAX);
   pmin() = Tpoint(-1,-1);
   pmax() = Tpoint(maxxval+1,maxyval+1);
 
