@@ -664,7 +664,6 @@ int EmbedTContact(TopologicalGraph &G)
   Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
   // Compute horizontals
   int x1,x2,xv;
-  printf("********\n");
   for(int v = 1;v <= n;v++)
       {if(v == iv2()){hp1[v].x() = -1.;continue;} // no horizontal
        xv = Ver[v];
@@ -674,7 +673,6 @@ int EmbedTContact(TopologicalGraph &G)
 	      {tvertex w = G.vin[-G.FirstBrin(v)];
 	      if(Hor2[w] < Hor[v])Hor2[v] =  Hor2[w] + 1;
 	      else if(Hor[v] < Hor[w])Hor[v] = Hor[w] - 1;
-	      printf("mod %d w=%d\n",v,w());
 	      hp1[v].y() =  hp2[v].y() = (double)Hor[v];
 	      }
 	  hp1[v].x() = (double)xv - xminsize;  hp2[v].x() = (double)xv + xminsize;continue;
