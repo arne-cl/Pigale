@@ -52,11 +52,11 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
     ButtonAddE = new QRadioButton(ButtonGroup1,"ButtonAddE");
     ButtonAddE->setGeometry(QRect(6,oy+dy,dx,20)); 
-    ButtonAddE->setText("Add  ");
+    ButtonAddE->setText("Add/Del");
 
     ButtonDel = new QRadioButton(ButtonGroup1,"ButtonDel");
     ButtonDel->setGeometry(QRect(6,oy+2*dy,dx,20)); 
-    ButtonDel->setText("Del");
+    ButtonDel->setText("Orient");
 
     ButtonMove = new QRadioButton(ButtonGroup1,"ButtonMove");
     ButtonMove->setGeometry(QRect(6,oy+3*dy,dx,20)); 

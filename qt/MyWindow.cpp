@@ -395,11 +395,11 @@ MyWindow::MyWindow()
   int Gen_N2 = 10;
   int Gen_M  = 30;
 #endif
-  spin_N1 = new QSpinBox(1,100000,1,generate,"spinN1");
+  spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
-  spin_N2 = new QSpinBox(1,100000,1,generate,"spinN2");
+  spin_N2 = new QSpinBox(0,100000,1,generate,"spinN2");
   spin_N2->setValue(Gen_N2);     spin_N2->setPrefix("N2: ");
-  spin_M = new QSpinBox(1,300000,1,generate,"spinM");
+  spin_M = new QSpinBox(0,300000,1,generate,"spinM");
   spin_M->setValue(Gen_M);      spin_M->setPrefix("M: ");
   generate->insertItem(spin_N1);
   generate->insertItem(spin_N2);
@@ -434,12 +434,10 @@ MyWindow::MyWindow()
   QPopupMenu *popupEmbed    = new QPopupMenu(this);
   QPopupMenu *popupDistance = new QPopupMenu(this);
   QPopupMenu *popupLimits   = new QPopupMenu(this);
-  QPopupMenu *popupSave     = new QPopupMenu(this);
   QComboBox *comboLabel     = new QComboBox(popupLabel,"LabelCombo");
   QComboBox *comboDistance  = new QComboBox(popupDistance,"DistCombo");
-  spin_MaxNS                = new QSpinBox(500,10000,1,popupLimits,"spinMaxNS");
-  spin_MaxND                = new QSpinBox(100,10000,1,popupLimits,"spinMaxND");
-  QPushButton *button_save  = new QPushButton(popupSave,"SaveSettings");
+  spin_MaxNS                = new QSpinBox(0,10000,1,popupLimits,"spinMaxNS");
+  spin_MaxND                = new QSpinBox(0,10000,1,popupLimits,"spinMaxND");
   menuBar()->insertItem("&Settings",settings);
   connect(settings,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
@@ -495,8 +493,8 @@ MyWindow::MyWindow()
   popupDistance->insertItem(comboDistance);
   comboDistance->insertItem("Czekanovski-Dice");
   comboDistance->insertItem("Bisect");
-  comboDistance->insertItem("Incidence");
-  comboDistance->insertItem("Incidence M");
+  comboDistance->insertItem("Adjacence");
+  comboDistance->insertItem("Adjacence M");
   comboDistance->insertItem("Oriented");
 #ifdef ALPHA 
   comboDistance->insertItem("R2");
@@ -504,10 +502,7 @@ MyWindow::MyWindow()
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
   settings->insertSeparator();
-  settings->insertItem("&Save Settings",popupSave);
-  button_save->setText("Save");
-  popupSave->insertItem(button_save);
-  connect(button_save,SIGNAL(clicked()),SLOT(SaveSettings()));
+  settings->insertItem("&Save Settings",10011);
 
   //End of the menuBar():window
   //help
@@ -713,7 +708,7 @@ void MyWindow::Message(QString s)
 void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
-  if(debug())DebugPrintf("handler:%d",action);
+  //if(debug())DebugPrintf("handler:%d",action);
   if(MacroRecording)macroRecord(action);
   if(action < 200)
       {UndoSave();timer.restart();
@@ -747,6 +742,7 @@ void MyWindow::handler(int action)
       }
   else if(action > 10000)
       {if(action == 10010){SetPigaleColors();return;}
+      else if(action == 10011){SaveSettings();Twait("Settings saved");return;}
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
       debug()               =  menuBar()->isItemChecked(10001);
       SchnyderRect()        =  menuBar()->isItemChecked(10002);

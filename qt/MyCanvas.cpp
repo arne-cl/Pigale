@@ -122,16 +122,17 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   bool Shift    = (e->state() ==  QMouseEvent::ShiftButton);
   bool Control  = (e->state() ==  QMouseEvent::ControlButton);
   bool SControl = (e->state() ==  (QMouseEvent::ShiftButton | QMouseEvent::ControlButton));
+
   if(e->button() == QMouseEvent::MidButton)//move
       MouseAction = (Shift) ? -3 : 3;
   else if(Shift && MouseAction == 1)//add
-      MouseAction = 2;
+      MouseAction = -1;
   else if(Control && MouseAction == 1)//duplicate
       MouseAction = 10;
   else if(SControl && MouseAction == 1)//duplicate +
       MouseAction = 11;
-  else if(Shift && MouseAction == 2)//delete
-      MouseAction = 1;
+  else if(Shift && MouseAction == 2)//Orient or reorient if oriented
+      MouseAction = -2; //disorient
   else if(Shift && MouseAction == 3)//move
       MouseAction = -3;
   else if(Shift && MouseAction == 4)//bissect
@@ -184,7 +185,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       gwp->curs_item = new CursItem(v,start_position,gwp);
       canvas()->update();
       }
-  else if(MouseAction == 2) // Delete
+  else if(MouseAction == -1) // Delete
       {NodeItem* node;
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
@@ -246,6 +247,23 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       G.ContractEdge(edge->e);
       load(false);
       gwp->mywindow->information();// Informations
+      return;
+      }
+  else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
+      {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+      EdgeItem *edge;
+      int rtt = FindItem(p,edge);
+      if(rtt != edge_rtti)return;
+      gwp->mywindow->UndoTouch(true);
+      if(MouseAction == 2)
+	  {if(eoriented[edge->e])
+	      {G.ReverseEdge(edge->e); eoriented[edge->e] = true;}
+	  else
+	      eoriented[edge->e] = true;
+	  }
+      else
+	  eoriented[edge->e] = false;
+      load(false);
       return;
       }
   else if(MouseAction == 10)//Duplicate the sugraph of the current color

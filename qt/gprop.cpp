@@ -176,7 +176,7 @@ void Graph_Properties::update()
  
   bool H = G.Set().exist(PROP_HYPERGRAPH);
   bool E;
-  bool MB = P && B && S && (G.ne() == (2*G.nv() - 4));
+  bool MB = P && B && S && (G.ne() == (2*G.nv() - 4)  && (G.nv() >= 4));
  
   if(S && G.nv() == 2 && G.ne() == 1) //One edge graph
       C1 = true;
@@ -230,12 +230,12 @@ void Graph_Properties::update()
 
   //Augment
   menu->setItemEnabled(101,(G.nv() > 1) && !C1);                   //make connected 
-  menu->setItemEnabled(102,(G.nv() > 1) && P && !C2);              //make 2 connected
+  menu->setItemEnabled(102,!SMALL && P && !C2);                    //make 2 connected
   menu->setItemEnabled(103,!SMALL && P && !C2);                    //make 2 connected opt
-  menu->setItemEnabled(104,(G.nv() > 1) && !C2);                   //make 2 connected NP  
+  menu->setItemEnabled(104,!SMALL && !C2);                         //make 2 connected NP  
   menu->setItemEnabled(105,!SMALL && P && S && !T);                //vertex triangulate
   menu->setItemEnabled(106,!SMALL && P && S && !T);                //ZigZag 
-  menu->setItemEnabled(107,(G.nv() > 1) && P && C3 && !T);         //Tricon triangulate opt
+  menu->setItemEnabled(107,!SMALL && P && C3 && !T);               //Tricon triangulate opt
   menu->setItemEnabled(108,(G.nv() > 1) && P && B && S && !MB);    //Quadrangulate
   //Embed
   menu->setItemEnabled(201,!SMALL && S && P && NotBigD);           //Schnyder

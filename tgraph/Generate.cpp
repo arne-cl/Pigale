@@ -48,25 +48,29 @@ GraphContainer *GenerateGrid(int a, int b)
     vlabel[v]=v();
   for (e=0; e<=m; e++)
     elabel[e]=e();
-  int aa=a-1; int bb=b-1;
-  int x; int y;
-  tbrin bs[4];
-  for (int j=0; j<b; j++)
-    {for (int i=0; i<a; i++)
-      {int nb=0;
-      x=i*b+j+1; y=i+j*a+aa*b+1; v=i+a*j+1;
-      vcoord[v]=Tpoint(i,j);
-      if (i<aa)	bs[nb++]=x;
-      if (j<bb)	bs[nb++]=y;
-      if (i>0)	bs[nb++]=b-x;
-      if (j>0)	bs[nb++]=a-y;
-      nb--;
-      for (int k=0; k<nb;k++)
-	{cir[bs[k]]=bs[k+1];acir[bs[k+1]]=bs[k];vin[bs[k]]=v;}
-      cir[bs[nb]]=bs[0];acir[bs[0]]=bs[nb];vin[bs[nb]]=v;
-      pbrin[v]=bs[0];
+  if(n > 1)
+      {int aa=a-1; int bb=b-1;
+      int x; int y;
+      tbrin bs[4];
+      for (int j=0; j<b; j++)
+	  {for (int i=0; i<a; i++)
+	      {int nb=0;
+	      x=i*b+j+1; y=i+j*a+aa*b+1; v=i+a*j+1;
+	      vcoord[v]=Tpoint(i,j);
+	      if (i<aa)	bs[nb++]=x;
+	      if (j<bb)	bs[nb++]=y;
+	      if (i>0)	bs[nb++]=b-x;
+	      if (j>0)	bs[nb++]=a-y;
+	      nb--;
+	      for (int k=0; k<nb;k++)
+		  {cir[bs[k]]=bs[k+1];acir[bs[k+1]]=bs[k];vin[bs[k]]=v;}
+	      cir[bs[nb]]=bs[0];acir[bs[0]]=bs[nb];vin[bs[nb]]=v;
+	      pbrin[v]=bs[0];
+	      }
+	  }
       }
-    }
+      else
+	  {pbrin[1]=0;vcoord[1] = Tpoint(1.,1.);}
   return &GC;
 }
 GraphContainer *GenerateCompleteGraph(int a)
@@ -143,7 +147,7 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   {if(debug())DebugPrintf("GenerateRandomGraph");  
   GraphContainer &GC = *new GraphContainer;
   int n = a;
-  int m = b;
+  int m = (n > 1) ? b : 0;
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
   char titre[256];
@@ -168,12 +172,11 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   time_t time_seed;
   time(&time_seed);
   srand(time_seed);
-  tbrin bb=1;
-  do
+  for(tbrin bb = 1;bb <= m;bb++)
       {while((v = random(n+1)) == 0);
       while((w = random(n+1)) == 0 || w == v);
       vin[bb] = v;vin[-bb] = w;
-      }while(bb++ < m);
+      }
       
   TopologicalGraph TG(GC);
   if(EraseMultipleEdges())TG.Simplify();

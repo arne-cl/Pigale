@@ -97,14 +97,14 @@ class EmbedRnGraph : public TopologicalGraph
   svector<double> EigenValues;
 
   int ComputeDistances();
-  int ComputeAdjMatrix();
+  int ComputeAdjacenceMatrix();
   double ComputeDistance(int vertex1,int vertex2);
   int ComputeOrientDistances();
   int ComputeInOutList();
   double ComputeInDist(int vertex1,int vertex2);
   double ComputeOutDist(int vertex1,int vertex2);
-  int ComputeIncidenceDistances();
-  int ComputeIncidenceMDistances();
+  int ComputeAdjacenceDistances();
+  int ComputeAdjacenceMDistances();
   int ComputeBissectDistances();
   int ComputeR2Distances();
   

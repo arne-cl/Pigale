@@ -126,10 +126,10 @@ void EmbedRnGraph::init()
       }
   if(useDistance() == 1)//Bissection
       ComputeBissectDistances();
-  else if(useDistance() == 2)//Incidence
-      ComputeIncidenceDistances();
+  else if(useDistance() == 2)//Adjacence
+      ComputeAdjacenceDistances();
   else if(useDistance() == 3)
-      ComputeIncidenceMDistances();
+      ComputeAdjacenceMDistances();
   else if(useDistance() == 4)
       ComputeOrientDistances();
   else if(useDistance() == 5)
@@ -272,7 +272,7 @@ double EmbedRnGraph::ComputeOutDist(int vertex1,int vertex2)
   int d = outdegree[vertex1] +  outdegree[vertex2] + 2;
   return (double)(d - 2.*outgoing )/d;
   }
-int EmbedRnGraph::ComputeAdjMatrix()
+int EmbedRnGraph::ComputeAdjacenceMatrix()
   {// Allocation du tableau d'adjacence circulaire des brins (OrderCir)
   svector<tbrin>OrderCir(-ne(),ne());     OrderCir.SetName("OrderCir");
 
@@ -341,7 +341,7 @@ int EmbedRnGraph::ComputeBissectDistances()
       Distances[i][i] = .0;
   return 0;
   }
-int EmbedRnGraph::ComputeIncidenceDistances()
+int EmbedRnGraph::ComputeAdjacenceDistances()
   {int i,j;
   for(i = 1;i <= nv();i++)
       for(j = 1;j <= nv();j++)
@@ -365,14 +365,14 @@ int EmbedRnGraph::ComputeR2Distances()
 	  }
   return 0;
   }
-int EmbedRnGraph::ComputeIncidenceMDistances()
+int EmbedRnGraph::ComputeAdjacenceMDistances()
   {int i,j;
+  double a = 1. - 2./nv();
   for(i = 1;i <= nv();i++)
       for(j = 1;j <= nv();j++)
 	  Distances[i][j] = 1.;
-  // 2/3 -> negative eigenvalues (.7 ok ?)
   for(tedge e = 1;e <= ne();e++)
-      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .75;
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = a;
   for(i = 1;i <= nv();i++)
       Distances[i][i] = .0;
   return 0;
@@ -392,7 +392,7 @@ int EmbedRnGraph::ComputeDistances()
   for(int i = 1;i <= nv();i++)
       vvadj[i] = new int[degree[i] + 2];
   // Fill vvadj
-  ComputeAdjMatrix();
+  ComputeAdjacenceMatrix();
 
   for(i = 1;i <= nv();i++)
       Distances[i][i] = .0;

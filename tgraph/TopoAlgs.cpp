@@ -282,6 +282,7 @@ bool TopologicalGraph::CheckBipartite(bool Color)
   if(Set().exist(PROP_BIPARTITE) && !Color)return true;
   if(!nv()) return false;
   if(debug())DebugPrintf("Executing CheckBipartite");
+  if(nv() == 1)return true;
   svector<tvertex> stack(1,nv()); stack.SetName("stack");
   svector<bool> vcol(1,nv()); vcol.SetName("vcol");
   svector<int> comp(1,nv()); comp.clear(); comp.SetName("Comp");
@@ -315,11 +316,11 @@ bool TopologicalGraph::CheckBipartite(bool Color)
                   else          // cotree
                       if(vcol[v] == vcol[w])bipartite = false;
                   }while((b = cir[b])!= b0);
-          if(!bipartite)break;
+          if(!bipartite)return false;
           }
       }
 
-  if(ncc == 1 && max_rank == nv())
+  if(ncc == 1)
       Prop1<int>is_connected(Set(),PROP_CONNECTED);
   if(!bipartite)return false;
   if(Color)

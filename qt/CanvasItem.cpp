@@ -248,7 +248,7 @@ void EdgeItem::SetColor(QColor c)
   tp->setColor(c);tp->setWidth(G.ewidth[e]);
   setPen(*tp);
   if(lower)
-      {if(eoriented[this->e])
+      {if(eoriented[this->e] && ShowOrientation())
 	  opp->SetColor(Desaturate(c));
       else
 	  opp->SetColor(c);
