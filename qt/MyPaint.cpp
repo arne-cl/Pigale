@@ -69,6 +69,39 @@ void DrawPolar(QPainter *p,MyPaint *paint)
       DrawNode(Vcoord[v],label[v()],Yellow);
   */
   }
+
+void DrawPolyline(QPainter *p,MyPaint *paint)
+  {GeometricGraph G(paint->GCP);
+  Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
+  Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> Ebend(G.Set(tedge()),PROP_DRAW_POINT_3);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  int m = G.ne(); 
+  int n = G.nv(); 
+  QPen pn = p->pen();pn.setWidth(2);
+
+  for (tedge ee=1; ee<=m; ee++)
+      {if (Ebend[ee] != Tpoint(-1, -1)) {
+	  paint->DrawSeg(p, Epoint1[ee], Ebend[ee],ecolor[ee]);
+	  paint->DrawSeg(p, Ebend[ee], Epoint2[ee],ecolor[ee]);
+      }
+      else
+	  paint->DrawSeg(p, Epoint1[ee], Epoint2[ee] , ecolor[ee]);
+      }
+  // Draw the vertices
+  p->setFont(QFont("lucida",Min((int)(.45 * Min(paint->xscale,paint->yscale) + .5),13)));
+  QString t;
+  for(tvertex v = 1;v <= n;v++) 
+      {if(ShowVertex() == -1)
+	  t.sprintf("%2.2d",v());
+      else
+ 	  t.sprintf("%2.2ld",G.vlabel[v()]);
+      paint->DrawText(p,Vcoord[v],t,vcolor[v],1);
+      }
+  }
+
 void DrawTContact(QPainter *p,MyPaint *paint)
   {GeometricGraph G(paint->GCP);
   Prop<Tpoint> hp1(G.Set(tvertex()),PROP_DRAW_POINT_1);
@@ -335,6 +368,7 @@ static DrawThing DrawFunctions[] =
     {DrawBipContact,QT_TRANSLATE_NOOP("MyPaint","Contact")},
     {DrawPolar,QT_TRANSLATE_NOOP("MyPaint","Polar")},
     {DrawTContact,QT_TRANSLATE_NOOP("MyPaint","T Contact")}, 
+    {DrawPolyline,QT_TRANSLATE_NOOP("MyPaint", "Polyline")},
     {0,QT_TRANSLATE_NOOP("MyPaint"," ")}  
     };
 const int border = 20;
@@ -411,7 +445,7 @@ void MyPaint::resizeEvent(QResizeEvent* e)
   {Wx_max = this->width() - 2*border;  Wy_max = this->height() - 2*border;
   xscale0 = xscale = Wx_max/(xmax - xmin);
   xtr0 = xtr  =  - xmin*xscale + border;
-  yscale0 =yscale = Wy_max/(ymax - ymin);
+  yscale0 = yscale = Wy_max/(ymax - ymin);
   ytr0 = ytr  =  - ymin*yscale + border;
   QWidget::resizeEvent(e);
   }
@@ -482,8 +516,9 @@ void MyPaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
   {QPen pn = p->pen();pn.setWidth(2);pn.setColor(color[Black]);p->setPen(pn);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   pb.setColor(color[col]);p->setBrush(pb);
-  nx *= xscale; ny *= yscale;
-  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
+  //  nx *= xscale; ny *= yscale;
+  //  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
+  p->drawRect(QRect((int)(to_x(a.x()) - nx*Min(xscale,yscale)/2), (int)(to_y(a.y())- ny*Min(xscale,yscale)/2), (int)(nx*Min(xscale,yscale)), (int)(ny*Min(xscale,yscale))));
   }
 void MyPaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
 // draw text centered at a, with a surrounding rectangle

@@ -16,6 +16,7 @@ Diagonalise.o \
 Embed2Pages.o \
 EmbedTutteCircle.o \
 EmbedVision.o \
+EmbedPolyline.o.o \
 FastTwit.o \
 File.o \
 Generate.o \

@@ -40,6 +40,7 @@
 #define  A_EMBED_SPRING             (A_EMBED+6)         // SPRING
 #define  A_EMBED_SPRING_PM          (A_EMBED+7)         // SPRING_PM
 #define  A_EMBED_JACQUARD           (A_EMBED+8)         // JACQUARD 
+#define  A_EMBED_POLYLINE           (A_EMBED+9)         // POLYLINE
 #define  A_EMBED_VISION             (A_EMBED+50)        // VISION
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTATC_BIPARTI 
 #define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 

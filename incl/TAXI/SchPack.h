@@ -51,4 +51,7 @@ class SchnyderPacking {
     tvertex FindVertex();
 };
 
+
+void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolor);
+
 #endif

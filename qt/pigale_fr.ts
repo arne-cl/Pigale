@@ -158,6 +158,10 @@
         <source>T Contact</source>
         <translation>Contact de T</translation>
     </message>
+    <message>
+        <source>Polyline</source>
+        <translation>Lignes Brisées</translation>
+    </message>
 </context>
 <context>
     <name>MyWindow</name>
@@ -331,6 +335,10 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>&amp;Contact Biparti</source>
         <translation>Contact (&amp;biparti)</translation>
+    </message>
+    <message>
+        <source>&amp;Polyline</source>
+        <translation>Lignes Bris&amp;ées</translation>
     </message>
     <message>
         <source>Spring (Map &amp;Preserving)</source>
@@ -763,6 +771,10 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>User Guide</source>
         <translation>Guide</translation>
+    </message>
+    <message>
+        <source>Q-distance</source>
+        <translation>Q-distance</translation>
     </message>
 </context>
 </TS>

@@ -160,7 +160,7 @@ static void CalcXY(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
   }
 
 
-static void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
+void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
 // precondition:
 //   G is simple, maximal planar.
 //   "cir" is a planar embedding.

@@ -39,7 +39,7 @@ int Polar(TopologicalGraph &G);
 int Embed3d(TopologicalGraph &G0);
 int Embed3dbis(TopologicalGraph &G0);
 int Embed3dSchnyder(TopologicalGraph &G0);
-
+int EmbedPolyline(TopologicalGraph &G);
 // Generators
 //in Generate.cpp
 GraphContainer *GenerateGrid(int a, int b);

@@ -234,6 +234,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
   menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
   menu->setItemEnabled(A_EMBED_FPP,!SMALL && S && P && NotBigD);              //FPP Fary
+  menu->setItemEnabled(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
   menu->setItemEnabled(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
   menu->setItemEnabled(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
   menu->setItemEnabled(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision

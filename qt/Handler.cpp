@@ -255,6 +255,10 @@ int EmbedHandler(int action,int &drawing)
 	  err = EmbedVision(G);
 	  drawing = 0;
 	  break;
+      case A_EMBED_POLYLINE:ret = 3;
+	  err = EmbedPolyline(G);
+	  drawing = 6;
+	  break;
       case A_EMBED_CONTACT_BIP:ret = 3;
 	  err = EmbedContactBip(G0);
 	  drawing = 3;

@@ -343,6 +343,7 @@ MyWindow::MyWindow()
   embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);
   embed->insertItem(tr("&T Contact"),            A_EMBED_T_CONTACT);
   embed->insertItem(tr("&Contact Biparti"),      A_EMBED_CONTACT_BIP);
+  embed->insertItem(tr("&Polyline"),             A_EMBED_POLYLINE);  
   embed->insertSeparator();
 #if VERSION_ALPHA
   embed->insertItem(tr("&Polar"),                A_EMBED_POLAR);
