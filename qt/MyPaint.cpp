@@ -179,6 +179,7 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
   // Draw edges
   int h1,h2,x1,x2;
   double alpha = .5;
+  double beta  = .8;
   Tpoint a,b;
   for(tedge e=1; e <= G.ne();e++)
       {h1 = y[G.vin[e]]; 
@@ -198,14 +199,14 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
 	  paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       else if(x1 < x2)
-	  {a.x() = x1 + alpha;
-	   b.x() = x2 - alpha;
+	  {a.x() = x1 + beta;
+	   b.x() = x2 - beta;
 	   a.y() = b.y() = h1 -alpha;
 	  paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       else if(x1 > x2)
-	  {a.x() = xriv[G.vin[-e]] + alpha;  
-	   b.x() = xliv[G.vin[e]] - alpha;
+	  {a.x() = xriv[G.vin[-e]] + beta;  
+	   b.x() = xliv[G.vin[e]]  - beta;
 	   a.y() = b.y() = h1 -alpha;
 	   paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
@@ -218,9 +219,9 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
   QPen pn = p->pen();
   pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
   for(tvertex v=1; v <= G.nv();v++) // draw boxes
-      {dx = (int)(paint->to_x(xriv[v]+alpha) - paint->to_x(xliv[v]-alpha) +.5);
+      {dx = (int)(paint->to_x(xriv[v]+beta) - paint->to_x(xliv[v]-beta) +.5);
       dy = (int)(2.*alpha*paint->yscale +.5);
-      rect = QRect(paint->to_x(xliv[v]-alpha),paint->to_y(y[v]),dx,dy);
+      rect = QRect(paint->to_x(xliv[v]-beta),paint->to_y(y[v]),dx,dy);
       p->setBrush(color[vcolor[v]]);p->drawRect(rect);
       if(ShowVertex() == -1 || !vlabel)
 	  t.sprintf("%2.2d",v());
