@@ -95,7 +95,8 @@ MyWindow::MyWindow()
     ,IsUndoEnable(true)
     ,MacroRecording(false),MacroExecuting(false)
   {int id;
-
+  // Initialze Error
+  setError();
   // Export some data
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
@@ -301,17 +302,15 @@ MyWindow::MyWindow()
   embed->insertSeparator();
   embed->insertItem("&Visibility",           A_EMBED_VISION );
   embed->insertItem("FPP Visi&bility",       A_EMBED_FPP_RECTI);
-#ifdef VERSION_ALPHA 
-  embed->insertItem("&General Visibility",   A_EMBED_FPP_GVISION);
-#endif
+  //#ifdef VERSION_ALPHA 
+  embed->insertItem("&General Visibility",   A_EMBED_GVISION);
+  //#endif
   embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
   embed->insertItem("&Polar",                A_EMBED_POLAR);
-#ifdef VERSION_ALPHA 
   embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
-#endif
   embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
   embed->insertItem(xmanIcon,"Spring Planar",A_EMBED_JACQUARD);
@@ -363,7 +362,8 @@ MyWindow::MyWindow()
   orient->insertItem("Planar &3-Con.",        A_ORIENT_TRICON);
   orient->insertItem("Planar &Biparti",       A_ORIENT_BIPAR);
   orient->insertItem("Planar &Schnyder",      A_ORIENT_SCHNYDER);
-  orient->insertItem("B&ipolarOrient Planar", A_ORIENT_BIPOLAR );
+  orient->insertItem("B&ipolarOrient Planar", A_ORIENT_BIPOLAR);
+  orient->insertItem("BipolarOrient",         A_ORIENT_BIPOLAR_NP);
 
   QPopupMenu *generate      = new QPopupMenu( this );
   QPopupMenu *popupCubic    = new QPopupMenu(this);
@@ -435,12 +435,11 @@ MyWindow::MyWindow()
   macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
-  macroMenu->insertItem(macroSpin);
-  macroMenu->insertItem("Insert a Pause",2);
   macroMenu->insertItem("Continue recording",3);
   macroMenu->insertSeparator();
- 
-  
+  macroMenu->insertItem(macroSpin);
+  macroMenu->insertItem("Insert a Pause",5);
+  macroMenu->insertSeparator();
   macroLine = new LineEditNum(macroMenu,"macroLineEditNum");
   macroLine->setPrefix("Repeat:"); macroLine->setNum(macroRepeat); macroLine->setMul(macroMul);
   macroMenu->insertItem(macroLine);
@@ -739,14 +738,12 @@ void MyWindow::next()
   {load(1);}
 void MyWindow::information()
   {if(!getError() && !MacroExecuting)MessageClear();
-  if(MacroRecording)return;
-  graph_properties->update();
+  graph_properties->update(!MacroExecuting);
   }
 void MyWindow::MessageClear()
   {e->setText("");}
 void MyWindow::Message(QString s)
-  {//if(MacroRecording)return;
-  e->append(s);
+  {e->append(s);
 #if QT_VERSION >= 300
   e->scrollToBottom ();
 #endif
@@ -830,13 +827,13 @@ void MyWindow::handler(int action)
       gw->update();
       }
   else if(ret == 2)
-      {if(MacroExecuting )return;
-      if(!MacroRecording)information();
+      {if(!MacroRecording)information();
+      if(MacroExecuting )return;
       gw->update();
       }
   else if(ret == 20) // Remove handler
-      {if(MacroExecuting )return;
-      information();
+      {if(!MacroRecording)information();
+      if(MacroExecuting )return;
       gw->update(false);
       }
   else if(ret == 3)
@@ -856,15 +853,12 @@ void MyWindow::handler(int action)
       {gw->update();gw->SpringJacquard();}
 
   double TimeG = t.elapsed()/1000.;
-  if(!MacroLooping && !MacroRecording)
+  if(!MacroExecuting && !MacroRecording)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
-	  {Tprintf("Handler Last Error:%d",(int)getError());
+	  {Tprintf("Handler Last Error:%s",(const char *)getErrorString());
 	  if(debug())
-	      {QString m;
-	      m.sprintf("Error:%d",(int)getError());
-	      Twait((const char *)m); 
-	      }
+	      Twait((const char *)getErrorString()); 
 	  }
       }
       
