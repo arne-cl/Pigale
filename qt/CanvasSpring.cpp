@@ -312,7 +312,7 @@ void GraphEditor::SpringPreservingMap()
 	  }
       translate.clear();
       stop = (n_red == G.nv())? ++stop : 0;
-      if(stop)force *= .95;
+      //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
@@ -919,6 +919,7 @@ int GraphEditor::SpringJacquard()
       }
   else
       {Tprintf("NOT A PLANAR EMBEDDING");return -1;}
+  DoNormalise = true;
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<Tpoint> SumDep(1,G.nv());       
   svector<int> extvertex(1,G.nv());      extvertex.clear();
@@ -939,7 +940,7 @@ int GraphEditor::SpringJacquard()
   double deplacement = 0;
 
   //Redimentionnement de la carte
-  DoNormalise = true;Normalise();
+  Normalise();
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
   // Boucle de calcul
   gwp->mywindow->blockInput(true);
@@ -966,7 +967,7 @@ int GraphEditor::SpringJacquard()
               }
           }
       // size_and_center(centre,*this);
-      DoNormalise = true;Normalise();
+      Normalise();
       // Affichage du graphe
       double dx,dy;
       n_red = 0;

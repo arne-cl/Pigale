@@ -474,33 +474,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       return;
       }
   }
-// void GraphEditor::EraseColorVertices()
-//   {GeometricGraph & G = *(gwp->pGG);
-//   for(tvertex v= G.nv() ;v > 0;v--)
-//     if(G.vcolor[v] == color_node)G.DeleteVertex(v);
-//   //DoNormalise = false;
-//   load(false);
-//   //DoNormalise = true;
-//   gwp->mywindow->information();// Informations
-//   }
-// void GraphEditor::EraseColorEdges()
-//   {GeometricGraph & G = *(gwp->pGG);
-//   for(tedge e= G.ne();e > 0;e--)
-//     if(G.ecolor[e] == color_edge)G.DeleteEdge(e);
-//   //DoNormalise = false;
-//   load(false);
-//   //DoNormalise = true;
-//   gwp->mywindow->information();// Informations
-//   }
-// void GraphEditor::EraseThickEdges()
-//   {GeometricGraph & G = *(gwp->pGG);
-//   for(tedge e= G.ne();e > 0;e--)
-//     if(G.ewidth[e] == width_edge)G.DeleteEdge(e);
-//   //DoNormalise = false;
-//   load(false);
-//   //DoNormalise = true;
-//   gwp->mywindow->information();// Informations
-//   }
+
 void GraphEditor::showEvent(QShowEvent* e)
   {if(gwp->mywindow->MacroLooping)return;
   if(gwp->CanvasHidden)// to assure mouse_action is initialise

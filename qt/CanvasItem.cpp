@@ -42,7 +42,7 @@ void GraphWidget::update(bool compute)
       {d->editor = new GraphEditor(d,this);
       d->is_init = true;
       }
-  else if(d->mywindow->MacroLooping)return;
+  //else if(d->mywindow->MacroLooping)return;
   else
       delete d->pGG;
   
