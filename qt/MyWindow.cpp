@@ -498,6 +498,9 @@ MyWindow::MyWindow()
   comboDistance->insertItem("Incidence");
   comboDistance->insertItem("Incidence M");
   comboDistance->insertItem("Oriented");
+#ifdef ALPHA 
+  comboDistance->insertItem("R2");
+#endif
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
   settings->insertSeparator();
