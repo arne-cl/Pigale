@@ -162,7 +162,7 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
       p->drawText(rect,Qt::AlignCenter,t);
       }
   }
-void DrawFPPRecti(QPainter *p,MyPaint *paint)
+void DrawFPPVisibility(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<int> xliv(G.Set(tvertex()),PROP_DRAW_INT_1);
   Prop<int> xriv(G.Set(tvertex()),PROP_DRAW_INT_2);
@@ -230,7 +230,7 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
       p->drawText(rect,Qt::AlignCenter,t);
       }
   }
-void DrawVision(QPainter *p,MyPaint *paint)
+void DrawVisibility(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> P1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> P2(G.Set(tedge()),PROP_DRAW_POINT_2);
@@ -249,19 +249,70 @@ void DrawVision(QPainter *p,MyPaint *paint)
   p->setFont(QFont("lucida",12));
   QPen pn = p->pen(); 
   pn.setWidth(2);
-  QPoint ps,pt;
-  for (tedge e = 1;e <= G.ne();e++)
-      {ps = QPoint(paint->to_x(P1[e].x()),paint->to_y(P1[e].y()));
-      pt = QPoint(paint->to_x(P1[e].x()),paint->to_y(P2[e].y()));
-      pn.setColor(color[ecolor[e]]); p->setPen(pn);
-      p->drawLine(ps,pt);
-      }
+  Tpoint a,b;
+
   pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
   QRect rect;
   int dx,dy;
   QString t;
   for(tvertex v=1;v<=G.nv();v++)
       {p->setBrush(color[vcolor[v]]);
+      dx = (int)(paint->to_x(x2[v]+alpha) - paint->to_x(x1[v]-alpha) +.5);
+      dy = (int)(2.*alpha*paint->yscale +.5);
+      rect = QRect(paint->to_x(x1[v]-alpha),paint->to_y(y[v]+alpha),dx,dy);
+      p->drawRect(rect);
+      if(ShowVertex() == -1|| !vlabel)
+	  t.sprintf("%2.2d",v());
+      else
+	  t.sprintf("%2.2ld",(*vlabel)[v()]);
+
+      p->drawText(rect,Qt::AlignCenter,t);
+      }
+
+  for (tedge e = 1;e <= G.ne();e++)
+      {a.x() = P1[e].x(); a.y() = P1[e].y() + alpha;
+      b.x() = P1[e].x();  b.y() = P2[e].y() - alpha;
+      paint->DrawSeg(p,a,b,ecolor[e]);
+      }
+  }
+void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
+  {TopologicalGraph G(paint->GCP);
+  Prop<Tpoint> P1(G.Set(tedge()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> P2(G.Set(tedge()),PROP_DRAW_POINT_2);
+  Prop<int> x1(G.Set(tvertex()),PROP_DRAW_INT_1);
+  Prop<int> x2(G.Set(tvertex()),PROP_DRAW_INT_2);
+  Prop<int> x1m(G.Set(tvertex()),PROP_DRAW_INT_3);
+  Prop<int> x2m(G.Set(tvertex()),PROP_DRAW_INT_4);
+  Prop<int> y(G.Set(tvertex()),PROP_DRAW_INT_5);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  //Checking if vertices have labels
+  svector<long> *vlabel = NULL;
+  if(G.Set(tvertex()).exist(PROP_LABEL))
+      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+      vlabel = &label.vector();
+      }
+  double alpha=0.3;
+  p->setFont(QFont("lucida",12));
+  QPen pn = p->pen(); 
+  pn.setWidth(2);
+  Tpoint a,b;
+  for (tedge e = 1;e <= G.ne();e++)
+      {a.x() = P1[e].x(); a.y() = P1[e].y();
+      b.x() = P1[e].x();  b.y() = P2[e].y();
+      paint->DrawSeg(p,a,b,ecolor[e]);
+      }
+  pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
+  QRect rect;
+  int dx,dy;
+  QString t;
+  for(tvertex v=1;v<=G.nv();v++)
+      {if(x1m[v] != x2m[v]) // always 
+	  {a.x() = x1m[v]; a.y() = y[v];
+	  b.x() = x2m[v];  b.y() = y[v];
+	  paint->DrawSeg(p,a,b,Black);
+	  }
+      p->setBrush(color[vcolor[v]]);
       dx = (int)(paint->to_x(x2[v]+alpha) - paint->to_x(x1[v]-alpha) +.5);
       dy = (int)(2.*alpha*paint->yscale +.5);
       rect = QRect(paint->to_x(x1[v]-alpha),paint->to_y(y[v]+alpha),dx,dy);
@@ -283,10 +334,11 @@ struct DrawThing {
 
 DrawThing DrawFunctions[] = 
     {
-    {DrawVision,"&Vision"},
+    {DrawVisibility,"&Visibility"},
+    {DrawFPPVisibility,"&FPP Visibility"},
+    {DrawGeneralVisibility,"&General Visibility"},
     {DrawBipContact,"&Contact"},
-    {DrawPolar,"&Polair"},
-    {DrawFPPRecti,"&FPP Recti"},
+    {DrawPolar,"&Polar"},
     {0,0} 
     };
 
