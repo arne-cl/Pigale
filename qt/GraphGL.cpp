@@ -31,7 +31,7 @@
 #endif
 
 #include <config.h>
-#ifdef HAVE_LIBGLU
+#ifdef HAVE_LIBGLUT
 #include <GL/glut.h>
 #endif
 
@@ -265,7 +265,7 @@ void GLWindow::initializeGL()
   glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
   GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
   glFogfv(GL_FOG_COLOR,fog_color);
-#ifdef HAVE_LIBGLU
+#ifdef HAVE_LIBGLUT
   CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
 #endif
   }
@@ -517,7 +517,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y+size,z-size);
   glEnd();
   }
-#ifdef HAVE_LIBGLU
+#ifdef HAVE_LIBGLUT
 void GLWindow::drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {QString t;
   t.sprintf("%2.2d",vlabel);
