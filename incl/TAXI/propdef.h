@@ -20,7 +20,7 @@
   */
 //@{
 #define PROP_DRAWING          (150)               //!< Start of Drawing Properties
-#define PROP_DRAW_COORD       (PROP_DRAWING)      //!< \c Tpoint : Main point
+#define PROP_DRAW_COORD       (PROP_DRAWING)      //!< \c Tpoint Main point
 #define PROP_DRAW_POINT_1     (PROP_DRAWING+1)    //!< \c Tpoint
 #define PROP_DRAW_POINT_2     (PROP_DRAWING+2)    //!< \c Tpoint
 #define PROP_DRAW_POINT_3     (PROP_DRAWING+3)    //!< \c Tpoint
@@ -41,8 +41,9 @@
 #define PROP_DRAW_INT_4       (PROP_DRAWING+24)   //!< \c int
 #define PROP_DRAW_INT_5       (PROP_DRAWING+25)   //!< \c int
 #define PROP_DRAW_INT_6       (PROP_DRAWING+26)   //!< \c int
-#define PROP_RESERVED         (200)               //!< Reserved for applications 
-#define PROP_TMP              (255)               //!< Temporary property
+#define PROP_CANVAS          (128)               //!< Start of CanvasProperties
+#define PROP_RESERVED         (200)               //!< \c anything Reserved for applications 
+#define PROP_TMP              (255)               //!< \c anything Temporary property
 //@}
 /** @name  Property numbers for General set.
   */
@@ -73,11 +74,6 @@
 #define PROP_NLOOPS           (30)   //!< \c int no loops
 #define PROP_MN               (31)   //!< \c int #meta vertices
 #define PROP_MM               (32)   //!< \c int #meta edges
-
-#define PROP_CANVAS          (128)               //!< Start of CanvasProperties
-#define PROP_CANVAS_NODE     (PROP_CANVAS+1)     //!< (void *) NodeItem
-#define PROP_CANVAS_EDGE     (PROP_CANVAS+2)     //!< (void *) EdgeItem
-#define PROP_COORD_S         (PROP_CANVAS+3)     //!< \c Tpoint   Copy Coord for editor
 #define PROP_POINT_MIN       (PROP_DRAWING+1)    //!< \c Tpoint
 #define PROP_POINT_MAX       (PROP_DRAWING+2)    //!< \c Tpoint
 //@}
@@ -120,6 +116,8 @@
 #define PROP_NLOOPS           (30)   //!< \c int     # of attached loops
 #define PROP_COORD3           (31)   //!< \c Tpoint3 Coord for Embed3d
 #define PROP_EIGEN            (32)   //!< \c double eigenvalues for Embed3d
+#define PROP_CANVAS_ITEM     (PROP_CANVAS+1)     //!< \c void * NodeItem
+#define PROP_CANVAS_COORD    (PROP_CANVAS+2)     //!< \c Tpoint   Copy Coord for editor
 
 //@}
 /** @name Property numbers for E.
@@ -133,6 +131,7 @@
 #define PROP_REORIENTED       (18)   //!< \c bool    orientation should be reversed
 #define PROP_ISTREE           (19)   //!< \c bool    edge belongs to the tree
 #define PROP_MULTIPLICITY     (20)   //!< \c int     edge multiplicity
+#define PROP_CANVAS_ITEM     (PROP_CANVAS+1)     //!< \c void * EdgeItem
 //@}
 /** @name Property numbers for B.
   */
@@ -144,3 +143,6 @@
 #define PROP_ACIR             (19)   //!< \c tbrin   previous brin in circular order
 #endif
 //@}
+
+char *PropName(int s,int i);
+char *PropDesc(int s,int i);
