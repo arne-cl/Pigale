@@ -409,6 +409,19 @@ reduce.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 reduce.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 reduce.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 reduce.o: ../../pigale/incl/TAXI/Tmessage.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tbase.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tmessage.h
+SchaefferGen.o: ../../pigale/incl/TAXI/color.h
+SchaefferGen.o: ../../pigale/incl/TAXI/graphs.h
+SchaefferGen.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tprop.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tsvector.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tdebug.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Errors.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tpropio.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tstring.h
+SchaefferGen.o: ../../pigale/incl/TAXI/propdef.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tpoint.h
 Schnyder.o: ../../pigale/incl/TAXI/SchPack.h ../../pigale/incl/TAXI/graphs.h
 Schnyder.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
 Schnyder.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
