@@ -755,9 +755,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  }
       else
 	  G.DeleteEdge(edge->e);
-      //DoNormalise = false;
       load(false);
-      //DoNormalise = true;
       gwp->mywindow->information();// Informations
       return;
       }
@@ -772,8 +770,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       }
   else if(MouseAction == -3) // Move a subgraph
       {gwp->moving_subgraph = true;
-      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      //if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
+      //  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       start_position = e->pos();
       return;
       }
@@ -796,9 +794,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
       G.ContractEdge(edge->e);
-      DoNormalise = false;
-      load();
-      DoNormalise = true;
+      load(false);
       gwp->mywindow->information();// Informations
       return;
       }
@@ -917,6 +913,18 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       }
   if(gwp->moving_subgraph == true)
       {gwp->moving_subgraph = false;
+      if(!IsGrid)return;
+      GeometricGraph & G = *(gwp->pGG);
+      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+      tvertex v = 1;
+      double prev_x = G.vcoord[v].x();
+      double prev_y = G.vcoord[v].y();
+      ToGrid(v);
+      double dx =  G.vcoord[v].x() - prev_x;
+      double dy =  G.vcoord[v].y() - prev_y;
+      for(v = 1;v <= G.nv();v++)
+	  nodeitem[v]->moveBy(dx,-dy);
+      canvas()->update();
       return;
       }
   if(gwp->curs_item)// end creating an edge
@@ -986,6 +994,7 @@ void GraphEditor::clear()
   QCanvasItemList::Iterator it = list.begin();
   for (; it != list.end(); ++it)
       if(*it)delete *it;
+  GridDrawn = false;
   }
 void GraphEditor::showEvent(QShowEvent*)
   {if(!gwp->canvas)
@@ -1054,7 +1063,7 @@ void GraphEditor::load(bool initgrid)
   {if(gwp->CanvasHidden)return;
   clear();// delete all items
   canvas()->update();
-  GridDrawn = false;
+  
   GeometricGraph & G = *(gwp->pGG);
   int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
   if(G.nv() > nmaxdisplay)
@@ -1063,7 +1072,11 @@ void GraphEditor::load(bool initgrid)
       {Normalise();
       InitGrid();
       }
-  else if(gwp->ShowGrid)DrawGrid(true);
+  else
+      {DrawGrid(false);
+      if(gwp->ShowGrid)showGrid(true);
+      }
+
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE,(NodeItem *)NULL);
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_EDGE,(EdgeItem *)NULL);
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
