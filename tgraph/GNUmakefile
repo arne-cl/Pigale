@@ -27,7 +27,7 @@ CFLAGSopt += -fomit-frame-pointer
 
 #DEBUGGING OPTIONS (-pg -a for sampling)
 CFLAGSdbg  =  -g -Wall  $(PIC)
-CFLAGSdbg +=  -DDEBUG
+CFLAGSdbg +=  -DTDEBUG
 
 DLIB   = $(PIGALEPATH)/lib/lib$L$(OPT).so
 LIBS    = -L$(PIGALEPATH)/lib -lleda$(OPT) -ltgraph$(OPT)
@@ -220,8 +220,8 @@ EmbedFPP.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 EmbedFPP.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
 EmbedFPP.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Tpropio.h
 EmbedFPP.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-EmbedFPP.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tmessage.h
-EmbedFPP.o: ../../pigale/incl/TAXI/color.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/SchPack.h
+EmbedFPP.o: ../../pigale/incl/TAXI/IntList.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graphs.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graph.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/elmt.h
@@ -331,6 +331,13 @@ more.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/elmt.h
 more.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tpropio.h
 more.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/graph.h
 more.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+netcut.o: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/graphs.h
+netcut.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+netcut.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
+netcut.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+netcut.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
+netcut.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+netcut.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tmessage.h
 NewPolar.o: ../../pigale/incl/TAXI/Dos.h ../../pigale/incl/TAXI/graphs.h
 NewPolar.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 NewPolar.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
