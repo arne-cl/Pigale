@@ -28,7 +28,7 @@ depend:
 nodepend:
 	cd tgraph ;make -e nodepend
 	cd qt ;make -e nodepend
-	cd ClientServer ;make -e depend	
+	cd ClientServer ;make -e nodepend	
 
 list:
 	cd tgraph ;make list
