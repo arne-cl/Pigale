@@ -9,29 +9,14 @@
 **
 *****************************************************************************/
 
-#ifdef QT
-#undef QT
-#endif
-
 #include <Pigale.h> 
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
-
-
-// in Misc.cpp
-GraphContainer& GetMainGraph();
-//in Generate.cpp
-GraphContainer *GenerateGrid(int a, int b);
-GraphContainer *GenerateCompleteGraph(int a);
-GraphContainer *GenerateCompleteBiGraph(int a,int b);
-GraphContainer *GenerateRandomGraph(int a,int b);
-//Schaeffer algo
-GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
+#include "MyWindow.h" 
+#include <QT/Misc.h>
 
 // in MyCanvas.cpp
 bool & ShowOrientation();
-// in Generate.cpp
-bool & EraseMultipleEdges();
 
 // Those handlers return:
 // -1 if error
@@ -58,6 +43,9 @@ int OrientHandler(int action)
 	   }
 	   ShowOrientation() = true;
 	   break;
+      case A_ORIENT_SHOW:
+	  ColorPoles(G);
+	  break;
       case A_REORIENT_COLOR:
 	  {short ecol; G.ecolor.getinit(ecol);
 	  for(tedge e = 1; e <= G.ne() ;e++)
@@ -104,7 +92,7 @@ int OrientHandler(int action)
 	  break;
       case A_ORIENT_BIPOLAR_NP:
 	  first = 1;
-	  NPBipolar(G,first);
+	  ret = NPBipolar(G,first);
 	  if(ret != 0){Tprintf("ret=%d",ret);return -1;}
 	  G.FixOrientation();
 	  ShowOrientation() = true;

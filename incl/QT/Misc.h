@@ -35,6 +35,7 @@ int & ShowVertex();
 QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);
 bool & ShowIndex();
+void ColorPoles(GeometricGraph &G);
 bool CheckCoordNotOverlap(GeometricGraph & G);
 void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
 #endif
