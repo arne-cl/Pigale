@@ -634,7 +634,7 @@ int EmbedTContact(TopologicalGraph &G)
 	  if(b.GetEdge() <= morg) Hor2[G.vin[-b]] = Max(Hor2[G.vin[-b]],Hor[iv]);
       if(b.GetEdge() <= morg) Hor2[G.vin[-b]] = Max(Hor2[G.vin[-b]],Hor[iv]);
       }
-
+ 
   // Solve constraints
   vertical.solve(Ver);
   Hor2[iv3] = Hor[iv3];
@@ -671,6 +671,13 @@ int EmbedTContact(TopologicalGraph &G)
       if(T_vertex[v].lvertex == 0)
 	  {hp1[v].x() = (double)xv - xminsize;  hp2[v].x() = (double)xv + xminsize;continue;}
       x1 = Ver[T_vertex[v].lvertex]; x2 = Ver[T_vertex[v].rvertex];
+      if(v == iv3())
+	  {if(x1 != x2)
+	      {hp1[v].x() = (double)x1 + epsilon; hp2[v].x() = (double)x2 - epsilon;}
+	  else
+	      {hp1[v].x() = (double)x2 - xminsize; hp2[v].x() = (double)x2 + xminsize;}
+	  continue;
+	  }
       // general case
       x1 = Min(x1,xv); x2 = Max(x2,xv);
       hp1[v].x() = (x1 != xv) ? (double)x1 + epsilon :(double) x1 - xminsize;
