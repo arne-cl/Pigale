@@ -142,7 +142,7 @@ void GraphWidget::update()
       }
   else
       delete d->pGG;
-
+  if(d->mywindow->MacroLooping)return;
   d->pGG = new GeometricGraph(d->mywindow->GC);
   d->moving_item = 0;  d->curs_item = 0;  d->info_item = 0; d->moving_subgraph = false;
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
