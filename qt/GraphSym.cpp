@@ -659,6 +659,10 @@ class GraphSymPrivate
       SymLabel = true;
       Optimal = false;
       Factorial = false;
+      editor = NULL;
+      bt_sym = bt_opt = bt_fact = NULL;
+      pGC = NULL;
+      pGG = NULL;
       }
   ~GraphSymPrivate()
       {delete editor;}
