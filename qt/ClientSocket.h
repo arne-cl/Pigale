@@ -23,16 +23,18 @@
 #include <qtextstream.h>
 #include <qdatastream.h>
 #include <qstringlist.h>
-//#include <stdlib.h>
+#include <qthread.h>
 
 #include <Pigale.h>
 #include "MyWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
  
+
 class PigaleServer;
 
-class ClientSocket : public QSocket
+
+class ClientSocket : public QSocket, QThread
 // created each time a client connects
 {Q_OBJECT
 public:
@@ -44,22 +46,27 @@ public:
 signals:
   void logText(const QString&);
   void signalId(int);
+  void threadDataAction(const QString&);
 
 private slots:
   void readClient();
   void ClientClosed();
+  int xhandler(const QString& data);
+  void writeServer(const QString&  msg);
 
 private: 
+  void run();
   void sendServerId();
-  void writeServer(QString&  msg);
-  int xhandler(const QString& data);
   int Png();
   int ReadRemoteGraph(QString &dataParam);
+  int GetRemoteGraph();
   int handlerInfo(int action);
   int handlerInput(int action,const QString& data);
   int line;
   int prId;
   int sdebug;
+  bool getRemoteGraph;
+  int indexRemoteGraph;
   QTextStream cli;
   QDataStream clo;
   MyWindow *mw; 
