@@ -41,7 +41,7 @@ int Embed3d(TopologicalGraph &G0)
   double min123 = min1; min123 = Min(min123,min2);min123 = Min(min123,min3);
   double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
   double alpha = Max(-min123,max123);
-  alpha = 1./alpha;
+  alpha = (alpha < 1.E-12) ? .0 : 1./alpha;
   Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
   for(int i = 1;i <= G.nv();i++)
       {Coord3[i].x() = alpha*G.Coords[i][1];
@@ -121,6 +121,8 @@ void EmbedRnGraph::init()
 	  DebugPrintf("Distance: Adjacence M"); 
       else if(useDistance() == 4) 
 	  DebugPrintf("Distance: Orient"); 
+      else
+	  DebugPrintf("Distance: Orient"); 
       }
 
   if(useDistance() == 2)//Incidence
@@ -129,6 +131,8 @@ void EmbedRnGraph::init()
       ComputeIncidenceMDistances();
   else if(useDistance() == 4)
       ComputeOrientDistances();
+  else if(useDistance() == 5)
+      ComputeR2Distances();
   else
       ComputeDistances(); //Neigbour or Bissect
 
@@ -328,13 +332,27 @@ int EmbedRnGraph::ComputeIncidenceDistances()
       Distances[i][i] = .0;
   return 0;
   }
+int EmbedRnGraph::ComputeR2Distances()
+  {int i,j;
+  Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j < i;j++)
+	  {Distances[i][j] = (vcoord[i].x() - vcoord[j].x())*(vcoord[i].x() - vcoord[j].x())
+	  + (vcoord[i].y() - vcoord[j].y())*(vcoord[i].y() - vcoord[j].y());
+	  Distances[j][i] = Distances[i][j];
+	  }
+  return 0;
+  }
 int EmbedRnGraph::ComputeIncidenceMDistances()
   {int i,j;
   for(i = 1;i <= nv();i++)
       for(j = 1;j <= nv();j++)
 	  Distances[i][j] = 1.;
+  // 2/3 -> negative eigenvalues (.7 ok ?)
   for(tedge e = 1;e <= ne();e++)
-      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .8;
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .75;
   for(i = 1;i <= nv();i++)
       Distances[i][i] = .0;
   return 0;
@@ -408,14 +426,15 @@ void SplitGraph::init()
   NumberElementsInClass.resize(1,NumberOfClasses);
   NumberElementsInClass.SetName("NumberElementsInClass");
   }
-
-void SplitGraph::NewClass(int dimension,int worst) 
-  {//worst becomes the barycenter of a new class 
-  for(int d = 0; d < dimension;d++)
-    l->BaryCoord(CurrentNumberOfClasses,d) = Coords[worst][d+1];
-  CurrentNumberOfClasses += 1;
+void SplitGraph::ComputeProjectDistance(int dimension)
+  {double aux;
+  for(int dim = 0; dim < dimension; dim++)
+      for(int i = 1;i < nv(); i++)
+          for(int j = 0;j < i; j++)
+              {aux = Coords[i+1][dim+1] - Coords[j+1][dim+1];
+              l->ProjectDist(i,j) += aux * aux;
+              }
   }
-
 void SplitGraph::SearchFarVertices(int dimension)
   {// Compute distances in R(dimension)
   int  extrem0, extrem1;
@@ -430,16 +449,8 @@ void SplitGraph::SearchFarVertices(int dimension)
       else if(Coords[i+1][1] > max0)
 	  {max0 = Coords[i+1][1];extrem1 = i;}
       }
-
-  double aux;
-  for(int dim = 0; dim < dimension; dim++)
-      for(int i = 1;i < nv(); i++)
-          for(int j = 0;j < i; j++)
-              {aux = Coords[i+1][dim+1] - Coords[j+1][dim+1];
-              l->ProjectDist(i,j) += aux * aux;
-              }
-
   extrem0 += 1;extrem1 += 1;
+  ComputeProjectDistance(dimension);
   AffectExtrems(extrem0, extrem1);
   if(debug())DebugPrintf("ext:%d %d",extrem0, extrem1);
   }
@@ -460,7 +471,28 @@ void SplitGraph::AffectExtrems(int extrem0,int extrem1)
     }
   CurrentNumberOfClasses = 2;
   }
+void SplitGraph::NewClass(int dimension,int worst) 
+  {//worst becomes the barycenter of a new class 
+  for(int d = 0; d < dimension;d++)
+    l->BaryCoord(CurrentNumberOfClasses,d) = Coords[worst][d+1];
+  CurrentNumberOfClasses += 1;
+  }
 
+void SplitGraph::SearchWorst(int dimension,int &worst) 
+  {double max_dist,dist,x;
+  max_dist = .0;
+  for(int i = 0; i < nv(); i++)
+    {for(int j = 0;j < CurrentNumberOfClasses; j++)
+      {dist = 0;
+      for(int d = 0; d < dimension; d++)
+	{x = Coords[i+1][d+1] - l->BaryCoord(j,d);
+	dist += x * x;
+	}
+      if(dist > max_dist){max_dist = dist; worst = i;}
+      }
+    }
+  worst += 1;
+  }
 void SplitGraph::BuildClasses(int dimension, double& inertie,int& worst)
   {// construct classes from the barycenters dans R(dim)
   // worst est le sommet qui n'est proches d'aucun barycentre in R(n-1) ? in R(dim) 
@@ -581,8 +613,9 @@ int SplitGraph::Segment()
   {int  dimension, worst,dim_opt;
   double inertie, inert_glob;
   double critere_glob,critere_opt = DBL_MAX;
-
-  l = new Locals(nv(),Max(MaxDimension,NumberOfClasses), NumberOfClasses);
+   MinDimension = Max(1,NumberOfClasses-2);
+   MaxDimension = NumberOfClasses;
+   l = new Locals(nv(),Max(MaxDimension,NumberOfClasses), NumberOfClasses);
 
   if(debug())
       {LogPrintf("\nRequested Number of Classes:%d):",NumberOfClasses);
@@ -592,9 +625,37 @@ int SplitGraph::Segment()
   double ClassVarianceNumber = .0;
   double ClassVarianceNumber_opt = .0;
   dim_opt = 0;
+
+//   dimension = 1;
+//   SearchFarVertices(dimension);
+//   Optimize(dimension,worst,inertie);
+//   while(CurrentNumberOfClasses < NumberOfClasses)
+//       {SearchWorst(++dimension,worst); 
+//       ComputeBarycenters(dimension);
+//       NewClass(dimension,worst);
+//       BuildClasses(dimension,inertie,worst);
+//       Optimize(dimension, worst, inertie);
+//       }
+
+//   for(dimension = MinDimension; dimension <= MaxDimension; dimension++)
+//        {Optimize(dimension, worst, inertie);
+//        inert_glob = TotalInertia(ClassVarianceNumber);
+//        critere_glob = inert_glob + ClassVarianceNumber/nv();
+//        if(debug())DebugPrintf("dimension:%d \ninertie:%f var:%f"
+//  			     ,dimension,inert_glob,ClassVarianceNumber);
+//       if(critere_glob < critere_opt)
+//           {critere_opt = critere_glob;
+// 	  dim_opt = dimension;
+//           ClassVarianceNumber_opt = ClassVarianceNumber;
+// 	  for(int i = 1;i <= nv();i++)
+// 	      ClassNumber[i] = l->Part.Class[i-1]+1;
+// 	  for(int i = 1;i <= NumberOfClasses;i++)
+// 	      NumberElementsInClass[i] = l->Part.Cardinal[i-1];
+//           }
+//        }
+
   for(dimension = MinDimension; dimension <= MaxDimension; dimension++)
       {SearchFarVertices(dimension);
-
       // Create more classes
       while(CurrentNumberOfClasses < NumberOfClasses)
           {Optimize(dimension,worst,inertie);
@@ -604,12 +665,10 @@ int SplitGraph::Segment()
 
       Optimize(dimension, worst, inertie);
       inert_glob = TotalInertia(ClassVarianceNumber);
+      //printf("dimension:%d inertie:%f var:%f\n",dimension,inert_glob,ClassVarianceNumber);
       if(debug())DebugPrintf("dimension:%d \ninertie:%f var:%f"
 			     ,dimension,inert_glob,ClassVarianceNumber);
       critere_glob = inert_glob + ClassVarianceNumber/nv();
-      //critere_glob = inert_glob + ClassVarianceNumber/10.;
-      //critere_glob = inert_glob;
-      //critere_glob = ClassVarianceNumber;
 
       if(critere_glob < critere_opt)
           {critere_opt = critere_glob;
@@ -621,6 +680,8 @@ int SplitGraph::Segment()
 	      NumberElementsInClass[i] = l->Part.Cardinal[i-1];
           }
       }
+
+
 
   Tprintf("Opt Dim.:%d (%3.3f)",dim_opt,ClassVarianceNumber_opt);
   if(debug())

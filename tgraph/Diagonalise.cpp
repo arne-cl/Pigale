@@ -28,7 +28,6 @@ static int ComputeBilinearForm(double **dis,double ** Distances,int ni,double& t
 static int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues);
 
 
-//const double  epsilon = 1.E-200;      //bon ave 1.E-100
 const double  epsilon = 1.E-12;      //bon ave 1.E-100
 
 
@@ -67,9 +66,12 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
   // Normalization: dis[i][j] coordonne j du sommet i (i=1,ni j=1,nf)
   double a;
   for(j = 1; j <= nf; j++)
-      {a = sqrt(Abs(EigenValues[j]*ni));
-      for (i = 1; i <= ni; i++)
-          dis[i][j] *= a;
+      {if(Abs(EigenValues[j]) < 1.E-10)
+	  for (i = 1; i <= ni; i++)  dis[i][j] = .0;
+      else
+	  {a = sqrt(Abs(EigenValues[j]*ni));
+	  for (i = 1; i <= ni; i++)  dis[i][j] *= a;
+	  }
       }
   if(debug()) // Impression des coordonnees
       {int imax = Min(ni,20);

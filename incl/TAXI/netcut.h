@@ -105,6 +105,7 @@ class EmbedRnGraph : public TopologicalGraph
   double ComputeOutDist(int vertex1,int vertex2);
   int ComputeIncidenceDistances();
   int ComputeIncidenceMDistances();
+  int ComputeR2Distances();
   
 
   EmbedRnGraph(Graph &G) :
@@ -136,7 +137,9 @@ class SplitGraph : public EmbedRnGraph
       
       void ComputeMaxDistance3d();
       void NewClass(int dimension,int worst);
+      void ComputeProjectDistance(int dimension);
       void SearchFarVertices(int dimension);
+      void SearchWorst(int dimension,int &worst); 
       void AffectExtrems(int extrem0,int extrem1);
       void BuildClasses(int dimension, double& inertie,int& worst);
       void Optimize(int dimension,int& worst,double& inertie);
