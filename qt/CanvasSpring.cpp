@@ -26,7 +26,7 @@ int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,doub
   dx = xmax - xmin;
   dy = ymax - ymin;
   return 0;
-  }
+  } 
 char sgn(double f)
 { if (f==0) return('0');
  if (f<0) return('-'); else return('+');}
@@ -165,15 +165,16 @@ void GraphEditor::Spring()
 
 //**************************************************************************************
 void GraphEditor::SpringPreservingMap()
+/*
+t current tanslation
+*/
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-  svector<Tpoint> translate(1,G.nv()); translate.clear();
-  Tpoint t; // current translation
+  svector<int> degree(1,G.nv()); 
   DoNormalise = true;
-  int h = gwp->canvas->height();
-  int w = gwp->canvas->width();
+  int h = gwp->canvas->height(),w = gwp->canvas->width();
   double mhw = Min(w,h) - 2*BORDER;
-  Tpoint center((w - space - sizerect)/2.,h/2.);
+  //Tpoint center((w - space - sizerect)/2.,h/2.);
   int n_red,n = G.nv(),m =G.ne();
   double len,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
@@ -182,12 +183,15 @@ void GraphEditor::SpringPreservingMap()
   int iter,niter = 2000;
   double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
-  Tpoint p0,p;
+  Tpoint p0,p,t,tt,center((w - space - sizerect)/2.,h/2.);
   gwp->mywindow->blockInput(true);
   double force = 1.;
   int stop = 0;
   // Compute bounds
   ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0);
+  // Compute degrees;
+  for(tvertex v = 1;v <= n;v++)
+      degree[v] = G.Degree(v);
 
   for(iter = 1;iter <= niter;iter++)
       {t=Tpoint(0,0);
@@ -202,6 +206,8 @@ void GraphEditor::SpringPreservingMap()
       len /= m;
       len02 = len*len;
       hw = expand*hw0;
+      dep = .0;
+      n_red = 0;
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  t.x() = t.y() = .0;
@@ -209,18 +215,39 @@ void GraphEditor::SpringPreservingMap()
 	  for(tvertex v = 1;v <= n;v++) 
 	      {if(v == v0)continue;
 	      p = G.vcoord[v];
-	      dist2 = Max(Distance2(p0,p),1.);
+	      tbrin b0 =  G.pbrin[v0];
+	      tbrin b = b0;
+	      double count=0;
+	      Tpoint pmin;
+	      Tpoint pcenter=Tpoint(0,0);
+	      if (b0!=0)
+		do
+		  if (G.vin[-b]!=v)
+		    {double d2=dist_seg(p,p0,G.vcoord[G.vin[-b]],pmin);
+		    d2=Max(d2,1E-6);
+		    pcenter+=pmin/d2; 
+		    count+=1/d2;
+		    }
+		while ((b=G.cir[b])!=b0);
+	      if (count!=0)
+		pcenter /= count;
+	      else pcenter=p0;
+	      dist2 = Max(Distance2(pcenter,p),1E-4);
 	      strength = (hw/dist2);
-	      t += (p0 - p)*strength; 
+	      t += strength * (pcenter-p);
+	      // t += (p0 - p)*strength; 
 	      }
 
 	  //v0 is attracted or repulsed by its neighbours (1/d)
 	  tbrin b0 = G.pbrin[v0];
 	  tbrin b = b0;
 	  do
-	      {p = G.vcoord[G.vin[-b]];
-	      dist2 = Max(Distance2(p0,p),1.);
-	      strength = Min(sqrt(hw/dist2),.1);
+	      {tvertex v=G.vin[-b];
+	      p = G.vcoord[v];
+	      dist2 = Max(Distance2(p0,p),.01);
+	      //strength = Min(sqrt(hw/dist2),1);
+	      double pond = .5*(1. + degree[v0]/(degree[v0]+degree[v]));
+	      strength = Min(sqrt(hw/dist2),1)*pond;
 	      if(dist2 > len02/4)
 		  t -= (p0-p)*strength*.5;
 	      else if(dist2 < 4*len02) 
@@ -242,75 +269,85 @@ void GraphEditor::SpringPreservingMap()
 		  {strength = (hw/dist2);
 		  t += (p00 - p)*strength;
 		  }
-	      else if(G.vcoord[v].y() != G.vcoord[v].y())
-		  t.x() += 5.;
 	      else
-		  {t.x() += 5.;t.y() += 5.;}
+		{if (dist2!=0)
+		  tt=p00-p;
+		else // more diffcult
+		  {Tpoint t1=G.vcoord[v]-G.vcoord[w];
+		  tt.x()=-t1.y(); tt.y()=t1.x(); // compute vector orthogonal to (v,w)
+		  if ((p0-G.vcoord[v])*tt>0) tt=-tt;
+		  }
+		if (tt*tt!=0) tt = tt/sqrt(tt*tt); // normalize
+		else qDebug("null vector");
+		//t += 5.*tt;
+		t += hw/2.*tt;
+		}
+// 	      else if(G.vcoord[v].y() != G.vcoord[v].y())
+// 		  t.x() += 5.;
+// 	      else
+// 		  {t.x() += 5.;t.y() += 5.;}
+
 	      }
 	  t *= force;
 	  // Check crossings
 	  bool found=false;
 	  if (t*t!=0)
-	      {for (tbrin b=1; b<=G.ne(); b++)
-		  {tvertex v1=G.vin[b];
-		  tvertex v2=G.vin[-b];
-		  if (v1==v0 || v2==v0) continue;
-		  Tpoint p1=G.vcoord[v1];
-		  Tpoint p2=G.vcoord[v2];
-		  double d1=Determinant(p1-p0,t);
-		  double d2=Determinant(p2-p0,t);
-		  double d3=Determinant(p0-p1,p2-p1);
-		  double d4=Determinant(p0+t-p1,p2-p1);
-                  double x1 = d1*d2; double x2=d3*d4;
-                  if (x1<=0 && x2<0 || x1<0 && x2<=0)
-		      {found=true;
-		      break;}
-		  }
-	      if (!found)
-		  {tbrin b0=G.pbrin[v0];
-		  bool dobrk=false;
-		  tbrin b=b0;
-		  do 
-		      {Tpoint pp0=G.vcoord[G.vin[-b]];
-		      for (tvertex z=1; z<=G.nv(); z++)
-			  {if (z==v0 || z==G.vin[-b]) continue;
-			  Tpoint p=G.vcoord[z];
-			  double d1=Determinant(p0-pp0,p-pp0);
-			  double d2=Determinant(p0+t-pp0,p-pp0);
-			  double d3=Determinant(pp0-p0,p-p0);
-			  double d4=Determinant(t,p-p0);
-			  double x1 = d1*d2; double x2=d3*d4;
-			  if (x1<0 && x2<=0 || x1<=0 && x2<0)
-			      {	dobrk=true;break;}
-			  }
-		      if (dobrk) {found=true; break;}
-		      } while ((b=G.cir[b])!=b0);
-		  }
-	      if (found)
-		  {t=Tpoint(0,0);
-		  if(debug())G.vcolor[v0] = Blue;
-		  }
+	    {for (tbrin b=1; b<=G.ne(); b++)
+	      {tvertex v1=G.vin[b];
+	      tvertex v2=G.vin[-b];
+	      if (v1==v0 || v2==v0) continue;
+	      Tpoint p1=G.vcoord[v1];
+	      Tpoint p2=G.vcoord[v2];
+	      double d1=Determinant(p1-p0,t);
+	      double d2=Determinant(p2-p0,t);
+	      double d3=Determinant(p0-p1,p2-p1);
+	      double d4=Determinant(p0+t-p1,p2-p1);
+	      double x1 = d1*d2; double x2=d3*d4;
+	      if (x1<=0 && x2<0 || x1<0 && x2<=0)
+		{found=true; break; }
 	      }
-	  if (!found)
-	    {G.vcoord[v0] += t; translate[v0] += t;}
+	    if (!found)
+	      {tbrin b0=G.pbrin[v0];
+	      tbrin b=b0;
+	      bool dobrk=false;
+	      do 
+		{Tpoint pp0=G.vcoord[G.vin[-b]];
+		for (tvertex z=1; z<=G.nv(); z++)
+		  {if (z==v0 || z==G.vin[-b]) continue;
+		  Tpoint p=G.vcoord[z];
+		  double d1=Determinant(p0-pp0,p-pp0);
+		  double d2=Determinant(p0+t-pp0,p-pp0);
+		  double d3=Determinant(pp0-p0,p-p0);
+		  double d4=Determinant(t,p-p0);
+		  double x1 = d1*d2; double x2=d3*d4;
+		  if (x1<0 && x2<=0 || x1<=0 && x2<0)
+		    {	dobrk=true; break;}
+		  }
+		if (dobrk) {found=true; break;}
+		} while ((b=G.cir[b])!=b0);
+	      }
+	    if(found)
+	      t=Tpoint(0,0);
+	    }
+
+	  if(!found)
+	      {G.vcoord[v0] += t; 
+	      dx = Abs(t.x()); dy = Abs(t.y());
+	      dep = Max(dep,dx,dy);  
+	      if(dx > 1. || dy > 1.)
+		  nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
+	      else
+		  {nodeitem[v0]->SetColor(red);++n_red;}
+	      nodeitem[v0]->moveTo(G.vcoord[v0],3.);
+	      }
+	  else
+	      {nodeitem[v0]->SetColor(blue);++n_red;}
+	  
 	  }
 
       // update the drawing
-      dep = .0;
-      n_red = 0;
-      for(tvertex v = 1;v <= n;v++)
-	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
-	  dep = Max(dep,dx);  dep = Max(dep,dy);
-	  if(dx > 1. || dy > 1.)
-	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      //nodeitem[v]->moveTo(G.vcoord[v]);
-	      }
-	  else
-	      {nodeitem[v]->SetColor(red);++n_red;}
-	  nodeitem[v]->moveTo(G.vcoord[v]);
-	  canvas()->update();
-	  }
-      translate.clear();
+      if(iter%2 == 0)canvas()->update();
+
       stop = (n_red == G.nv())? ++stop : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
