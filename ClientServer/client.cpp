@@ -46,10 +46,12 @@ int Client::ChangeActionsToDo(int delta)
   mutex.lock();
   i=(ActionsToDo += delta);
   mutex.unlock();
-  if(!stack.isEmpty() && delta < 0)
-      {if(debug()) writeToClient("...... "+*stack.top()+" processed");
+  if(delta < 0)
+      {if(debug()) writeToClient("!"+*stack.top());
       stack.pop(); 
       }
+  else if(debug() && !stack.isEmpty() && delta > 0 )
+      writeToClient(QString("%1").arg(*stack.top()));
   return i;
   }
 void Client::socketConnected()
@@ -126,9 +128,9 @@ void Client::sendToServer(QString &str)
           sendToServerGraph(fields[i]);
       else
           {cls << fields[i] << endl;
-          ChangeActionsToDo(1);
           QString *txt  =  new QString(fields[i]);
           stack.push(txt);
+          ChangeActionsToDo(1);
           //if(debug())writeToClient(QString(" action:%1 -%2-").arg(ActionsToDo).arg( fields[i]));
           }
       }
@@ -195,7 +197,10 @@ void Client::socketReadyRead()
       if(str.at(0) == ':')
           writeToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-          {char * buffer = NULL;
+          {QString *txt  =  new QString("GET_PNG");
+          stack.push(txt);
+          ChangeActionsToDo(1);
+          char * buffer = NULL;
           uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PngFile = QString("image%1.png").arg(++numPng);
@@ -206,6 +211,11 @@ void Client::socketReadyRead()
           delete [] buffer;
           if(debug())writeToClient(QString("GOT:%1").arg(PngFile));
           ChangeActionsToDo(-1);
+          }
+      else if(str == "!!")// server ha finished everything
+          {ChangeActionsToDo(-1);
+          closeConnection();
+          writeToClient("Connection Closed");
           }
       else if(str.at(0) == '!')//server has finished one action
           ChangeActionsToDo(-1);
@@ -223,15 +233,8 @@ void threadRead::run()
       while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
           if(++retry %100 == 0 && pclient->debug())
-              {
-              if(!pclient->stack.isEmpty()) 
-                  {QString action = *pclient->stack.top(); 
-                  pclient-> writeToClient(QString("Waiting %1s (%2-%3)").arg(retry/100).arg(action)
-                                      .arg(pclient->ChangeActionsToDo(0)));
-                  }
-              else
-                  pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100)
-                                      .arg(pclient->ChangeActionsToDo(0)));
+              {QString action = *pclient->stack.top(); 
+              pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100).arg(action));
               }
           }
       str = stream.readLine(); 

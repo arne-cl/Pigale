@@ -101,12 +101,11 @@ void ClientSocket::run()
       {QString str = cli.readLine();
       if(++line == 10000)line = 0;
       if(str.at(0) == '#')
-          {cli << str << endl;
-          cli << "!" << endl;
+          {cli << "!" << str << endl;
           }
       else if(str.at(0) == '!')
           {cli << ":END OF FILE" << endl;
-          cli << "!" << endl;
+          cli << "!!" << endl;
           }
       else 
           xhandler(str);

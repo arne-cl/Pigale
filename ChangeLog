@@ -21,3 +21,5 @@
 16/03/2005: Added in the file menu an option to start the server.
 29/03/2005: Improved client-server.
 29/03/2005: Corrected a bug in Embedding in Rn (if an edge had a color index > 16).
+-------------------------------------------------------------------------------------
+04/04/2005: Now the first line of an scii graph file must be:"PIGAL:0" (without ").
