@@ -82,6 +82,7 @@ public slots:
 public:
   void Message(QString s);
   void MessageClear();
+  void UndoTouch(bool save=false);
 
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;

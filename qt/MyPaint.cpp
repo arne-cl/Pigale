@@ -21,7 +21,6 @@
 //in QtMisc.cpp
 int & ShowVertex();
 
-#define Pink Blue
 void DrawPolar(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
@@ -35,6 +34,7 @@ void DrawPolar(QPainter *p,MyPaint *paint)
   Prop<double> Etheta1(G.Set(tedge()),PROP_DRAW_DBLE_2);
   Prop<double> Etheta2(G.Set(tedge()),PROP_DRAW_DBLE_3);
   Prop1<double> nw(G.Set(),PROP_DRAW_DBLE_1);
+
   int m = G.ne(); 
   int ox,oy,nx,ny,theta,dt;
   QPen pn = p->pen();pn.setWidth(1);
@@ -45,17 +45,17 @@ void DrawPolar(QPainter *p,MyPaint *paint)
           continue;
           }
       if (Epoint11[ee]!=Tpoint(-1,-1))
-          {paint->DrawSeg(p,Epoint1[ee],Epoint11[ee],Pink);
-          paint->DrawSeg(p,Epoint11[ee],Epoint12[ee],Pink);
+          {paint->DrawSeg(p,Epoint1[ee],Epoint11[ee],Blue);
+          paint->DrawSeg(p,Epoint11[ee],Epoint12[ee],Blue);
           }
       else if (Epoint12[ee]!=Tpoint(-1,-1))
-          paint->DrawSeg(p,Epoint1[ee],Epoint12[ee],Pink);
+          paint->DrawSeg(p,Epoint1[ee],Epoint12[ee],Blue);
       if (Epoint21[ee]!=Tpoint(-1,-1))
-          {paint->DrawSeg(p,Epoint2[ee],Epoint21[ee],Pink);
-          paint->DrawSeg(p,Epoint21[ee],Epoint22[ee],Pink);
+          {paint->DrawSeg(p,Epoint2[ee],Epoint21[ee],Blue);
+          paint->DrawSeg(p,Epoint21[ee],Epoint22[ee],Blue);
           }
       else if (Epoint22[ee]!=Tpoint(-1,-1))
-          paint->DrawSeg(p,Epoint2[ee],Epoint22[ee],Pink);
+          paint->DrawSeg(p,Epoint2[ee],Epoint22[ee],Blue);
 	  
       pn.setColor(color[Blue]);pn.setWidth(2);p->setPen(pn);
       ox = paint->to_x(-Erho[ee]);
@@ -65,64 +65,39 @@ void DrawPolar(QPainter *p,MyPaint *paint)
       theta = (int)(Etheta1[ee]*16*180/PI+.5);
       dt = (int)((Etheta2[ee] - Etheta1[ee])*16*180/PI+.5); 
       p->drawArc(ox,oy,nx,ny,theta,dt);
-      //DrawArc(Erho[ee],Etheta1[ee],Etheta2[ee],Blue);
       }
     // Draw the vertices
   /*
     int n = G.nv();
   Prop<long> label(G.PV(),PROP_LABEL);
-  DrawNode(Vcoord[1],label[1],Pink);
+  DrawNode(Vcoord[1],label[1],Blue);
   for(tvertex v = 2;v <= n;v++)
       DrawNode(Vcoord[v],label[v()],Yellow);
   */
   }
-#undef Pink
-
 void DrawTContact(QPainter *p,MyPaint *paint)
   {GeometricGraph G(paint->GCP);
   Prop<Tpoint> hp1(G.Set(tvertex()),PROP_DRAW_POINT_1);
   Prop<Tpoint> hp2(G.Set(tvertex()),PROP_DRAW_POINT_2);
   Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
-  Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
+  Prop<Tpoint> postxt(G.Set(tvertex()),PROP_DRAW_POINT_5);
   Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
-  
+
   // Draw horizontals and verticals
   for(tvertex v = 1;v <= G.nv();v++)
       {if(hp1[v].x() > .0)paint->DrawSeg(p,hp1[v],hp2[v],Black);
       if(vp1[v].x() > .0)paint->DrawSeg(p,vp1[v],vp2[v],Black);
       }
-
   // Draw text
-  int sizefont = (int)(sizetext() * Min(paint->xscale,paint->yscale) + .5);
-  sizefont = Min(sizefont,12);
-  if(sizefont < 6)return;
-  QFont font = QFont("lucida",sizefont);
-  p->setFont(font);
-  //Checking if vertices have labels
-  svector<long> *vlabel = NULL;
-  if(G.Set(tvertex()).exist(PROP_LABEL))
-      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-      vlabel = &label.vector();
-      }
- 
-  QPen pn = p->pen();
-  pn.setColor(color[Black]); pn.setWidth(1); p->setPen(pn);
-  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  QRect rect;
-  QSize size;
+  p->setFont(QFont("lucida",Min((int)(sizetext() * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
-  int dx,dy;
   for(tvertex v=1; v <= G.nv();v++)
-      {if(ShowVertex() == -1 || !G.Set(tvertex()).exist(PROP_LABEL))
+      {if(ShowVertex() == -1)
 	  t.sprintf("%2.2d",v());
       else
-	  t.sprintf("%2.2ld",G.vlabel[v()]);
-      size = QFontMetrics(font).size(Qt::AlignCenter,t);
-      dx =size.width() + 4;   dy = size.height() ;
-      rect = QRect(paint->to_x(txt[v].x()) -dx/2,paint->to_y(txt[v].y())-dy,dx,dy);
-      pb.setColor(color[G.vcolor[v]]);      p->setBrush(pb);
-      p->drawRect(rect);      p->drawText(rect,Qt::AlignCenter,t);
+ 	  t.sprintf("%2.2ld",G.vlabel[v()]);
+      paint->DrawText(p,postxt[v],t,G.vcolor[v],0);
       }
   }
 void DrawBipContact(QPainter *p,MyPaint *paint)
@@ -132,6 +107,7 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
   Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+
   QPen pn = p->pen();pn.setWidth(1);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   QPoint ps,pt;
@@ -196,7 +172,7 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
 	      } 
 	  }
 
-      if(ShowVertex() == -1 || !G.Set(tvertex()).exist(PROP_LABEL))
+      if(ShowVertex() == -1)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",G.vlabel[v()]);
@@ -258,23 +234,16 @@ void DrawFPPVisibility(QPainter *p,MyPaint *paint)
 	   paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       }
-  
+
   // Draw vertices
-  int dx,dy;
-  QRect rect;
+  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
-  QPen pn = p->pen();
-  pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
-  for(tvertex v=1; v <= G.nv();v++) // draw boxes
-      {dx = (int)(paint->to_x(xriv[v]+beta) - paint->to_x(xliv[v]-beta) +.5);
-      dy = (int)(2.*alpha*paint->yscale +.5);
-      rect = QRect(paint->to_x(xliv[v]-beta),paint->to_y(y[v]),dx,dy);
-      p->setBrush(color[vcolor[v]]);p->drawRect(rect);
-      if(ShowVertex() == -1 || !vlabel)
+  for(tvertex v=1; v <= G.nv();v++) 
+      {if(ShowVertex() == -1 || !vlabel)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-      p->drawText(rect,Qt::AlignCenter,t);
+      paint->DrawText(p,xliv[v]-beta, y[v], xriv[v]-xliv[v]+2.*beta, 2.*alpha,t,vcolor[v]);
       }
   }
 void DrawVisibility(QPainter *p,MyPaint *paint)
@@ -292,30 +261,18 @@ void DrawVisibility(QPainter *p,MyPaint *paint)
       {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
       vlabel = &label.vector();
       }
-  double alpha=0.3;
-  p->setFont(QFont("lucida",12));
-  QPen pn = p->pen(); 
-  pn.setWidth(2);
-  Tpoint a,b;
 
-  pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
-  QRect rect;
-  int dx,dy;
+  double alpha=0.3;
+  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  Tpoint a,b;
   QString t;
   for(tvertex v=1;v<=G.nv();v++)
-      {p->setBrush(color[vcolor[v]]);
-      dx = (int)(paint->to_x(x2[v]+alpha) - paint->to_x(x1[v]-alpha) +.5);
-      dy = (int)(2.*alpha*paint->yscale +.5);
-      rect = QRect(paint->to_x(x1[v]-alpha),paint->to_y(y[v]+alpha),dx,dy);
-      p->drawRect(rect);
-      if(ShowVertex() == -1|| !vlabel)
+      {if(ShowVertex() == -1|| !vlabel)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-
-      p->drawText(rect,Qt::AlignCenter,t);
+      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,t,vcolor[v]);
       }
-
   for (tedge e = 1;e <= G.ne();e++)
       {a.x() = P1[e].x(); a.y() = P1[e].y() + alpha;
       b.x() = P1[e].x();  b.y() = P2[e].y() - alpha;
@@ -340,18 +297,14 @@ void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
       vlabel = &label.vector();
       }
   double alpha=0.3;
-  p->setFont(QFont("lucida",12));
-  QPen pn = p->pen(); 
-  pn.setWidth(2);
   Tpoint a,b;
   for (tedge e = 1;e <= G.ne();e++)
       {a.x() = P1[e].x(); a.y() = P1[e].y();
       b.x() = P1[e].x();  b.y() = P2[e].y();
       paint->DrawSeg(p,a,b,ecolor[e]);
       }
-  pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
-  QRect rect;
-  int dx,dy;
+
+  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
   for(tvertex v=1;v<=G.nv();v++)
       {if(x1m[v] != x2m[v]) // always 
@@ -359,19 +312,16 @@ void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
 	  b.x() = x2m[v];  b.y() = y[v];
 	  paint->DrawSeg(p,a,b,Black);
 	  }
-      p->setBrush(color[vcolor[v]]);
-      dx = (int)(paint->to_x(x2[v]+alpha) - paint->to_x(x1[v]-alpha) +.5);
-      dy = (int)(2.*alpha*paint->yscale +.5);
-      rect = QRect(paint->to_x(x1[v]-alpha),paint->to_y(y[v]+alpha),dx,dy);
-      p->drawRect(rect);
       if(ShowVertex() == -1|| !vlabel)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-
-      p->drawText(rect,Qt::AlignCenter,t);
+      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,t,vcolor[v]);
       }
   }
+
+//**********************************************************************************************
+//**********************************************************************************************
 
 typedef void (*draw_func)(QPainter *p,MyPaint *paint);
 struct DrawThing {
@@ -389,6 +339,7 @@ DrawThing DrawFunctions[] =
     {DrawTContact,"&T Contact"},
     {0,0} 
     };
+const int border = 20;
 
 MyPaint::~MyPaint()
   { }
@@ -417,11 +368,11 @@ void MyPaint::update(int i)
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   xmin = pmin().x();  ymin = pmin().y();
   xmax = pmax().x();  ymax = pmax().y();
-  Wx_max = this->width();  Wy_max = this->height();
+  Wx_max = this->width() - 2*border;  Wy_max = this->height() - 2*border;
   xscale = Wx_max/(xmax - xmin);
-  xtr  =  - xmin*xscale;
+  xtr  =  - xmin*xscale + border;
   yscale = Wy_max/(ymax - ymin);
-  ytr  =   - ymin*yscale;
+  ytr  =   - ymin*yscale +border;
 #if QT_VERSION < 300
   father->tabWidget->changeTab(this,DrawFunctions[index].name);
 #else
@@ -440,11 +391,11 @@ void MyPaint::showEvent(QShowEvent*)
 void MyPaint::hideEvent(QHideEvent*)
   {isHidden = true;}
 void MyPaint::resizeEvent(QResizeEvent* e)
-  {Wx_max = this->width();  Wy_max = this->height();
+  {Wx_max = this->width() - 2*border;  Wy_max = this->height() - 2*border;
   xscale = Wx_max/(xmax - xmin);
-  xtr  =  - xmin*xscale;
+  xtr  =  - xmin*xscale + border;
   yscale = Wy_max/(ymax - ymin);
-  ytr  =  - ymin*yscale;
+  ytr  =  - ymin*yscale + border;
   QWidget::resizeEvent(e);
   }
 void MyPaint::mousePressEvent(QMouseEvent * event)
@@ -462,4 +413,41 @@ void MyPaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col)
   pn.setColor(color[col]); pn.setWidth(2);
   p->setPen(pn);
   p->drawLine(ps,pt);
+  }
+void MyPaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
+// draw a rectangle centered at a
+  {QPen pn = p->pen();pn.setWidth(2);pn.setColor(color[Black]);p->setPen(pn);
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[col]);p->setBrush(pb);
+  nx *= xscale; ny *= yscale;
+  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
+  }
+void MyPaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
+// draw text centered at a, with a surrounding rectangle
+// center=1 center
+// center=0 horizontal
+  {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
+  QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
+  int nx = size.width() + 4; int ny = size.height();
+  QRect rect;
+  if(center)
+      rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny/2+.5),(int)(nx+.5),(int)(ny+.5));
+  else
+      rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny+.5),(int)(nx+.5),(int)(ny+.5));
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[col]);p->setBrush(pb);
+  p->drawRect(rect);
+  if(ny >= 6)p->drawText(rect,Qt::AlignCenter,t);
+  }
+void MyPaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QString &t,int col)
+// draw centered text in rectangle left at x,y of size: nx,ny
+  {QPen pn = p->pen();pn.setColor(color[Black]);
+  nx *= xscale;  ny *= yscale;
+  QRect rect = QRect(to_x(x),to_y(y),(int)(nx+.5),(int)(ny+.5));
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[col]);p->setBrush(pb);
+  pn.setWidth(2);p->setPen(pn);
+  p->drawRect(rect);
+  pn.setWidth(1);p->setPen(pn);
+  p->drawText(rect,Qt::AlignCenter,t);
   }

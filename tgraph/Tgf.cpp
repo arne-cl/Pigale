@@ -51,7 +51,7 @@ int Tgf::open(char const *name,open_mode mode)
   IsGood = 1;
   
   //Il y a toujours un header  (eventuellement juste initialise)
-  if(ReadOffsets() == BADFILE)return(0);
+  if(ReadOffsets() == BADFILE)return(-1);
   
   stream.seekp(0, ios::end);
   offset_new_data  = stream.tellp();
@@ -151,12 +151,25 @@ long Tgf::GetTagLength(int Tag)
 int Tgf::CreateRecord()
   {if(new_data)Flush();
   if(NRECORDS < Header.RecordNum)return 0;
+  // Find the end of data (!= end of file if records have been deleted)
+  // so that the tgf file behave like a stack
+  // The end of data is just after the last Ifd
+  if(Header.RecordNum)//hf  modified 15/05/2002 before always else case
+      {long OffsetLast = IfdOffset[Header.RecordNum];
+      stream.seekg(OffsetLast, ios::beg);
+      StructIfdHeader header0;
+      stream.read((char *)&(header0), sizeof(StructIfdHeader));
+      offset_new_data = OffsetLast + sizeof(StructIfdHeader) + header0.FieldNum * 16; 
+      stream.seekg(offset_new_data, ios::beg);
+      }
+  else
+      {stream.seekp(0, ios::end); 
+      offset_new_data  = stream.tellp();
+      }
   ++Header.RecordNum;
   ++Header.IfdNum;
   //Preparation D'un Ifd vide
   Ifd.Header.tag = TAG_FIRST;
-  stream.seekp(0, ios::end);
-  offset_new_data  = stream.tellp();
   new_ifd = 1;
   return(1);
   }
@@ -399,6 +412,7 @@ int Tgf::DeleteRecord(int num)
   {if(num < 1 || num > Header.RecordNum)return 0;
   if(Header.RecordNum == 1)
       {Header.RecordNum = 0;
+      Header.IfdNum = 0;
       Header.FstIfdOffs = 0;
       WriteHeader();
       return 1;
@@ -411,6 +425,7 @@ int Tgf::DeleteRecord(int num)
   else
       Header.FstIfdOffs = next;
   Header.RecordNum--;
+  Header.IfdNum--; // now as many records as Ifd
   WriteHeader();
   return 1;
   }

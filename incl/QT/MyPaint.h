@@ -14,6 +14,7 @@
 #include <TAXI/graphs.h> 
 #include <qpainter.h>
 #include <qwidget.h>
+#include <qstring.h>
 
 class MyWindow;
 class QPrinter;
@@ -28,6 +29,9 @@ public:
   int to_x(double x);   
   int to_y(double y);   
   void DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col);
+  void DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col);
+  void DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center);
+  void DrawText(QPainter *p,double x,double y,double nx,double ny,QString &t,int color);
   //public slots:
   void update(int index);
   void print(QPrinter *printer);

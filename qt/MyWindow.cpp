@@ -615,6 +615,7 @@ void MyWindow::load(int pos)
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   G.RemoveLoops();
+  UndoSave();
   banner();
   if(MacroExecuting)return;
   information(); gw->update();
@@ -627,7 +628,7 @@ void MyWindow::save()
   titre = QInputDialog::getText("Pigale","Enter the graph name",
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
-  else return;
+  else if(!ok) return;
   if(SaveGraphTgf(G,(const char *)OutputFileName,1) == 1)
       {QString t;
       t.sprintf("Cannot open file:%s",(const char *)OutputFileName);
@@ -645,6 +646,7 @@ void MyWindow::save_ascii()
   titre = QInputDialog::getText("Pigale","Enter the graph name",
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
+  else if(!ok)return;
   QString OutputAsciiFile = QFileDialog::
   getSaveFileName(DirFile,"Txt Files(*.txt)",this);
   if(OutputAsciiFile.isEmpty())return;
@@ -720,15 +722,16 @@ void MyWindow::handler(int action)
       }
   else if(action < 400)
       {UndoClear();UndoSave();timer.restart();
-      ret = DualHandler(action);
+      ret = DualHandler(action); UndoSave();
       }
   else if(action < 500)
       {UndoSave();timer.restart();
-      ret = RemoveHandler(action);
+      ret = RemoveHandler(action);UndoTouch(false);
       }
   else if(action < 600)
       {UndoClear();UndoSave();timer.restart();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
+      UndoSave();
       }
   else if(action < 700)
       {timer.restart();
@@ -854,21 +857,41 @@ UndoMax  : # of save graphs
 UndoSave : index of graph to restore [1,UndoMax]
 Should always be possible to restore 1
 */
+// void MyWindow::Undo()
+//   {if(UndoIndex > 1)--UndoIndex;
+//   if(ReadGraph(GC,undofile,UndoMax,UndoIndex) != 0)return;
+//   banner();
+//   information(); gw->update();
+//   this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
+//   }
 void MyWindow::Undo()
-  {if(UndoIndex > 1)--UndoIndex;
+  {if (UndoIndex > UndoMax) UndoSave();
+  if(UndoIndex > 1)--UndoIndex;
   if(ReadGraph(GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
   this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
   }
+void MyWindow::UndoTouch(bool save)
+  {if (UndoIndex<=UndoMax) {UndoMax=UndoIndex; UndoIndex++;banner();}
+  else if (save) { UndoSave(); UndoIndex++;banner();}
+  }
 void MyWindow::UndoSave()
   {if(!IsUndoEnable)return;
   TopologicalGraph G(GC);
   if(G.nv() == 0)return;
+  int nb = GetNumRecords(undofile); if (nb<0) nb=0;
+  int last = UndoMax>UndoIndex ? UndoIndex : UndoMax;
+  if (last<nb)
+      { Tgf file;
+      if(file.open(undofile, Tgf::old) == 0)return;
+      while (last < nb)
+	  {file.DeleteRecord(nb);
+	  nb--;}
+      }
   if(SaveGraphTgf(G,undofile,1) == 1)
       {handler(10005);return;}
-  UndoMax = GetNumRecords(undofile);
-  UndoIndex = UndoMax;
+  UndoIndex=UndoMax=++nb;
   this->undoL->setEnabled(true);
   banner();
   }
@@ -881,7 +904,8 @@ void MyWindow::Redo()
   }
 void MyWindow::UndoClear()
   {if(!IsUndoEnable)return;
-  UndoIndex = UndoMax = 0;
+  UndoIndex = 0;
+  UndoMax = 0;
   this->undoL->setEnabled(false);
   this->undoR->setEnabled(false);
   QFileInfo fi(undofile);

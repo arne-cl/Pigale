@@ -226,7 +226,9 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   Tgf file;
   if(IsFileTgf(~filename) == 1)
       {if((file.open(~filename, Tgf::old)) == 0)
-          return 1;
+	  {file.close();
+          if((file.open(~filename, Tgf::create)) == 0)return 1;
+	  }
       }
   else
       {if((file.open(~filename, Tgf::create)) == 0)

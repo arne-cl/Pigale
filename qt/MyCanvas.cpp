@@ -727,11 +727,13 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(rtt == 0)return;
 	  } 
       if(rtt == node_rtti)
-	  {G.vcolor[node->v] = color_node;
+	  {gwp->mywindow->UndoTouch(false);
+	  G.vcolor[node->v] = color_node;
 	  node->SetColor(color[color_node]);
 	  }
       else if(rtt == edge_rtti)
-	  {G.ecolor[edge->e] = color_edge;
+	  {gwp->mywindow->UndoTouch(false);
+	  G.ecolor[edge->e] = color_edge;
 	  G.ewidth[edge->e]  = width_edge;
 	  if(edge->lower) edge->SetColor(color[color_edge]);
 	  else edge->opp->SetColor(color[color_edge]);
@@ -740,7 +742,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       return;
       }
   else if(MouseAction == 1) // Create an edge
-      {Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+      {gwp->mywindow->UndoTouch(false);
+      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       NodeItem* node;
       EdgeItem *edge;
       tvertex v;
@@ -769,11 +772,14 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(rtt == 0)return;
 	  } 
       if(rtt == node_rtti)
-	  {G.DeleteVertex(node->v);
+	  {gwp->mywindow->UndoTouch(true);
+	  G.DeleteVertex(node->v);
 	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
 	  }
       else
+	  {gwp->mywindow->UndoTouch(true);
 	  G.DeleteEdge(edge->e);
+	  }
       load(false);
       gwp->mywindow->information();// Informations
       return;
@@ -783,19 +789,22 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
       if(rtt != node_rtti)return;
+      gwp->mywindow->UndoTouch(false);
       gwp->moving_item = node;
       start_position = e->pos();
       return;
       }
   else if(MouseAction == -3) // Move a subgraph
-      {gwp->moving_subgraph = true;
+      {gwp->mywindow->UndoTouch(false);
+      gwp->moving_subgraph = true;
       //if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
       //  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       start_position = e->pos();
       return;
       }
   else if(MouseAction == 4) // Bissect an edge
-      {if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
+      {gwp->mywindow->UndoTouch(true);
+      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
 	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       EdgeItem *edge;
@@ -812,13 +821,15 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       {EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
+      gwp->mywindow->UndoTouch(true);
       G.ContractEdge(edge->e);
       load(false);
       gwp->mywindow->information();// Informations
       return;
       }
   else if(MouseAction == 10)//Duplicate the sugraph of the current color
-      {if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
+      {gwp->mywindow->UndoTouch(true);
+      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
 	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       short vcol;  G.vcolor.getinit(vcol);
@@ -846,7 +857,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   else if(MouseAction == 11)
       //Duplicate the sugraph of the current color
       // and add edges between a new vertex and its father
-      {if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
+      {gwp->mywindow->UndoTouch(true);
+      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
 	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);

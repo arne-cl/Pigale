@@ -608,27 +608,22 @@ int EmbedTContact(TopologicalGraph &G)
   tbrin left,right,b;
   for(tvertex ivn = 3;ivn <= G.nv();ivn++)
       {if((iv = SP.FindVertex(left,right)) == 0)return -3;
-      // left and right are incident to iv
-      // First compute Hor[iv]
+      // First compute Hor[iv]: left and right are incident to iv
       b = left;
       Hor[iv] = Hor2[iv] = Max(Hor[iv],Hor[G.vin[-b]()] + 1);
       vertical.insert(G.vin[-b](),iv(),1);
       T_vertex[iv].lvertex =  T_vertex[iv].rvertex =  0;
-      if(b.GetEdge() <= morg) {T_vertex[iv].lvertex = T_vertex[iv].rvertex = G.vin[-b];}     
-      while((b = G.cir[b]) != right) // for packed b incident to iv 
+      if(b.GetEdge() <= morg) {T_vertex[iv].lvertex = T_vertex[iv].rvertex = G.vin[-b];}    
+ 
+      while((b = G.cir[b]) != G.cir[right]) // for packed b incident to iv 
             {Hor[iv] = Max(Hor[iv],Hor[G.vin[-b]()] + 1);
 	    if(b.GetEdge() <= morg)
 		{T_vertex[iv].rvertex = G.vin[-b];
 		if(T_vertex[iv].lvertex == 0)T_vertex[iv].lvertex = G.vin[-b];
 		}
             }
-      // b == right
-      if(b.GetEdge() <= morg)
-	  {T_vertex[iv].rvertex = G.vin[-b];
-	  if(T_vertex[iv].lvertex == 0)T_vertex[iv].lvertex = G.vin[-b];
-	  }
-      Hor[iv] = Max(Hor[iv],Hor[G.vin[-b]()] + 1);
 
+      b = right;
       // Now Hor[iv] is correct
       Hor2[iv] = Hor[iv];
       vertical.insert(iv(),G.vin[-b](),1);
@@ -649,49 +644,37 @@ int EmbedTContact(TopologicalGraph &G)
   T_vertex[iv2].lvertex = iv2;  T_vertex[iv2].rvertex = iv2;  
  
   // define the boundaries
-  int xmax = Ver[1];
-  for(int i = 2; i <= n;i++)xmax = Max(xmax,Ver[i]);
-  int ymax = Hor[1];
-  for(int i = 2; i <= n;i++)ymax = Max(ymax,Hor[i]);
-
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
-  pmin() = Tpoint(.0,.0);pmax() = Tpoint(xmax+1.,ymax+1.);
-  //pmin() = Tpoint(1.0,1.0);pmax() = Tpoint(xmax,ymax);
+  Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
+
+  double epsilon = .1;    // free distance for contacts
+  double yminsize = .55;  // minsize of verticals 
+  double xminsize = .25;  // minsize of horizontals
+  sizetext() = .5;        // maximal textsize
+  pmin() = Tpoint(1.0-xminsize,1.0);
+  pmax() = Tpoint(Ver[iv2] + sizetext()/2,Hor[iv3] + sizetext());
+
   // compute horizontals and verticals
   Prop<Tpoint> hp1(G.Set(tvertex()),PROP_DRAW_POINT_1);
   Prop<Tpoint> hp2(G.Set(tvertex()),PROP_DRAW_POINT_2);
   Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
   Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
-  Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
   
-  double epsilon = .1;  // free distance for contacts
-  double yminsize = .55; // minsize of verticals 
-  double xminsize = .25; // minsize of horizontals
-  sizetext() = .5;      // maximal textsize
-
   int x1,x2,xv;
   // Compute horizontals
   for(int v = 1;v <= n;v++)
       {if(v == iv2()){hp1[v].x() = -1.;continue;} // no horizontal
        xv = Ver[v];
       hp1[v].y() =  hp2[v].y() = (double)Hor[v];
-
       if(T_vertex[v].lvertex == 0)
 	  {hp1[v].x() = (double)xv - xminsize;  hp2[v].x() = (double)xv + xminsize;continue;}
-
       x1 = Ver[T_vertex[v].lvertex]; x2 = Ver[T_vertex[v].rvertex];
-//       if(v == iv3())
-// 	  {hp1[v].x() = (double)x1 - epsilon;  hp2[v].x() = (double)x2 + epsilon;continue;}
-
       // general case
       x1 = Min(x1,xv); x2 = Max(x2,xv);
       hp1[v].x() = (x1 != xv) ? (double)x1 + epsilon :(double) x1 - xminsize;
       hp2[v].x() = (x2 != xv) ? (double)x2 - epsilon : (double)x2 + xminsize;
-//       hp1[v].x() = (x1 != xv) ? (double)x1 + epsilon :(double) x1;
-//       hp2[v].x() = (x2 != xv) ? (double)x2 - epsilon : (double)x2;
-//       if(hp1[v].x() == hp2[v].x())hp1[v].x() = -1;
       }
 
   // Compute verticals and text position
