@@ -252,19 +252,19 @@ typedef Point2_<double> Tpoint;
 
 inline void read(istream &in,Tpoint &p)
     {double x,y;
-    in >>"x:">> x >>" y:">> y;
+    in >> x >> y;
     p = Tpoint(x,y);
     }
 inline void write(ostream &in,const Tpoint &p)
-   {in <<"x:"<< p.x() <<" y:"<< p.y()<< endl;}
+   {in << p.x() <<" "<< p.y()<< endl;}
 
 inline void read(istream &in,Tpoint3 &p)
     {double x,y,z;
-    in >>"x:">> x >>" y:">> y >> " z:" >> z;
+    in >> x >> y >> z;
     p = Tpoint3(x,y,z);
     }
 inline void write(ostream &in,const Tpoint3 &p)
-  {in <<"x:"<< p.x() <<" y:"<< p.y() << " z:"<< p.z()<< endl;}
+  {in << p.x() <<" "<< p.y()<<" " << p.z()<< endl;}
 
 
 #endif
