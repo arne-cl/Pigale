@@ -96,7 +96,7 @@ class EmbedRnGraph : public TopologicalGraph
   svector<int> outdegree;
   svector<double> EigenValues;
 
-  int ComputeDistances();
+  int ComputeCzekanovskiDistances();
   int ComputeAdjacenceMatrix();
   double ComputeDistance(int vertex1,int vertex2);
   int ComputeOrientDistances();
@@ -104,8 +104,9 @@ class EmbedRnGraph : public TopologicalGraph
   double ComputeInDist(int vertex1,int vertex2);
   double ComputeOutDist(int vertex1,int vertex2);
   int ComputeAdjacenceDistances();
+  int ComputeLaplacianDistances();
   int ComputeAdjacenceMDistances();
-  int ComputeBissectDistances();
+  int ComputeBisectDistances();
   int ComputeR2Distances();
   
 
@@ -155,5 +156,5 @@ class SplitGraph : public EmbedRnGraph
 
 
 // DIAG.CPP
-int diag(double **Coords,int nb_vertex,double **Distances,svector<double>& EigenValues);
+int diag(double **Coords,int nb_vertex,double **Distances,svector<double>& EigenValues,bool Project = true);
 #endif
