@@ -10,11 +10,10 @@
 *****************************************************************************/
 
 #include <qapplication.h>
-#include <qcolordialog.h> 
 #include <TAXI/graphs.h> 
 #include <TAXI/Tbase.h>
 #include "MyWindow.h" 
-#include "mouse_actions.h" 
+//#include "mouse_actions.h" 
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -72,21 +71,13 @@ void Tprintf(char *fmt,...)
   va_end(arg_ptr);
   mw->Message((const char *)texte_print);
   }
-
-int & useDistance()
-  {static int _dist = 0;
-  return _dist;
-  }
 bool & ShowOrientation()
   {static bool showorientation = false;
   return showorientation;
   }
-bool & ShowIndex()
-  {static bool showindex = true;
-  return showindex;
-  }
 int & ShowVertex()
-  {static int _show = -1;//Index 
+// -1:index 0:label
+  {static int _show = 0; 
   return _show;
   }
 QColor OppCol(QColor & col)
@@ -103,66 +94,6 @@ QColor OppCol(QColor & col)
   col.setRgb(r,g,b);
   */
   return col;
-  }
-void SetPigaleColors()
-  {QColor  initial = QColor(248,238,224);
-  QColorDialog::getColor(initial,GetMyWindow()); 
-  QPalette Palette = QApplication::palette();
-  Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
-  Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
-  Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
-  QApplication::setPalette(Palette,TRUE);
-  QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
-  LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
-  GetMyWindow()->mouse_actions->setPalette(LightPalette,TRUE);
-  GetMyWindow()->tabWidget->setPalette(LightPalette,TRUE);
-  GetMyWindow()->statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
-  QBrush pb(QColorDialog::customColor(1));
-  GetMyWindow()->e->setPaper(pb); 
-  // Save colors
-  QFile settings("settings.txt");
-  if(settings.open(IO_ReadWrite)) 
-      {QTextStream txt(&settings);
-      int r,g,b;
-      txt << "colors" << endl;
-      for(int i = 0;i <= 3; i++)
-	  {QColor col = QColor(QColorDialog::customColor(i));
-	  col.rgb(&r,&g,&b); 
-	  txt << i <<" "<< r <<" " << g <<" " << b << endl; 
-	  }
-      settings.close();
-      }
-  }
-int GetPigaleColors()
-  {QFileInfo fi("settings.txt"); 
-  if(!fi.exists())return -1;
-  QFile settings("settings.txt");
-  if(settings.open(IO_ReadWrite))
-      {QString s;
-      int ii,r,g,b;
-      QColor col;
-      QTextStream txt(&settings);
-      s = txt.readLine(); 
-      if(s.contains("colors") == 0)
-	  {settings.close();
-	  qDebug("Error reading settings.txt");
-	  return -1;
-	  }
-      for(int i = 0;i <= 3; i++)
-	  {txt >> ii >> r >>  g >> b;
-	  col.setRgb(r,g,b);
-	  if(col.isValid() && i < 4)
-	      QColorDialog::setCustomColor(i,col.rgb());
-	  else 
-	      {qDebug("Error reading settings.txt");
-	      settings.close();
-	      return -1;
-	      }
-	  }
-      settings.close();
-      return 0;
-      }
-  return -1;
   }
 
 //*************************************

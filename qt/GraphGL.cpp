@@ -15,13 +15,13 @@
 #include "mouse_actions.h"
 #include <QT/GLWindow.h>
 #include <QT/MyQcolors.h>
-#include <QT/netcut.h>
+#include <TAXI/netcut.h>
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
 #include <GL/glut.h>
 
-// in MyCanvas.cpp
-bool & ShowIndex();
+//in QtMisc.cpp
+bool & ShowVertex();
 
 class GraphGLPrivate
 {public:
@@ -281,7 +281,7 @@ GLuint GLWindow::load(bool init)
   if(glp->bt_label->isChecked())
       { glLineWidth(1.0);
       for(tvertex  v = 1;v <= G.nv();v++)
-	  {if(ShowIndex())
+	  {if(ShowVertex() == -1)
 	      drawInt(v(),(GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y(),(GLfloat)Coord3[v].z(),ds);
 	  else
 	      drawInt((int)G.vlabel[v],(GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y()

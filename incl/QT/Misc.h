@@ -11,7 +11,7 @@
 
 #ifndef MISC_H
 #define MISC_H
-class QColor;
+
 
 // in Misc.cpp 
 void DefineGraphContainer(GraphContainer *GC);
@@ -29,11 +29,8 @@ void Normalise(TopologicalGraph &G);
 
 int & useDistance();
 bool & ShowOrientation();
-bool & ShowIndex();
 int & ShowVertex();
 QColor OppCol(QColor & col);
 bool & ShowIndex();
-void SetPigaleColors();
-int  GetPigaleColors();
 bool CheckCoordNotOverlap(GeometricGraph & G);
 #endif

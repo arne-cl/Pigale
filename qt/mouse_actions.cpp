@@ -63,9 +63,9 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
     ButtonMove->setText("Move");
     ButtonMove->setChecked(TRUE);
 
-    ButtonBissect = new QRadioButton(ButtonGroup1,"ButtonBissect");
+    ButtonBissect = new QRadioButton(ButtonGroup1,"ButtonBisect");
     ButtonBissect->setGeometry(QRect(6,oy+4*dy,dx,20)); 
-    ButtonBissect->setText("Bissect");
+    ButtonBissect->setText("Bisect");
 
     ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
     ButtonContract->setGeometry(QRect(6,oy+5*dy,dx,20)); 

@@ -18,8 +18,8 @@
 #include <iostream.h>
 #include <qprinter.h>
 
-//in MyCanvas.cpp
-bool & ShowIndex();
+//in QtMisc.cpp
+int & ShowVertex();
 
 #define Pink Blue
 void DrawPolar(QPainter *p,MyPaint *paint)
@@ -148,7 +148,8 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
 	      pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
 	      } 
 	  }
-      if(ShowIndex())
+
+      if(ShowVertex() == -1 || !G.Set(tvertex()).exist(PROP_LABEL))
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",G.vlabel[v()]);
@@ -221,7 +222,7 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
       dy = (int)(2.*alpha*paint->yscale +.5);
       rect = QRect(paint->to_x(xliv[v]-alpha),paint->to_y(y[v]),dx,dy);
       p->setBrush(color[vcolor[v]]);p->drawRect(rect);
-      if(ShowIndex() || !vlabel)
+      if(ShowVertex() == -1 || !vlabel)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);
@@ -264,7 +265,7 @@ void DrawVision(QPainter *p,MyPaint *paint)
       dy = (int)(2.*alpha*paint->yscale +.5);
       rect = QRect(paint->to_x(x1[v]-alpha),paint->to_y(y[v]+alpha),dx,dy);
       p->drawRect(rect);
-      if(ShowIndex() || !vlabel)
+      if(ShowVertex() == -1|| !vlabel)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);

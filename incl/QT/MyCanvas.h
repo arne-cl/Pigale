@@ -20,7 +20,6 @@
 #include <qpainter.h>
 
 bool & ShowOrientation();
-bool & ShowIndex();
 int  & ShowVertex();
 
 class NodeItem;

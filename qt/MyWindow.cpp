@@ -60,6 +60,7 @@
 #else
 #include <qtextedit.h>
 #include <qtextbrowser.h>
+#include <qsettings.h>
 #endif
 
 
@@ -79,7 +80,7 @@
 
 void Test(GraphContainer &GC,int action);
 void UndoErase();
-
+void SaveSettings();
 static char undofile[L_tmpnam];
 
 MyWindow::MyWindow()
@@ -91,8 +92,14 @@ MyWindow::MyWindow()
   DefineMyWindow(this);
   //Create an  undofile name
   tmpnam(undofile);
-  // Erase undo.tgf
+  // Atexit: Erase undo.tgf
   atexit(UndoErase);
+  //LoadSettings();
+#if QT_VERSION >= 300
+  LoadSettings();
+  QSettings setting;
+  setting.insertSearchPath(QSettings::Windows,"/pigale");
+#endif
   // Define some colors
   QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
@@ -101,18 +108,22 @@ MyWindow::MyWindow()
   printer->setOrientation(QPrinter::Landscape); 
   printer->setColorMode(QPrinter::Color);
 
-  // Windows
+  // Window size
 #if QT_VERSION >= 300
+
   QRect rect = QApplication::desktop()->screenGeometry();
-  int MyWindowInitYsize = rect.height();
+  int MyWindowInitYsize = setting.readNumEntry("/pigale/geometry height",rect.height());
+  int MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",817);
 #else
   QWidget *d = QApplication::desktop();
   int MyWindowInitYsize = d->height();
-#endif
   int MyWindowInitXsize = 817; 
+#endif
   int MyEditorMinXsize  = 220, MyEditorMinYsize  = 180;
   int MyEditorMaxXsize  = 300, MyEditorMaxYsize  = 500;
 
+
+  // Widgets
   QWidget *mainWidget = new QWidget(this,"mainWidget");
   setCentralWidget(mainWidget);
   QHBoxLayout *topLayout = new QHBoxLayout(mainWidget,0,0,"topLayout");
@@ -236,7 +247,7 @@ MyWindow::MyWindow()
   augment->insertItem(xmanIcon,"Vertex &Quadrangulate",  108);
   augment->setWhatsThis(108,"Quadrangulate a planar bipartite graph");
   augment->insertSeparator();
-  augment->insertItem("&Bissect all edges",     109);
+  augment->insertItem("&Bisect all edges",     109);
 
   QPopupMenu *remove = new QPopupMenu( this );
   menuBar()->insertItem("&Remove",remove);
@@ -345,10 +356,12 @@ MyWindow::MyWindow()
   QPopupMenu *popupEmbed    = new QPopupMenu(this);
   QPopupMenu *popupDistance = new QPopupMenu(this);
   QPopupMenu *popupLimits   = new QPopupMenu(this);
+  QPopupMenu *popupSave     = new QPopupMenu(this);
   QComboBox *comboLabel     = new QComboBox(popupLabel,"LabelCombo");
   QComboBox *comboDistance  = new QComboBox(popupDistance,"DistCombo");
-  QSpinBox *spin_MaxNS      = new QSpinBox(500,10000,1,popupLimits,"spinMaxNS");
-  QSpinBox *spin_MaxND      = new QSpinBox(100,10000,1,popupLimits,"spinMaxND");
+  spin_MaxNS                = new QSpinBox(500,10000,1,popupLimits,"spinMaxNS");
+  spin_MaxND                = new QSpinBox(100,10000,1,popupLimits,"spinMaxND");
+  QPushButton *button_save  = new QPushButton(popupSave,"SaveSettings");
   menuBar()->insertItem("&Settings",settings);
   connect(settings,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
@@ -368,11 +381,18 @@ MyWindow::MyWindow()
   //Pigale limits
   settings->insertItem("Limit number of vertices",popupLimits);
   popupLimits->insertItem("for slow algorithms");
-  spin_MaxNS->setValue(500);      
+#if QT_VERSION >= 300
+  int MaxNS = setting.readNumEntry("/pigale/limits slow_algo",500);
+  int MaxND = setting.readNumEntry("/pigale/limits display",500);
+#else
+  int MaxNS = 500;
+  int MaxND = 500;
+#endif
+  spin_MaxNS->setValue(MaxNS);      
   spin_MaxNS->setPrefix("Slow algorithms: ");
   popupLimits->insertItem(spin_MaxNS);
   popupLimits->insertItem("for displaying graph");
-  spin_MaxND->setValue(500);      
+  spin_MaxND->setValue(MaxND);      
   spin_MaxND->setPrefix("Display: ");
   popupLimits->insertItem(spin_MaxND);
    //Vertex Label Options
@@ -381,7 +401,8 @@ MyWindow::MyWindow()
   popupLabel->insertItem(comboLabel);
   comboLabel->insertItem("Index");
   comboLabel->insertItem("Label");
-  comboLabel->setCurrentItem(1);showLabel(1);
+  int current = (ShowVertex() == -1) ? 0 : 1;
+  comboLabel->setCurrentItem(current);showLabel(current);
   //Embed Settings
   settings->insertSeparator();
   settings->insertItem("&Embed Options",popupEmbed);
@@ -399,7 +420,13 @@ MyWindow::MyWindow()
   comboDistance->insertItem("Adjacence");
   comboDistance->insertItem("Adjacence M");
   comboDistance->insertItem("Oriented");
-  comboDistance->setCurrentItem(1);distOption(1);
+  comboDistance->setCurrentItem(useDistance());distOption(useDistance());
+  //Save Settings
+  settings->insertSeparator();
+  settings->insertItem("&Save Settings",popupSave);
+  button_save->setText("Save");
+  popupSave->insertItem(button_save);
+  connect(button_save,SIGNAL(clicked()),this,SLOT(SaveSettings()));
 
   //End of the menuBar():window
   //help
@@ -412,16 +439,7 @@ MyWindow::MyWindow()
   help->insertItem("About &Qt", this, SLOT(aboutQt()));
   help->insertSeparator();
   help->insertItem(helpIcon,"What is ?",this,SLOT(whatsThis()),SHIFT+Key_F1);
-  /*
-  //Menubar Icons
-  id = menuBar()->insertItem(leftIcon);  
-  menuBar()->setItemParameter(id,-1);  menuBar()->connectItem(id,this,SLOT(load(int))); 
-  //menuBar()->setWhatsThis(id,left_txt); 
-  id = menuBar()->insertItem(reloadIcon,id);
-  menuBar()->setItemParameter(id,0);   menuBar()->connectItem(id,this,SLOT(load(int))); 
-  id = menuBar()->insertItem(rightIcon); 
-  menuBar()->setItemParameter(id,1);   menuBar()->connectItem(id,this,SLOT(load(int))); 
-  */
+
   //Resize
   setCaption("Pigale");
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
@@ -435,8 +453,16 @@ MyWindow::MyWindow()
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
   else {Twait("The variable TGF should point on a tgf directory");exit(1);}
+#if QT_VERSION >= 300
+  InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
+  OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+  QFileInfo fis  = InputFileName;
+  if(fis.exists() && fis.isDir() )DirFile = fis.filePath();
+#else
   InputFileName = DirFile + QDir::separator() + "a.tgf";
   OutputFileName = InputFileName;
+#endif
+  
   load(0);
   }
 
@@ -574,29 +600,35 @@ void MyWindow::Message(QString s)
 #endif
   } 
 void MyWindow::handler(int action)
-  {timer.restart();
-  int ret = 0;
+  {int ret = 0;
   int drawing;
   if(action < 200)
-      {UndoSave();
+      {UndoSave();timer.restart();
       ret = AugmentHandler(action);
       }
   else if(action < 300)
+      {timer.restart();
       ret = EmbedHandler(action,drawing);
+      }
   else if(action < 400)
+      {UndoClear();UndoSave();timer.restart();
       ret = DualHandler(action);
+      }
   else if(action < 500)
-      {UndoSave();
+      {UndoSave();timer.restart();
       ret = RemoveHandler(action);
       }
   else if(action < 600)
-      {UndoClear();UndoSave();
+      {UndoClear();UndoSave();timer.restart();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       }
   else if(action < 700)
+      {timer.restart();
       ret = AlgoHandler(action,spin_N->value());
+      }
   else if(action < 800)
-      {ret = OrientHandler(action);
+      {timer.restart();
+      ret = OrientHandler(action);
       menuBar()->setItemChecked(10020,ShowOrientation());
       }
   else if(action > 10000)
@@ -659,16 +691,14 @@ void MyWindow::userHandler(int action)
   gw->update();
   }
 void MyWindow::showLabel(int show)
-  {if(show == 0)ShowIndex() = true;
-  else ShowIndex() = false;
-  //We can only show the index of a vertex or a long
+  {//Now We can only show the index of a vertex or a long
   int _show = ShowVertex();
   switch(show)
       {case 0:
 	   ShowVertex() = -1;
 	   break;
-      case 1:
-	  ShowVertex() = PROP_LABEL;
+      case 1:// PROP_LABEL = 0
+	  ShowVertex() = PROP_LABEL; 
 	  break;
       default:
 	  return;
@@ -752,3 +782,5 @@ void UndoErase()
   QFile undo_tgf(undofile);
   undo_tgf.remove();
   }
+
+

@@ -932,7 +932,7 @@ void SymWindow::update(QPainter *p)
   for(tvertex v = 1; v <= G.nv();v++)
       {if(gsp->SymLabel)
 	  t.sprintf("%2.2d",(int)symlabel(v));
-      else if(ShowIndex())
+      else if(ShowVertex() == -1)
 	  t.sprintf("%2.2d",v());
       else
 	  t.sprintf("%2.2ld",G.vlabel[v()]); 

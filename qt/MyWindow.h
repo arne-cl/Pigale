@@ -67,6 +67,9 @@ private slots:
   void Redo();
   void UndoClear();
   void UndoEnable(bool enable);
+  void LoadSettings();
+  void SaveSettings();
+  void SetPigaleColors();
 public slots:
   void UndoSave();
   void information();
@@ -88,7 +91,7 @@ public:
   GraphContainer GC;
  
 private:
-  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N;
+  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND;
   QTime timer;
   QPrinter *printer;
   QString InputFileName;

@@ -7,6 +7,8 @@ void Test(GraphContainer &GC,int action)
   if(action == 1)
       {qDebug("Number of vertices:%d",G.nv());
       qDebug("Number of edges:%d",G.ne());
+      for(tvertex v = 1; v <= G.nv();v++)
+	  qDebug("vertex:%3.3d %3.0f %3.0f",v(),G.vcoord[v].x(),G.vcoord[v].y());
       }
   if(action == 2)//print incidences
       {qDebug("Number of vertices:%d",G.nv());
@@ -15,8 +17,7 @@ void Test(GraphContainer &GC,int action)
 	  qDebug("edge:%3.3d  %3.3d %3.3d",e(),G.vin[e](),G.vin[-e]());
       return;
       }
-  if(action == 3) //print coordinates
-      {for(tvertex v = 1; v <= G.nv();v++)
-	  qDebug("vertex:%3.3d %3.0f %3.0f",v(),G.vcoord[v].x(),G.vcoord[v].y());
-      }
+  if(action == 3) //save settings
+      ;
   }
+
