@@ -392,7 +392,38 @@ void NodeItem::SetColor(QColor c)
   }
 void NodeItem::moveTo(Tpoint &p)
   {QPoint qp = QRect(rect()).center();
-  moveBy(p.x() - qp.x(),gwp->canvas->height() - p.y() - qp.y());
+  double dx = p.x() - qp.x();
+  double dy = gwp->canvas->height() - p.y() - qp.y();
+  GeometricGraph & G = *(gwp->pGG);
+  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+  double nx = x() + dx; //new x position
+  double ny = y() + dy;
+  QCanvasRectangle::moveBy(nx-x(),ny-y());
+  nx += width/2;  ny += height/2;
+  nodetextitem->move(nx,ny);// move the text 
+  // Deplacer les aretes
+  EdgeItem *ei,*opp;
+  int x0,y0;
+  double x,y;
+  for(tbrin b=G.FirstBrin(v);b!=0;b=G.NextBrin(v,b))
+      {ei = (EdgeItem *)(edgeitem[b.GetEdge()]); //lower part
+      opp = ei->opp; //upper part
+      if(b() > 0)  
+	  {x0 = opp->endPoint().x(); y0 = opp->endPoint().y();
+	  x  = (int)(nx * xorient + x0*(1.-xorient));
+	  y  = (int)(ny * xorient + y0*(1.-xorient));
+	  ei->setPoints((int)nx,(int)ny,(int)x,(int)y);
+	  opp->setFromPoint((int)x,(int)y);
+	  }
+      else  
+	  {x0 = ei->startPoint().x(); y0 = ei->startPoint().y();
+	  x  = (int)(x0 * xorient + nx*(1.-xorient));
+	  y  = (int)(y0 * xorient + ny*(1.-xorient));
+	  opp->setPoints((int)x,(int)y,(int)nx,(int)ny);
+	  ei->setToPoint((int)x,(int)y);   
+	  }
+      }
+  canvas()->update();
   }
 void NodeItem::moveBy(double dx, double dy)
 //Move the left upper part of the item and
