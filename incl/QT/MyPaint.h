@@ -11,10 +11,18 @@
 
 #ifndef MYPAINT_H
 #define MYPAINT_H
+
 #include <TAXI/graphs.h> 
 #include <qpainter.h>
 #include <qwidget.h>
 #include <qstring.h>
+#include <qprinter.h>
+#include <qpixmap.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
+#include <qtabwidget.h>
+#include <qapplication.h>
 
 class MyWindow;
 class QPrinter;
@@ -43,18 +51,23 @@ private:
   void showEvent(QShowEvent*);
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent* e);
-  void mousePressEvent(QMouseEvent * event);
+  void mousePressEvent(QMouseEvent *e);
+  void mouseMoveEvent(QMouseEvent *e);
+  void wheelEvent(QWheelEvent *e);
+  void keyPressEvent(QKeyEvent *k);
 
 private:
   MyWindow *father;
   bool isHidden;
   QPrinter* printer;
   int index;
+  double zoom;
+  QPoint posClick;
 
 public:
   GraphContainer GCP;
   double Wx_min,Wx_max,Wy_min,Wy_max;
-  double xscale,xtr,yscale,ytr;
+  double xscale,xtr,yscale,ytr,xtr0,ytr0,xscale0,yscale0;
   double xmin,xmax,ymin,ymax;
 };
 #endif

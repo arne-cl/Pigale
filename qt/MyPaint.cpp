@@ -14,14 +14,6 @@
 #include <QT/MyQcolors.h>
 #include <QT/Misc.h>
 
-#include <qprinter.h>
-#include <qpixmap.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qfiledialog.h>
-#include <qtabwidget.h>
-#include <qapplication.h>
-
 void DrawPolar(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
@@ -351,6 +343,7 @@ MyPaint::MyPaint(QWidget *parent, const char *name,MyWindow *f):
     QWidget(parent,name),father(f),isHidden(true)
   {index = -1;
   setBackgroundColor(Qt::white);
+  setFocusPolicy(QWidget::ClickFocus); 
   }
 void MyPaint::print(QPrinter* printer)
   {if(index < 0)return;
@@ -382,6 +375,7 @@ void MyPaint::drawIt(QPainter *p)
   }
 void MyPaint::update(int i)
   {setBackgroundColor(Qt::white);
+  zoom = 1;
   index = i;
   GCP = father->GC;
   TopologicalGraph G(GCP);
@@ -390,10 +384,10 @@ void MyPaint::update(int i)
   xmin = pmin().x();  ymin = pmin().y();
   xmax = pmax().x();  ymax = pmax().y();
   Wx_max = this->width() - 2*border;  Wy_max = this->height() - 2*border;
-  xscale = Wx_max/(xmax - xmin);
-  xtr  =  - xmin*xscale + border;
-  yscale = Wy_max/(ymax - ymin);
-  ytr  =   - ymin*yscale +border;
+  xscale0 = xscale = Wx_max/(xmax - xmin);
+  xtr0 = xtr  =  - xmin*xscale + border;
+  yscale0 = yscale = Wy_max/(ymax - ymin);
+  ytr0 = ytr  =   - ymin*yscale +border;
 #if QT_VERSION < 300
   father->tabWidget->changeTab(this,DrawFunctions[index].name);
 #else
@@ -413,14 +407,60 @@ void MyPaint::hideEvent(QHideEvent*)
   {isHidden = true;}
 void MyPaint::resizeEvent(QResizeEvent* e)
   {Wx_max = this->width() - 2*border;  Wy_max = this->height() - 2*border;
-  xscale = Wx_max/(xmax - xmin);
-  xtr  =  - xmin*xscale + border;
-  yscale = Wy_max/(ymax - ymin);
-  ytr  =  - ymin*yscale + border;
+  xscale0 = xscale = Wx_max/(xmax - xmin);
+  xtr0 = xtr  =  - xmin*xscale + border;
+  yscale0 =yscale = Wy_max/(ymax - ymin);
+  ytr0 = ytr  =  - ymin*yscale + border;
   QWidget::resizeEvent(e);
   }
-void MyPaint::mousePressEvent(QMouseEvent * event)
-  {Tprintf("%d %d",event->x(),event->y());}
+void MyPaint::keyPressEvent(QKeyEvent *k)
+  {int key = k->key();
+  if(key == Qt::Key_Up)
+      zoom = 1.1;
+  else if(key == Qt::Key_Down)
+      zoom = 1/1.1;
+  else if(key == Qt::Key_Escape)
+      {xtr = xtr0; ytr = ytr0;
+      xscale = xscale0; yscale = yscale0;
+      }
+  else
+      return;
+  k->accept();
+  if(key !=  Qt::Key_Escape)
+      {double xx0 = ((double)posClick.x() - xtr)/xscale;
+      double yy0 = -((double)posClick.y() + ytr - this->height())/yscale;
+      xscale *= zoom ;yscale *= zoom;
+      xtr += posClick.x() - to_x(xx0);
+      ytr += to_y(yy0) -  posClick.y();
+      }
+  setBackgroundColor(Qt::white);
+  QPainter p(this);
+  drawIt(&p);
+  }
+void MyPaint::wheelEvent(QWheelEvent *event)
+  {event->accept();
+  zoom = (event->delta() > 0) ? 1.1 : 1./1.1;
+  double xx0 = ((double)posClick.x() - xtr)/xscale;
+  double yy0 = -((double)posClick.y() + ytr - this->height())/yscale;
+  xscale *= zoom ;yscale *= zoom;
+  xtr += posClick.x() - to_x(xx0);
+  ytr += to_y(yy0) -  posClick.y();
+  setBackgroundColor(Qt::white);
+  QPainter p(this);
+  drawIt(&p);
+  }
+void MyPaint::mousePressEvent(QMouseEvent *event)
+  {posClick = event->pos();
+  }
+void MyPaint::mouseMoveEvent(QMouseEvent *event)
+  {int dx = event->pos().x() - posClick.x();
+  int dy = event->pos().y() - posClick.y();
+  posClick = event->pos();
+  xtr += dx;  ytr -= dy;
+  setBackgroundColor(Qt::white);
+  QPainter p(this);
+  drawIt(&p);
+  }
 int MyPaint::to_x(double x)
   {return (int)(x*xscale + xtr +.5);
   }
