@@ -230,6 +230,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(205,P && NotBigD);
   menu->setItemEnabled(250,P && NotBigD);
   menu->setItemEnabled(251,B && P && NotBigD);
+  menu->setItemEnabled(253,P && NotBigD);
   //dual
   menu->setItemEnabled(301,P); 
   menu->setItemEnabled(302,P);

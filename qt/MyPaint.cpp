@@ -160,7 +160,73 @@ void DrawBipContact(QPainter *p,MyPaint *paint)
       p->drawText(rect,Qt::AlignCenter,t);
       }
   }
-
+void DrawFPPRecti(QPainter *p,MyPaint *paint)
+  {TopologicalGraph G(paint->GCP);
+  Prop<int> xliv(G.Set(tvertex()),PROP_DRAW_INT_1);
+  Prop<int> xriv(G.Set(tvertex()),PROP_DRAW_INT_2);
+  Prop<int> y(G.Set(tvertex()),PROP_DRAW_INT_3);
+  Prop<int> xje(G.Set(tedge()),PROP_DRAW_INT_4);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  //Checking if vertices have labels
+  svector<long> *vlabel = NULL;
+  if(G.Set(tvertex()).exist(PROP_LABEL))
+      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+      vlabel = &label.vector();
+      }
+  // Draw edges
+  int h1,h2,x1,x2;
+  double alpha = .5;
+  Tpoint a,b;
+  for(tedge e=1; e <= G.ne();e++)
+      {h1 = y[G.vin[e]]; 
+       h2 = y[G.vin[-e]];
+       x1 = xriv[G.vin[e]]; 
+       x2 = xliv[G.vin[-e]];
+      if(h1 < h2)
+	  {a.x() = b.x() = xje[e]; 
+	   a.y() = h1;  
+	   b.y() = h2 - 2*alpha;
+	  paint->DrawSeg(a,b,ecolor[e]);
+	  }
+      else if(h1 > h2)
+	  {a.x() = b.x() = xje[e];
+	   a.y() = h2;
+	   b.y() = h1 - 2*alpha;
+	  paint->DrawSeg(a,b,ecolor[e]);
+	  }
+      else if(x1 < x2)
+	  {a.x() = x1 + alpha;
+	   b.x() = x2 - alpha;
+	   a.y() = b.y() = h1 -alpha;
+	  paint->DrawSeg(a,b,ecolor[e]);
+	  }
+      else if(x1 > x2)
+	  {a.x() = xriv[G.vin[-e]] - alpha;  
+	   b.x() = xliv[G.vin[e]] + alpha;
+	   a.y() = b.y() = h1 -alpha;
+	  paint->DrawSeg(a,b,ecolor[e]);
+	  }
+      }
+  
+  // Draw vertices
+  int dx,dy;
+  QRect rect;
+  QString t;
+  QPen pn = p->pen();
+  pn.setColor(color[Black]); pn.setWidth(2); p->setPen(pn);
+  for(tvertex v=1; v <= G.nv();v++) // draw boxes
+      {dx = (int)(paint->to_x(xriv[v]+alpha) - paint->to_x(xliv[v]-alpha) +.5);
+      dy = (int)(2.*alpha*paint->yscale +.5);
+      rect = QRect(paint->to_x(xliv[v]-alpha),paint->to_y(y[v]),dx,dy);
+      p->setBrush(color[vcolor[v]]);p->drawRect(rect);
+      if(ShowIndex() || !vlabel)
+	  t.sprintf("%2.2d",v());
+      else
+	  t.sprintf("%2.2ld",(*vlabel)[v()]);
+      p->drawText(rect,Qt::AlignCenter,t);
+      }
+  }
 void DrawVision(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> P1(G.Set(tedge()),PROP_DRAW_POINT_1);
@@ -217,6 +283,7 @@ DrawThing DrawFunctions[] =
     {DrawVision,"&Vision"},
     {DrawBipContact,"&Contact"},
     {DrawPolar,"&Polair"},
+    {DrawFPPRecti,"&FPP Recti"},
     {0,0} 
     };
 

@@ -19,6 +19,7 @@
 #include <TAXI/color.h>
 #include <QT/Handler.h>
 
+int EmbedFPPRecti(TopologicalGraph &G);
 int EmbedFPP(TopologicalGraph &G);
 int EmbedTutteCircle(TopologicalGraph &G);
 int FindNPSet(TopologicalGraph &);
@@ -285,6 +286,10 @@ int EmbedHandler(int action,int &drawing)
       case 252:ret = 3;
 	  err = Polar(G);
 	  drawing = 2;
+	  break;
+      case 253:ret = 3;
+	  err = EmbedFPPRecti(G);
+	  drawing = 3;
 	  break;
       case 298:ret = 4; //Embed3d
 	  break;

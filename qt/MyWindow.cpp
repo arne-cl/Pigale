@@ -230,7 +230,7 @@ MyWindow::MyWindow()
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
-  embed->insertItem("&Fraysseix-Pach-Pollack",205);
+  embed->insertItem("&FPP Fary",             205);
   embed->insertItem("&Schnyder",             201);
   embed->insertItem("Schnyder &V ",          202);
   embed->insertSeparator();
@@ -238,7 +238,9 @@ MyWindow::MyWindow()
   embed->insertItem("Tutte &Circle",         204);
   embed->insertSeparator();
   embed->insertItem("&Vision",               250);
+  embed->insertItem("FPP Visi&on",           253);
   embed->insertItem("&Contact Biparti",      251);
+  embed->insertSeparator();
   embed->insertItem("&Polair",               252);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",298);
