@@ -21,7 +21,7 @@ UNIXLIBS   =  -L$(MQTDIR)/lib -lqt-mt  -lqt-mt -L/usr/local/lib -lglut -lGL -lGL
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith  -pipe
-#CFLAGSopt += -DQT_THREAD_SUPPORT $(CPU)
+CFLAGSopt += -DQT_THREAD_SUPPORT $(CPU)
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall  $(PIC) 
