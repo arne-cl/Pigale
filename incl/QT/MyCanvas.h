@@ -47,7 +47,7 @@ const int info_z     = 132; // InfoItem
 const double xorient = .4; 
 const int sizerect   = 12;  //size and space are used to draw the color palets
 const int sizerecth  = 8;   //size and space are used to draw the thick palets
-const int space      = 3;
+const int space      = 1;   //spece + sizerect <= 13 for screens 800x600
 const int BORDER     = 30;  // free space around the graph drawing 
 
 class EdgeItem: public QCanvasLine

@@ -64,7 +64,6 @@ int GetPigaleColors()
 void MyWindow:: SaveSettings()
   {QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
-  //setting.writeEntry("/pigale/TgfFile dir",DirFile);
   setting.writeEntry("/pigale/TgfFile input",InputFileName);
   setting.writeEntry("/pigale/TgfFile output",OutputFileName);
   setting.writeEntry("/pigale/geometry width",this->width());
@@ -88,7 +87,6 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
   setting.writeEntry("/pigale/generate/gen EraseMultiple",randomEraseMultipleEdges());
   // macro
-//setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
   setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getNum());
   setting.writeEntry("/pigale/macro/macroRepeat macroMul",macroLine->getMul());
   setting.writeEntry("/pigale/macro/macroDelay macroDelay", pauseDelay());

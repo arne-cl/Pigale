@@ -168,16 +168,16 @@ MyWindow::MyWindow()
 #if QT_VERSION >= 300
   QRect rect = QApplication::desktop()->screenGeometry();
   int MyWindowInitYsize = setting.readNumEntry("/pigale/geometry height",rect.height());
-  int MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",817);
+  int MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",850);
 #else
   QWidget *d = QApplication::desktop();
   int MyWindowInitYsize = d->height();
-  int MyWindowInitXsize = 817; 
+  int MyWindowInitXsize = 850; 
 #endif
   // sizes of the message window
   int MyEditorMinXsize  = 250, MyEditorMaxXsize  = 250;
-  int MyEditorMinYsize  = 200, MyEditorMaxYsize  = 1800;
-  // When testing screens 600x800
+  int MyEditorMinYsize  = 150;
+  // When testing screens 800x600
   //MyWindowInitXsize = 800;MyWindowInitYsize = 600;
 
   // Widgets
@@ -189,7 +189,7 @@ MyWindow::MyWindow()
   QHBoxLayout * leftLayout = new QHBoxLayout(topLayout,0,"leftLayout");
   tabWidget = new  QTabWidget(mainWidget,"tab");
   leftLayout->addWidget(tabWidget,1);
-  tabWidget->setMinimumSize(MyWindowInitXsize-MyEditorMinXsize-10,100);
+  tabWidget->setMinimumSize(525,525);
   tabWidget->setPalette(LightPalette);
   mypaint =  new MyPaint(tabWidget,"paint",this);
   gw = new  GraphWidget(tabWidget,"graphwidget",this);
@@ -215,7 +215,7 @@ MyWindow::MyWindow()
   QGridLayout *rightLayout = new  QGridLayout(topLayout,2,4,-1,"rightLayout");
   e = new QTextEdit(mainWidget,"informations");
   e->setMinimumSize(MyEditorMinXsize,MyEditorMinYsize);
-  e->setMaximumSize(MyEditorMaxXsize,MyEditorMaxYsize);
+  e->setMaximumWidth(MyEditorMaxXsize);
   QBrush pb(QColorDialog::customColor(1)); e->setPaper(pb); 
 #if QT_VERSION >= 300
   e->setReadOnly(true);
@@ -330,7 +330,7 @@ MyWindow::MyWindow()
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
-  embed->insertItem(xmanIcon,"&FPP Fary",             A_EMBED_FPP);
+  embed->insertItem(xmanIcon,"&FPP Fary",    A_EMBED_FPP);
   embed->setWhatsThis(A_EMBED_FPP,fpp_txt);
   embed->insertItem(xmanIcon,"&Schnyder",    A_EMBED_SCHNYDER_E);
   embed->setWhatsThis(A_EMBED_SCHNYDER_E,schnyder_txt);
@@ -347,22 +347,21 @@ MyWindow::MyWindow()
   embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
-  //#if VERSION_ALPHA
+#if VERSION_ALPHA
   embed->insertItem("&Polar",                A_EMBED_POLAR);
-  embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
+  embed->insertItem(xmanIcon,"Sprin&g",      A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
-  //#endif
+#endif
   embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
-  embed->insertItem(xmanIcon,"Spring Planar",A_EMBED_JACQUARD);
+  embed->insertItem(xmanIcon,"Spring Planar",           A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
-  embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
+  embed->insertItem(xmanIcon,"&Embedding in Rn",        A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
-#if VERSION_ALPHA
-  embed->insertItem(xmanIcon,"&Schnyder in R3",A_EMBED_3dSchnyder);
-  embed->setWhatsThis(A_EMBED_3dSchnyder,embed3dSchnyder_txt);
-#endif
+  embed->insertItem(xmanIcon,"Schnyder in R3",         A_EMBED_3dSCHNYDER);
+  embed->setWhatsThis(A_EMBED_3dSCHNYDER,embed3dSchnyder_txt);
+
   QPopupMenu *dual = new QPopupMenu( this );
   menuBar()->insertItem("&Dual/Angle",dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));
