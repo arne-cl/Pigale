@@ -90,10 +90,11 @@ static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )
-    ,MacroLooping(false)
-    ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
-    ,IsUndoEnable(true)
-    ,MacroRecording(false),MacroExecuting(false)
+      ,MacroLooping(false)
+      ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
+      ,UndoIndex(0),UndoMax(0)
+      ,IsUndoEnable(true)
+      ,MacroRecording(false),MacroExecuting(false)
   {int id;
   // Initialze Error
   setError();
@@ -102,8 +103,12 @@ MyWindow::MyWindow()
   DefineMyWindow(this);
   // Create the actions map
   mapActionsInit();
-  //Create an  undofile name
+  // Create an  undofile name
   mkstemp(undofile);
+  // Create a tgf file with no records
+  {Tgf undo_tgf;
+  undo_tgf.open(undofile,Tgf::create);
+  }
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
 #if QT_VERSION >= 300
@@ -489,6 +494,9 @@ MyWindow::MyWindow()
   //undoEnable
   settings->insertItem("&Undo Enable",10005);
   settings->setItemChecked(10005,IsUndoEnable);
+  undoL->setEnabled(false);
+  undoS->setEnabled(IsUndoEnable);
+  undoR->setEnabled(false);
   // randomSeed 
   settings->insertItem("&Random Seed",10007);
   settings->setItemChecked(10007,randomSeed());
@@ -961,13 +969,7 @@ UndoMax  : # of save graphs
 UndoSave : index of graph to restore [1,UndoMax]
 Should always be possible to restore 1
 */
-// void MyWindow::Undo()
-//   {if(UndoIndex > 1)--UndoIndex;
-//   if(ReadGraph(GC,undofile,UndoMax,UndoIndex) != 0)return;
-//   banner();
-//   information(); gw->update();
-//   this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
-//   }
+
 void MyWindow::Undo()
   {if (UndoIndex > UndoMax) UndoSave();
   if(UndoIndex > 1)--UndoIndex;
@@ -986,12 +988,13 @@ void MyWindow::UndoSave()
   if(G.nv() == 0)return;
   int nb = GetNumRecords(undofile); if (nb<0) nb=0;
   int last = UndoMax>UndoIndex ? UndoIndex : UndoMax;
-  if (last<nb)
-      { Tgf file;
+  if(last < nb)
+      {Tgf file;
       if(file.open(undofile, Tgf::old) == 0)return;
       while (last < nb)
 	  {file.DeleteRecord(nb);
-	  nb--;}
+	  nb--;
+	  }
       }
   if(SaveGraphTgf(G,undofile) == 1)
       {handler(10005);return;}
@@ -1012,17 +1015,17 @@ void MyWindow::UndoClear()
   UndoMax = 0;
   this->undoL->setEnabled(false);
   this->undoR->setEnabled(false);
-  QFileInfo fi(undofile);
-  if(!fi.exists())return;
-  QFile undo_tgf(undofile);
-  if(!undo_tgf.remove())
-      {Twait("Cannot remove undofile");
-      menuBar()->setItemChecked(10005,false);
-      }
+  // empty the tgf file
+  Tgf undo_tgf;
+  undo_tgf.open(undofile,Tgf::create);
   }
 void MyWindow::UndoEnable(bool enable)
   {this->undoS->setEnabled(enable);
-  if(!enable){UndoClear();banner();}
+  if(!enable)
+      UndoClear();
+  else
+      {IsUndoEnable = true;UndoSave();}
+  banner();
   IsUndoEnable = enable;
   }
 // UndoErase is called when the program exit
