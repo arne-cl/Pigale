@@ -89,11 +89,11 @@ static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )
-      ,MacroLooping(false)
+      ,MacroExecuting(false)
       ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
       ,UndoIndex(0),UndoMax(0)
       ,IsUndoEnable(true)
-      ,MacroRecording(false),MacroExecuting(false)
+      ,MacroRecording(false),MacroLooping(false)
   {int id;
   // Initialze Error
   setError();
@@ -192,7 +192,7 @@ MyWindow::MyWindow()
   e->setReadOnly(true);
 #endif
   // editor menu
-  mouse_actions = new Mouse_Actions(mainWidget,"mouseactions",0,gw,graphgl);
+  mouse_actions = new Mouse_Actions(mainWidget,"mouseactions",0,gw);
   mouse_actions->setPalette(LightPalette);
   graph_properties = new Graph_Properties(mainWidget,menuBar(),"graph_properties");
   graph_properties->setMinimumSize(MyEditorMinXsize,170);

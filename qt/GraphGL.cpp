@@ -79,24 +79,27 @@ int GraphGL::update()
       d->editor = new GLWindow(d,this);
       vb->addWidget(d->editor);
       QHBoxLayout* hb = new QHBoxLayout(vb);
+
+      QHBoxLayout* hb2 = new QHBoxLayout(vb);
+      QSlider *Slider = new QSlider(Qt::Horizontal,this,"Slider");
+      Slider->setMinValue(2);Slider->setMaxValue(100);Slider->setValue(2);
+      connect(Slider,SIGNAL(valueChanged(int)),SLOT(delayChanged(int)));
+      hb2->addWidget(Slider);
+
+      d->bt_facet = new QCheckBox("Facet",this); d->bt_facet->setChecked(false);
+      d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(false);
+      d->bt_color = new QCheckBox("Color",this); d->bt_color->setChecked(false);
+      hb->addWidget(d->bt_facet); hb->addWidget(d->bt_label); hb->addWidget(d->bt_color);
+
+      QSpinBox *spin_Edge = new QSpinBox(1,10,1,this,"spinEdge");
+      spin_Edge->setValue((int)d->edge_width*2); spin_Edge->setPrefix("Ew: ");
+      QSpinBox *spin_Vertex = new QSpinBox(1,20,1,this,"spinVertex");
+      spin_Vertex->setValue((int)d->vertex_width*5); spin_Vertex->setPrefix("Vw: ");
+      hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
+
       QHButtonGroup* bt_group = new QHButtonGroup(this);
       bt_group->setFrameShape(QFrame::NoFrame); 
       bt_group->setMaximumHeight(45);
-      d->bt_facet = new QCheckBox("Facet",this);
-      d->bt_facet->setChecked(false);
-      d->bt_label = new QCheckBox("Label",this);
-      d->bt_label->setChecked(false);
-      d->bt_color = new QCheckBox("Color",this);
-      d->bt_color->setChecked(false);
-      hb->addWidget(d->bt_facet);
-      hb->addWidget(d->bt_label);
-      hb->addWidget(d->bt_color);
-      //hb->addWidget(bt_group);
-      QSpinBox *spin_Edge = new QSpinBox(1,10,1,this,"spinEdge");
-      spin_Edge->setValue((int)d->edge_width*2);     spin_Edge->setPrefix("Ew: ");
-      QSpinBox *spin_Vertex = new QSpinBox(1,20,1,this,"spinVertex");
-      spin_Vertex->setValue((int)d->vertex_width*5);     spin_Vertex->setPrefix("Vw: ");
-      hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
       hb->addWidget(bt_group);
       QRadioButton* rb_x = new QRadioButton("X",bt_group,"x");
       QRadioButton* rb_y = new QRadioButton("Y",bt_group,"y");
@@ -194,7 +197,7 @@ void GraphGL::resizeEvent(QResizeEvent* e)
 void GraphGL::delayChanged(int i)
   {if(!d->is_init || d->isHidden)return;
   d->idelay = i;
-  d->delay = (d->idelay <= 2) ? -1 : 101 - d->idelay;
+  d->delay = (d->idelay <= 2) ? -1 : 102 - d->idelay;
   d->editor->setAnimationDelay(d->delay);
   }
 void GraphGL::axisChanged(int i)
@@ -376,9 +379,9 @@ void GLWindow::showEvent(QShowEvent*)
       {glp->isHidden = false;
       //as now we may load a graph while this window is active
       // we have to reset the speed
-      glp->idelay = 2;
-      glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
-      glp->mywindow->mouse_actions->Slider->setValue(glp->idelay);
+//       glp->idelay = 2;
+//       glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
+//       glp->mywindow->mouse_actions->Slider->setValue(glp->idelay);
       }
   }
 QSize GLWindow::sizeHint() const

@@ -110,7 +110,7 @@ public:
   Mouse_Actions *mouse_actions;
   GraphContainer GC;
   QString DirFilePng;
-  bool MacroLooping;
+  bool MacroExecuting;
  
 private:
   QToolBar *tb;
@@ -124,7 +124,7 @@ private:
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
   bool IsUndoEnable;
   bool MacroRecording;
-  bool MacroExecuting;
+  bool MacroLooping;
   bool MacroWait;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActionsString;

@@ -35,7 +35,7 @@ class Mouse_Actions : public QWidget
 
 public:
   Mouse_Actions(QWidget* parent = 0,const char* name = 0,WFlags fl = 0
-		,GraphWidget* gw=0,GraphGL* gp = 0);
+		,GraphWidget* gw=0);
   ~Mouse_Actions();
   
   void contentsMousePressEvent(QMouseEvent* e);

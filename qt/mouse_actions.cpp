@@ -31,7 +31,7 @@ const int oy_grid = 8;
 const int sizegrid = 40;
 
 Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
-			     ,WFlags fl,GraphWidget* gw,GraphGL* gp)
+			     ,WFlags fl,GraphWidget* gw)
     : QWidget(parent,name,fl)
 {
     if(!name)setName("Mouse_Acions");
@@ -143,7 +143,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
     connect(ButtonGroup1,SIGNAL(clicked(int)),SLOT(valueChanged(int)));
     connect(Slider,SIGNAL(valueChanged(int)),LCDNumber,SLOT(display(int)));
     connect(Slider,SIGNAL(valueChanged(int)),gw,SLOT(sizegridChanged(int)));
-    connect(Slider,SIGNAL(valueChanged(int)),gp,SLOT(delayChanged(int)));
+    //connect(Slider,SIGNAL(valueChanged(int)),gp,SLOT(delayChanged(int)));
     connect(ButtonShowGrid,SIGNAL(toggled(bool)),gw,SLOT(showgridChanged(bool)));
     connect(ButtonFitGrid,SIGNAL(toggled(bool)),gw,SLOT(fitgridChanged(bool)));
     connect(ButtonForceGrid,SIGNAL(clicked()),gw,SLOT(ForceGrid()));

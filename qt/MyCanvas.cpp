@@ -476,28 +476,12 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
   }
 
 void GraphEditor::showEvent(QShowEvent* e)
-  {if(gwp->mywindow->MacroLooping)return;
-  if(gwp->CanvasHidden)// to assure mouse_action is initialise
-      {gwp->mywindow->mouse_actions->LCDNumber->display(gwp->SizeGrid);
-      gwp->mywindow->mouse_actions->Slider->setValue(gwp->SizeGrid);
-      //Enable load buttons
-//       gwp->mywindow->left->setEnabled(true);
-//       gwp->mywindow->right->setEnabled(true);
-//       gwp->mywindow->redo->setEnabled(true);
-      }
-  // need initialize in case size changed
-  initialize();
+  {initialize();
   gwp->CanvasHidden = false;
   QCanvasView::showEvent(e);
   }
 void GraphEditor::hideEvent(QHideEvent* e)
-  {
-//   if(!gwp->CanvasHidden)//Disable load buttons
-//       {gwp->mywindow->left->setDisabled(true);
-//       gwp->mywindow->right->setDisabled(true);
-//       gwp->mywindow->redo->setDisabled(true);
-//       }
-  gwp->CanvasHidden = true;
+  {gwp->CanvasHidden = true;
   QCanvasView::hideEvent(e);
   }
 QSize GraphEditor::sizeHint() const
@@ -509,7 +493,7 @@ void GraphEditor::resizeEvent(QResizeEvent* e)
   QCanvasView::resizeEvent(e);
   }
 void GraphEditor::paintEvent(QPaintEvent *e)
-  {if(gwp->mywindow->MacroLooping)return;
+  {//if(gwp->mywindow->MacroLooping)return;
   QCanvasView::paintEvent(e);
   // Before the first paintEvent,the sizes are wrong
   if(!is_init)
