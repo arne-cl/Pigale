@@ -29,7 +29,7 @@ int TopologicalGraph::Biconnect()
   {if(Set().exist(PROP_BICONNECTED))return 0;
   MakeConnected();
   RemoveLoops();
-  if(!CheckPlanar())return 1;
+  if(!CheckPlanar())return -1;
 
   if(debug())DebugPrintf("Biconnected");
   svector<int> VMark(1,nv());
@@ -80,9 +80,9 @@ int TopologicalGraph::Opt6Biconnect()
 // The graph must be simple
 // augmentation to biconnected graph without changing the embedding.
   {if(Set().exist(PROP_BICONNECTED))return 0;
-  if(!CheckSimple())return 1;
+  if(!CheckSimple())return -1;
   MakeConnected();
-  if(!CheckPlanar())return 2;
+  if(!CheckPlanar())return -1;
   if(debug())DebugPrintf("Opt6Biconnect");
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
   svector<bool> save_oriented(0,ne()); save_oriented.swap(oriented);
@@ -99,7 +99,7 @@ int TopologicalGraph::Opt6Biconnect()
 int SchnyderMarkAngles(TopologicalGraph &G, svector<int> &mark)
 // mark[b] is the #marks of the angle FOLLOWING the brin b in positive circular order.
   {int OrgM = G.ne();
-  if(G.ZigZagTriangulate()) return 1;
+  if(G.ZigZagTriangulate() < 0) return -1;
   tbrin bb,b = 1;
   G.SchnyderOrient(b);
 
@@ -205,7 +205,7 @@ int SchnyderBiconnectByMarks(TopologicalGraph &G, svector<int> &mark)
                   do
                       {bb=G.acir[-bb];
                       }while(mark[bb]<2 && G.vin[bb]!=G.vin[b]);
-                  if (G.vin[bb] == G.vin[b])return 1;
+                  if (G.vin[bb] == G.vin[b])return -10;
                   LastLinkV = VMark[G.vin[bb]];
                   LinkBList.push(bb());
                   }
@@ -235,7 +235,7 @@ int TopologicalGraph::Opt2Biconnect()
   int NedgeConnect = ne();
 
   // To get a proper embedding
-  if(!CheckPlanar())return 1;
+  if(!CheckPlanar())return -1;
   tbrin ExtBrin = extbrin();
   // The Marks are defined on the connected graph.
   // Mark[b] allows to insert a brin in cir order after brin

@@ -17,7 +17,7 @@
 void TutteCircle(GeometricGraph &G, tbrin FirstBrin);
 
 int EmbedTutteCircle(TopologicalGraph &G)
-  {if(!G.CheckSimple() || !G.CheckPlanar())return 1;
+  {if(!G.CheckSimple() || !G.CheckPlanar())return -1;
   int m = G.ne();
   G.MakeConnected();
   Prop<short> marke(G.Set(tedge()),PROP_MARK); marke.clear();

@@ -161,11 +161,11 @@ void Constraints::ComputeCoord_Rect(tvertex iv,tvertex iv1,tvertex iv2,int forme
 
 
 int EmbedFPP(TopologicalGraph &G)
-  {if(G.nv() < 3)return -5;
+  {if(G.nv() < 3)return -1;
+  if(!G.CheckSimple())return -1;
   if(SchnyderRect())return EmbedFPP_Rect(G);
   int OldNumEdge = G.ne();
   G.MakeConnected();
-  G.Simplify();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
@@ -174,7 +174,7 @@ int EmbedFPP(TopologicalGraph &G)
       G.LongestFace(ee,len);
   else
       ee = G.extbrin();
-  if(!MaxPlanar && G.ZigZagTriangulate())return -2;
+  if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
   tbrin left,right,new_push;
   tvertex iv,iv1,iv2,iv3;
   tvertex ivl,nivl,ivr,pivr;
@@ -243,10 +243,8 @@ int EmbedFPP(TopologicalGraph &G)
   }
 
 int EmbedFPP_Rect(TopologicalGraph &G)
-  {if(G.nv() < 3)return -5;
-  int OldNumEdge = G.ne();
+  {int OldNumEdge = G.ne();
   G.MakeConnected();
-  G.Simplify();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
@@ -255,7 +253,7 @@ int EmbedFPP_Rect(TopologicalGraph &G)
       G.LongestFace(ee,len);
   else
       ee = G.extbrin();
-  if(!MaxPlanar && G.ZigZagTriangulate())return -2;
+  if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
   tbrin left,right,new_push;
   tvertex iv,iv1,iv2,iv3;
   tvertex ivl,nivl,ivr,pivr;
@@ -501,10 +499,10 @@ int Recti::lrver(void)
 
 
 int EmbedFPPRecti(TopologicalGraph &G)
-  {if(G.nv() < 3)return -5;
+  {if(G.nv() < 3)return -1;
+  if(!G.CheckSimple())return -1;
   int OldNumEdge = G.ne();
   G.MakeConnected();
-  G.Simplify();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
@@ -513,7 +511,7 @@ int EmbedFPPRecti(TopologicalGraph &G)
       G.LongestFace(ee,len);
   else
       ee = G.extbrin();
-  if(!MaxPlanar && G.ZigZagTriangulate())return -2;
+  if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
   tvertex iv,iv1,iv2,iv3;
 
   //init with the leftmost brin incident to tha last vertxex to be packed

@@ -18,6 +18,7 @@
 #include <TAXI/color.h>
 #include <TAXI/DFSGraph.h> 
 #include <TAXI/ndfs.h>
+#include <TAXI/Tmessage.h>
 
 int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
 // after DFS
@@ -157,7 +158,7 @@ int Graph::Planarity()//BUG in PrepDFS if not connected
   }
 */
 int TopologicalGraph::Planarity()
-  {if(debug())DebugPrintf("Executing Top:Planarity");
+  {if(debug())DebugPrintf("Executing Planarity");
   if(!ne())return 1;
   int m_origin = ne();
   MakeConnected();
@@ -171,7 +172,7 @@ int TopologicalGraph::Planarity()
   tbrin b0 = extbrin();
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
-      {delete &low;return -1;}
+      {delete &low;DebugPrintf("GDFSRenum ERROR");return -1;}
   nvin.swap(vin);
   _Bicon Bicon(n);
   int ret = bicon(n,m,vin,Bicon,low);
@@ -182,6 +183,7 @@ int TopologicalGraph::Planarity()
 
   _Hist Hist(n,m);
   ret = lralgo(n,m,vin,Bicon,LrSort,Hist);
+  if(debug())DebugPrintf("Executing Embed");
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
   nvin.swap(vin);
@@ -223,7 +225,11 @@ int TopologicalGraph::Planarity()
       maptype() = PROP_MAPTYPE_LRALGO;
       Prop1<int> isplanar(Set(),PROP_PLANAR);
       Prop1<int> planarmap(Set(),PROP_PLANARMAP);
+      int g;
+      if((g = ComputeGenus()) != 0)
+	  {DebugPrintf("ERROR genus:%d",g);Twait("Planarity Error");}
       }
+  if(debug())DebugPrintf("    END Planarity");
   return ret;
   }
 int TopologicalGraph::TestPlanar()

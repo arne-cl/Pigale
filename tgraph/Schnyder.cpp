@@ -65,7 +65,6 @@ static void CountParents(GeometricGraph &G, short TreeColor, tbrin RootBrin,
 static void CalcCoord(svector<int> &x, svector<tvertex> &Father1,
                       svector<tvertex> &Father2,svector<int> &Descendants, int n)
   {tvertex tmp;
-
   for (int v = 1; v <= n; v++)
       {tmp = Father1[v];
       while (tmp!=0) { x[v] += Descendants[tmp]; tmp = Father1[tmp];}
@@ -214,15 +213,16 @@ static int SchnyderOrientMaxPlanar(TopologicalGraph &G, tbrin brin)
 
 int TopologicalGraph::SchnyderOrient(tbrin FirstBrin)
 // inf-3-orient a graph.
-  {int OldNumEdge = ne();
+  {if(nv() < 3)return -1;
+  if(!CheckSimple())return -1;
+  int OldNumEdge = ne();
   MakeConnected();
-  Simplify();
 
-  if(!CheckPlanar()) return 1;
+  if(!CheckPlanar())return -1;
   if(FirstBrin == 0)
       {FirstBrin =  extbrin();FirstBrin = -acir[FirstBrin];}
 
-  if(ne() != 3 * nv() - 6 && ZigZagTriangulate())return 1;
+  if(ZigZagTriangulate())return -2;
   SchnyderOrientMaxPlanar(*this,FirstBrin);
 
   // delete the edges added by Connexity and Triangulation
@@ -233,11 +233,11 @@ int TopologicalGraph::SchnyderOrient(tbrin FirstBrin)
   return 0;
   }
 int TopologicalGraph::Schnyder(tbrin FirstBrin)
-  {int OldNumEdge = ne();
-  Simplify();
+  {if(nv() < 3)return -1;
+  if(!CheckSimple())return -1;
+  int OldNumEdge = ne();
   MakeConnected();
-  if(!CheckPlanar())
-      {DebugPrintf("Error:Schnyder::No planar map");return 1;}
+  if(!CheckPlanar())return -1;
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
   int len;
   if(!FirstBrin && SchnyderLongestFace() && !MaxPlanar)
@@ -245,7 +245,7 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
 
-  if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return 1;
+  if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return -2;
 
   if(SchnyderColor())
       {Prop<short> ecolor(Set(tedge()),PROP_COLOR);
@@ -264,12 +264,13 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
   }
 int TopologicalGraph::SchnyderV(tbrin FirstBrin)
 // FirstBrin will be on left top
-  {int OldNumEdge = ne();
+  {if(nv() < 3)return -1;
+  if(!CheckSimple())return -1;
+  int OldNumEdge = ne();
   int OldNumVertex = nv();
   //  Opt6Biconnect();
-  Simplify();
   Biconnect();
-  if(!CheckPlanar()) return 1;
+  if(!CheckPlanar())return -1;
  
 
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
@@ -279,7 +280,7 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
 
-  if(!MaxPlanar && VertexTriangulate())return 1;
+  if(!MaxPlanar && VertexTriangulate())return -2;
 
 
   if(SchnyderColor())
@@ -298,4 +299,10 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
   for(tedge e = ne();e > OldNumEdge;e--) DeleteEdge(e);
   return 0;
   }
+
+
+
+
+  
+
 

@@ -18,6 +18,7 @@
 
 int TopologicalGraph::FindPlanarMap()
   {bool Connect= CheckConnected();
+  if(ne() <= 2){Prop1<int> map(Set(),PROP_PLANARMAP);return 0;}
   //if(!CheckConnected())return 4;
   if(Set().exist(PROP_PLANARMAP)) 
       {if(debug())DebugPrintf("  exist PROP_PLANARMAP");
@@ -203,7 +204,7 @@ bool TopologicalGraph::CheckSimple()
   }
 int TopologicalGraph::BFS(svector<int> &comp)
   {comp.clear();
-  if(!nv()) return 0;
+  if(!nv()) return -1;
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
@@ -475,7 +476,7 @@ svector<tbrin> &TopologicalGraph::ComputeFpbrin()
   return *Fpbrin;
   }
 int TopologicalGraph::LongestFace(tbrin& b,int& len)
-  {if(!CheckConnected() || !CheckPlanar())return 1;
+  {if(!CheckConnected() || !CheckPlanar())return -1;
   svector<tbrin> & Fpbrin = ComputeFpbrin();
   len = 0;
   int l;
@@ -487,7 +488,7 @@ int TopologicalGraph::LongestFace(tbrin& b,int& len)
   return 0;
   }
 int TopologicalGraph::LongestFaceWalk(tbrin& b,int& len)
-  {if(!CheckConnected() || !CheckPlanar())return 1;
+  {if(!CheckConnected() || !CheckPlanar())return -1;
   svector<tbrin> & Fpbrin = ComputeFpbrin();
   len = 0;
   int l;
@@ -505,11 +506,11 @@ void TopologicalGraph::ZigZag()
   delete &Fpbrin;
   }
 int TopologicalGraph::ZigZagTriangulate()
-  {if(ne() <= 1)return 3;
-  Simplify();
+  {if(nv() < 3)return -1;
+  if(!CheckSimple())return -1;
   int Orgm = ne();
   MakeConnected();
-  if(!CheckPlanar()) return 1;
+  if(!CheckPlanar()) return -1;
   if(ne() == 3*nv() - 6)return 0;
   if(debug())DebugPrintf("Executing ZigZagTriangulate");
 
@@ -557,7 +558,7 @@ int TopologicalGraph::ZigZagTriangulate()
       }
   for(e = ne();e > Orgm;e--)
       if(link[e] != 0)Rotate(e);
-  if(ne() != 3*nv() - 6)return 2;
+  if(ne() != 3*nv() - 6)return -2;
   return 0;
   }
 tedge TopologicalGraph::IdentifyEdge(tvertex &v1,tvertex &v2)
@@ -646,14 +647,14 @@ int TopologicalGraph::VertexQuadrangulate()
 */
 int TopologicalGraph::VertexQuadrangulate()
   {if(debug())DebugPrintf("VertexQuadrangulate");
-  if(!CheckBipartite(true))return 1;  
-  if(!CheckPlanar())return 4;
+  if(!CheckSimple())return -1;
+  if(!CheckBipartite(true))return -1;  
+  if(!CheckPlanar())return -1;
   if(!CheckConnected())
       {MakeConnected();
-      if(!CheckBipartite(true))return 1; 
+      if(!CheckBipartite(true))return -1; 
       }
   if(debug())DebugPrintf("Executing VertexQuadrangulate");
-  Simplify();
   int n0 = nv();
   // We add Red vertices
   _VertexQuadrangulate(true);
@@ -665,7 +666,7 @@ int TopologicalGraph::VertexQuadrangulate()
   if(ne() != 2*nv() - 4 && !debug())
       {for(v = nv(); v > n0;v--)
           DeleteVertex(v);
-      return 3;    
+      return -2;    
       }
   return 0;
   }
@@ -746,12 +747,10 @@ int TopologicalGraph::_VertexQuadrangulate(bool First)
 int TopologicalGraph::VertexTriangulate()
 // Precondition: simple plane 2-connected  graph
   {if(debug())DebugPrintf("VertexTriangulate");
-  Simplify();
+  if(!CheckSimple())return -1;
   if(!CheckConnected())MakeConnected();
-  if(!CheckPlanar())
-      {DebugPrintf("Error 4:Vertextriangulate:non planar"); return 4;}
+  if(!CheckPlanar())return -1;
   if(!CheckBiconnected())Biconnect();
-  
   if(debug())DebugPrintf("Executing VertexTriangulate");
   svector<tbrin> & Fpbrin = ComputeFpbrin();
   tvertex v,v0;
@@ -763,7 +762,7 @@ int TopologicalGraph::VertexTriangulate()
       {b = b0 = Fpbrin[i];
       len = FaceWalkLength(b0);
       if(len ==  2)
-          {DebugPrintf("Error:Vertextriangulate:not simple graph");return 2;}
+          {DebugPrintf("Vertextriangulate:not simple graph ?");return -2;}
       if(len ==  3)continue;
       // Creating a new vertex and an edge incident to it
       v = NewVertex();
@@ -788,7 +787,7 @@ int TopologicalGraph::VertexTriangulate()
       {for(v = nv(); v > v0;v--)
           DeleteVertex(v);
       DebugPrintf("Error 3:Vertextriangulate");
-      return 3;    
+      return -3;    
       }
   if(Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
       {Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
@@ -816,7 +815,8 @@ int TopologicalGraph::VertexTriangulate()
   }
 
 bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
-  {if(debug())DebugPrintf("Executing CheckAcyclic");
+  {if(ne() <= 1)return true;
+  if(debug())DebugPrintf("Executing CheckAcyclic");
   ns=nt=0;
   svector<int> din(1,nv());
   svector<tvertex> stack(1,nv());
@@ -933,12 +933,10 @@ bool ExtendAcyclic(TopologicalGraph &G, int &ns, int &nt)
   G.RestoreOrientation();
   return (num==n);
   }
-
-
+bool TopologicalGraph::TopSort(svector<tbrin> &topin, svector<tvertex> &order, bool revert)
 // topsort does a topological sort.
 // It is intended for acyclic digraphs.
 // It computes a "dependence tree" -> topin=last incoming brin.
-bool TopologicalGraph::TopSort(svector<tbrin> &topin, svector<tvertex> &order, bool revert)
   {if(debug())DebugPrintf("TopSort");
   svector<int> din(1,nv());
   svector<tvertex> queue(1,nv());
@@ -977,13 +975,13 @@ bool TopologicalGraph::CheckNoC3Sep()
   if(debug())DebugPrintf("   CheckNoC3Sep");
   if (nv() < 6) return false;
   if(!CheckPlanar() || !CheckBiconnected() || !CheckSimple())
-      {DebugPrintf("Not planar or not Bicconnected or not simple");Error() = 1;
+      {DebugPrintf("Not planar or not Bicconnected or not simple");Error() = -1;
       return false;
       }
   if(debug())DebugPrintf("ExecutingCheckNoC3Sep");
   GraphContainer GC(Container());
   TopologicalGraph G0(GC);
-  if(G0.VertexTriangulate() != 0){Error() = 1;return false;}
+  if(G0.VertexTriangulate() != 0){Error() = -1;return false;}
   G0.SchnyderOrient(1);
   Prop<bool> erase(G0.Set(tvertex()),PROP_TMP);
   erase.clear();
@@ -1277,7 +1275,7 @@ bool TopologicalGraph::CheckTriconnected()
   save_oriented.swap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {Error() = 1;save_oriented.swap(oriented);RestoreOrientation();return false;}  
+      {Error() = -1;save_oriented.swap(oriented);RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if(nsinks > 1){save_oriented.swap(oriented);RestoreOrientation();return false;}
   // Check that vin[-1] is a sink

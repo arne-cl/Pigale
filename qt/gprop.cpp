@@ -145,13 +145,18 @@ void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
 Graph_Properties::~Graph_Properties()
   { }
 void Graph_Properties::MaxNSlowChanged(int i)
-  {MaxNSlow = i;update();
+  {MaxNSlow = i;if(GetMainGraph().nv())update();
   }
 void Graph_Properties::MaxNDisplayChanged(int i)
-  {MaxNDisplay = i;update();
+  {MaxNDisplay = i;if(GetMainGraph().nv())update();
   }
 void Graph_Properties::update()
   {GeometricGraph G(GetMainGraph());
+  if(G.vin[0]() || G.cir[0]() || G.acir[0]())
+      {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
+      Twait("memory error");
+      }
+  if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   int ns,nt;
   bool S = G.CheckSimple();
   bool P = G.CheckPlanar();
@@ -227,18 +232,18 @@ void Graph_Properties::update()
   menu->setItemEnabled(103,!SMALL && P && !C2);                    //make 2 connected opt
   menu->setItemEnabled(104,(G.nv() > 1) && !C2);                   //make 2 connected NP  
   menu->setItemEnabled(105,!SMALL && P && S && !T);                //vertex triangulate
-  menu->setItemEnabled(106,(G.nv() > 1) && P && S && !T);          //ZigZag 
+  menu->setItemEnabled(106,!SMALL && P && S && !T);                //ZigZag 
   menu->setItemEnabled(107,(G.nv() > 1) && P && C3 && !T);         //Tricon triangulate opt
   menu->setItemEnabled(108,(G.nv() > 1) && P && B && S && !MB);    //Quadrangulate
   //Embed
-  menu->setItemEnabled(201,!SMALL && P && NotBigD);                 //Schnyder
-  menu->setItemEnabled(202,!SMALL && P && NotBigD);                 //Schnyder V 
-  menu->setItemEnabled(203,!SMALL && P && NotBigD);                 //Tutte
-  menu->setItemEnabled(204,!SMALL && P && S && NotBigD);            //Tutte Circle 
-  menu->setItemEnabled(205,!SMALL && P && NotBigD);                 //FPP Fary
-  menu->setItemEnabled(250,(!SMALL || G.ne() > 1) && P && NotBigD); //Vision
-  menu->setItemEnabled(251,(G.nv() > 1) && B && P && NotBigD);      //Biparti
-  menu->setItemEnabled(253,!SMALL && P && NotBigD);                 //FPP vision
+  menu->setItemEnabled(201,!SMALL && S && P && NotBigD);           //Schnyder
+  menu->setItemEnabled(202,!SMALL && S && P && NotBigD);           //Schnyder V 
+  menu->setItemEnabled(203,!SMALL && S && P && NotBigD);           //FPP Fary
+  menu->setItemEnabled(204,!SMALL && P && S && NotBigD);           //Tutte Circle 
+  menu->setItemEnabled(205,!SMALL && P && NotBigD);                //Tutte
+  menu->setItemEnabled(250,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
+  menu->setItemEnabled(251,(G.nv() > 1) && B && P && NotBigD);     //Biparti
+  menu->setItemEnabled(253,!SMALL && S && P && NotBigD);           //FPP vision
   //dual
   menu->setItemEnabled(301,(G.nv() > 1) && P); 
   menu->setItemEnabled(302,(G.nv() > 1) && P);
@@ -253,17 +258,13 @@ void Graph_Properties::update()
   //Orient
   menu->setItemEnabled(703,!SMALL && P && C3);                        //planar 3-con 
   menu->setItemEnabled(704,(G.nv() > 1) && P && B);                   //biparti 
-  menu->setItemEnabled(705,!SMALL && P);                              //planar schnyder
+  menu->setItemEnabled(705,!SMALL && P && S);                         //planar schnyder
   menu->setItemEnabled(706,(G.nv() > 1) && P && C2);                  //bipolar 
 
   //Print informations
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
-  if(G.nv() ==0 || G.ne() == 0) return;
-  if(G.vin[0]() || G.cir[0]() || G.acir[0]())
-      Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d"
-              ,G.vin[0](),G.cir[0](),G.acir[0]());
-
+  if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;
   else if(T && G.nv() > 3)
@@ -284,16 +285,18 @@ void Graph_Properties::update()
       
   if(B && P && S && G.nv() > 3 && G.ne() == 2*G.nv()-4)
       Tprintf("Maximal planar bipartite");
-  else if(H) {
-    Prop1<int> hnv(G.Set(),PROP_NV);
-    Prop1<int> hne(G.Set(),PROP_NE);
-    Tprintf("Hypergraph: %d hypervertices %d hyperedges",hnv(),hne());
-  }
+  else if(H) 
+      {Prop1<int> hnv(G.Set(),PROP_NV);
+      Prop1<int> hne(G.Set(),PROP_NE);
+      Tprintf("Hypergraph: %d hypervertices %d hyperedges",hnv(),hne());
+      }
 
   if(dmin != dmax)
       {Tprintf("Minimum degree:%d",dmin);
       Tprintf("Maximum degree:%d",dmax);
       }
+  else
+      Tprintf("Regular degree:%d",dmin);
 
   if(G.Set().exist(PROP_MAPTYPE))
       {Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
@@ -304,5 +307,5 @@ void Graph_Properties::update()
       }
   int g = G.ComputeGenus();
   if(g)Tprintf("Genus of the current map: %d",g);
-  if(A) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
+  if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
   }

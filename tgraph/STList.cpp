@@ -25,7 +25,7 @@ int TopologicalGraph::PseudoBipolarPlan(tbrin& st_brin,int &NumberOfSinks)
   RemoveLoops();
   int m_origin = ne();
   MakeConnected();
-  if(!CheckPlanar())return 1;
+  if(!CheckPlanar())return -1;
   eoriented.clear();
   if(!st_brin())st_brin = acir[extbrin()];
 
@@ -92,9 +92,9 @@ int TopologicalGraph::PseudoBipolarPlan(tbrin& st_brin,int &NumberOfSinks)
   return 0;
   }
 int TopologicalGraph::BipolarPlan(tbrin FirstBrin)
-  {if(!CheckConnected() || !CheckPlanar())return 1;
+  {if(!CheckConnected() || !CheckPlanar())return -1;
   if(!FirstBrin)FirstBrin = extbrin();
-  if(!CheckBiconnected())return 1;
+  if(!CheckBiconnected())return -1;
   ComputeSTlist(FirstBrin);
   Prop<tvertex> stlink(Set(tvertex()),PROP_STLINK);
   svector<int> num(1,nv());

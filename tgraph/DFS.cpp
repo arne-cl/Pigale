@@ -121,7 +121,7 @@ int Graph::GDFS(const svector<tbrin> &cir, svector<tvertex>&nvin,
   }
 
 int bicon(int n,int m,const svector<tvertex> &nvin, _Bicon &Bicon,svector<tvertex> &low)
-  {if(debug())DebugPrintf("Executing Graph:bicon");
+  {if(debug())DebugPrintf("Executing DFS:bicon");
   int nbre_fine = 0;
   tvertex nfrom,nto,nformer;
   tedge z;
