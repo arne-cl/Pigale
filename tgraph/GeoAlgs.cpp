@@ -183,6 +183,18 @@ int GeometricGraph::ColorExteriorface()
   ecolor[e] = Green; ewidth[e] = 2;
   return len;
   }
+double GeometricGraph::MinMaxCoords(double &xmin,double &xmax, double &ymin,double &ymax)
+  {if(nv() < 1)return .0;
+  tvertex v = 1;
+  xmin = xmax = vcoord[v].x();
+  ymin = ymax = vcoord[v].y();
+  for(v = 2; v <= nv();v++)
+      {xmin = Min(xmin,vcoord[v].x());xmax = Max(xmax,vcoord[v].x());
+      ymin = Min(ymin,vcoord[v].y());ymax = Max(ymax,vcoord[v].y());
+      }
+  return Max(xmax-xmin,ymax-ymin);
+  }
+
 GraphContainer * GeometricGraph::GeometricDualGraph()
   {if(!CheckConnected() || !CheckPlanar())
       return (GraphContainer *)0;
