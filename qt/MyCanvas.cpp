@@ -33,14 +33,19 @@ GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name,
   DoNormalise = true;
   is_init = false;
   CreatePenBrush();
-
   color_node = Yellow;
   color_edge = Black;
   width_edge = 1;
   zoom = 1.;
+  setFocusPolicy(QWidget::ClickFocus);
   }
 GraphEditor::~GraphEditor()
   { }
+void GraphEditor::keyPressEvent(QKeyEvent *k)
+  {if(k->key() == Qt::Key_Escape)
+      Tprintf("ESC");
+  qDebug("Ackey pressed:%d",k->key());
+  }
 void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   {GeometricGraph & G = *(gwp->pGG);
   QPoint p(e->pos());

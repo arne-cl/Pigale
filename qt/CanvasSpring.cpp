@@ -32,6 +32,7 @@ void GraphEditor::Spring()
   // during iteration keeep the drawing size
   double hw = .8*(mhw*mhw)/(n*m); 
   int iter,niter = 2000;
+  int n_red = 0;
   double dist2,strength;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
@@ -84,14 +85,15 @@ void GraphEditor::Spring()
 	  if(dx > 1. || dy > 1.) 
 	      {nodeitem[v]->moveBy(translate[v].x(),-translate[v].y());
 	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      --n_red;
 	      }
 	  else
-	      nodeitem[v]->SetColor(red);
+	      {nodeitem[v]->SetColor(red);++n_red;}
 	  }
-      if(dep < .5)break;
-      canvas()->update(); 
+      if(dep < .5 || n_red == G.nv())break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      canvas()->update(); 
       }
   gwp->mywindow->blockInput(false);
   Tprintf("Spring iter=%d",iter-1);
@@ -114,15 +116,13 @@ double coefDiff = 0.707;
 int DEFAULT_ADD_VIRTUAL_DEGRE = 4;
 int MAX_GENERATIONS = 1000;
 double K_ANGLE = 10;
-double K_MINDIST = 100;
+//double K_MINDIST = 100;
+double K_MINDIST = 50;
 double K_ELECTRO = 10;
 double K_SPRING = 0.1;
 bool K_FRONTIER = false;
-
 double _4PI2 = 4*PI*PI;
 struct tk {double angle,spring,mindist,electro;bool frontier;};
-
-
 
 Tpoint ZERO = Tpoint();
 
@@ -672,6 +672,7 @@ int GraphEditor::SpringJacquard()
   double k_electro =  K_ELECTRO;
   double k_spring  = .1;
   bool k_frontier  = false;
+  int n_red = 0;
   GeometricGraph & G = *(gwp->pGG);
   if(G.ComputeGeometricCir() == 0)
       {G.extbrin() = G.FindExteriorFace();
@@ -736,24 +737,20 @@ int GraphEditor::SpringJacquard()
 	  dy = G.vcoord[v].y()- scoord[v].y();
 	  if(Abs(dx) > 1. || Abs(dy) > 1.)
 	      {nodeitem[v]->moveBy(dx,-dy);
-	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      nodeitem[v]->SetColor(color[G.vcolor[v]]);--n_red;
 	      }
 	  else
-	      nodeitem[v]->SetColor(red);
+	      {nodeitem[v]->SetColor(red);++n_red;}
 	  }      
-      canvas()->update();
+      if(n_red > (2*G.nv())/3)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      canvas()->update(); 
       }
   gwp->mywindow->blockInput(false);
   Tprintf("Spring iter=%d",generations);
   DoNormalise = true;
   Normalise();load(false);
   return generations;
-  }
-void GraphEditor::keyPressEvent(QKeyEvent *k)
-  {if(k->key() == Qt::Key_Escape)
-      Tprintf("ESC");
-  qDebug("Ackey pressed:%d",k->key());
   }
 

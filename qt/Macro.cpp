@@ -30,7 +30,8 @@ void MyWindow::keyPressEvent(QKeyEvent *k)
   {if(k->key() == Qt::Key_Escape)
       escape = 1;
   key = k->key();
-  QWidget::keyPressEvent(k);
+  //qDebug("k=%d",key);
+  //QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;

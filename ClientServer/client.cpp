@@ -67,10 +67,9 @@ void Client::closeConnection()
   stop();
   }
 void Client::sendToServer()
-  {if(socket->state() != QSocket::Connected)return;
-  QTextStream os(socket);
-  os << inputText->text() << "\n";
-  inputText->setText( "" );
+  {QString str = inputText->text();
+  sendToServer(str);
+  inputText->setText("");
   }
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)return;

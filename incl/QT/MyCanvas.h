@@ -183,8 +183,8 @@ private:
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent*);
   void paintEvent(QPaintEvent *);
-  void keyPressEvent(QKeyEvent *k);
   void UpdateSizeGrid();
+  void keyPressEvent(QKeyEvent *k);
 
   QPoint start_position;
   GraphWidgetPrivate* gwp;
