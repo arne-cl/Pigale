@@ -188,7 +188,7 @@ DFS.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 DFS.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 DFS.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 DFS.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/color.h
-DFSGraph.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/Tbase.h
+DFSGraph.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/DFSLow.h
 DFSGraph.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/DFSGraph.h
 DFSGraph.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 DFSGraph.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
@@ -288,7 +288,7 @@ Generate.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 Generate.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 Generate.o: ../../pigale/incl/TAXI/Tsvector.h
 Generate.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
-Generate.o: ../../pigale/incl/TAXI/propdef.h
+Generate.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/random.h
 GeoAlgs.o: ../../pigale/incl/TAXI/smatrix.h ../../pigale/incl/TAXI/Tbase.h
 GeoAlgs.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
 GeoAlgs.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
@@ -402,6 +402,7 @@ PSet.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tbase.h
 PSet.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
 PSet.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 PSet.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
+random.o: ../../pigale/incl/TAXI/Tbase.h
 reduce.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tbase.h
 reduce.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 reduce.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
@@ -422,6 +423,7 @@ SchaefferGen.o: ../../pigale/incl/TAXI/Tpropio.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tstring.h
 SchaefferGen.o: ../../pigale/incl/TAXI/propdef.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tpoint.h
+SchaefferGen.o: ../../pigale/incl/TAXI/random.h
 Schnyder.o: ../../pigale/incl/TAXI/SchPack.h ../../pigale/incl/TAXI/graphs.h
 Schnyder.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
 Schnyder.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
