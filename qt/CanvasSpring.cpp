@@ -50,18 +50,19 @@ void GraphEditor::Spring()
 	      p = G.vcoord[v];
 	      dist2 = Max(Distance2(p0,p),1.);
 	      strength = (hw/dist2);
-	      translate[v0]  += (p0 - p)*strength*force; 
+	      translate[v0]  += (p0 - p)*strength; 
 	      }
 	  // edges repulse non adjacent vertices (1/d²)
-	  // now too simple solution
 	  for(tedge e = 1; e <= m;e++)
 	      {tvertex v = G.vin[e], w = G.vin[-e];
 	      if(v0 == v || v0 == w)continue;
-	      p = (G.vcoord[v]+G.vcoord[w])/2.;
-	      dist2 = Max(Distance2(p0,p),1.);
-	      //strength = (hw/dist2)*.8; 
-	      strength = (hw/dist2); 
-	      translate[v0] += (p0 - p)*strength*force;
+	      dist2 = dist_seg(p0,G.vcoord[v],G.vcoord[w],p);
+	      if(dist2 > 2.)
+		  {strength = (hw/dist2); 
+		  translate[v0] += (p0 - p)*strength;
+		  }
+	      else // if p0 on edge not hor !!
+		  translate[v0].x() += 10.;
 	      }
 	  }
 
@@ -71,8 +72,8 @@ void GraphEditor::Spring()
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  dist2 = Max(Distance2(p0,p),1.);
 	  strength = Min(sqrt(hw/dist2),.1)*1.5;
-	  translate[G.vin[e]]  += (p-p0)*strength*force;
-	  translate[G.vin[-e]] += (p0-p)*strength*force;
+	  translate[G.vin[e]]  += (p-p0)*strength;
+	  translate[G.vin[-e]] += (p0-p)*strength;
 	  len += sqrt(dist2)/m;
 	  }
       //qDebug("len=%f (est=%f)",len,mhw/sqrt(m));
@@ -82,14 +83,15 @@ void GraphEditor::Spring()
 	  dist2 = Max(Distance2(p0,center),1.);
 	  //strength = Min(sqrt(hw/dist2),.25);
 	  strength = Min(sqrt(hw/dist2),.5);
-	  translate[v0] -= (p0 - center)*strength*force;
+	  translate[v0] -= (p0 - center)*strength;
 	  }
 
       // update the drawing
       double dx,dy,dep = .0;
       n_red = 0;
       for(tvertex v = 1;v <= n;v++)
-	  {G.vcoord[v] += translate[v];
+	  {translate[v] *= force;
+	  G.vcoord[v] += translate[v];
 	  dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
