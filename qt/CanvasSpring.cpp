@@ -20,24 +20,21 @@
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
 
-int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax,double & dx,double & dy);
-int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax,double & dx,double & dy)
-  {if(G.nv() < 2)return -1;
-  tvertex v = 1;
-  xmin = xmax = G.vcoord[v].x();
-  ymin = ymax = G.vcoord[v].y();
-  for(v = 2; v <= G.nv();v++)
-      {xmin = Min(xmin,G.vcoord[v].x());xmax = Max(xmax,G.vcoord[v].x());
-      ymin = Min(ymin,G.vcoord[v].y());ymax = Max(ymax,G.vcoord[v].y());
-      }
+int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax
+		  ,double & dx,double & dy)
+  {G.MinMaxCoords(xmin,xmax,ymin,ymax);
   dx = xmax - xmin;
   dy = ymax - ymin;
   return 0;
   }
+char sgn(double f)
+{ if (f==0) return('0');
+ if (f<0) return('-'); else return('+');}
 
 
 void GraphEditor::Spring()
-  {GeometricGraph & G = *(gwp->pGG);
+  {grabKeyboard(); 
+  GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<Tpoint> translate(1,G.nv()); translate.clear();
   DoNormalise = true;
@@ -51,16 +48,16 @@ void GraphEditor::Spring()
   double expand = 1.;
   double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
   int iter,niter = 2000;
-  //int iter,niter = 10;
+  //int iter,niter = 1;
   double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
-  Tpoint p0,p;
+  Tpoint p0,p,translation;
   gwp->mywindow->blockInput(true);
   double force = 1.;
   int stop = 0;
   // Compute bounds
   ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0); 
-
+  
   for(iter = 1;iter <= niter;iter++)
       {translate.clear();
       if(iter > 50)force *= .99;
@@ -76,13 +73,14 @@ void GraphEditor::Spring()
       hw = expand*hw0;
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
+	  translation.x() = translation.y() = .0;
 	  // v0 repulse other vertices (1/d²)
 	  for(tvertex v = 1;v <= n;v++) 
 	      {if(v == v0)continue;
 	      p = G.vcoord[v];
 	      dist2 = Max(Distance2(p0,p),1.);
 	      strength = (hw/dist2);
-	      translate[v0]  += (p0 - p)*strength; 
+	      translation  += (p0 - p)*strength; 
 	      }
 	  // v0 is repulsed by non adjacent edges (1/d²)
 	  // if too small cir changes
@@ -92,12 +90,12 @@ void GraphEditor::Spring()
 	      dist2 = dist_seg(p0,G.vcoord[v],G.vcoord[w],p);
 	      if(dist2 > 2.)
 		  {strength = (hw/dist2); 
-		  translate[v0] += (p0 - p)*strength;
+		  translation += (p0 - p)*strength;
 		  }
 	      else if(G.vcoord[v].y() != G.vcoord[v].y())
-		  translate[v0].x() += 5.;
+		  translation.x() += 5.;
 	      else
-		  translate[v0].y() += 5.;
+		  translation.y() += 5.;
 	      }
 	  //v0 is attracted or repulsed by its neighbours (1/d)
 	  tbrin b0 = G.pbrin[v0];
@@ -107,17 +105,19 @@ void GraphEditor::Spring()
 	      dist2 = Max(Distance2(p0,p),1.);
 	      strength = Min(sqrt(hw/dist2),.1);
 	      if(dist2 > len02/4)
-		  translate[v0]  -= (p0-p)*strength*.5;
+		  translation  -= (p0-p)*strength*.5;
 	      else if(dist2 < 4*len02) 
-		  translate[v0]  += (p0-p)*strength*.5;
+		  translation  += (p0-p)*strength*.5;
 	      }while((b = G.cir[b]) != b0);
 	  // v0 is attracted by the center (1/d)
 	  dist2 = Max(Distance2(p0,center),1.);
 	  strength = Min(sqrt(hw/dist2),.5)*.5;
 	  translate[v0] -= (p0 - center)*strength;
+	  translation -= (p0 - center)*strength;
 	  // update v0
-	  translate[v0] *= force;
-	  G.vcoord[v0] += translate[v0];
+	  translation *= force;
+	  translate[v0] = translation;
+	  G.vcoord[v0] += translation;
 	  }
 
       // update the drawing
@@ -128,16 +128,192 @@ void GraphEditor::Spring()
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
 	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      nodeitem[v]->moveTo(G.vcoord[v]);
+	      //nodeitem[v]->moveTo(G.vcoord[v]);
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
+	  nodeitem[v]->moveTo(G.vcoord[v]);
 	  canvas()->update();
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
       stop = (n_red == G.nv())? ++stop : 0;
       if(stop)force *= .9;
       if(dep < .25 || stop == 4)break;
+      qApp->processEvents(1);
+      //if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      if(key_pressed == Qt::Key_Escape)break;
+      // Compute bounds ro adapt the expand factor (should not be too strong)
+      ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
+      if(sizex > sizex0 && sizey > sizey0)
+	  expand /= Max(sizex/sizex0,sizey/sizey0);
+      else if(sizex < sizex0 && sizey < sizey0)
+	  expand *= Max(sizex0/sizex,sizey0/sizey);
+      sizex0 = sizex;      sizey0 = sizey;
+      }
+
+  gwp->mywindow->blockInput(false);
+  Normalise();
+  // same as load(false) but much faster
+  for(tvertex v = 1;v <= n;v++)
+      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+      nodeitem[v]->moveTo(G.vcoord[v]);
+      }
+  canvas()->update();
+  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+  releaseKeyboard(); 
+  }
+
+//**************************************************************************************
+void GraphEditor::SpringPreservingMap()
+  {GeometricGraph & G = *(gwp->pGG);
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+  svector<Tpoint> translate(1,G.nv()); translate.clear();
+  Tpoint t; // current translation
+  DoNormalise = true;
+  int h = gwp->canvas->height();
+  int w = gwp->canvas->width();
+  double mhw = Min(w,h) - 2*BORDER;
+  Tpoint center((w - space - sizerect)/2.,h/2.);
+  int n_red,n = G.nv(),m =G.ne();
+  double len,len02 = mhw*mhw/n;
+  // during iteration keeep the drawing size
+  double expand = 1.;
+  double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
+  int iter,niter = 2000;
+  double dist2,strength,dx,dy,dep;
+  double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
+  Tpoint p0,p;
+  gwp->mywindow->blockInput(true);
+  double force = 1.;
+  int stop = 0;
+  // Compute bounds
+  ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0);
+
+  for(iter = 1;iter <= niter;iter++)
+      {t=Tpoint(0,0);
+      if(iter > 100)force *= .99;
+      else if(iter > 200)force *= .98;
+      // Compute mean length of edges
+      len = .0;
+      for(tedge e = 1; e <= m;e++)
+	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
+	  len += Distance(p0,p);
+	  }
+      len /= m;
+      len02 = len*len;
+      hw = expand*hw0;
+      for(tvertex v0 = 1;v0 <= n;v0++)
+	  {p0 = G.vcoord[v0];
+	  t.x() = t.y() = .0;
+	  // v0 repulse other vertices (1/d²)
+	  for(tvertex v = 1;v <= n;v++) 
+	      {if(v == v0)continue;
+	      p = G.vcoord[v];
+	      dist2 = Max(Distance2(p0,p),1.);
+	      strength = (hw/dist2);
+	      t += (p0 - p)*strength; 
+	      }
+
+	  //v0 is attracted or repulsed by its neighbours (1/d)
+	  tbrin b0 = G.pbrin[v0];
+	  tbrin b = b0;
+	  do
+	      {p = G.vcoord[G.vin[-b]];
+	      dist2 = Max(Distance2(p0,p),1.);
+	      strength = Min(sqrt(hw/dist2),.1);
+	      if(dist2 > len02/4)
+		  t -= (p0-p)*strength*.5;
+	      else if(dist2 < 4*len02) 
+		  t += (p0-p)*strength*.5;
+	      }while((b = G.cir[b]) != b0);
+
+	  // v0 is attracted by the center (1/d)
+	  dist2 = Max(Distance2(p0,center),1.);
+	  strength = Min(sqrt(hw/dist2),.5)*.5;
+	  t -= (p0 - center)*strength;
+
+	  // v0 is repulsed by non adjacent edges (1/d²)
+	  Tpoint p00 = p0 + t;
+	  for(tedge e = 1; e <= m;e++)
+	      {tvertex v = G.vin[e], w = G.vin[-e];
+	      if(v0 == v || v0 == w)continue;
+	      dist2 = dist_seg(p00,G.vcoord[v],G.vcoord[w],p);
+	      if(dist2 > 2.)
+		  {strength = (hw/dist2);
+		  t += (p00 - p)*strength;
+		  }
+	      else if(G.vcoord[v].y() != G.vcoord[v].y())
+		  t.x() += 5.;
+	      else
+		  {t.x() += 5.;t.y() += 5.;}
+	      }
+	  t *= force;
+	  // Check crossings
+	  bool found=false;
+	  if (t*t!=0)
+	      {for (tbrin b=1; b<=G.ne(); b++)
+		  {tvertex v1=G.vin[b];
+		  tvertex v2=G.vin[-b];
+		  if (v1==v0 || v2==v0) continue;
+		  Tpoint p1=G.vcoord[v1];
+		  Tpoint p2=G.vcoord[v2];
+		  double d1=Determinant(p1-p0,t);
+		  double d2=Determinant(p2-p0,t);
+		  double d3=Determinant(p0-p1,p2-p1);
+		  double d4=Determinant(p0+t-p1,p2-p1);
+                  double x1 = d1*d2; double x2=d3*d4;
+                  if (x1<=0 && x2<0 || x1<0 && x2<=0)
+		      {found=true;
+		      break;}
+		  }
+	      if (!found)
+		  {tbrin b0=G.pbrin[v0];
+		  bool dobrk=false;
+		  tbrin b=b0;
+		  do 
+		      {Tpoint pp0=G.vcoord[G.vin[-b]];
+		      for (tvertex z=1; z<=G.nv(); z++)
+			  {if (z==v0 || z==G.vin[-b]) continue;
+			  Tpoint p=G.vcoord[z];
+			  double d1=Determinant(p0-pp0,p-pp0);
+			  double d2=Determinant(p0+t-pp0,p-pp0);
+			  double d3=Determinant(pp0-p0,p-p0);
+			  double d4=Determinant(t,p-p0);
+			  double x1 = d1*d2; double x2=d3*d4;
+			  if (x1<0 && x2<=0 || x1<=0 && x2<0)
+			      {	dobrk=true;break;}
+			  }
+		      if (dobrk) {found=true; break;}
+		      } while ((b=G.cir[b])!=b0);
+		  }
+	      if (found)
+		  {t=Tpoint(0,0);
+		  if(debug())G.vcolor[v0] = Blue;
+		  }
+	      }
+	  if (!found)
+	    {G.vcoord[v0] += t; translate[v0] += t;}
+	  }
+
+      // update the drawing
+      dep = .0;
+      n_red = 0;
+      for(tvertex v = 1;v <= n;v++)
+	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
+	  dep = Max(dep,dx);  dep = Max(dep,dy);
+	  if(dx > 1. || dy > 1.)
+	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      //nodeitem[v]->moveTo(G.vcoord[v]);
+	      }
+	  else
+	      {nodeitem[v]->SetColor(red);++n_red;}
+	  nodeitem[v]->moveTo(G.vcoord[v]);
+	  canvas()->update();
+	  }
+      translate.clear();
+      stop = (n_red == G.nv())? ++stop : 0;
+      if(stop)force *= .95;
+      if(dep < .1 || stop == 4)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       // Compute bounds ro adapt the expand factor (should not be too strong)
@@ -161,161 +337,6 @@ void GraphEditor::Spring()
   }
 
 //**************************************************************************************
-void GraphEditor::SpringPreservingMap()
-  {GeometricGraph & G = *(gwp->pGG);
-  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-  svector<Tpoint> translate(1,G.nv()); translate.clear();
-  DoNormalise = true;
-  int h = gwp->canvas->height();
-  int w = gwp->canvas->width();
-  double mhw = Min(w,h) - 2*BORDER;
-  Tpoint center((w - space - sizerect)/2.,h/2.); 
-  int n_red,n = G.nv(),m =G.ne();
-  double len,len02 = mhw*mhw/n;
-  // during iteration keeep the drawing size
-  double expand = 1.;
-  double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
-  int iter,niter = 2000;
-  double dist2,strength,dx,dy,dep;
-  double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
-  Tpoint p0,p;
-  gwp->mywindow->blockInput(true);
-  double force = 1.;
-  int stop = 0;
-  // Compute bounds
-  ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0); 
-
-  for(iter = 1;iter <= niter;iter++)
-      {translate.clear();
-      if(iter > 50)force *= .99;
-      else if(iter > 100)force *= .98;
-      // Compute mean length of edges
-      len = .0;
-      for(tedge e = 1; e <= m;e++)
-	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
-	  len += Distance(p0,p);
-	  }
-      len /= m;
-      len02 = len*len;
-      hw = expand*hw0;
-      for(tvertex v0 = 1;v0 <= n;v0++)
-	  {p0 = G.vcoord[v0];
-	  // v0 repulse other vertices (1/d²)
-	  for(tvertex v = 1;v <= n;v++) 
-	      {if(v == v0)continue;
-	      p = G.vcoord[v];
-	      dist2 = Max(Distance2(p0,p),1.);
-	      strength = (hw/dist2);
-	      translate[v0]  += (p0 - p)*strength; 
-	      }
-	  // v0 is repulsed by non adjacent edges (1/d²)
-	  for(tedge e = 1; e <= m;e++)
-	      {tvertex v = G.vin[e], w = G.vin[-e];
-	      if(v0 == v || v0 == w)continue;
-	      dist2 = dist_seg(p0,G.vcoord[v],G.vcoord[w],p);
-	      if(dist2 > 2.)
-		  {strength = (hw/dist2); 
-		  translate[v0] += (p0 - p)*strength;
-		  }
-	      else if(G.vcoord[v].y() != G.vcoord[v].y())
-		  translate[v0].x() += 5.;
-	      else
-		  translate[v0].y() += 5.;
-	      }
-	  //v0 is attracted or repulsed by its neighbours (1/d)
-	  tbrin b0 = G.pbrin[v0];
-	  tbrin b = b0;
-	  do
-	      {p = G.vcoord[G.vin[-b]];
-	      dist2 = Max(Distance2(p0,p),1.);
-	      strength = Min(sqrt(hw/dist2),.1);
-	      if(dist2 > len02/4)
-		  translate[v0]  -= (p0-p)*strength*.5;
-	      else if(dist2 < 4*len02) 
-		  translate[v0]  += (p0-p)*strength*.5;
-	      }while((b = G.cir[b]) != b0);
-	  // v0 is attracted by the center (1/d)
-	  dist2 = Max(Distance2(p0,center),1.);
-	  strength = Min(sqrt(hw/dist2),.5)*.5;
-	  translate[v0] -= (p0 - center)*strength;
-	  // update v0
-	  translate[v0] *= force;
-
-	  bool found=false;Tpoint &t=translate[v0];
-	  if (t*t!=0)
-	      {Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
-	      
-	      for (tbrin b=1; b<=G.ne(); b++)
-		  {tvertex v1=G.vin[b];
-		  tvertex v2=G.vin[-b];
-		  if (v1==v0 || v2==v0) continue;
-		  Tpoint p1=G.vcoord[v1];
-		  Tpoint p2=G.vcoord[v2];
-		  if ((Determinant(p1-p0,t)*Determinant(p2-p0,t)<=0) 
-		      && (Determinant(p0-p1,p2-p1)*Determinant(p0+t-p1,p2-p1)<=0))
-		      {found=true;break;}
-		  }
-	      if (!found)
-		  {tbrin b0=G.pbrin[v0];
-		  bool dobrk=false;
-		  tbrin b=b0;
-		  do 
-		      {Tpoint pp0=G.vcoord[G.vin[-b]];
-		      for (tvertex z=1; z<G.nv(); z++)
-			  {if (z==v0 || z==G.vin[-b]) continue;
-			  Tpoint p=G.vcoord[z];
-			  if ((Determinant(p0-pp0,p-pp0)*Determinant(p0+t-pp0,p-pp0)<=0) 
-			      && (Determinant(pp0-p0,p-p0)*Determinant(t,p-p0)<=0))
-			      {dobrk=true;break;}
-			  }
-		      if (dobrk) {found=true; break;}
-		      } while ((b=G.cir[b])!=b0);
-		  }
-	      if (found){ t=Tpoint(0,0);G.vcolor[v0] = Blue;}
-	      }
-	  G.vcoord[v0] += translate[v0];
-	  }
-
-      // update the drawing
-      dep = .0;
-      n_red = 0;
-      for(tvertex v = 1;v <= n;v++)
-	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
-	  dep = Max(dep,dx);  dep = Max(dep,dy);
-	  if(dx > 1. || dy > 1.) 
-	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      nodeitem[v]->moveTo(G.vcoord[v]);
-	      }
-	  else
-	      {nodeitem[v]->SetColor(red);++n_red;}
-	  //nodeitem[v]->moveTo(G.vcoord[v]);
-	  canvas()->update();
-	  }
-      //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
-      stop = (n_red == G.nv())? ++stop : 0;
-      if(stop)force *= .9;
-      if(dep < .25 || stop == 4)break;
-      qApp->processEvents(1);
-      if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
-      // Compute bounds ro adapt the expand factor (should not be too strong)
-      ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
-      if(sizex > sizex0 && sizey > sizey0)
-	  expand /= Max(sizex/sizex0,sizey/sizey0);
-      else if(sizex < sizex0 && sizey < sizey0)
-	  expand *= Max(sizex0/sizex,sizey0/sizey);
-      sizex0 = sizex;      sizey0 = sizey;
-      }
-
-  gwp->mywindow->blockInput(false);
-  Normalise();
-  // same as load(false) but much faster
-  for(tvertex v = 1;v <= n;v++)
-      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-      nodeitem[v]->moveTo(G.vcoord[v]);
-      }
-  canvas()->update();
-  Tprintf("Spring-Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
-  }
 
 //******************** JACQUARD SPRING EMBEDDER 
 //  ****************** VARIABLES D'EQUILIBRAGE
@@ -1016,24 +1037,4 @@ bool BoundRay(QCanvas *canvas, GeometricGraph &G, const tvertex &v0, const Tpoin
   return found;
   }
 */
-//       double d=Determinant(tt,t);
-//       if (d!=0)
-// 	  {
-// 	  double alpha=-exb1/d;qDebug("** %f",alpha);
-//           if (alpha<1) 
-// 	      {t*=alpha; found=true; 
-// 	      nodeitem[v0]->SetColor(red);
-// 	      edgeitem[b()]->SetColor(red);
-// 	      canvas()->update();
-// 	      Twait("");
-// 	      }
-// 	  }
-//       else
-// 	  {Tpoint pmin;
-// 	  qDebug("found alignment");
-// 	  dist_seg(p0,p1,p2,pmin);
-//           qDebug("t*t=%f",t*t);
-//           double alpha=(t*(t-pmin))/(t*t);
-// 	  if (alpha>0 && alpha<1) {t*=alpha;  qDebug("alpha correction 2: %f",alpha);found=true;}
-// 	  else qDebug("alpha=%f",alpha);
-// 	  }
+
