@@ -291,9 +291,13 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   int x  = (int)(x0 * xorient + x1*(1.-xorient));
   int y  = (int)(y0 * xorient + y1*(1.-xorient));
   QColor col = color[G.ecolor[e]];
+  QColor col2 = color[G.ecolor2[e]];
   tp->setColor(col);tp->setWidth(G.ewidth[e]);
   EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
-  if(ShowOrientation() && eoriented[e])tp->setColor(Desaturate(col));
+  if(ShowOrientation() && eoriented[e])
+    tp->setColor(Desaturate(col));
+  else
+    tp->setColor(col2);
   EdgeItem *edge1 = new EdgeItem(e,x,h-y,x1,h-y1,false,g);
   edge0->opp = edge1;  edge1->opp = edge0;
   return edge0;
@@ -338,6 +342,18 @@ void EdgeItem::SetColor(QColor c)
 	  opp->SetColor(c);
       }
   }
+
+void EdgeItem::SetColors(QColor c1, QColor c2)
+  {GeometricGraph & G = *(gwp->pGG);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+  tp->setColor(c1);tp->setWidth(G.ewidth[e]);
+  setPen(*tp);
+  if(lower)
+    opp->SetColor(c2);
+  else
+    opp->SetColor(c1);
+  }
+
 void EdgeItem::setFromPoint(int x,int y)
   {setPoints(x,y,endPoint().x(),endPoint().y());
   }

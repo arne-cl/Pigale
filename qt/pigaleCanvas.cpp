@@ -263,6 +263,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(G.FindExteriorFace(pp) == 0)return;
 	  //ColorExteriorface
 	  tedge e;
+
 	  ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
 	  tbrin b0 = G.extbrin();
 	  tbrin b = b0;

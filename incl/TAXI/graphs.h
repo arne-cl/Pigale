@@ -283,6 +283,7 @@ public :
     Prop<long> vlabel;
     Prop<int> ewidth;
     Prop<short> ecolor;
+    Prop<short> ecolor2;
     Prop<long> elabel;
     long maxvlabel;
     long maxelabel;
@@ -311,12 +312,12 @@ public :
     GeometricGraph(GraphContainer &G) : 
         TopologicalGraph(G), vcoord(G.PV(),PROP_COORD,Tpoint(0,0)),
         vcolor(G.PV(),PROP_COLOR,5),vlabel(G.PV(),PROP_LABEL),
-        ewidth(G.PE(),PROP_WIDTH,1), ecolor(G.PE(),PROP_COLOR,1),
+        ewidth(G.PE(),PROP_WIDTH,1), ecolor(G.PE(),PROP_COLOR,1), ecolor2(G.PE(),PROP_COLOR2,1),
         elabel(G.PE(),PROP_LABEL)
         {init();keep();}
     GeometricGraph(GraphAccess &G) : TopologicalGraph(G), vcoord(G.PV(),PROP_COORD),
         vcolor(G.PV(),PROP_COLOR,5),vlabel(G.PV(),PROP_LABEL),
-        ewidth(G.PE(),PROP_WIDTH,1), ecolor(G.PE(),PROP_COLOR,1),
+        ewidth(G.PE(),PROP_WIDTH,1), ecolor(G.PE(),PROP_COLOR,1),ecolor2(G.PE(),PROP_COLOR2,1),
         elabel(G.PE(),PROP_LABEL)
         {init();keep();}
 
@@ -350,6 +351,7 @@ public :
         tedge ee = ne();
         elabel[ee]= ++maxelabel;
         ecolor[ee] = ecolor[e];
+        ecolor2[ee] = ecolor2[e];
         ewidth[ee] = ewidth[e];
         vcoord[v].x() = (vcoord[v1].x()+vcoord[v2].x())/2;
         vcoord[v].y() = (vcoord[v1].y()+vcoord[v2].y())/2;

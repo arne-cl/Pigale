@@ -17,6 +17,8 @@ const char * redo_txt = "Reload the <b>current</b> graph from the current  opene
 const char * right_txt = "Opens <b>next</b> graph of the current opened <em>tgf</em> file";
 
 const char * fpp_txt = "The original Fraysseix Pach Pollack algorithm to produce a Fary drawing";
+const char * ccd_txt = "Convex Compact drawing";
+const char * cd_txt = "Convex drawing";
 const char * jacquard_txt ="Jacquard spring embedder which preserves planarity\nTutte circle may give better results\nESC to stop";
 const char *schnyder_txt ="<qt>\
 The original Schnyder algorithm to produce a Fary drawing\

@@ -245,6 +245,15 @@ int EmbedHandler(int action,int &drawing)
 	  err = EmbedFPP(G);
 	  if(err)Tprintf("ret=%d",err);
 	  break;
+      case A_EMBED_CD:ret = 1;
+	  err = EmbedCCD(G, G0, false);
+
+	  if(err)Tprintf("ret=%d",err);
+	  break;
+      case A_EMBED_CCD:ret = 1;
+	  err = EmbedCCD(G, G0, true);
+	  if(err)Tprintf("ret=%d",err);
+	  break;
       case A_EMBED_TUTTE_CIRCLE:ret = 1;
           EmbedTutteCircle(G);
 	  break;

@@ -49,10 +49,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   {if(!name)setName("Mouse_Acions");
 
   setMinimumHeight(140);  setMaximumHeight(140); 
-  //QFont fnt = QFont("helvetica",12);
-  QFont fnt = this->font();
-  fnt.setBold(true);
-  setFont(fnt,true);
+  //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
 
   ButtonGroup1 = new QButtonGroup(this,"ButtonGroup1");
   ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,6*dy+oy+5)); 

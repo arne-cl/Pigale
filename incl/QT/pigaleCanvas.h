@@ -56,6 +56,7 @@ class EdgeItem: public QCanvasLine
   EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
 	   ,GraphWidgetPrivate* g);
   void SetColor(QColor c);
+  void SetColors(QColor c1, QColor c2);
   void setFromPoint(int x,int y) ;
   void setToPoint(int x,int y);
   int rtti() const;

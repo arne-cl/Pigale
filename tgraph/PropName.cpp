@@ -217,6 +217,12 @@ struct _PropName {
      desc[512+(13)]="A value";
      name[768+(13)]="PROP_VALUE";
      desc[768+(13)]="A value";
+     name[256+(14)]="PROP_COLOR2";
+     desc[256+(14)]="Color of the second brin";
+     name[512+(14)]="PROP_COLOR2";
+     desc[512+(14)]="Color of the second brin";
+     name[768+(14)]="PROP_COLOR2";
+     desc[768+(14)]="Color of the second brin";
      name[256+(3)]="PROP_INITIALV";
      desc[256+(3)]="Initial Numbering";
      name[256+(4)]="PROP_NEW";

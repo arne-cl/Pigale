@@ -91,6 +91,7 @@
 #define PROP_BIRTH            (11)   //!< \c long  Start of validity
 #define PROP_DEATH            (12)   //!< \c long  End of validity
 #define PROP_VALUE            (13)   //!< \c double A value
+#define PROP_COLOR2           (14)   //!< \c short Color of the second brin
 //@}
 /** @name Property numbers for V.
   */

@@ -61,10 +61,10 @@ clean:
 	@rm -f *~ *bak *.flc $(OBJ) *.flc $(DLIB)
 
 depend:
-	@makedepend -o.o -fGNUmakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
+	@makedepend -o.o -fgnumakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
 
 nodepend:
-	@makedepend -o.o -fGNUmakefile  -Y  2> /dev/null
+	@makedepend -o.o -fgnumakefile  -Y  2> /dev/null
 
 list:
 	../makelist *.cpp >Make.lst

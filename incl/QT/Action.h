@@ -20,6 +20,8 @@ static _Action actions[]={
 {"JACQUARD",(A_EMBED+8)},
 {"POLYLINE",(A_EMBED+9)},
 {"CURVES",(A_EMBED+10)},
+{"CCD",(A_EMBED+11)},
+{"CD",(A_EMBED+12)},
 {"VISION",(A_EMBED+50)},
 {"CONTATC_BIPARTI",(A_EMBED+51)},
 {"POLAR",(A_EMBED+52)},

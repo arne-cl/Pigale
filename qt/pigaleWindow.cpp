@@ -34,6 +34,7 @@
 #include <qpixmap.h>
 #include <qfiledialog.h>
 #include <qinputdialog.h> 
+#include <qfontdialog.h> 
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qapplication.h>
@@ -320,6 +321,10 @@ pigaleWindow::pigaleWindow()
   embed->setWhatsThis(A_EMBED_SCHNYDER_E,schnyder_txt);
   embed->insertItem(xmanIcon,"Schnyder &V ", A_EMBED_SCHNYDER_V);
   embed->setWhatsThis(A_EMBED_SCHNYDER_V,schnyder_txt);
+  embed->insertItem(xmanIcon,"Co&nvex Drawing", A_EMBED_CD);
+  embed->setWhatsThis(A_EMBED_CD,cd_txt);
+  embed->insertItem(xmanIcon,"&Convex Compact Dra&wing",    A_EMBED_CCD);
+  embed->setWhatsThis(A_EMBED_CCD,ccd_txt);
   embed->insertSeparator();
   embed->insertItem("&Tutte"      ,          A_EMBED_TUTTE);
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
@@ -525,6 +530,8 @@ pigaleWindow::pigaleWindow()
   settings->setItemChecked(A_SET_RANDOM_SEED,randomSeed());
   //Pigale colors
   settings->insertItem(tr("&Pigale Colors"),A_SET_COLOR);
+  //Fonte
+  settings->insertItem(tr("Set a font"),this, SLOT(SetPigaleFont()));
 #if QT_VERSION >= 300 || _WINDOWS
   // Pigale Doc Path
   settings->insertItem(tr("&Documentation path"),A_SET_DOC);
@@ -1059,6 +1066,12 @@ void pigaleWindow::png()
 	  break;
       }
   }
+void pigaleWindow::SetPigaleFont()
+ {bool ok;
+  QFont font = QFontDialog::getFont( &ok, this->font(), this );
+  if(!ok)return;
+  QApplication::setFont(font,true);
+ }
 /*
 The copies are cleared when a new graph is loaded or generated, but the last graph is saved
 A copy is created when edges/vertices are added/deleted outside the editor

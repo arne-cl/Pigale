@@ -87,6 +87,7 @@ private slots:
   void LoadSettings();
   void SaveSettings();
   void SetPigaleColors();
+  void SetPigaleFont();
   void keyPressEvent(QKeyEvent *k);
 public slots:
   void UndoSave();

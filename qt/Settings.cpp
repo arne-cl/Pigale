@@ -248,6 +248,10 @@ void pigaleWindow:: SaveSettings()
   setting.writeEntry("/pigale/colors/GreenBackground r",r);
   setting.writeEntry("/pigale/colors/GreenBackground g",g);
   setting.writeEntry("/pigale/colors/GreenBackground b",b);
+  // Font
+  setting.writeEntry("/pigale/font/family",this->font().family());
+  setting.writeEntry("/pigale/font/size",this->font().pointSize());
+
   }
 
 void pigaleWindow::LoadSettings()
@@ -291,6 +295,19 @@ void pigaleWindow::LoadSettings()
 				    + QString("a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
   DirFileDoc = setting.readEntry("/pigale/Documentation dir",QString(PACKAGE_PATH)+QDir::separator()+"Doc");
+  // Font
+#if QT_VERSION >= 300
+  QRect rect = QApplication::desktop()->screenGeometry();
+  int h = rect.height();
+#else
+  QWidget *d = QApplication::desktop();
+  int h = d->height();
+#endif
+  int fontSize = (h > 600) ? 12 : 10;
+  QString family = setting.readEntry("/pigale/font/family","Helvetica");
+  fontSize = setting.readNumEntry("/pigale/font/size",fontSize);
+  QFont font = QFont(family,fontSize);
+  QApplication::setFont(font,true);
 }
 
 int GetPigaleColors()
@@ -386,20 +403,7 @@ void InitPigaleColors()
   Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
   QApplication::setPalette(Palette,TRUE);
   }
-void InitPigaleFont()
-  {
-#if QT_VERSION >= 300
-  QRect rect = QApplication::desktop()->screenGeometry();
-  int h = rect.height();
-#else
-  QWidget *d = QApplication::desktop();
-  int h = d->height();
-#endif
-  int fontsize = (h > 600) ? 12 : 11;
-  QFont font = QFont("helvetica",fontsize);
-  font.setPixelSize(fontsize);
-  QApplication::setFont(font,true);
-  }
+
 
 
 

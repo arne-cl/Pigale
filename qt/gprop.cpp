@@ -28,9 +28,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
     : QWidget( parent,name,fl)
   {if(!name)setName("Graph_Properties");
   menu = menubar;
-  QFont fnt = this->font();
-  fnt.setBold(true);
-  setFont(fnt,true);
+  //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
   setMinimumHeight(180); 
   //marge,spacing
   QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
@@ -220,7 +218,6 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar
   menu->setItemEnabled(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
   menu->setItemEnabled(A_EMBED_POLAR,C1 && NotBigD);                        //polair
-
   //Augment
   menu->setItemEnabled(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
   menu->setItemEnabled(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
@@ -234,6 +231,8 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
   menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
   menu->setItemEnabled(A_EMBED_FPP,!SMALL && S && P && NotBigD);              //FPP Fary
+  menu->setItemEnabled(A_EMBED_CCD,!SMALL && S && P && C3 && NotBigD);         //Convex Compact
+  menu->setItemEnabled(A_EMBED_CD,!SMALL && S && P && C3 && NotBigD);         //Convex 
   menu->setItemEnabled(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
   menu->setItemEnabled(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
   menu->setItemEnabled(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte

@@ -28,9 +28,22 @@
 
 
 void InitPigaleColors();
-void InitPigaleFont();
-int InitPigaleServer(pigaleWindow *w);
 
+
+static void InitPigaleFont()
+  {
+#if QT_VERSION >= 300
+  QRect rect = QApplication::desktop()->screenGeometry();
+  int h = rect.height();
+#else
+  QWidget *d = QApplication::desktop();
+  int h = d->height();
+#endif
+  int fontsize = (h > 600) ? 12 : 11;
+  QFont font = QFont("helvetica",fontsize);
+  font.setPixelSize(fontsize);
+  QApplication::setFont(font,true);
+  }
 int InitPigaleServer(pigaleWindow *w)
   {PigaleServer  *server = new PigaleServer(w,qApp);
   if(!server->ok())

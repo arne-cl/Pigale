@@ -28,6 +28,7 @@ bool & SchnyderColor();
 int EmbedTContact(TopologicalGraph &G);
 int EmbedFPPRecti(TopologicalGraph &G);
 int EmbedFPP(TopologicalGraph &G);
+int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact);
 int EmbedTutteCircle(TopologicalGraph &G);
 int FindNPSet(TopologicalGraph &);
 int split(Graph &G0,int &NumberOfClasses);

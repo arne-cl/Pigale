@@ -28,28 +28,23 @@
 #include <QT/Misc.h>
 
 void InitPigaleColors();
-void InitPigaleFont();
 
 int main(int argc,char ** argv)
   {QApplication app(argc,argv);
-
-  // Set the font for all widgets
-  InitPigaleFont();
-
   // Set the colors of tha application
   InitPigaleColors();
+
+  //Translations
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
   // translation file for Qt
   QTranslator qt( 0 );
   qt.load(QString("qt_") + QTextCodec::locale(),transDict);
   app.installTranslator( &qt );
-
   // translation file for application strings
   QTranslator myapp( 0 );
-  myapp.load( QString("pigale_" ) + QTextCodec::locale(),transDict);
-  //myapp.load( QString( "pigale_fr" ), "." );
-  app.installTranslator( &myapp );
 
+  myapp.load( QString("pigale_" ) + QTextCodec::locale(),transDict);
+  app.installTranslator( &myapp );
   pigaleWindow *mw = new pigaleWindow();
   mw->show();
   app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));

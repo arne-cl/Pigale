@@ -15,6 +15,7 @@ libtgraph_la_SOURCES= \
     Diagonalise.cpp\
     Embed2Pages.cpp\
     EmbedFPP.cpp\
+    EmbedCCD.cpp\
     EmbedPolyline.cpp\
     EmbedTutteCircle.cpp\
     EmbedVision.cpp\
@@ -41,6 +42,7 @@ libtgraph_la_SOURCES= \
     reduce.cpp\
     SchaefferGen.cpp\
     Schnyder.cpp\
+    SchnyderWood.cpp\
     STList.cpp\
     Tgf.cpp\
     TopoAlgs.cpp\
