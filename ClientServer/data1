@@ -1,17 +1,29 @@
-#if a line starts by '!' or ':' only the 2 first characters are interpreted
-#lines starting with '#' are comments
-R_GRAPH;../../tgf/Sydney.tgf;3
+# ask to transfer a file from the client
+# and read the graph n°3
+S_DEBUG
+RC_GRAPH;../../tgf/Sydney.tgf;1
+#RC_GRAPH;../../tgf/a.txt
+#RC_GRAPH;../../tgf/bug1.txt
+#RS_GRAPH;graph0.txt
+# get the number of vertices and edges
 N:M
+# ask for a spring embedder
 SPRING_PM
-PNG
+# asks to create and transfer to the client a png file
+#PNG
 GVISION
-PNG
+#PNG
 FPP_RECTI
-PNG
+#PNG
 EMBED-3d
-PNG
-SYMETRIE
-PNG
+#PNG
+#SYMETRIE
+#PNG
+# tell the server that to send a message when previous commands have been treated
+# and close the file
 :!
+ 
+
+
 
 

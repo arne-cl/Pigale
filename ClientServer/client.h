@@ -77,11 +77,13 @@ private slots:
   void stop();
 
 private:
+  int sendToServerGraph(QString &str);
   QSocket *socket;
   QTextStream cls;
   QDataStream clo;
   QTextView *infoText;
   QLineEdit *inputText;
+  bool ActionTreated;
   bool debug;
   int numPng;
 };

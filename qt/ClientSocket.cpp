@@ -61,7 +61,6 @@ void PigaleServer::OneClientClosed()
    Tprintf("Server: The client disconnects");
    mw->ServerExecuting = false;
    mw->blockInput(false);
-   
   }
 
 //ClientSocket: public QSocket
@@ -79,6 +78,7 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   mw->ServerClientId = prId;
   mw->show();
   if(!display)mw->showMinimized(); 
+  cli << "!" << endl;
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
   }
 ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
@@ -90,6 +90,8 @@ ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *pa
   prId = 1;
   line = 1;
   mw->ServerClientId = prId;
+  cli << ":Server Ready"<<endl;
+  cli << "!" << endl;
   }
 void ClientSocket::ClientClosed()
   {mw->ServerExecuting = false;
@@ -105,37 +107,35 @@ void ClientSocket::readClient()
       //qDebug("R:'%s'",(const char *)str);
       if(++line == 10000)line = 0;
       if(str.at(0) == '#')
-          cli << str << endl;
+          {cli << str << endl;
+	  cli << "!" << endl;
+	  }
       else if(str.at(0) == '!')
-          cli << ":END OF FILE" << endl;
+          {cli << ":END OF FILE" << endl;
+          cli << "!" << endl;
+	  }
       else 
-          //parseSplitAction(str);  
-          xhandler(str); // now the server split actions  
+          xhandler(str);   
       }
   }
-int ClientSocket::parseSplitAction(const QString& data)
-  {QStringList fields = QStringList::split(ACTION_SEP,data);
-  for(int i = 0;i < (int)fields.count();i++)
-      xhandler(fields[i]);
-  cli <<"!" << endl; // tells the client that processing is over
-  return 0;
-  }
+// int ClientSocket::parseSplitAction(const QString& data)
+//   {QStringList fields = QStringList::split(ACTION_SEP,data);
+//   for(int i = 0;i < (int)fields.count();i++)
+//       xhandler(fields[i]);
+//   return 0;
+//   }
 int ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
   if(sdebug)cli <<"#debug:'"<<dataAction<<"'-> "<<action<<endl;
+
+  // call the right handler
   int err = 0;
   if(action == 0)
-      {err = ACTION_NOT_INT;
-      cli <<": ERREUR '"<<dataAction <<"'" << endl;
-      cli <<": data param:" <<  beg << endl;
-      return err;
-      }
-  
-  // call the right handler
-  if(action > A_INFO && action < A_INFO_END)
+      err = ACTION_NOT_INT;
+  else if(action > A_INFO && action < A_INFO_END)
       err =  handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
       err =  handlerInput(action,dataParam);
@@ -145,35 +145,95 @@ int ClientSocket::xhandler(const QString& dataAction)
       else 
           cli <<":Action not allowed:"<<mw->getActionString(action)<< endl;
       }
+  else if(action > A_TRANS && action < A_TRANS_END)
+      {if(action == A_TRANS_PNG)
+	  err = Png();
+      else if(action == A_TRANS_GRAPH_GET)
+	  err = ReadRemoteGraph(dataParam);
+      }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
-  else if(action == A_TRANS_PNG)
-      {mw->png();
-      QString InputFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
-      QFileInfo fi = QFileInfo(InputFileName);
-      if(InputFileName.isEmpty())
-          {cli << "no png file" << endl;return -1;}
-      else
-          cli << ":SENDING:" << InputFileName << endl;
-      uint size = fi.size();
-      QFile file(InputFileName);
-      file.open(IO_ReadWrite);
-      QDataStream stream(&file);
-      char *buff = new char[size];
-      stream.readRawBytes(buff,size); 
-      cli <<"!PNG" << endl;
-      clo.writeBytes(buff,size);
-      delete [] buff;
-      file.remove();
-      }
   else
       err = UNKNOWN_COMMAND;
+
   if(err)
       {cli <<": ERREUR '"<<mw->getActionString(action)<<"' -> "
            << mw->getActionString(err)<<endl;
       cli <<": " <<dataAction<< endl;
       }
+  cli << "!" << endl;
   return err; 
+  }
+int ClientSocket::Png()
+  {mw->png();
+  QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
+  QFileInfo fi = QFileInfo(PngFileName);
+  if(PngFileName.isEmpty())
+      {cli << "no png file" << endl;return -1;}
+  else
+      cli << ":SENDING:" << PngFileName << endl;
+  uint size = fi.size();
+  QFile file(PngFileName);
+  file.open(IO_ReadWrite);
+  QDataStream stream(&file);
+  char *buff = new char[size];
+  stream.readRawBytes(buff,size); 
+  cli <<"!PNG" << endl;
+  clo.writeBytes(buff,size);
+  delete [] buff;
+  file.remove();
+  return 0;
+  }
+int ClientSocket::ReadRemoteGraph(QString &dataParam)
+  {QString GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
+  QFile file(GraphFileName);
+  file.remove();
+  file.open(IO_ReadWrite);
+  QDataStream stream(&file);
+  uint size = 0;
+  Q_ULONG  nb = bytesAvailable();
+  while(bytesAvailable() < 4){waitForMore(100);qDebug(".");} 
+  qDebug("nbytes=%ld",nb);
+  clo >>  size;
+  if(size <= 0)return -1;
+  if(sdebug)qDebug("should read:%d bytes",size);
+  char *buff  = new char[size+1];
+//   Q_ULONG nb0 = 0;
+  int i = 0;
+  Q_ULONG nread = 0;
+  char *pbuff = buff;
+  while(nread  < size)
+      {waitForMore(100);  // in millisec
+      nb = bytesAvailable();
+      nread += nb;
+      if(nread > size)return READ_ERROR;
+      clo.readRawBytes(pbuff,nb);
+      pbuff += nb;
+      qDebug("%d %ld (%ld/ %ld)",i,(long)nb,(long)nread,(long)size);
+      if(++i > 50)return -1;
+      }
+  //clo.readRawBytes(buff,size);
+  stream.writeRawBytes(buff,size);
+  file.close();
+  delete [] buff;
+  if(sdebug)qDebug("%s:%d bytes",(const char *)GraphFileName,size);
+  QFileInfo fi = QFileInfo(GraphFileName);
+  if(fi.size() !=  size)return READ_ERROR;
+  if(sdebug)qDebug("Tgf file: %d (1-yes)",IsFileTgf((const char *)GraphFileName));
+	  
+  // Read the graph
+  QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+  mw->InputFileName = GraphFileName;
+  int num = 1;
+  bool ok;
+  if(fields.count() > 1)num = fields[1].toInt(&ok);
+  if(!ok)return WRONG_PARAMETERS;
+  if(mw->publicLoad(num) < 0)return READ_ERROR;
+  if(sdebug)
+      {TopologicalGraph G(mw->GC);
+      qDebug("n=%d m=%d",G.nv(),G.ne());
+      }
+  return 0;
   }
 int ClientSocket::handlerInput(int action,const QString& dataParam)
   {QStringList fields = QStringList::split(PARAM_SEP,dataParam);

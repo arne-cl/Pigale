@@ -14,8 +14,9 @@
 
 using namespace std;
 
+//class Client : public QVBox, QThread
 Client::Client(const QString &host, Q_UINT16 port)
-    :debug(false),numPng(0)
+    :ActionTreated(false),debug(false),numPng(0)
   {infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
@@ -50,18 +51,52 @@ void Client::closeConnection()
   stop();
   }
 void Client::sendToServer()
-  {QString str = inputText->text();
+  {if(socket->state() != QSocket::Connected)return;
+  QString str = inputText->text();
   sendToServer(str);
   inputText->setText("");
   }
 void Client::sendToServer(QString &str)
-  {if(socket->state() != QSocket::Connected)return;
+  {if(socket->state() != QSocket::Connected)
+      {qDebug("state:%d",socket->state());return;}
+  else qDebug("client:%s",(const char *)str);
   //split str -> 1 command per line if not a comment
   if(str.at(0) == '#' || str.at(0) == '!')
-      {cls << str << endl;return;}
+      {cls << str << endl;
+      ActionTreated = false;
+      return;
+      }
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
-      cls << fields[i].stripWhiteSpace() << endl;
+      {fields[i].stripWhiteSpace();
+      if(fields[i].contains("RC_GRAPH",true))
+	  sendToServerGraph(fields[i]);
+      else
+	  cls << fields[i] << endl;
+      ActionTreated = false;
+      }
+  }
+int Client::sendToServerGraph(QString &data)
+  {QStringList fields = QStringList::split(PARAM_SEP,data);
+  if(fields.count() < 1)return -1;
+  QString GraphFileName = fields[1].stripWhiteSpace();
+  QFileInfo fi = QFileInfo(GraphFileName);
+  if(GraphFileName.isEmpty()){infoText->append("no graph file");return -1;}
+  uint size = fi.size();
+  if(size)infoText->append(QString("SENDING:%1").arg(GraphFileName));
+  else {infoText->append("empty file");return -1;}
+  cls << data << endl;
+  QFile file(GraphFileName);
+  file.open(IO_ReadOnly);
+  QDataStream stream(&file);
+  char *buff = new char[size];
+  stream.readRawBytes(buff,size); 
+  clo << size;
+  clo.writeRawBytes(buff,size);
+  //clo.writeBytes(buff,size);
+  infoText->append(QString("SENT:%1 bytes").arg(size));
+  delete [] buff;
+  return 0;
   }
 void Client::socketReadyRead()
   {while(socket->canReadLine())
@@ -70,21 +105,32 @@ void Client::socketReadyRead()
       if(str.at(0) == ':')
 	  infoText->append(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-	  {QString PngFile = QString("image%1.png").arg(++numPng);
+	  {ActionTreated = false;
+	  QString PngFile = QString("image%1.png").arg(++numPng);
 	  QString m = QString("getting:%1").arg(PngFile);
 	  infoText->append(m);
 	  QFile file(PngFile);
 	  file.open(IO_ReadWrite);
 	  QDataStream stream(&file);
-	  char *buff;
+	  //char *buff;
 	  uint size;
-	  clo.readBytes(buff,size);
+	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
+	  clo >> size;
+	  qDebug("Getting PNG: %d bytes",size);
+	  char *buff = new char[size+1];
+	  Q_ULONG  nb;
+	  while((nb = socket->bytesAvailable()) < size)
+	      {socket->waitForMore(100);qDebug(". %ld",nb);}
+	  clo.readRawBytes(buff,size);
+	  //clo.readBytes(buff,size);
 	  stream.writeRawBytes(buff,size);
 	  file.close();
 	  delete [] buff;
-	  infoText->append("got image");
+	  infoText->append("END PNG");
+	  ActionTreated = true;
 	  }
-      //else if(str.at(0) != '!')
+      else if(str.at(0) == '!')//server has finished
+	  ActionTreated = true;
       else 
 	  cout << str << endl;
       }
@@ -111,10 +157,17 @@ void Client::writeToClient(QString & str)
 void Client::run() 
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
+  //usleep(500000);// sleep.5s
   QString str;
   if(socket->state() != QSocket::Connected)return;
+  int i = 0;
   while(!stream.atEnd())
-      {str = stream.readLine(); 
+      {i = 0;
+      while(!ActionTreated)
+	  {usleep(1000);// microseconds
+	  if(++i%1000 == 0)cout << "." << endl;
+	  }
+      str = stream.readLine(); 
       QChar ch = str.at(0);
       if(ch == ':')
 	  {QChar c = str.at(1);

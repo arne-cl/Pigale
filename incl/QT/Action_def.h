@@ -12,7 +12,8 @@
 #ifndef  ACTIONS_H_INCLUDED
 #define  ACTIONS_H_INCLUDED 
 
-//DO NOT ADD WHITES
+// The header Action.h is automatically generated from this file
+// The comments defines the macronames which shoul not include whitespaces
 
 #define A_PAUSE                    (99)                 // PAUSE
 
@@ -153,7 +154,7 @@
 #define A_INFO_END             (A_INFO+99)     
 
 #define A_INPUT                (A_SERVER+100)    
-#define A_INPUT_READ_GRAPH     (A_INPUT+1)    //  R_GRAPH
+#define A_INPUT_READ_GRAPH     (A_INPUT+1)    //  RS_GRAPH 
 #define A_INPUT_NEW_GRAPH      (A_INPUT+2)    //  N_GRAPH
 #define A_INPUT_NEW_VERTEX     (A_INPUT+3)    //  N_V
 #define A_INPUT_NEW_EDGE       (A_INPUT+4)    //  N_E
@@ -161,9 +162,10 @@
 
 #define A_TRANS                (A_SERVER+200)  
 #define A_TRANS_PNG            (A_TRANS+1)    // PNG  
+#define A_TRANS_GRAPH_GET      (A_TRANS+2)    // RC_GRAPH  
 #define A_TRANS_END            (A_TRANS+99)  
 
-#define SERVER_DEBUG           (A_SERVER+999)  //  S_DEBUG  
+#define SERVER_DEBUG           (A_SERVER+999)  // S_DEBUG  
 
 // server message errors
 #define A_ERRORS               (-10000) 

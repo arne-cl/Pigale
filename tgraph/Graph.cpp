@@ -549,7 +549,7 @@ bool TopologicalGraph::CheckRegular(int &d)
   return true;
   }
 bool TopologicalGraph::MinMaxDegree(int& dmin,int& dmax)
-  {dmin = nv(); dmax = -1;
+  {dmin = nv(); dmax = 0;
   int d;
   for(tvertex v = 1; v <= nv();v++)
       {d = Degree(v);

@@ -659,7 +659,10 @@ MyWindow::MyWindow()
 #endif  
   // gw->update();
   // if no load check pgraphindex
-  load(0);
+  if(Server)
+      gw->update();
+  else
+      load(0);
   }
 
 MyWindow::~MyWindow()

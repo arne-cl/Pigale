@@ -191,8 +191,9 @@ int AlgoHandler(int action,int nn)
 	  return 0;
 	  break;
       case A_ALGO_SYM://symetrie
-	  ret = Embed3dbis(G);
-	  if(ret >=0)return 5;
+	  //ret = Embed3dbis(G);
+	  //if(ret >=0)return 5;
+	  return 5;
 	  break;
       case A_ALGO_COLOR_BIPARTI://color bipartite
 	  G.CheckBipartite(true);
@@ -277,10 +278,10 @@ int EmbedHandler(int action,int &drawing)
 	  drawing = 5;
 	  break;
       case A_EMBED_3d:ret = 4; //Embed3d
-	err = Embed3dbis(G);
+	  //err = Embed3dbis(G);
 	break;
       case A_EMBED_3dSchnyder:ret = 4; //Embed3d
-	err = Embed3dSchnyder(G);
+	  //err = Embed3dSchnyder(G);
 	break;
       case  A_EMBED_SPRING :ret = 6;
 	  break;

@@ -54,6 +54,8 @@ private:
   void writeServer(QString&  msg);
   int parseSplitAction(const QString& data);
   int xhandler(const QString& data);
+  int Png();
+  int ReadRemoteGraph(QString &dataParam);
   int handlerInfo(int action);
   int handlerInput(int action,const QString& data);
   int line;

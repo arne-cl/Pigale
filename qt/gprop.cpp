@@ -288,7 +288,6 @@ void Graph_Properties::update(bool print)
   LE_Max->setText(QString("%1").arg(dmax));
   
   //Print informations
-
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
@@ -314,9 +313,7 @@ void Graph_Properties::update(bool print)
       else if(maptype() == PROP_MAPTYPE_GEOMETRIC)Tprintf("Geometric map");
       else if(maptype() == PROP_MAPTYPE_LRALGO)Tprintf("LRALGO map");
       }
-  int g = G.ComputeGenus();
-  if(g)Tprintf("Genus of the current map: %d",g);
+  //int g = G.ComputeGenus();
+  //if(g)Tprintf("Genus of the current map: %d",g);
   if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
-  else if(A)Tprintf("Acyclic Orientation");
-  else if(!A)Tprintf("Not Acyclic Orientation");
   }
