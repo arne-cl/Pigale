@@ -2562,7 +2562,7 @@ int pmFreeMap(pmMap *Map)
 #include <time.h>
 bool & EraseMultipleEdges();
 
-GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
+GraphContainer *GenerateSchaeffer0(int n_ask,int type,int e_connectivity)
 //n_ask must be even
   {pmSize Sizes;
   pmMethod Meth;
