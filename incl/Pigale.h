@@ -8,6 +8,7 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
+
 #ifndef PIGALE_H
 #define PIGALE_H
 #include <TAXI/Tbase.h> 
@@ -15,6 +16,7 @@
 #include <TAXI/color.h> 
 #include <TAXI/graphs.h>
 #include <TAXI/Tfile.h>
+#include <TAXI/random.h>
 
 int NPBipolar(TopologicalGraph &G, tbrin bst);
 int EmbedGVision(TopologicalGraph &G);
@@ -42,10 +44,8 @@ GraphContainer *GenerateGrid(int a, int b);
 GraphContainer *GenerateCompleteGraph(int a);
 GraphContainer *GenerateCompleteBiGraph(int a,int b);
 GraphContainer *GenerateRandomGraph(int a,int b);
-bool & EraseMultipleEdges(); // if set to true generators generate simple graphs
+
 //in SchaefferGen.cpp
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
-long & setSeed();  // set the seed of the random generator (1 if not randomSeed)
-bool & randomSeed(); 
-void randomInit();
+
 #endif

@@ -10,38 +10,10 @@
 *****************************************************************************/
 
 
-
-#include <stdlib.h> 
-#include <stdio.h>
-#include <math.h>
-#include <time.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/Tdebug.h>
 #include <TAXI/graphs.h>
-
-bool & EraseMultipleEdges();
-bool & EraseMultipleEdges()
-// if true the generators generate simple graphs
-  {static bool _Erase = false;
-  return _Erase;
-  }
-long & setSeed()
-  {static long _seed = 1;
-  return _seed;
-  }
-bool & randomSeed()
-  {static bool  _random = false;
-  return _random;
-  }
-void randomInit()
-// should be called before nay random graph generator
-  {if(randomSeed())
-      {time_t time_seed;
-      time(&time_seed);
-      setSeed() = (long)time_seed; 
-      }
-  srand48(setSeed());
-  }
+#include <TAXI/random.h>
 
 GraphContainer *GenerateGrid(int a, int b)
   {if(debug())DebugPrintf("GenerateGrid");   
@@ -157,10 +129,7 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   return &GC;
 }
 
-static int random(int range) 
-//returns an integer >=0 && < range
-  {return (int)(lrand48()%(long)range);
-  }
+
 GraphContainer *GenerateRandomGraph(int a,int b)
   {if(debug())DebugPrintf("GenerateRandomGraph");  
   GraphContainer &GC = *new GraphContainer;
@@ -169,7 +138,7 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
   char titre[256];
-  sprintf(titre,"Random%d,%d", a,b);
+  sprintf(titre,"Random_%ld",randomSetSeed());
   title() = titre;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
@@ -186,13 +155,15 @@ GraphContainer *GenerateRandomGraph(int a,int b)
     }
   for (e=0; e<=m; e++)
     elabel[e]=e();
+
+  randomStart();
   for(tbrin bb = 1;bb <= m;bb++)
-      {while((v = random(n+1)) == 0);
-      while((w = random(n+1)) == 0 || w == v);
+      {v = randomGet(n);
+      while((w = randomGet(n)) == v);
       vin[bb] = v;vin[-bb] = w;
-      }
-      
+      }    
+  randomEnd();
   TopologicalGraph TG(GC);
-  if(EraseMultipleEdges())TG.Simplify();
+  if(randomEraseMultipleEdges())TG.Simplify();
   return &GC;
 }

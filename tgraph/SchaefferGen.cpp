@@ -8,8 +8,9 @@
 #include <TAXI/Tmessage.h> 
 #include <TAXI/color.h> 
 #include <TAXI/graphs.h> 
+#include <TAXI/random.h> 
 
-bool & EraseMultipleEdges();
+#define pmRandom randomGet
 
 //PMdef.c
 #define PMTRUE -1
@@ -436,12 +437,14 @@ int pmInitRND(pmMethod *Meth){
 /******************************/
 /* this function generate random integers between 1,n */
 /******************************/
-long pmRandom(long n){
+/*
+long pmRandom(long n)
+  {
   if (n>0) 
     return lrand48()%n+1;
   else return 1; 
 }
-
+*/
 
 
 //**************************************************************************
@@ -2577,7 +2580,8 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   Meth.verbose = 0;
   //Allowed approximation on n,m
   Sizes.t = -1;
-
+  // random
+  randomStart();
   char t[256];
   bool loops = false;
   bool multiple = false;
@@ -2670,7 +2674,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  }
       }
   
-  if(debug())LogPrintf("<%d",n_ask);
+  if(debug())LogPrintf("<(%ld)%d",randomSetSeed(),n_ask);
   Sizes.v = n_ask; 
   //if(!pmInitRND(&Meth))return NULL;
   if(!pmSetParameters(&Sizes,&Meth))return NULL;
@@ -2700,10 +2704,12 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   int n = (int)ni;
   int m = (int)i/2;
 
-  //printf("n: %d m:%d\n",n,m);
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
+  char seed_txt[20];
+  sprintf(seed_txt,"_%ld",randomSetSeed());
   title() = t;
+  title() += seed_txt;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
   Prop<long> vlabel(GC.PV(),PROP_LABEL);
@@ -2725,7 +2731,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   while(Cur1 != Vtx->root->prev)
       {if(Cur1->label > 0)
 	  {b++;
-	  //printf("%d: %ld %ld \n",b(),Cur1->from->label, Cur1->oppo->from->label);
 	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
 	  }
       Cur1 = Cur1->next; 
@@ -2733,7 +2738,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 
   if(Cur1->label > 0)
       {b++;
-      //printf("%d:%ld %ld \n",b(), Cur1->from->label, Cur1->oppo->from->label);
       vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
       }
 
@@ -2743,14 +2747,12 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       while(Cur1 != Vtx->root->prev)
 	  {if(Cur1->label > 0)
 	      {b++;
-	      //printf("%d:%ld %ld \n",b(),Cur1->from->label, Cur1->oppo->from->label);
 	      vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
 	      }
 	  Cur1 = Cur1->next; 
 	  }
       if(Cur1->label > 0) 
 	  {b++;
-	  //printf("%d:%ld %ld \n",b(), Cur1->from->label, Cur1->oppo->from->label);
 	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
 	  }
       }
@@ -2758,11 +2760,11 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   TopologicalGraph TG(GC);
   int erased  = 0;
   if(!loops){Prop1<int> numloops(TG.Set(),PROP_NLOOPS);numloops() = 0;}
-  if(EraseMultipleEdges() && multiple)
+  if(randomEraseMultipleEdges() && multiple)
       erased = TG.Simplify();
   else if(loops)
       erased = TG.RemoveLoops();
-
+  randomEnd();
   if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
   return &GC;
   }
