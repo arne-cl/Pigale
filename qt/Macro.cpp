@@ -28,26 +28,32 @@
 #include <qtabwidget.h> 
 #include <qtabbar.h> 
 #include <qcursor.h> 
+#include <qmessagebox.h> 
 
 #include <TAXI/Tgf.h> 
 
-static TSArray<int> MacroActions(4),MacroEwidth(4);
+static TSArray<int> MacroActions(4);
+//static TSArray<int> ,MacroEwidth(4);
 //static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
 static int key = 0;
 
-class MousePressEater : public QObject
+class eventEater : public QObject
 {public:
-  MousePressEater(){};
-  ~MousePressEater(){};
+  eventEater(){};
+  ~eventEater(){};
 protected:
   bool eventFilter(QObject *o,QEvent *e);
 };
 
-bool MousePressEater::eventFilter(QObject *o,QEvent *e)
-    {if( e->type() == QEvent::MouseButtonPress) 
+bool eventEater::eventFilter(QObject *o,QEvent *e)
+    {if(e->type() == QEvent::MouseButtonPress) 
 	return TRUE; // eat event
+//     if(e->type() == QEvent::KeyPress) 
+// 	{QKeyEvent *k = (QKeyEvent *)e;
+// 	if(k->key() != Qt::Key_Escape)return TRUE; 
+// 	}
     return FALSE;
     }
 int & pauseDelay()
@@ -56,32 +62,30 @@ int & pauseDelay()
   }
 void MyWindow::keyPressEvent(QKeyEvent *k)
   {key = k->key();
-  //qDebug("k:%d",k->key());
   QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;
-  //if(key)qDebug("get k=%d",key0);
   if(key0 == Qt::Key_Escape && MacroLooping)MacroLooping = false;
   key = 0;
   return key0;
   }
 void MyWindow::blockInput(bool t)
   {static bool _inputBlocked = false;
-  static MousePressEater *MouseEater = 0;
   if(_inputBlocked == t)return;
   _inputBlocked = t;
-   menuBar()->setDisabled(t); 
+  menuBar()->setDisabled(t); 
 //   tb->setDisabled(t);
 //   mouse_actions->setDisabled(t);
-//   tabWidget->setDisabled(t);
-  if(!MouseEater)MouseEater = new MousePressEater();
+//   tabWidget->setDisabled(t); 
+  static eventEater *EventEater = 0;
+  if(!EventEater)EventEater = new eventEater();
   if(t)
-      {qApp->installEventFilter(MouseEater);
+      {qApp->installEventFilter(EventEater);
       qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
       }
   else 
-      {qApp->removeEventFilter(MouseEater);
+      {qApp->removeEventFilter(EventEater);
       qApp->restoreOverrideCursor();
       }
   }
@@ -190,6 +194,15 @@ void MyWindow::macroHandler(int event)
 	  if(QFileInfo(FileName).extension(false) != (const char *)"mc")
 	      FileName += (const char *)".mc";
 	  DirFileMacro = QFileInfo(FileName).dirPath(true);
+	  QFileInfo fi = QFileInfo(FileName);
+	  if(fi.exists())
+	      {int rep = QMessageBox::warning(this,"Pigale Editor"
+			    ,"This file already exixts.<br>"
+			    "Overwrite ?"
+			    ,QMessageBox::Ok 
+			    ,QMessageBox::Cancel);
+	      if(rep == 2)break;
+	      } 
 	  bool ok = TRUE;
 	  QString titre("name");
 	  titre = QInputDialog::getText("Pigale","Enter the macro name",
