@@ -91,6 +91,9 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/embed/schnyder longestface",SchnyderLongestFace());
   setting.writeEntry("/pigale/embed/schnyder color",SchnyderColor());
   setting.writeEntry("/pigale/embed/distance dist",useDistance());
+  setting.writeEntry("/pigale/generate/gen N1",spin_N1->value());
+  setting.writeEntry("/pigale/generate/gen N2",spin_N1->value());
+  setting.writeEntry("/pigale/generate/gen M",spin_M->value());
   // Printer
   setting.writeEntry("/pigale/printer colormode",printer->colorMode());
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
