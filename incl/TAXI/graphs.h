@@ -357,6 +357,7 @@ public :
   int ComputeGeometricCir();
   tbrin FindExteriorFace();
   tbrin FindExteriorFace(Tpoint& p);
+  double MinMaxCoords(double &xmin,double &xmax, double &ymin,double &ymax);
   int Tutte();
   int ColorExteriorface();
  
