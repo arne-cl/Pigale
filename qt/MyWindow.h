@@ -56,6 +56,7 @@ public slots:
 
 private slots:
   void newgraph();
+  void ChangeDirectory();
   void load();
   void previous();
   void reload();

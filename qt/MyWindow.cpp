@@ -96,34 +96,53 @@ MyWindow::MyWindow()
   {int id;
   // Initialze Error
   setError();
+
   // Export some data
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
+
   // Create the actions map
   mapActionsInit();
+
   // Create an  undofile name
   mkstemp(undofile);
+
   // Create a tgf file with no records
   {Tgf undo_tgf;
   undo_tgf.open(undofile,Tgf::create);
   }
+
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
+  // Load settings
+#if QT_VERSION < 300
   // Check tgf
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
   else {Twait("The variable TGF should point on a tgf directory");exit(1);}
-#if QT_VERSION >= 300
+  InputFileName = DirFile + QDir::separator() + "a.tgf";
+  OutputFileName = InputFileName;
+#else
   QSettings setting;
-  setting.insertSearchPath(QSettings::Windows,"/pigale");
   LoadSettings();
-  
+  // Check tgf
+  QFileInfo fi = QFileInfo(DirFile);
+  if(fi.exists() && fi.isDir())
+      DirFile = fi.filePath();
+  else
+      {DirFile = QFileDialog::
+      getExistingDirectory(".",this,"find","Choose the TGF directory",TRUE);
+      setting.writeEntry("/pigale/TgfFile dir",DirFile);
+      }
 #endif
+
   // Init random generator
   randomInitSeed();
+
   // Define some colors
   LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
+
   // Create a printer
   printer = new QPrinter;
 #if QT_VERSION >= 300
@@ -264,6 +283,7 @@ MyWindow::MyWindow()
   file->insertSeparator();
   file->insertItem("&Delete current record",this,SLOT(deleterecord()));
   file->insertItem("S&witch Input/Output files",this,SLOT(switchInputOutput()));
+  file->insertItem("&Change TGF directory",this,SLOT(ChangeDirectory()));
   file->insertSeparator();
   file->insertItem(printIcon,"&Print",this, SLOT(print()));
   file->insertSeparator();
@@ -592,18 +612,7 @@ MyWindow::MyWindow()
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   DebugPrintf("Init seed:%ld",randomSetSeed());
   
-//   QFileInfo fi  = QString(getenv("TGF"));
-//   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
-//   else {Twait("The variable TGF should point on a tgf directory");exit(1);}
-#if QT_VERSION >= 300
-//   InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
-//   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
-  QFileInfo fis  = InputFileName;
-  if(fis.exists() && fis.isDir() )DirFile = fis.filePath();
-#else
-  InputFileName = DirFile + QDir::separator() + "a.tgf";
-  OutputFileName = InputFileName;
-#endif
+
 #if QT_VERSION >= 300
   //Check for documentation repertory
   QString DocPath = setting.readEntry("/pigale/Documentation dir","documentation");
@@ -650,13 +659,15 @@ QString MyWindow::getActionString(int action)
 int MyWindow::getActionInt(QString action_str)
   {return mapActionsInt[action_str];
   }
+void MyWindow::ChangeDirectory()
+  {DirFile = QFileDialog::
+      getExistingDirectory(DirFile,this,"find","Choose the TGF directory",TRUE);
+  }
 void MyWindow::load()
   {QString FileName = QFileDialog::
   getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
   setError();
-  if(FileName.isEmpty())
-      newgraph();
-  else
+  if(!FileName.isEmpty())
       {InputFileName = FileName;
       *pGraphIndex = 1;
       int NumRecords =GetNumRecords((const char *)InputFileName);
@@ -933,7 +944,7 @@ void MyWindow::banner()
   statusBar()->message(m);
   }
 void MyWindow::about()
-  {QMessageBox::about(this,"Pigale Editor 1.2.3", 
+  {QMessageBox::about(this,"Pigale Editor 1.2.4", 
 		      "<b>Copyright (C) 2001</b>"
 		      "<br>Hubert de Fraysseix"
 		      "<br>Patrice Ossona de Mendez "

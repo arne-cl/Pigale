@@ -64,6 +64,7 @@ int GetPigaleColors()
 void MyWindow:: SaveSettings()
   {QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
+  setting.writeEntry("/pigale/TgfFile dir",DirFile);
   setting.writeEntry("/pigale/TgfFile input",InputFileName);
   setting.writeEntry("/pigale/TgfFile output",OutputFileName);
   setting.writeEntry("/pigale/geometry width",this->width());
@@ -138,17 +139,31 @@ void MyWindow::LoadSettings()
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
   pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
   randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
+  DirFile = setting.readEntry("/pigale/TgfFile dir"," ");
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
   InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+  // if pigale was called with arguments, we may modify some values
   if(qApp->argc() < 3)return;
   for(int i = 1; i < qApp->argc()-1;i++)
+      {if(QString((const char *)qApp->argv()[i]) == "-fd")
+	  {QString FileName = (const char *)qApp->argv()[i+1];
+	   QFileInfo fi = QFileInfo(FileName);
+	   if(fi.exists() && fi.isDir())DirFile = fi.filePath();
+	   else qDebug("%s is not a valid directory",(const char *)FileName);
+	  }
+      }
+  for(int i = 1; i < qApp->argc()-1;i++)
       {if(QString((const char *)qApp->argv()[i]) == "-fi")
-	  InputFileName =  DirFile+QDir::separator()
+	  {InputFileName =  DirFile + QDir::separator()
 	  +(const char *)qApp->argv()[i+1];
+	  QFileInfo fi = QFileInfo(InputFileName);
+	  if(!fi.exists()) 
+	      qDebug("%s does not exist",(const char *)InputFileName);
+	  }
       if(QString((const char *)qApp->argv()[i]) == "-fo")
-	  OutputFileName =  DirFile+QDir::separator()
+	  OutputFileName =  DirFile + QDir::separator()
 	  +(const char *)qApp->argv()[i+1];
       }
   }
