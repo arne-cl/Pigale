@@ -117,6 +117,17 @@ QColor Desaturate(QColor & col)
   return col;
   }
 //*************************************
+// should be in tgraph
+void ColorPoles(GeometricGraph &G)
+  {for(tvertex v = 1; v <= G.nv();v++)
+      {int Out = G.OutDegree(v);
+      int In = G.InDegree(v);
+      if(In == 0 && Out == 0)G.vcolor[v] = Pink;
+      else if(In == 0)G.vcolor[v] = Green;
+      else if(Out == 0)G.vcolor[v] = Red;
+      else G.vcolor[v] = Yellow;
+      }
+  }
 void HeapSort(int (*f)(int a,int b),int first,int nelements,int *heap);
 
 static bool Equal(double x, double y);
