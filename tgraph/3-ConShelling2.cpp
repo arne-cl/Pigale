@@ -48,14 +48,14 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
               MarkedE[left.GetEdge()] = 1;
               MarkedV[G.vin[-G.cir[FirstBrin]]()]=1;
               
-              //if(debug())
+              if(debug())
                   {for(tedge e = 1;e <= G.ne();e++) {ecolor[e]=Black;ewidth[e] = 1;}
                   for(tedge e = 1;e <= G.ne();e++)
                       {if(IsOuterE[e])ecolor[e]=Green; // exterior face
                       if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 4;}
                       }
-                  for(tvertex w=1;w < G.nv();w++)
-                      {if(MarkedV[w])vcolor[w] = Red;}
+                  for(tvertex w=1;w <= G.nv();w++)
+                      if(MarkedV[w])vcolor[w] = Red;
                   ecolor[FirstBrin.GetEdge()()] = Yellow;
                    if(debug())cout << "last  path length: " << count << endl;
                    if(debug())Twait("end packing");
@@ -66,10 +66,10 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           // return FirstBrin at the last time.
           left = FirstBrin;
           //All edges should be red except the FisrtBrin
-          int nred = 1;
+          int nMark = 1;
           for(tedge e = 1;e <= G.ne();e++)
-              if(ecolor[e] == Red) ++nred;
-          if(nred != G.ne())error= nred - G.ne();
+              if(MarkedE[e]) ++nMark;
+          if(nMark != G.ne())error= nMark - G.ne();
           return 0; // no more vertex or face to shell.
           }
       i = Candidates.pop();
@@ -145,15 +145,18 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
       b = right; //LastB =-G.acir[left];
       while (b != left) 
           {MarkedV[G.vin[b]()] = 1;
-          vcolor[G.vin[b]()] = Red;
-          ecolor[b.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
-          MarkedE[b.GetEdge()()] = 1;
+          if(debug())
+              {vcolor[G.vin[b]()] = Red;
+              ecolor[b.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
+              MarkedE[b.GetEdge()()] = 1;
+              }
           b = -G.acir[b];
           }
       MarkedE[left.GetEdge()()] = 1;
 
-      if(debug()){ecolor[left.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;}
-      if(debug()){DrawGraph();Twait("Packing chain: done");}   
+      if(debug())
+          {ecolor[left.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
+          DrawGraph();Twait("Packing chain: done");}   
       // update visited[v].
       _visited(G.vin[left](),1);    _visited(G.vin[-right](),1);
 
@@ -226,7 +229,10 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
   else   // shell a vertex ========================================
       {v = -i;
       MarkedV[v]=1;
-       if(debug())cout << "packing vertex:" <<-i << "*************************"<< endl;
+       if(debug())
+           {vcolor[v] = Red;
+           cout << "packing vertex:" <<-i << "*************************"<< endl;
+           }
       // set leftmost & rightmost brins incident to v.
       // G.vin[left]() = G.vin[right]() = v()
       if (v == v_n) 
@@ -240,8 +246,7 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           }
       
       if(debug())
-          {vcolor[v] = Red;
-          ecolor[left.GetEdge()()] = Blue;
+          {ecolor[left.GetEdge()()] = Blue;
           ecolor[right.GetEdge()()] = Orange; 
           ewidth[left.GetEdge()()] = 3; 
           ewidth[right.GetEdge()()] = 3; 
@@ -254,8 +259,10 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
       b=left;
       while(!MarkedE[b.GetEdge()])
           {MarkedE[b.GetEdge()]=1;
-          if(b!=left && b !=right)ecolor[b.GetEdge()] = Pink;
-          else ecolor[b.GetEdge()] = Red;
+           if(debug())
+               {if(b!=left && b !=right)ecolor[b.GetEdge()] = Pink;
+               else ecolor[b.GetEdge()] = Red;
+               }
           b=G.cir[b];
           }
       
@@ -296,9 +303,7 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
                if(debug())cout << "--------b:"<< G.vin[b]() << "  "<< G.vin[StopB]()<< endl;
               while(b != StopB)
                   {b = G.cir[b];
-                   if(debug())cout << G.vin[ b]() << endl;
                   f = Brin2Face[b];
-                  if(debug())cout << "Faces:  " << f << endl;
                   if(outv[f] < 3 && (outv[f] != 2 || oute[f] != 0)) 
                       if(!NonSepFaces.InList(f)) 
                           {NonSepFaces.push(f);
