@@ -181,6 +181,7 @@ int AlgoHandler(int action,int nn)
 	  //G.Simplify();
 	  i = G.MaxPlanar();
 	  if(i == 0)return 0;
+	  if(i < 0){Tprintf("Max.planar (slow) Error:%d",i);return i;}
 	  Tprintf("Max.planar (slow)");
 	  Tprintf("Need to erase %d edges",i);
 	  return 1;
@@ -395,6 +396,7 @@ int DualHandler(int action)
   }
 int RemoveHandler(int action)
   {TopologicalGraph G(GetMainGraph());
+  GeometricGraph GG(GetMainGraph());
   int n;
   switch(action)
       {case 401:
@@ -408,6 +410,22 @@ int RemoveHandler(int action)
 	  break;
       case 404:
 	  G.RemoveIsthmus();
+	  break;
+      case 405://Erase Color Vertices
+	  short vcol; GG.vcolor.getinit(vcol);
+	  for(tvertex v= GG.nv() ;v > 0;v--)
+	      if(GG.vcolor[v] == vcol)GG.DeleteVertex(v);
+	  break;
+	  break;
+      case 406://Erase Color Edges
+	  short ecol; GG.ecolor.getinit(ecol);
+	  for(tedge e = GG.ne() ;e > 0;e--)
+	      if(GG.ecolor[e] == ecol)GG.DeleteEdge(e);
+	  break;
+      case 407://Erase Thick Edges
+	  int ewidth; GG.ewidth.getinit(ewidth);
+	  for(tedge e = GG.ne() ;e > 0;e--)
+	      if(GG.ewidth[e] == ewidth)GG.DeleteEdge(e);
 	  break;
       default:
 	  return 0;

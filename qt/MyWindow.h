@@ -17,6 +17,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <TAXI/graphs.h> 
+#include <TAXI/Tgf.h> 
 #if QT_VERSION < 300
 #define QTextEdit QTextView
 #endif
@@ -59,6 +60,8 @@ private slots:
   void switchInputOutput();
   void handler(int action);
   void userHandler(int action);
+  void macroHandler(int action);
+  void macroPlay();
   void about();
   void aboutQt();
   void showLabel(int action);
@@ -70,6 +73,7 @@ private slots:
   void LoadSettings();
   void SaveSettings();
   void SetPigaleColors();
+ 
 public slots:
   void UndoSave();
   void information();
@@ -99,6 +103,8 @@ private:
   QString DirFile;
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
   bool IsUndoEnable;
+  bool MacroRecording;
+  bool MacroExecuting;
 };
 
 

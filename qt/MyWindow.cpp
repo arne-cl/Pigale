@@ -77,15 +77,19 @@
 #include "icones/sleftarrow.xpm"
 #include "icones/srightarrow.xpm"
 #include "icones/sfilesave.xpm"
+#include "icones/macroplay.xpm"
 
 void Test(GraphContainer &GC,int action);
+void MacroRecord(int action);
 void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam];
 
+
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose ),
-      GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1),IsUndoEnable(true)
+      GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1),IsUndoEnable(true),
+      MacroRecording(false),MacroExecuting(false)
   {int id;
 
   // Export some data
@@ -196,10 +200,11 @@ MyWindow::MyWindow()
   QPixmap infoIcon = QPixmap(info), helpIcon = QPixmap(help),printIcon = QPixmap(fileprint);
   QPixmap xmanIcon = QPixmap(xman), undoLIcon = QPixmap(sleftarrow);
   QPixmap undoSIcon = QPixmap(sfilesave),undoRIcon = QPixmap(srightarrow);
-
+  QPixmap macroplayIcon = QPixmap(macroplay);
+ 
   //ToolBar
   QToolBar *tb = new QToolBar(this,"toolbar" );
-  QToolButton *fileopen,*filenew,*filesave,*fileprint,*info;
+  QToolButton *fileopen,*filenew,*filesave,*fileprint,*info,*macroplay;
   filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(newgraph()),tb,"New");
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
   QWhatsThis::add(fileopen,fileopen_txt);
@@ -217,6 +222,9 @@ MyWindow::MyWindow()
   undoL = new QToolButton(undoLIcon,"Undo",QString::null,this,SLOT(Undo()),tb,"Undo L");
   undoS = new QToolButton(undoSIcon,"Save",QString::null,this,SLOT(UndoSave()),tb,"Save");
   undoR = new QToolButton(undoRIcon,"Redo",QString::null,this,SLOT(Redo()),tb,"Redo");
+  tb->addSeparator();
+  macroplay = new QToolButton(macroplayIcon,"Play macro",QString::null,
+			      this,SLOT(macroPlay()),tb,"macroplay");
   tb->addSeparator();
   //toggle button:    setToggleButton(true); left->isOn()
   (void)QWhatsThis::whatsThisButton(tb);
@@ -267,9 +275,12 @@ MyWindow::MyWindow()
   remove->insertItem("&Multiple edges",      403);
   remove->insertItem("Ist&hmus",             404);
   remove->insertSeparator();
-  remove->insertItem("Colored &vertices", gw,SLOT(EraseColorVertices()));
-  remove->insertItem("Colored &edges",    gw,SLOT(EraseColorEdges()));
-  remove->insertItem("&Thick edges",      gw,SLOT(EraseThickEdges()));
+  remove->insertItem("Colored &vertices",    405);
+  remove->insertItem("Colored &edges",       406);
+  remove->insertItem("&Thick edges",         407);
+//   remove->insertItem("Colored &vertices", gw,SLOT(EraseColorVertices()));
+//   remove->insertItem("Colored &edges",    gw,SLOT(EraseColorEdges()));
+//   remove->insertItem("&Thick edges",      gw,SLOT(EraseThickEdges()));
 
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
@@ -363,6 +374,13 @@ MyWindow::MyWindow()
   generate->insertItem(spin_N1);
   generate->insertItem(spin_N2);
   generate->insertItem(spin_M);
+
+  QPopupMenu *macroMenu = new QPopupMenu( this );
+  menuBar()->insertItem("&Macro",macroMenu);
+  connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
+  macroMenu->insertItem("Start recording",1);
+  macroMenu->insertItem("Stop  recording",2);
+  macroMenu->insertItem("Continue recording",3);
 
   QPopupMenu *userMenu = new QPopupMenu( this );
   menuBar()->insertItem("&UserMenu",userMenu);
@@ -467,7 +485,7 @@ MyWindow::MyWindow()
 
   resize(MyWindowInitXsize,MyWindowInitYsize);
   mainWidget->setFocus();
-  DebugPrintf("Debugprintf messages\nUndoFile:%s",undofile);
+  DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   if(Error() == -1){Twait("Impossible to write in log.txt");Error() = 0;}
   
   
@@ -558,6 +576,7 @@ void MyWindow::load(int pos)
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   banner();
+  if(MacroExecuting)return;
   information(); gw->update();
   }
 void MyWindow::save()
@@ -635,7 +654,7 @@ void MyWindow::reload()
 void MyWindow::next()
   {load(1);}
 void MyWindow::information()
-  {MessageClear(); //GraphInformation();
+  {MessageClear();
   graph_properties ->update();
   }
 void MyWindow::MessageClear()
@@ -649,6 +668,8 @@ void MyWindow::Message(QString s)
 void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
+  if(debug())DebugPrintf("handler:%d",action);
+  if(MacroRecording)MacroRecord(action);
   if(action < 200)
       {UndoSave();timer.restart();
       ret = AugmentHandler(action);
@@ -692,6 +713,7 @@ void MyWindow::handler(int action)
       }
   else
       return;
+  if(MacroExecuting )return;
   //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
   // 3:(Drawing) 4:(3d) 5:symetrie
   if(ret < 0)return;
@@ -699,7 +721,9 @@ void MyWindow::handler(int action)
   if(ret == 1)
       gw->update();
   else if(ret == 2)
-      {information();gw->update();}
+      {information();
+      gw->update();
+      }
    else if(ret == 3)
        mypaint->update(drawing); 
   else if(ret == 4) //3d
@@ -709,7 +733,7 @@ void MyWindow::handler(int action)
       graphsym->update();
       }
   double TimeG = timer.elapsed()/1000.;
-  Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
+  if(!MacroExecuting || debug())Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
   }
 void MyWindow::banner()
   {QString m;  
@@ -732,8 +756,17 @@ void MyWindow::about()
 void MyWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
   }
-void MyWindow::userHandler(int action)
-  {Test(GC,action);
+void MyWindow::userHandler(int event)
+  {
+//   GeometricGraph G(GC);
+//   load(1);
+//   if(G.ne() != G.ecolor.vector().n()-1)qDebug("ERROR ecolor");
+//   else qDebug("OK ecolor");
+  Test(GC,event);
+  //GeometricGraph G(GC);
+//   if(G.ne() != G.ecolor.vector().n()-1)qDebug("ERROR ecolor");
+//   else qDebug("OK ecolor");
+  
   //Call the editor
   gw->update();
   }

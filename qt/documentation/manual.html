@@ -13,6 +13,7 @@
 <ul>
 <li> <A HREF="manual.html#OV">Overview</A> 
 <li> <A HREF="manual.html#GE">Using the Editor</A> 
+<li> <A HREF="manual.html#macro">Using Macros</A> 
 <li> <A HREF="manual.html#tgf">Input files:TGF and ASCII formats</A> 
 <li> <A HREF="manual.html#3d">Embedding a graph  in space</A>
 </ul>
@@ -25,16 +26,16 @@ graphs coded either as <A HREF="manual.html#tgf"><b>tgf</b></A> files or
 <A HREF="manual.html#tgf"><b>ascii</b></A> files.
 When  <b>Pigale</b> is started, by default, the file <tt>a.tgf</tt> is opened for reading and writing.
 And the first graph is loaded and displayed.<br>
-While in the graph editor,the arrows of the tool bar let you load the next
+The arrows of the tool bar let you load the next
  or previous graph of the current tgf file or reload the current one:<br>
 
-<table>
+<center><table>
 <tr>
 <td><IMG SRC="../icones/sleft.xpm"></td>
 <td><IMG SRC="../icones/reload.xpm"></td>
 <td><IMG SRC="../icones/sright.xpm"></td>
 </tr>
-</table>
+</table></center>
 On the lowest band of the main window is displayed the current tgf input and output file.<br>
 
 In Pigale there always one active graph which is displayed in the <b>Graph editor</b> window.
@@ -68,14 +69,12 @@ To come back to the original colors, you only need to erase that file
 <li> save the settings if the version of <b>Qt</b> is at least 3.0:
 <ul>
 <li> all the settings of this menu,
+<li> the generator settings
 <li> the input and output tgf files,
 <li> the location of the documentation repertory,
 <li> the geometry and colors of the screen,
 <li> the printer settings.
-
 </ul> 
-
-					      
 </ul>
 The dashed line at the top of the settings menu, is used to create a floating settings menu.
 
@@ -128,6 +127,7 @@ If this function is enable, a copy of the current graph is appended each time a 
 (except the editor) adds or delete edges.<br>
 When a new graph is loaded, all the copies are destroyed and the current graph is saved.<br> 
 The save icon let you manually append a copy.
+<center>
 <table>
 <tr>
 <td><IMG SRC="../icones/sleftarrow.xpm"></td>
@@ -137,8 +137,26 @@ The save icon let you manually append a copy.
 <td><b>Undo</b></td> <td><b>Save</b></td> <td><b>Redo</b></td> 
 </tr>
 </table>
-There is no limit of the number of copies which are placed in a temporary file.
+</center>
+There is no limit of the number of copies which are placed in a temporary file,
+ which name is written in log.txt
+<br><A HREF="manual.html#home"><em>top</em></A>
 
+<HR><H2> <A NAME="macro">M</A>acro </H2> 
+
+You can record any number of functions from the menus Augment, Remove, Dual, Orient and Generate.
+The functions  will use the colors and thickness defined at the recording time.
+When you execute a macro, the recording is stopped but you can restart it. 
+
+<center><table>
+<tr>
+<td><IMG SRC="../icones/macroplay.xpm"></td>
+</tr><tr>
+<td><b>Play macro</b></td>  
+</tr>
+</table></center>
+If the first record is not a graph generator, the macro will start loading the next graph
+of the current file.
 <br><A HREF="manual.html#home"><em>top</em></A>
 
 <HR><H2> <A NAME="3d">E</A>mbedding a graph  in space </H2> 
