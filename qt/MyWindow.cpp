@@ -86,7 +86,6 @@ void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
-static QLineEdit *seedEdit;
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )

@@ -39,6 +39,7 @@ class QToolBar;
 class QPrinter;
 class LineEditNum;
 class QProgressBar;
+class QLineEdit;
 
 class MyWindow: public QMainWindow 
 {Q_OBJECT
@@ -113,6 +114,7 @@ private:
   QToolBar *tb;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
   LineEditNum *macroLine;
+  QLineEdit *seedEdit;
   QPrinter *printer;
   QString InputFileName;
   QString OutputFileName;
