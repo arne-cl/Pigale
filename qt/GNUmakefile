@@ -25,7 +25,8 @@ CC=g++
 CFLAGSopt = -O3  $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
 #CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
-CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) -DQT_THREAD_SUPPORT 
+CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
+#CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
 
 #DEBUGGING OPTIONS

@@ -28,6 +28,7 @@ _T_Error &ErrorPositioner(const char *f, int l)
 
 int getError() 
   {return (int) MainError.error;}
+//{return MainError.error.code;}
 const char * getErrorMsg()
   {return MainError.error.msg;}
 const char * getErrorFile()
