@@ -24,20 +24,25 @@
 void GraphEditor::Spring()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-  svector<Tpoint> translate(1,G.nv()); //translate.clear();
+  svector<Tpoint> translate(1,G.nv()); translate.clear();
   double w = gwp->canvas->width();
   double mhw = Min(gwp->canvas->width(),gwp->canvas->height()) - 2*BORDER;
   Tpoint center((w - space - sizerect)/2.,gwp->canvas->height()/2.); 
   int n = G.nv(),m =G.ne();
+  double len = mhw/sqrt(n);
   // during iteration keeep the drawing size
-  double hw = .8*(mhw*mhw)/(n*m); 
+  double hw = .5*(mhw*mhw)/(n*m); 
   int iter,niter = 2000;
   int n_red;
   double dist2,strength;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
+  double force = 1.;
   for(iter = 1;iter <= niter;iter++)
-      {for(tvertex v0 = 1;v0 <= n;v0++)
+      {translate.clear();
+      if(iter > 50)force *= .99;
+      else if(iter > 100)force *= .98;
+      for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  // vertices repulse each other (1/d²)
 	  for(tvertex v = 1;v <= n;v++)
@@ -45,7 +50,7 @@ void GraphEditor::Spring()
 	      p = G.vcoord[v];
 	      dist2 = Max(Distance2(p0,p),1.);
 	      strength = (hw/dist2);
-	      translate[v0]  = (p0 - p)*strength; 
+	      translate[v0]  += (p0 - p)*strength*force; 
 	      }
 	  // edges repulse non adjacent vertices (1/d²)
 	  // now too simple solution
@@ -54,26 +59,30 @@ void GraphEditor::Spring()
 	      if(v0 == v || v0 == w)continue;
 	      p = (G.vcoord[v]+G.vcoord[w])/2.;
 	      dist2 = Max(Distance2(p0,p),1.);
-	      strength = (hw/dist2);
-	      translate[v0] += (p0 - p)*strength;
+	      //strength = (hw/dist2)*.8; 
+	      strength = (hw/dist2); 
+	      translate[v0] += (p0 - p)*strength*force;
 	      }
 	  }
 
       // adjacent vertices are attracted (1/d)
+      len = .0; // mean length
       for(tedge e = 1; e <= m;e++)
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  dist2 = Max(Distance2(p0,p),1.);
-	  strength = Min(sqrt(hw/dist2),.1);
-	  translate[G.vin[e]]  -= (p0-p)*strength;
-	  translate[G.vin[-e]] += (p0-p)*strength;
+	  strength = Min(sqrt(hw/dist2),.1)*1.5;
+	  translate[G.vin[e]]  += (p-p0)*strength*force;
+	  translate[G.vin[-e]] += (p0-p)*strength*force;
+	  len += sqrt(dist2)/m;
 	  }
-
+      //qDebug("len=%f (est=%f)",len,mhw/sqrt(m));
       // vertices are attracted by the center (1/d)
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  dist2 = Max(Distance2(p0,center),1.);
-	  strength = Min(sqrt(hw/dist2),.25);
-	  translate[v0] -= (p0 - center)*strength;
+	  //strength = Min(sqrt(hw/dist2),.25);
+	  strength = Min(sqrt(hw/dist2),.5);
+	  translate[v0] -= (p0 - center)*strength*force;
 	  }
 
       // update the drawing
@@ -96,7 +105,7 @@ void GraphEditor::Spring()
       canvas()->update(); 
       }
   gwp->mywindow->blockInput(false);
-  Tprintf("Spring iter=%d",iter-1);
+  Tprintf("Spring iter=%d force=%f",iter,force);
   DoNormalise = true;
   Normalise();load(false);
   }
