@@ -10,6 +10,7 @@
 *****************************************************************************/
 
 #include <TAXI/graphs.h>
+#include <TAXI/Tmessage.h>
 
 /*
 ref[sommet] brin par lequel on a atteint un sommet
@@ -108,6 +109,11 @@ int TopologicalGraph::BipolarPlan(tbrin FirstBrin)
       {if(num[vin[e.firsttbrin()]] > num[vin[e.secondtbrin()]])
           ReverseEdge(e);
       eoriented[e] = true;
+      }
+  if(debug())
+      {int ns,nt;
+      CheckAcyclic(ns,nt);
+      if(ns != 1 || nt != 1)Twait("Error Bipolar");
       }
   return 0;
   }
