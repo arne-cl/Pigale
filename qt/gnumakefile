@@ -32,7 +32,7 @@ MMOC=$(MQTDIR)/bin/moc
 PIGALELIB =  -L$(PIGALEPATH)/lib    -l$(L)$(OPT) -ltgraph$(OPT)
 
 #GENERAL OPTIONS
-.SUFFIXES:.cpp .o
+.SUFFIXES:.cpp .o .obj .opt .dbg
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC) $(CPU)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror  -pipe
@@ -48,7 +48,7 @@ CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 CFLAGSdbg +=  -DQT_THREAD_SUPPORT 
 
 CFLAGS  = $(CFLAGS$(OPT))
-VPATH   = $(PIGALEPATH)/tmp.$(OPT)
+VPATH   = ./.obj
 DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
 FILEALL := $(wildcard *.cpp)
 FILES   := $(filter-out client.cpp, $(FILEALL))
@@ -58,307 +58,342 @@ MOC_CPP := $(patsubst %.h,moc_%.cpp, $(INCL))
 FILES_WO_MOC := $(filter-out $(MOC_CPP), $(FILES))
 FILES_W_MOC  := $(FILES_WO_MOC)
 FILES_W_MOC  += $(MOC_CPP)
-OBJECTS       =  $(patsubst %.cpp,%.o, $(FILES_W_MOC))
-OBJ           =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES_W_MOC))
-ALLOBJ        = $(wildcard $(VPATH)/*.o)
+OBJECTS       =  $(patsubst %.cpp,%.$(OPT), $(FILES_W_MOC))
+OBJ           =  $(patsubst %.cpp,$(VPATH)/%.$(OPT), $(FILES_W_MOC))
+ALLOBJ        = $(wildcard $(VPATH)/*.$(OPT))
 
 all : $(P)
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
-#moc_%.cpp:%.h
-#	$(MMOC) $< -o $@
+moc_%.cpp:%.h
+	$(MMOC) $< -o $@
 
-.cpp.o: $*.cpp
-	$(CC) -c $(CFLAGS) $(IFLAGS) -o  $(VPATH)/$*.o   $*.cpp
-	
+.cpp.$(OPT): $*.cpp
+	$(CC) -c $(CFLAGS) $(IFLAGS) -o  $(VPATH)/$*.$(OPT)  $*.cpp
+
 $(DLIB):$(OBJECTS) 
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
 	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
-$(P) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
+$(P) :md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
 
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
-
+md: depend
+	@if ! test -d .obj ; then mkdir .obj ; fi
 test:
 	@echo OBJ=$(OBJ)
 	@echo OBJECTS=$(OBJECTS)
 	@echo FILES=$(FILES)
-	
-static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
+
+static:md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 	g++  $(CFLAGS) -o s$(P) $(ALLOBJ)  $(UNIXLIB) 
 
 moc_cpp:    $(MOC_CPP)
 
 depend:
-	@makedepend -o.o  -fgnumakefile -I$(PIGALEPATH)/incl  -Y   $(FILES_WO_MOC)  2> /dev/null
+	@makedepend -o.$(OPT)  -fgnumakefile -I$(PIGALEPATH)/incl  -Y   $(FILES_WO_MOC)  2> /dev/null
 
 nodepend:
-	@makedepend -o.o  -fgnumakefile -Y    2> /dev/null
-
+	@makedepend -o.$(OPT)  -fgnumakefile -Y    2> /dev/null
+.PHONY: md all
 # DO NOT DELETE
 
-CanvasGrid.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tbase.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tmessage.h
-CanvasGrid.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-CanvasGrid.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tpropio.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tstring.h
-CanvasGrid.o: ../../pigale/incl/TAXI/propdef.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-CanvasGrid.o: GraphWidget.h ../../pigale/incl/QT/pigaleQcolors.h
-CanvasGrid.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/pigaleCanvas.h
-CanvasGrid.o: ../../pigale/incl/QT/grid.h
-CanvasGrid.o: ../../pigale/incl/QT/GraphWidgetPrivate.h mouse_actions.h
-CanvasGrid.o: gprop.h
-CanvasItem.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tbase.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tmessage.h
-CanvasItem.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-CanvasItem.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tpropio.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tstring.h
-CanvasItem.o: ../../pigale/incl/TAXI/propdef.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-CanvasItem.o: GraphWidget.h mouse_actions.h
-CanvasItem.o: ../../pigale/incl/QT/pigaleQcolors.h
-CanvasItem.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/pigaleCanvas.h
-CanvasItem.o: ../../pigale/incl/QT/grid.h
-CanvasItem.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
-CanvasSpring.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tbase.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tmessage.h
-CanvasSpring.o: ../../pigale/incl/TAXI/graphs.h
-CanvasSpring.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tprop.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tdebug.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Errors.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tpropio.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tstring.h
-CanvasSpring.o: ../../pigale/incl/TAXI/propdef.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tpoint.h
-CanvasSpring.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-CanvasSpring.o: ../../pigale/incl/TAXI/random.h GraphWidget.h mouse_actions.h
-CanvasSpring.o: gprop.h ../../pigale/incl/QT/pigaleQcolors.h
-CanvasSpring.o: ../../pigale/incl/QT/Misc.h
-CanvasSpring.o: ../../pigale/incl/QT/pigaleCanvas.h
-CanvasSpring.o: ../../pigale/incl/QT/grid.h
-CanvasSpring.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
-ClientSocket.o: ClientSocket.h ../../pigale/incl/config.h
-ClientSocket.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tmessage.h
-ClientSocket.o: ../../pigale/incl/TAXI/graphs.h
-ClientSocket.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tprop.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tsvector.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tdebug.h
-ClientSocket.o: ../../pigale/incl/TAXI/Errors.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tpropio.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tstring.h
-ClientSocket.o: ../../pigale/incl/TAXI/propdef.h
-ClientSocket.o: ../../pigale/incl/TAXI/Tpoint.h
-ClientSocket.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-ClientSocket.o: ../../pigale/incl/TAXI/random.h pigaleWindow.h
-ClientSocket.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
-ClientSocket.o: GraphWidget.h GraphGL.h GraphSym.h mouse_actions.h gprop.h
-ClientSocket.o: LineEditNum.h ../../pigale/incl/QT/Handler.h
-ClientSocket.o: ../../pigale/incl/QT/pigalePaint.h
-ClientSocket.o: ../../pigale/incl/QT/pigaleCanvas.h
-ClientSocket.o: ../../pigale/incl/QT/grid.h
-EmbedCurves.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tbase.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tmessage.h
-EmbedCurves.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-EmbedCurves.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tsvector.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tdebug.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Errors.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tpropio.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tstring.h
-EmbedCurves.o: ../../pigale/incl/TAXI/propdef.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-EmbedCurves.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-EmbedCurves.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
-EmbedCurves.o: GraphWidget.h ../../pigale/incl/QT/pigaleCanvas.h
-EmbedCurves.o: ../../pigale/incl/QT/grid.h
-EmbedCurves.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
-glcontrolwidget.o: ../../pigale/incl/TAXI/Tbase.h glcontrolwidget.h
-gprop.o: gprop.h pigaleWindow.h ../../pigale/incl/Pigale.h
-gprop.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-gprop.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-gprop.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-gprop.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-gprop.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-gprop.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-gprop.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-gprop.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-gprop.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
-GraphGL.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-GraphGL.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-GraphGL.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-GraphGL.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-GraphGL.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-GraphGL.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-GraphGL.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-GraphGL.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-GraphGL.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-GraphGL.o: GraphGL.h glcontrolwidget.h mouse_actions.h
-GraphGL.o: ../../pigale/incl/QT/GLWindow.h ../../pigale/incl/QT/Misc.h
-GraphGL.o: ../../pigale/incl/QT/pigaleQcolors.h
-GraphGL.o: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/embedrn.h
-GraphGL.o: ../../pigale/incl/config.h
-GraphSym.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-GraphSym.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-GraphSym.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-GraphSym.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-GraphSym.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-GraphSym.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-GraphSym.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-GraphSym.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-GraphSym.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-GraphSym.o: GraphSym.h ../../pigale/incl/QT/SymWindow.h
-GraphSym.o: ../../pigale/incl/QT/pigaleQcolors.h ../../pigale/incl/QT/Misc.h
-Handler.o: ../../pigale/incl/QT/Handler.h ../../pigale/incl/QT/Action_def.h
-Handler.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-Handler.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-Handler.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Handler.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Handler.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-Handler.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-Handler.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-Handler.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-Handler.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-Handler.o: ../../pigale/incl/QT/Misc.h
-LineEditNum.o: LineEditNum.h
-Macro.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-Macro.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-Macro.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Macro.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Macro.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-Macro.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-Macro.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-Macro.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-Macro.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-Macro.o: GraphWidget.h mouse_actions.h LineEditNum.h
-Macro.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
-Macro.o: ../../pigale/incl/TAXI/Tgf.h
-main.o: ../../pigale/incl/config.h pigaleWindow.h ../../pigale/incl/Pigale.h
-main.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-main.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-main.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-main.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-main.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-main.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-main.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-main.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-main.o: ../../pigale/incl/QT/Misc.h
-MiscQt.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-MiscQt.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-MiscQt.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-MiscQt.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-MiscQt.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-MiscQt.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-MiscQt.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-MiscQt.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-MiscQt.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-MiscQt.o: GraphWidget.h
-mouse_actions.o: mouse_actions.h GraphWidget.h GraphGL.h
-pigaleCanvas.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tbase.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tmessage.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/graphs.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tprop.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tsvector.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tdebug.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Errors.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tpropio.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tstring.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/propdef.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/Tpoint.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-pigaleCanvas.o: ../../pigale/incl/TAXI/random.h GraphWidget.h mouse_actions.h
-pigaleCanvas.o: gprop.h ../../pigale/incl/QT/pigaleQcolors.h
-pigaleCanvas.o: ../../pigale/incl/QT/Misc.h
-pigaleCanvas.o: ../../pigale/incl/QT/pigaleCanvas.h
-pigaleCanvas.o: ../../pigale/incl/QT/grid.h
-pigaleCanvas.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
-pigalePaint.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tbase.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tmessage.h
-pigalePaint.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-pigalePaint.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tsvector.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tdebug.h
-pigalePaint.o: ../../pigale/incl/TAXI/Errors.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tpropio.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tstring.h
-pigalePaint.o: ../../pigale/incl/TAXI/propdef.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-pigalePaint.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-pigalePaint.o: ../../pigale/incl/QT/pigalePaint.h
-pigalePaint.o: ../../pigale/incl/QT/pigaleQcolors.h
-pigalePaint.o: ../../pigale/incl/QT/Misc.h
-pigaleWindow.o: ../../pigale/incl/config.h pigaleWindow.h
-pigaleWindow.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tmessage.h
-pigaleWindow.o: ../../pigale/incl/TAXI/graphs.h
-pigaleWindow.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tprop.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tsvector.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tdebug.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Errors.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tpropio.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tstring.h
-pigaleWindow.o: ../../pigale/incl/TAXI/propdef.h
-pigaleWindow.o: ../../pigale/incl/TAXI/Tpoint.h
-pigaleWindow.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-pigaleWindow.o: ../../pigale/incl/TAXI/random.h ../../pigale/incl/TAXI/Tgf.h
-pigaleWindow.o: GraphWidget.h GraphGL.h GraphSym.h mouse_actions.h gprop.h
-pigaleWindow.o: LineEditNum.h ../../pigale/incl/QT/pigaleWindow_doc.h
-pigaleWindow.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
-pigaleWindow.o: ../../pigale/incl/QT/Action_def.h
-pigaleWindow.o: ../../pigale/incl/QT/Action.h
-pigaleWindow.o: ../../pigale/incl/QT/pigalePaint.h
-pigaleWindow.o: ../../pigale/incl/QT/pigaleCanvas.h
-pigaleWindow.o: ../../pigale/incl/QT/grid.h icones/fileopen.xpm
-pigaleWindow.o: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
-pigaleWindow.o: icones/info.xpm icones/sleft.xpm icones/sright.xpm
-pigaleWindow.o: icones/sreload.xpm icones/help.xpm icones/xman.xpm
-pigaleWindow.o: icones/sleftarrow.xpm icones/srightarrow.xpm
-pigaleWindow.o: icones/sfilesave.xpm icones/macroplay.xpm icones/film.xpm
-Settings.o: ../../pigale/incl/config.h pigaleWindow.h
-Settings.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
-Settings.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/graphs.h
-Settings.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Settings.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Settings.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
-Settings.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
-Settings.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
-Settings.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-Settings.o: ../../pigale/incl/TAXI/random.h mouse_actions.h LineEditNum.h
-Settings.o: gprop.h ../../pigale/incl/QT/Misc.h
-Settings.o: ../../pigale/incl/QT/Handler.h
-Test.o: pigaleWindow.h ../../pigale/incl/Pigale.h
-Test.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
-Test.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Test.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Test.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
-Test.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
-Test.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-Test.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
-Test.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
-Test.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
-Test.o: GraphWidget.h ../../pigale/incl/QT/pigaleCanvas.h
-Test.o: ../../pigale/incl/QT/grid.h ../../pigale/incl/QT/GraphWidgetPrivate.h
+CanvasGrid.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tbase.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tmessage.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/graphs.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tprop.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tsvector.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tdebug.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Errors.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tpropio.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tstring.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/propdef.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/Tpoint.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+CanvasGrid.dbg: ../../pigale/incl/TAXI/random.h GraphWidget.h
+CanvasGrid.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+CanvasGrid.dbg: ../../pigale/incl/QT/Misc.h
+CanvasGrid.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+CanvasGrid.dbg: ../../pigale/incl/QT/grid.h
+CanvasGrid.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h mouse_actions.h
+CanvasGrid.dbg: gprop.h
+CanvasItem.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tbase.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tmessage.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/graphs.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tprop.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tsvector.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tdebug.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Errors.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tpropio.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tstring.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/propdef.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/Tpoint.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+CanvasItem.dbg: ../../pigale/incl/TAXI/random.h GraphWidget.h mouse_actions.h
+CanvasItem.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+CanvasItem.dbg: ../../pigale/incl/QT/Misc.h
+CanvasItem.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+CanvasItem.dbg: ../../pigale/incl/QT/grid.h
+CanvasItem.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h
+CanvasSpring.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tbase.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tmessage.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/graphs.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/graph.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/elmt.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tprop.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tsvector.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tdebug.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Errors.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tpropio.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tstring.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/propdef.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tpoint.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/color.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/Tfile.h
+CanvasSpring.dbg: ../../pigale/incl/TAXI/random.h GraphWidget.h
+CanvasSpring.dbg: mouse_actions.h gprop.h
+CanvasSpring.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+CanvasSpring.dbg: ../../pigale/incl/QT/Misc.h
+CanvasSpring.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+CanvasSpring.dbg: ../../pigale/incl/QT/grid.h
+CanvasSpring.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h
+ClientSocket.dbg: ClientSocket.h ../../pigale/incl/config.h
+ClientSocket.dbg: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tmessage.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/graphs.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/graph.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/elmt.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tprop.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tsvector.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tdebug.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Errors.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tpropio.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tstring.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/propdef.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tpoint.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/color.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/Tfile.h
+ClientSocket.dbg: ../../pigale/incl/TAXI/random.h pigaleWindow.h
+ClientSocket.dbg: ../../pigale/incl/QT/Misc.h
+ClientSocket.dbg: ../../pigale/incl/QT/Action_def.h GraphWidget.h GraphGL.h
+ClientSocket.dbg: GraphSym.h mouse_actions.h gprop.h LineEditNum.h
+ClientSocket.dbg: ../../pigale/incl/QT/Handler.h
+ClientSocket.dbg: ../../pigale/incl/QT/pigalePaint.h
+ClientSocket.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+ClientSocket.dbg: ../../pigale/incl/QT/grid.h
+EmbedCurves.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tbase.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tmessage.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/graphs.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tprop.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tsvector.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tdebug.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Errors.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tpropio.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tstring.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/propdef.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tpoint.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/color.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/Tfile.h
+EmbedCurves.dbg: ../../pigale/incl/TAXI/random.h ../../pigale/incl/QT/Misc.h
+EmbedCurves.dbg: ../../pigale/incl/QT/Action_def.h GraphWidget.h
+EmbedCurves.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+EmbedCurves.dbg: ../../pigale/incl/QT/grid.h
+EmbedCurves.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h
+glcontrolwidget.dbg: ../../pigale/incl/TAXI/Tbase.h glcontrolwidget.h
+gprop.dbg: gprop.h pigaleWindow.h ../../pigale/incl/Pigale.h
+gprop.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+gprop.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+gprop.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+gprop.dbg: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
+gprop.dbg: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
+gprop.dbg: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+gprop.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+gprop.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+gprop.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
+GraphGL.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+GraphGL.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+GraphGL.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+GraphGL.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+GraphGL.dbg: ../../pigale/incl/TAXI/Tsvector.h
+GraphGL.dbg: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+GraphGL.dbg: ../../pigale/incl/TAXI/Tpropio.h
+GraphGL.dbg: ../../pigale/incl/TAXI/Tstring.h
+GraphGL.dbg: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+GraphGL.dbg: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+GraphGL.dbg: ../../pigale/incl/TAXI/random.h GraphGL.h glcontrolwidget.h
+GraphGL.dbg: mouse_actions.h ../../pigale/incl/QT/GLWindow.h
+GraphGL.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/pigaleQcolors.h
+GraphGL.dbg: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/embedrn.h
+GraphGL.dbg: ../../pigale/incl/config.h
+GraphSym.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tbase.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tmessage.h
+GraphSym.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+GraphSym.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tsvector.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tpropio.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tstring.h
+GraphSym.dbg: ../../pigale/incl/TAXI/propdef.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+GraphSym.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+GraphSym.dbg: GraphSym.h ../../pigale/incl/QT/SymWindow.h
+GraphSym.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+GraphSym.dbg: ../../pigale/incl/QT/Misc.h
+Handler.dbg: ../../pigale/incl/QT/Handler.h ../../pigale/incl/QT/Action_def.h
+Handler.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+Handler.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+Handler.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+Handler.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Handler.dbg: ../../pigale/incl/TAXI/Tsvector.h
+Handler.dbg: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+Handler.dbg: ../../pigale/incl/TAXI/Tpropio.h
+Handler.dbg: ../../pigale/incl/TAXI/Tstring.h
+Handler.dbg: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+Handler.dbg: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+Handler.dbg: ../../pigale/incl/TAXI/random.h ../../pigale/incl/QT/Misc.h
+LineEditNum.dbg: LineEditNum.h
+Macro.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+Macro.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+Macro.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+Macro.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Macro.dbg: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
+Macro.dbg: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
+Macro.dbg: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+Macro.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+Macro.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+Macro.dbg: GraphWidget.h mouse_actions.h LineEditNum.h
+Macro.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
+Macro.dbg: ../../pigale/incl/TAXI/Tgf.h
+main.dbg: ../../pigale/incl/config.h pigaleWindow.h
+main.dbg: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+main.dbg: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/graphs.h
+main.dbg: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+main.dbg: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
+main.dbg: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+main.dbg: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
+main.dbg: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+main.dbg: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+main.dbg: ../../pigale/incl/TAXI/random.h ../../pigale/incl/QT/Misc.h
+MiscQt.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+MiscQt.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+MiscQt.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+MiscQt.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+MiscQt.dbg: GraphWidget.h
+mouse_actions.dbg: mouse_actions.h GraphWidget.h GraphGL.h
+pigaleCanvas.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tbase.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tmessage.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/graphs.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/graph.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/elmt.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tprop.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tsvector.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tdebug.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Errors.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tpropio.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tstring.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/propdef.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tpoint.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/color.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/Tfile.h
+pigaleCanvas.dbg: ../../pigale/incl/TAXI/random.h GraphWidget.h
+pigaleCanvas.dbg: mouse_actions.h gprop.h
+pigaleCanvas.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+pigaleCanvas.dbg: ../../pigale/incl/QT/Misc.h
+pigaleCanvas.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+pigaleCanvas.dbg: ../../pigale/incl/QT/grid.h
+pigaleCanvas.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h
+pigalePaint.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tbase.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tmessage.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/graphs.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tprop.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tsvector.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tdebug.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Errors.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tpropio.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tstring.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/propdef.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tpoint.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/color.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/Tfile.h
+pigalePaint.dbg: ../../pigale/incl/TAXI/random.h
+pigalePaint.dbg: ../../pigale/incl/QT/pigalePaint.h
+pigalePaint.dbg: ../../pigale/incl/QT/pigaleQcolors.h
+pigalePaint.dbg: ../../pigale/incl/QT/Misc.h
+pigaleWindow.dbg: ../../pigale/incl/config.h pigaleWindow.h
+pigaleWindow.dbg: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tmessage.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/graphs.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/graph.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/elmt.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tprop.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tsvector.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tdebug.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Errors.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tpropio.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tstring.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/propdef.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tpoint.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/color.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tfile.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/random.h
+pigaleWindow.dbg: ../../pigale/incl/TAXI/Tgf.h GraphWidget.h GraphGL.h
+pigaleWindow.dbg: GraphSym.h mouse_actions.h gprop.h LineEditNum.h
+pigaleWindow.dbg: ../../pigale/incl/QT/pigaleWindow_doc.h
+pigaleWindow.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
+pigaleWindow.dbg: ../../pigale/incl/QT/Action_def.h
+pigaleWindow.dbg: ../../pigale/incl/QT/Action.h
+pigaleWindow.dbg: ../../pigale/incl/QT/pigalePaint.h
+pigaleWindow.dbg: ../../pigale/incl/QT/pigaleCanvas.h
+pigaleWindow.dbg: ../../pigale/incl/QT/grid.h icones/fileopen.xpm
+pigaleWindow.dbg: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
+pigaleWindow.dbg: icones/info.xpm icones/sleft.xpm icones/sright.xpm
+pigaleWindow.dbg: icones/sreload.xpm icones/help.xpm icones/xman.xpm
+pigaleWindow.dbg: icones/sleftarrow.xpm icones/srightarrow.xpm
+pigaleWindow.dbg: icones/sfilesave.xpm icones/macroplay.xpm icones/film.xpm
+Settings.dbg: ../../pigale/incl/config.h pigaleWindow.h
+Settings.dbg: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+Settings.dbg: ../../pigale/incl/TAXI/Tmessage.h
+Settings.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+Settings.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Settings.dbg: ../../pigale/incl/TAXI/Tsvector.h
+Settings.dbg: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+Settings.dbg: ../../pigale/incl/TAXI/Tpropio.h
+Settings.dbg: ../../pigale/incl/TAXI/Tstring.h
+Settings.dbg: ../../pigale/incl/TAXI/propdef.h
+Settings.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+Settings.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+Settings.dbg: mouse_actions.h LineEditNum.h gprop.h
+Settings.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
+Test.dbg: pigaleWindow.h ../../pigale/incl/Pigale.h
+Test.dbg: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
+Test.dbg: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+Test.dbg: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Test.dbg: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
+Test.dbg: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
+Test.dbg: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+Test.dbg: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
+Test.dbg: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
+Test.dbg: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Action_def.h
+Test.dbg: GraphWidget.h ../../pigale/incl/QT/pigaleCanvas.h
+Test.dbg: ../../pigale/incl/QT/grid.h
+Test.dbg: ../../pigale/incl/QT/GraphWidgetPrivate.h
