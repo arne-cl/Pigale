@@ -639,7 +639,7 @@ void MyWindow::load(int pos)
   TopologicalGraph G(GC);
   UndoSave();
   banner();
-  if(MacroExecuting)return;
+  _PRINTFL(MacroExecuting);
   information(); gw->update();
   }
 void MyWindow::save()
@@ -722,7 +722,7 @@ void MyWindow::reload()
 void MyWindow::next()
   {load(1);}
 void MyWindow::information()
-  {MessageClear();
+  {if(!Error())MessageClear();
   graph_properties->update();
   }
 void MyWindow::MessageClear()
