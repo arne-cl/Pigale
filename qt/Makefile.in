@@ -16,7 +16,7 @@
 
 
 
-SOURCES = $(libpigaleQt_la_SOURCES) $(nodist_libpigaleQt_la_SOURCES) $(Client_SOURCES) $(nodist_Client_SOURCES) $(pigale_SOURCES)
+SOURCES = $(libpigaleQt_la_SOURCES) $(nodist_libpigaleQt_la_SOURCES) $(pigale_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -41,7 +41,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = pigale$(EXEEXT) Client$(EXEEXT)
+bin_PROGRAMS = pigale$(EXEEXT)
 subdir = qt
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in install-sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -78,10 +78,6 @@ libpigaleQt_la_OBJECTS = $(am_libpigaleQt_la_OBJECTS) \
 	$(nodist_libpigaleQt_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_Client_OBJECTS = client.$(OBJEXT)
-nodist_Client_OBJECTS = moc_client.$(OBJEXT)
-Client_OBJECTS = $(am_Client_OBJECTS) $(nodist_Client_OBJECTS)
-Client_LDADD = $(LDADD)
 am_pigale_OBJECTS = main.$(OBJEXT)
 pigale_OBJECTS = $(am_pigale_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/incl
@@ -96,9 +92,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libpigaleQt_la_SOURCES) $(nodist_libpigaleQt_la_SOURCES) \
-	$(Client_SOURCES) $(nodist_Client_SOURCES) $(pigale_SOURCES)
-DIST_SOURCES = $(libpigaleQt_la_SOURCES) $(Client_SOURCES) \
 	$(pigale_SOURCES)
+DIST_SOURCES = $(libpigaleQt_la_SOURCES) $(pigale_SOURCES)
 dataDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(data_DATA)
 ETAGS = etags
@@ -247,20 +242,16 @@ MOC_FILES = \
     moc_pigaleWindow.cpp
 
 HEADER_FILES := $(wildcard *.h)
-BUILT_SOURCES = $(MOC_FILES) $(top_srcdir)/incl/QT/Action.h moc_client.cpp
+BUILT_SOURCES = $(MOC_FILES) $(top_srcdir)/incl/QT/Action.h
 ALL_FILES = $(FILES) $(HEADER_FILES)
 INCLUDES = @QT_INCLUDES@
 lib_LTLIBRARIES = libpigaleQt.la
 nodist_libpigaleQt_la_SOURCES = $(MOC_FILES)
-#libpigaleQt_la_SOURCES=$(MOC_FILES)
 libpigaleQt_la_SOURCES = $(ALL_FILES)
 libpigaleQt_la_LDFLAGS = -version-info @LIB_VERSION@
 pigale_SOURCES = main.cpp
 pigale_LDADD = -L$(prefix)/lib -ltgraph -lpigaleQt
 pigale_DEPENDENCIES = tgraph pigale_fr.qm 
-nodist_Client_SOURCES = moc_client.cpp
-#Client_SOURCES =  moc_client.cpp client.cpp  
-Client_SOURCES = client.cpp  
 data_DATA = pigale_fr.qm qt_fr.qm
 EXTRA_DIST = pigale_fr.ts pigale.pro qt_fr.ts
 all: $(BUILT_SOURCES)
@@ -277,9 +268,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  qt/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  qt/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  qt/Makefile
+	  $(AUTOMAKE) --gnu  qt/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -354,9 +345,6 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-Client$(EXEEXT): $(Client_OBJECTS) $(Client_DEPENDENCIES) 
-	@rm -f Client$(EXEEXT)
-	$(CXXLINK) $(Client_LDFLAGS) $(Client_OBJECTS) $(Client_LDADD) $(LIBS)
 pigale$(EXEEXT): $(pigale_OBJECTS) $(pigale_DEPENDENCIES) 
 	@rm -f pigale$(EXEEXT)
 	$(CXXLINK) $(pigale_LDFLAGS) $(pigale_OBJECTS) $(pigale_LDADD) $(LIBS)
@@ -380,7 +368,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MiscQt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Settings.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glcontrolwidget.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gprop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
@@ -389,7 +376,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_GraphSym.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_GraphWidget.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_LineEditNum.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_glcontrolwidget.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_gprop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_mouse_actions.Plo@am__quote@

@@ -22643,7 +22643,7 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
-                              ac_config_files="$ac_config_files Makefile tgraph/Makefile qt/Makefile"
+                                        ac_config_files="$ac_config_files Makefile tgraph/Makefile qt/Makefile ClientServer/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -23210,6 +23210,7 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "tgraph/Makefile" ) CONFIG_FILES="$CONFIG_FILES tgraph/Makefile" ;;
   "qt/Makefile" ) CONFIG_FILES="$CONFIG_FILES qt/Makefile" ;;
+  "ClientServer/Makefile" ) CONFIG_FILES="$CONFIG_FILES ClientServer/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "incl/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/config.h:config.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

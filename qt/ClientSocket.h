@@ -30,10 +30,10 @@
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
- 
+#include <QT/clientEvent.h> 
+
 
 class PigaleServer;
- 
 
 class ClientSocket : public QSocket, QThread
 // created each time a client connects
@@ -41,20 +41,19 @@ class ClientSocket : public QSocket, QThread
 public:
   ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
   ~ClientSocket() { }
-  
+  void customEvent(QCustomEvent * e );
 
 signals:
   void logText(const QString&);
   void signalId(int);
-  void threadDataAction(const QString&);
 
 private slots:
   void readClient();
   void ClientClosed();
-  int xhandler(const QString& data);
   void writeServer(const QString&  msg);
 
 private: 
+  int xhandler(const QString& data);
   void run();
   void sendServerId();
   int Png();

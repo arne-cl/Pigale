@@ -1,0 +1,72 @@
+####################### MAY NEED EDITING ########################
+#Compiler options
+CC=g++
+#CPU="-mcpu=i686"
+CPU=
+#OPT: if set to dbg > debug version
+#OPT: if set to opt > optimised version
+OPT=opt
+
+#libray paths
+MQTDIR=$(QTDIR)
+UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt   
+#include paths
+IFLAGS =  -I$(MQTDIR)/include 
+IFLAGS += -I$(PIGALEPATH)/incl
+#awk 
+AWK=awk
+####################### END EDITING #########################
+PIGALEPATH=../../pigale
+NVERSION=BETA
+# P = name of output program
+
+MMOC=$(MQTDIR)/bin/moc
+
+
+#GENERAL OPTIONS
+.SUFFIXES:.cpp .o .obj .opt .dbg
+#OPTIMIZED OPTIONS
+CFLAGSopt = -O3  $(PIC) $(CPU)
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror  -pipe
+CFLAGSopt +=  -fomit-frame-pointer 
+CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
+CFLAGSopt +=  -DQT_THREAD_SUPPORT 
+
+#DEBUGGING OPTIONS
+CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
+CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+CFLAGSdbg +=  -DTDEBUG
+CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
+CFLAGSdbg +=  -DQT_THREAD_SUPPORT 
+
+CFLAGS  = $(CFLAGS$(OPT))
+VPATH   = ./.obj
+
+
+all : Client
+
+$(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
+	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
+ 
+
+
+Client:client.h client.cpp md $(VPATH) 
+	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
+	$(MMOC) client.h -o moc_client.cpp
+	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
+	$(CC)  $(CFLAGS) -o Client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
+
+
+clean:
+	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
+
+md: 
+	@if ! test -d .obj ; then mkdir .obj ; fi
+
+
+
+.PHONY: md all
+# DO NOT DELETE
+
+
+

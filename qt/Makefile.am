@@ -33,7 +33,7 @@ MOC_FILES= \
 
 HEADER_FILES:= $(wildcard *.h)
 
-BUILT_SOURCES=$(MOC_FILES) $(top_srcdir)/incl/QT/Action.h moc_client.cpp
+BUILT_SOURCES=$(MOC_FILES) $(top_srcdir)/incl/QT/Action.h
 
 ALL_FILES=$(FILES) $(HEADER_FILES)
 INCLUDES=@QT_INCLUDES@
@@ -41,18 +41,14 @@ LRELEASE=@LRELEASE@
 
 lib_LTLIBRARIES = libpigaleQt.la
 nodist_libpigaleQt_la_SOURCES=$(MOC_FILES)
-#libpigaleQt_la_SOURCES=$(MOC_FILES)
 libpigaleQt_la_SOURCES=$(ALL_FILES)
 libpigaleQt_la_LDFLAGS = -version-info @LIB_VERSION@
 
-bin_PROGRAMS = pigale Client
+bin_PROGRAMS = pigale 
 pigale_SOURCES=main.cpp
 pigale_LDADD = -L$(prefix)/lib -ltgraph -lpigaleQt
 pigale_DEPENDENCIES =tgraph pigale_fr.qm 
 
-nodist_Client_SOURCES =  moc_client.cpp
-#Client_SOURCES =  moc_client.cpp client.cpp  
-Client_SOURCES = client.cpp  
 
 datadir = $(prefix)/translations
 data_DATA = pigale_fr.qm qt_fr.qm

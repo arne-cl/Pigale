@@ -20,30 +20,12 @@
 #include <QT/Handler.h>
 #include <QT/pigalePaint.h>
 #include <QT/pigaleCanvas.h> 
+#include <QT/clientEvent.h> 
 
 #include <qmenubar.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 
-
-
-void InitPigaleColors();
-
-
-static void InitPigaleFont()
-  {
-#if QT_VERSION >= 300
-  QRect rect = QApplication::desktop()->screenGeometry();
-  int h = rect.height();
-#else
-  QWidget *d = QApplication::desktop();
-  int h = d->height();
-#endif
-  int fontsize = (h > 600) ? 12 : 11;
-  QFont font = QFont("helvetica",fontsize);
-  font.setPixelSize(fontsize);
-  QApplication::setFont(font,true);
-  }
 int InitPigaleServer(pigaleWindow *w)
   {PigaleServer  *server = new PigaleServer(w,qApp);
   if(!server->ok())
@@ -65,36 +47,38 @@ void PigaleServer::newConnection(int socket)
       nconnections = 1;
       mw->MessageClear();
       Tprintf("Server: New connection");
-      mw->ServerExecuting = true;
-      mw->blockInput(true);
+      mw->ServerExecuting = true;      mw->blockInput(true);
       }
   else
-      Tprintf("Server: already a connection");
+      {QSocket *so =  new QSocket(qApp);
+      so->setSocket(socket);
+      QTextStream cli;
+      cli.setDevice(so);
+      cli << ":Server Busy"<<endl;
+      so->close();
+      }
   }
 void PigaleServer::OneClientClosed()
-  {--nconnections;
-   Tprintf("Server: The client disconnects");
-   mw->ServerExecuting = false;
-   mw->blockInput(false);
+  {Tprintf("Server: Client disconnects");
+  mw->ServerClientId = 0;
+  nconnections = 0;
+  mw->ServerExecuting = false;   mw->blockInput(false);
   }
 
-
+//ClientSocket: thread reading and writing on a socket
 ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
     QSocket(parent,name),sdebug(0),mw(p)
-// Constructor for pigale server
   {connect(this,SIGNAL(readyRead()),SLOT(readClient()));
   connect(this,SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
-  connect(this,SIGNAL(threadDataAction(const QString&)),SLOT(xhandler(const QString&)));
   connect(this,SIGNAL(logText(const QString&)),SLOT(writeServer(const QString&)));
   setSocket(sock);
   cli.setDevice(this);
   clo.setDevice(this);
   getRemoteGraph = false;
-  start();
-  prId = 1;
   line = 1;
-  mw->ServerClientId = prId;
+  start();
+  mw->ServerClientId = prId = sock;
   cli << ":Server Ready"<<endl;
   cli << "!" << endl;
   }
@@ -129,7 +113,12 @@ void ClientSocket::run()
 	      cli << "!" << endl;
 	      }
 	  else 
-	      emit threadDataAction(str); //xhandler(str);   
+                        {
+                       textEvent *event = new textEvent(str);
+                       QApplication::postEvent(this,event);
+                        //emit threadDataAction(str); 
+                        //xhandler(str);
+                       }
 	  }
   else
       {GetRemoteGraph();
@@ -137,6 +126,67 @@ void ClientSocket::run()
       cli << ":READ GRAPH" <<endl;
       cli << "!" << endl;
       }
+  }
+void ClientSocket::customEvent( QCustomEvent * e )
+  {if( e->type() != TEXTEVENT) return;
+  textEvent *event  =  (textEvent  *)e;
+  QString msg = event->getString();
+  xhandler(msg);
+  }
+
+int ClientSocket::xhandler(const QString& dataAction)
+  {int pos = dataAction.find(PARAM_SEP);
+  QString beg = dataAction.left(pos);
+  QString dataParam = dataAction.mid(pos+1);
+  int action = mw->getActionInt(beg);
+  if(sdebug)cli <<"#DEBUG: "<<dataAction<<endl;
+  Tprintf("%s",(const char *)dataAction);
+  // call the right handler
+  int err = 0;
+
+  if(action == 0)
+      err = ACTION_NOT_INT;
+  else if(action > A_INFO && action < A_INFO_END)
+      err =  handlerInfo(action);
+  else if(action > A_INPUT && action < A_INPUT_END)
+      err =  handlerInput(action,dataParam);
+  else if(action > A_AUGMENT && action < A_TEST_END)
+      {if(mw->menuBar()->isItemEnabled(action))
+          {mw->handler(action);
+//           clientEvent *event = new clientEvent(action," ");
+//           mw->ServerBusy = true;
+//           QApplication::postEvent(mw,event);
+//           qApp->processEvents() ;// a ! is sent when the action is over
+//           while(mw->ServerBusy == true){qDebug("waiting for server");qApp->processEvents (); msleep(10);}
+          }
+      else 
+          cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
+      }
+  else if(action > A_TRANS && action < A_TRANS_END)
+      {if(action == A_TRANS_PNG)
+	  err = Png();
+      else if(action == A_TRANS_GRAPH_GET)
+	  {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+	  indexRemoteGraph = 1;
+	  bool ok;
+	  if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
+	  if(!ok)return WRONG_PARAMETERS;
+	  getRemoteGraph = true;
+	  return 0;
+	  }
+      }
+  else if(action == SERVER_DEBUG)
+      sdebug = 1;
+  else
+      err = UNKNOWN_COMMAND;
+  if(getError())err = getError();
+  if(err)
+      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> "
+           << mw->getActionString(err)<<endl;
+      cli <<": " <<dataAction<< endl;
+      }
+  cli << "!" << endl;
+  return err; 
   }
 int ClientSocket::GetRemoteGraph()
   {QString GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
@@ -195,54 +245,7 @@ int ClientSocket::ReadRemoteGraph(QString &dataParam)
       }
   return 0;
   }
-int ClientSocket::xhandler(const QString& dataAction)
-// now xhandler receives msg from the thread
-  {int pos = dataAction.find(PARAM_SEP);
-  QString beg = dataAction.left(pos);
-  QString dataParam = dataAction.mid(pos+1);
-  int action = mw->getActionInt(beg);
-  //if(sdebug)cli <<"#DEBUG:'"<<dataAction<<"'-> "<<action<<endl;
-  Tprintf("%s",(const char *)dataAction);
-  // call the right handler
-  int err = 0;
-  if(action == 0)
-      err = ACTION_NOT_INT;
-  else if(action > A_INFO && action < A_INFO_END)
-      err =  handlerInfo(action);
-  else if(action > A_INPUT && action < A_INPUT_END)
-      err =  handlerInput(action,dataParam);
-  else if(action > A_AUGMENT && action < A_TEST_END)
-      {if(mw->menuBar()->isItemEnabled(action))
-          mw->handler(action);
-      else 
-          cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
-      }
-  else if(action > A_TRANS && action < A_TRANS_END)
-      {if(action == A_TRANS_PNG)
-	  err = Png();
-      else if(action == A_TRANS_GRAPH_GET)
-	  {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-	  indexRemoteGraph = 1;
-	  bool ok;
-	  if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
-	  if(!ok)return WRONG_PARAMETERS;
-	  getRemoteGraph = true;
-	  return 0;
-	  }
-      }
-  else if(action == SERVER_DEBUG)
-      sdebug = 1;
-  else
-      err = UNKNOWN_COMMAND;
-  if(getError())err = getError();
-  if(err)
-      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> "
-           << mw->getActionString(err)<<endl;
-      cli <<": " <<dataAction<< endl;
-      }
-  cli << "!" << endl;
-  return err; 
-  }
+
 int ClientSocket::Png()
   {mw->png();
   QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);

@@ -14,10 +14,11 @@
 
 using namespace std;
 
-//class Client : public QVBox, QThread
+//class Client : public QVBox
 Client::Client(const QString &host, Q_UINT16 port)
     :dbg(false),numPng(0)
-  {infoText = new QTextView( this );
+  {
+  infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
   QPushButton *send = new QPushButton("Send",hb1);
@@ -27,7 +28,6 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(close,SIGNAL(clicked()),SLOT(closeConnection()));
   connect(quit,SIGNAL(clicked()),SLOT(stop()));
   connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
-  //connect(this,SIGNAL(WriteToClient(QString)),SLOT(writeToClient(QString)));
   // create the socket and connect various of its signals
   socket = new QSocket( this );
   cls.setDevice(socket);
@@ -36,10 +36,10 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
   connect(socket,SIGNAL(error(int)),SLOT(socketError(int)));
-  //connect(this,SIGNAL(WriteToClient(QString &)),SLOT(write(QString &)));
   // connect to the server
   infoText->append("Trying to connect to the server\n" );
   socket->connectToHost(host,port);
+  inputText->setFocus();
   }
 int Client::ChangeActionsToDo(int delta)
   {int i;
@@ -64,13 +64,15 @@ void Client::socketClosed()
 void Client::socketError(int e)
   {infoText->append(QString("Error number %1 occurred\n").arg(e));
   }
-void Client::write(QString& str)
-  {infoText->append(str);
-  }
 void Client::writeToClient(QString str)
-  {//emit WriteToClient(str);
-  //qDebug(str);
-  infoText->append(str);
+  {textEvent *e = new textEvent(str);
+  QApplication::postEvent(this,e);
+  //qApp->processEvents (); 
+  }
+void Client:: customEvent(QCustomEvent * e ) 
+  {if( e->type() != TEXTEVENT ) return;
+  textEvent *event  =  (textEvent  *)e;
+  infoText->append(event->getString());
   }
 void Client::stop()
   {ThreadRead.terminate();ThreadRead.wait();
@@ -102,9 +104,9 @@ void Client::sendToServer(QString &str)
   for(int i = 0; i < (int)fields.count();i++)
       {fields[i].stripWhiteSpace();
       if(fields[i].contains("RC_GRAPH",true))
-	  sendToServerGraph(fields[i]);
+          sendToServerGraph(fields[i]);
       else
-	  cls << fields[i] << endl;
+          cls << fields[i] << endl;
       ChangeActionsToDo(1);
       }
   }
@@ -140,40 +142,40 @@ void Client::socketReadyRead()
       {QString str = socket->readLine();
       str = str.stripWhiteSpace();
       if(str.at(0) == ':')
-	  writeToClient(str.mid(1));
+          writeToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-	  {ChangeActionsToDo(1);
-	  QString PngFile = QString("image%1.png").arg(++numPng);
-	  QFile file(PngFile);
-	  file.open(IO_ReadWrite);
-	  QDataStream stream(&file);
-	  uint size;
-	  while(socket->bytesAvailable() < 4)
-	      {socket->waitForMore(100);writeToClient("+");} 
-	  clo >> size;
-	  char *buff = new char[size+1];
- 	  Q_ULONG  nb;
-	  int i = 1;
-	  Q_ULONG nread = 0;
-	  char *pbuff = buff;
-	  while(nread  < size)
-	      {nb = socket->bytesAvailable();
-	      nread += nb;
-	      clo.readRawBytes(pbuff,nb);
-	      pbuff += nb;
-	      socket->waitForMore(100);  // in millisec
-	      if(++i > 50)return ;
-	      }
-	  stream.writeRawBytes(buff,size);
-	  file.close();
-	  delete [] buff;
-	  writeToClient(QString("GOT:%1").arg(PngFile));
-	  ChangeActionsToDo(-1);
-	  }
+          {ChangeActionsToDo(1);
+          QString PngFile = QString("image%1.png").arg(++numPng);
+          QFile file(PngFile);
+          file.open(IO_ReadWrite);
+          QDataStream stream(&file);
+          uint size;
+          while(socket->bytesAvailable() < 4)
+              {socket->waitForMore(100);writeToClient("+");} 
+          clo >> size;
+          char *buff = new char[size+1];
+          Q_ULONG  nb;
+          int i = 1;
+          Q_ULONG nread = 0;
+          char *pbuff = buff;
+          while(nread  < size)
+              {nb = socket->bytesAvailable();
+              nread += nb;
+              clo.readRawBytes(pbuff,nb);
+              pbuff += nb;
+              socket->waitForMore(100);  // in millisec
+              if(++i > 50)return ;
+              }
+          stream.writeRawBytes(buff,size);
+          file.close();
+          delete [] buff;
+          writeToClient(QString("GOT:%1").arg(PngFile));
+          ChangeActionsToDo(-1);
+          }
       else if(str.at(0) == '!')//server has finished
-	  ChangeActionsToDo(-1);
+          ChangeActionsToDo(-1);
       else 
-	  writeToClient(str);
+          writeToClient(str);
       }
   }
 
@@ -181,31 +183,35 @@ void threadRead::run()
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
-  if(pclient->socket->state() != QSocket::Connected)return;
+  //if(pclient->socket->state() != QSocket::Connected)return;
   while(!stream.atEnd())
-      {while(pclient->ChangeActionsToDo(0))msleep(10);// milliseconds
+      { int i = 0;
+      while(pclient->ChangeActionsToDo(0))
+          {msleep(10);// milliseconds
+          if(++i %100 == 0)
+              pclient-> writeToClient(QString("Waiting %1s (%2)").arg(i/100).arg(pclient->ChangeActionsToDo(0)));
+          }
       str = stream.readLine(); 
       QChar ch = str.at(0);
       if(ch == ':')
-	  {QChar c = str.at(1);
-	      switch(c)
-		  {case '!':
-		       str = "!";
-		       pclient->sendToServer(str);
-		       return;
-		  case 'D':
-		      pclient->debug(true);
-		      break;
-		  case 'd':
-		      pclient->debug(false);
-		      break;
-		  default:
-		      break;
-		  }
-	  }
+          {QChar c = str.at(1);
+          switch(c)
+              {case '!':
+                  str = "!";
+                  pclient->sendToServer(str);
+                  return;
+              case 'D':
+                  pclient->debug(true);
+                  break;
+              case 'd':
+                  pclient->debug(false);
+                  break;
+              default:
+                  break;
+              }
+          }
       else if(pclient->debug() || ch != '#')
-	  pclient->sendToServer(str);
-      //else if(pclient->debug) qDebug(str);
+          pclient->sendToServer(str);
       }
   }
 

@@ -12,7 +12,6 @@
 #ifndef CLIENT_H 
 #define CLIENT_H
 #include <config.h>
-#include <QT/Action_def.h>
 #include <qsocket.h>
 #include <qapplication.h>
 #include <qevent.h>
@@ -28,7 +27,8 @@
 #include <qfileinfo.h>
 #include <qthread.h>
 #include <qmutex.h>
-
+#include <QT/clientEvent.h> 
+#include <QT/Action_def.h>
 #include <unistd.h>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
@@ -57,12 +57,6 @@ When reading from the server
 otherwise they are output to the terminal 
 */
 
-class TextEvent : public QCustomEvent
-{
-public:
-   QString text;
-   TextEvent(QString str) :  QCustomEvent( 65432 ), text(str) {}
-};
 class Client;
 
 class threadRead : public QThread 
@@ -73,18 +67,14 @@ public:
   Client* pclient; 
 };
 
-class Client : public QVBox
+class Client : public QVBox 
 {Q_OBJECT
 public:
   Client( const QString &host, Q_UINT16 port);
   ~Client(){}
   void sendToServer(QString& str);
   void writeToClient(QString str);
-
-//signals:
-  void WriteToClient(QString& str) {QApplication::postEvent(this,new TextEvent(str));}
-  void CustomEvent(QCustomEvent * e ) { if ( e->type() == 65432 ) write(((TextEvent *)e)->text); }
-  void write(QString& str);
+  void customEvent(QCustomEvent * e );
 
 private slots:
   void closeConnection();

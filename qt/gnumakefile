@@ -63,7 +63,7 @@ OBJECTS       =  $(patsubst %.cpp,%.$(OPT), $(FILES_W_MOC))
 OBJ           =  $(patsubst %.cpp,$(VPATH)/%.$(OPT), $(FILES_W_MOC))
 ALLOBJ        = $(wildcard $(VPATH)/*.$(OPT))
 
-all : $(P)
+all : $(P) 
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
@@ -81,8 +81,15 @@ $(DLIB):$(OBJECTS)
 $(P) :md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
 
+Client:client.h client.cpp
+	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
+	$(MMOC) client.h -o moc_client.cpp
+	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
+	$(CC)  $(CFLAGS) -o Client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
+	
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
+	
 md: depend
 	@if ! test -d .obj ; then mkdir .obj ; fi
 test:
@@ -185,7 +192,8 @@ ClientSocket.opt: ../../pigale/incl/TAXI/color.h
 ClientSocket.opt: ../../pigale/incl/TAXI/Tfile.h
 ClientSocket.opt: ../../pigale/incl/TAXI/random.h pigaleWindow.h
 ClientSocket.opt: ../../pigale/incl/QT/Misc.h
-ClientSocket.opt: ../../pigale/incl/QT/Action_def.h GraphWidget.h GraphGL.h
+ClientSocket.opt: ../../pigale/incl/QT/Action_def.h
+ClientSocket.opt: ../../pigale/incl/QT/clientEvent.h GraphWidget.h GraphGL.h
 ClientSocket.opt: GraphSym.h mouse_actions.h gprop.h LineEditNum.h
 ClientSocket.opt: ../../pigale/incl/QT/Handler.h
 ClientSocket.opt: ../../pigale/incl/QT/pigalePaint.h
@@ -365,7 +373,8 @@ pigaleWindow.opt: ../../pigale/incl/QT/Action_def.h
 pigaleWindow.opt: ../../pigale/incl/QT/Action.h
 pigaleWindow.opt: ../../pigale/incl/QT/pigalePaint.h
 pigaleWindow.opt: ../../pigale/incl/QT/pigaleCanvas.h
-pigaleWindow.opt: ../../pigale/incl/QT/grid.h icones/fileopen.xpm
+pigaleWindow.opt: ../../pigale/incl/QT/grid.h
+pigaleWindow.opt: ../../pigale/incl/QT/clientEvent.h icones/fileopen.xpm
 pigaleWindow.opt: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
 pigaleWindow.opt: icones/info.xpm icones/sleft.xpm icones/sright.xpm
 pigaleWindow.opt: icones/sreload.xpm icones/help.xpm icones/xman.xpm

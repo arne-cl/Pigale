@@ -18,6 +18,7 @@
 #include "mouse_actions.h"
 #include "gprop.h"
 #include "LineEditNum.h"
+
 #include <QT/pigaleWindow_doc.h> 
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
@@ -25,6 +26,7 @@
 #include <QT/Action.h>
 #include <QT/pigalePaint.h> 
 #include <QT/pigaleCanvas.h>
+#include <QT/clientEvent.h>
 
 #include <qmenubar.h>
 #include <qstatusbar.h>
@@ -659,9 +661,20 @@ pigaleWindow::~pigaleWindow()
 void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1) 
        macroPlay();
-#ifndef _WINDOWS
+  //#ifndef _WINDOWS
+  ServerClientId = 0;
   if(Server)InitPigaleServer(this); 
-#endif
+  //#endif
+  }
+void pigaleWindow::customEvent( QCustomEvent * e )
+  {if( e->type() != CLIENTEVENT) return;
+  clientEvent *event  =  (clientEvent  *)e;
+  int action  = event->getAction();
+  QString msg = event->getParamString();
+  //qDebug("message:-%d %s (%s)-",action,(const char *)getActionString(action),(const char *)msg);
+  if(action > A_AUGMENT && action < A_TEST_END)
+      handler(action);
+  ServerBusy = false;
   }
 void pigaleWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));

@@ -18,6 +18,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qmap.h>
+#include <qevent.h> 
 #include <Pigale.h> 
 
 #if QT_VERSION < 300
@@ -104,6 +105,7 @@ private:
   void ParseArguments(); 
 public:
   void whenReady();
+  void customEvent( QCustomEvent * e );
   void Message(QString s);
   void MessageClear();
   void UndoTouch(bool save=false);
@@ -130,6 +132,7 @@ public:
   QString InputFileName;
   QString OutputFileName;
   bool ServerExecuting;
+  bool ServerBusy;
   int ServerClientId;
 private:
   QToolBar *tb;

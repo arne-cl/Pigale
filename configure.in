@@ -198,6 +198,7 @@ AC_OUTPUT(
 Makefile
 tgraph/Makefile
 qt/Makefile
+ClientServer/Makefile
 )
 
 
