@@ -162,7 +162,7 @@ bool TopologicalGraph::CheckSimple()
   {if(debug())DebugPrintf("   CheckSimple");
   if(Set().exist(PROP_SIMPLE))return true;
   if(debug())DebugPrintf("Executing CheckSimple");
-  if(!Set().exist(PROP_NLOOPS))return false;
+  if(!Set().exist(PROP_NLOOPS))RemoveLoops();//return false;
   if(ne() <= 1){Prop1<int> simple(Set(),PROP_SIMPLE);return true;}
   svector<tedge>link(1,ne()); link.clear();
   svector<tedge>top1(1,nv()); top1.clear();
