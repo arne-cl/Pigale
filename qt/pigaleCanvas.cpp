@@ -26,6 +26,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
+#include <qpaintdevicemetrics.h> 
 
 GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name, WFlags f)
     :QCanvasView(g->canvas,parent,name,f)
@@ -570,8 +571,12 @@ void GraphEditor::load(bool initgrid)
 void GraphEditor::print(QPrinter *printer)
   {if(printer->setup(this))
       {QPainter pp(printer);
-      gwp->canvas->drawArea(QRect(0,0,gwp->canvas->width()-space-sizerect-20
-				  ,gwp->canvas->height()),&pp,FALSE);
+      QPaintDeviceMetrics pdm(printer);
+      int nx = gwp->canvas->width()-space-sizerect-20;
+      int ny = gwp->canvas->height();
+      double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
+      printer->setResolution((int)(scale*printer->resolution()+.5));
+      gwp->canvas->drawArea(QRect(0,0,nx,ny),&pp,FALSE);
       }
   }
 void GraphEditor::png()

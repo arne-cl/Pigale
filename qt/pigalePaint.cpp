@@ -13,7 +13,7 @@
 #include <QT/pigalePaint.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
-
+#include <qpaintdevicemetrics.h> 
 
 void DrawPolar(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -438,6 +438,11 @@ void pigalePaint::print(QPrinter* printer)
   {if(index < 0)return;
   if(printer->setup(this))
       {QPainter pp(printer);
+      QPaintDeviceMetrics pdm(printer);
+      int nx = width();
+      int ny = height();
+      double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
+      printer->setResolution((int)(scale*printer->resolution()+.5));
       drawIt(&pp);
       }
   }
