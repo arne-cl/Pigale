@@ -11,13 +11,14 @@
 
 #include "MyWindow.h"
 #include "GraphWidget.h"
-#include "mouse_actions.h"
+#include "mouse_actions.h" 
 #include "LineEditNum.h"
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
 #include <qapplication.h> 
 #include <qspinbox.h> 
 #include <qslider.h> 
+#include <qprogressbar.h>
 #include <qmenubar.h> 
 #include <qtoolbar.h> 
 #include <TAXI/Tgf.h> 
@@ -47,16 +48,19 @@ int MyWindow::getKey()
 void MyWindow::blockInput(bool t)
   {menuBar()->setEnabled(!t); tb->setEnabled(!t);
   }
+void MyWindow::timer()
+  {MacroWait = false;
+  }
 void AllowAllMenus(QMenuBar *menubar)
   {for(int menu = A_AUGMENT;menu <= A_TEST_END;menu++)
       {if(menubar->text(menu) == QString::null ||menubar->isItemEnabled(menu))continue;
       menubar->setItemEnabled(menu,true);
       }
   }
-void macroRecord(int action)
+void MyWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
-  QString str_action = GetMyWindow()->getActionString(action);
+  QString str_action = getActionString(action);
   Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action);
   GeometricGraph G(GetMainGraph());
   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
@@ -87,6 +91,7 @@ void MyWindow::macroHandler(int event)
 	  break; 
       case 4:// play repeat times
 	  MacroRecording = false;
+	  MacroWait = false;
 	  MessageClear();
 	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
 	  t0.start();
@@ -94,19 +99,23 @@ void MyWindow::macroHandler(int event)
 	  t0.restart();
 	  MacroLooping = true;
 	  blockInput(true);
-	  repeat0 = (repeat == 0) ? 10000 : repeat;
+	  repeat0 = (repeat == 0) ? 1000 : repeat;
+	  progressBar->setTotalSteps(repeat0);
+	  progressBar->show();
 	  j = 0;
 	  for(i = 1;i <= repeat0;i++)
 	      {if(i == repeat0 && repeat == 0)i = 1;
 	      ++j;
 	      macroPlay();
-	      mouse_actions->LCDNumber->display((int)(i*100./repeat0));
-	      mouse_actions->Slider->setValue((int)(i*100./repeat0));
-	      qApp->processEvents(1);
+	      progressBar->setProgress(i);
+	      do
+		  {qApp->processEvents();
+		  }while(MacroWait);
 	      if(!MacroLooping)break; // if an error had occurred
 	      if(getKey() == Qt::Key_Escape){gw->update();break;}
 	      }
-	  MacroLooping = MacroExecuting = false;
+	  progressBar->hide();
+	  MacroLooping = MacroExecuting = MacroWait = false;
 	  blockInput(false);
 	  Time = t0.elapsed()/1000.;
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
@@ -154,7 +163,7 @@ void MyWindow::macroPlay()
 	  {++record;continue;}
       if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
-      if(getError()){Executing = false;break;}
+      if(getError()){Executing = false; MacroWait = false;break;}
       else if(debug())LogPrintf("macro action:OK\n");
       }
   if(getError())
