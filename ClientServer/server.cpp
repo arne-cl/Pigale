@@ -19,7 +19,7 @@ int Twait(const char *) {return 0;}
 void Tprintf(const char *,...) {}
 
 //ClientSocket: public QSocket
-ClientSocket::ClientSocket(int sock,const int id,QObject *parent=0,const char *name=0 ) :
+ClientSocket::ClientSocket(int sock,const int id,QObject *parent,const char *name) :
     QSocket(parent,name),line(0),prId(id),sdebug(0),cli(this)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
