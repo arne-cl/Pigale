@@ -69,23 +69,7 @@ void DebugPrintf(const char *fmt,...)
   Tprintf("%*s%s", Indent*2, "", buff);
   fclose(LogFile);
   }
-void DebugPrintf(char *fmt,...)
-  {FILE *LogFile;
-  va_list arg_ptr;
-  char buff[256];
-  va_start(arg_ptr,fmt);
-  vsprintf(buff,fmt,arg_ptr);
-  va_end(arg_ptr);
 
-  if(first)
-      {LogFile = fopen(LogName, "w");first = false;}
-  else
-      LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){setError(-1);return;}
-  fprintf(LogFile, "%*s%s\n", Indent*2, "", buff);
-  Tprintf("%*s%s", Indent*2, "", buff);
-  fclose(LogFile);
-  }
 
 void LogPrintf(const char *fmt,...)
   {FILE *LogFile;
