@@ -68,6 +68,7 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/geometry width",this->width());
   setting.writeEntry("/pigale/geometry height",this->height());
   setting.writeEntry("/pigale/debug enable",debug());
+  setting.writeEntry("/pigale/randomSeed enable",randomSeed());
   setting.writeEntry("/pigale/undo enable",IsUndoEnable);
   // limits
   setting.writeEntry("/pigale/limits slow_algo",spin_MaxNS->value());
@@ -124,6 +125,7 @@ void MyWindow::LoadSettings()
 #else
   debug() = true;
 #endif
+  randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);
   ShowVertex() = setting.readNumEntry("/pigale/embed/label show",0);
   SchnyderRect() = setting.readBoolEntry("/pigale/embed/schnyder rect",false);
