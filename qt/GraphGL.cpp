@@ -21,7 +21,7 @@
 #include <GL/glut.h>
 
 //in QtMisc.cpp
-bool & ShowVertex();
+int & ShowVertex();
 
 class GraphGLPrivate
 {public:
