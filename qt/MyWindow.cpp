@@ -109,6 +109,10 @@ MyWindow::MyWindow()
   }
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
+  // Check tgf
+  QFileInfo fi  = QString(getenv("TGF"));
+  if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
+  else {Twait("The variable TGF should point on a tgf directory");exit(1);}
 #if QT_VERSION >= 300
   QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
@@ -586,15 +590,14 @@ MyWindow::MyWindow()
   mainWidget->setFocus();
   if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
-  if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
   DebugPrintf("Init seed:%ld",randomSetSeed());
   
-  QFileInfo fi  = QString(getenv("TGF"));
-  if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
-  else {Twait("The variable TGF should point on a tgf directory");exit(1);}
+//   QFileInfo fi  = QString(getenv("TGF"));
+//   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
+//   else {Twait("The variable TGF should point on a tgf directory");exit(1);}
 #if QT_VERSION >= 300
-  InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
-  OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+//   InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
+//   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
   QFileInfo fis  = InputFileName;
   if(fis.exists() && fis.isDir() )DirFile = fis.filePath();
 #else

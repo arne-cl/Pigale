@@ -26,6 +26,7 @@
 #include <qtabwidget.h>
 #include <qspinbox.h>
 #include <qprinter.h>
+#include <qdir.h>
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -139,6 +140,17 @@ void MyWindow::LoadSettings()
   randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
+  InputFileName = setting.readEntry("/pigale/TgfFile input",DirFile + QDir::separator() + "a.tgf");
+  OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+  if(qApp->argc() < 3)return;
+  for(int i = 1; i < qApp->argc()-1;i++)
+      {if(QString((const char *)qApp->argv()[i]) == "-fi")
+	  InputFileName =  DirFile+QDir::separator()
+	  +(const char *)qApp->argv()[i+1];
+      if(QString((const char *)qApp->argv()[i]) == "-fo")
+	  OutputFileName =  DirFile+QDir::separator()
+	  +(const char *)qApp->argv()[i+1];
+      }
   }
 int GetPigaleColors()
   {QSettings setting;
