@@ -72,7 +72,7 @@ GraphContainer & QuotientGraph(TopologicalGraph &G, bool geom)
           else
               ++nhv;
           }
-#ifdef DEBUG
+#ifdef TDEBUG
       for (v=1; v<=n; v++)
           {if (nise[classv[v]]!=ise[v])
               exit(1);
