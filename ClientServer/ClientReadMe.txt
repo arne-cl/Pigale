@@ -4,14 +4,14 @@ These two programs make use of the Qt library  but as the  client reads
 its instructions from stdin and its results  to stdout, 
 it should not be difficult for applications to communicate with the server.
 
-To experiment the program  two example files are provided (data1 and data2)
+To experiment the program  one example files is provided (Clientdata.txt)
 which shows some aspects of the proposed syntax.
 
 The server and client use a TCP connection on port 4242.
+The server should be allowed to write on /tmp (\tmp on Windows).
 
 To launch the application, first launch the server:
-XServer (serves concurrently != clients)
-or pigale -server (serves one client at a time)
+pigale -server (serves one client at a time)
 then the client:
 Client or Client < data
 If the Client does not run on the same machine as the server:

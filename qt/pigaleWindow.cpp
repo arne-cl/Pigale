@@ -280,6 +280,8 @@ pigaleWindow::pigaleWindow()
   file->insertSeparator();
   file->insertItem(printIcon,tr("&Print"),this, SLOT(print()));
   file->insertSeparator();
+  file->insertItem(tr("&Init server"),this, SLOT(initServer()));
+  file->insertSeparator();
   file->insertItem(tr("&Quit"),qApp,SLOT(closeAllWindows()));
 
   QPopupMenu * augment = new QPopupMenu(this);
@@ -666,6 +668,10 @@ void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
   ServerClientId = 0;
   if(Server)InitPigaleServer(this); 
+  }
+void pigaleWindow::initServer()
+  {ServerClientId = 0;
+  InitPigaleServer(this); 
   }
 void pigaleWindow::customEvent( QCustomEvent * ev)
   {switch( ev->type())

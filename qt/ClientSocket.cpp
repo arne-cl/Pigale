@@ -146,10 +146,8 @@ int ClientSocket::xhandler(const QString& dataAction)
   else if(action > A_INPUT && action < A_INPUT_END)
       err =  handlerInput(action,dataParam);
   else if(action > A_AUGMENT && action < A_TEST_END)
-      {if(mw->menuBar()->isItemEnabled(action))
-          {mw->handler(action);
-          //mw->getResultHandler();
-          }
+      {if(mw->graph_properties->actionAllowed(action))
+          mw->handler(action);
       else 
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
@@ -185,27 +183,36 @@ int ClientSocket::GetRemoteGraph()
   file.remove();
   file.open(IO_ReadWrite);
   QDataStream stream(&file);
-  if(sdebug)cli << ":SERVER: reading graph" << endl;
-  Tprintf("Reading graph");
+  cli << ":Server: receiving graph" << endl;
+  Tprintf("Receiving graph");
   uint size = 0;
   uint nb = bytesAvailable();
-  while(bytesAvailable() < 4)waitForMore(100);
+  while(bytesAvailable() < 4)waitForMore(10);
   clo >>  size;
   if(size <= 0)return -1;
+  uint size0 = 0;
   char *buff  = new char[size+1];
-  int i = 0;
+  int retry = 0;
   uint nread = 0;
   char *pbuff = buff;
   while(nread  < size)
-      {waitForMore(100);  // in millisec
+      {waitForMore(20);  // in millisec
       nb = bytesAvailable();
+      if(nb == 0)
+          {if(++retry > 500){setError(-1,"Timeout");delete [] buff;return READ_ERROR;}
+           continue;
+          }
+      retry = 0;
+      if(nb > size-nread)nb = size-nread;
       nread += nb;
-      if(nread > size)return READ_ERROR;
       clo.readRawBytes(pbuff,nb);
       pbuff += nb;
-      if(sdebug)cli << QString(":%1 (%2/%3)").arg(nb).arg(nread).arg(size) << endl;
-      Tprintf("%d (%d/%d)",nb,nread,size);
-      if(++i > 50){setError(-1,"Timeout");return -1;}
+      if(nread >= size0)
+          {int percent = (int)(nread*100./size + .5);
+          size0 = nread + size/10; // we write when at least 10% more  is read
+          cli << QString(":Server:%1 % (%2 / %3)").arg(percent).arg(nread).arg(size) << endl;
+          Tprintf(" %d % (%d)",percent,size);
+          }
       }
   stream.writeRawBytes(buff,size);
   file.close();

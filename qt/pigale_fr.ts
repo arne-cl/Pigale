@@ -102,15 +102,15 @@
     </message>
     <message>
         <source>Z +</source>
-        <translation>Z +</translation>
+        <translation type="obsolete">Z +</translation>
     </message>
     <message>
         <source>Z 0</source>
-        <translation>Z 0</translation>
+        <translation type="obsolete">Z 0</translation>
     </message>
     <message>
         <source>Z -</source>
-        <translation>Z -</translation>
+        <translation type="obsolete">Z -</translation>
     </message>
 </context>
 <context>
@@ -881,7 +881,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Show arrows</source>
-        <translation type="unfinished">Montrer les flèches</translation>
+        <translation>Montrer les flèches</translation>
+    </message>
+    <message>
+        <source>&amp;Init server</source>
+        <translation>&amp;Démarrer le serveur</translation>
     </message>
 </context>
 </TS>

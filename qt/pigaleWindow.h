@@ -101,6 +101,7 @@ private slots:
   void SetPigaleFont();
   void keyPressEvent(QKeyEvent *k);
   void settingsHandler(int action);
+  void initServer();
 private:
   void mapActionsInit();
   int  macroLoad(QString FileName);
