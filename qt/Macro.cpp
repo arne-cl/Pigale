@@ -14,7 +14,7 @@
 #include "mouse_actions.h" 
 #include "LineEditNum.h"
 #include <QT/Misc.h> 
-#include <QT/Action_def.h> 
+#include <QT/Action_def.h>  
 #include <qapplication.h> 
 #include <qspinbox.h> 
 #include <qslider.h> 
@@ -146,7 +146,7 @@ void MyWindow::macroPlay()
       {MessageClear();
       DebugPrintf("Play macro:%d actions",MacroNumActions);
       }
-  bool Executing = MacroExecuting = true;
+  MacroExecuting = true;
   MacroRecording = false;
   if(MacroNumActions == 0){load(1);return;}
   int record = 1;
@@ -156,17 +156,17 @@ void MyWindow::macroPlay()
       {macroDefColors(record);
       if(record == MacroNumActions && !MacroLooping)
 	  {gw->update();
-	  MacroExecuting = false;
-	  Executing = false;
+	  MacroExecuting = false; // so if the action needs a redraw, it will be done
 	  }
       if((MacroActions[record] != A_PAUSE && !menuBar()->isItemEnabled(MacroActions[record]))
 	 || (MacroActions[record] == A_PAUSE && !MacroLooping))
-	  {qDebug("No actio:%s",(const char *)getActionString(MacroActions[record]));
+	  {if(debug())LogPrintf("%s:initial conditons not satisfied\n"
+		  ,(const char *)getActionString(MacroActions[record]));
 	  ++record;continue;
 	  }
       if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
-      if(getError()){Executing = false; MacroWait = false;break;}
+      if(getError()){MacroWait = false;break;}
       else if(debug())LogPrintf("macro action:OK\n");
       }
   if(getError())
@@ -177,5 +177,4 @@ void MyWindow::macroPlay()
       }
 
   if(!MacroLooping)information();
-  MacroExecuting = Executing;
   }

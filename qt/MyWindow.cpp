@@ -859,7 +859,6 @@ void MyWindow::handler(int action)
       }
   else
       return;
-
   //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
   if(ret < 0)return;
@@ -899,8 +898,7 @@ void MyWindow::handler(int action)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
 	  {Tprintf("Handler Last Error:%s",(const char *)getErrorString());
-	  if(debug())
-	      Twait((const char *)getErrorString()); 
+	  if(debug())Twait((const char *)getErrorString()); 
 	  }
       }
       
