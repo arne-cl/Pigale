@@ -584,6 +584,7 @@ MyWindow::MyWindow()
   progressBar->hide();
 
   mainWidget->setFocus();
+  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
   DebugPrintf("Init seed:%ld",randomSetSeed());
