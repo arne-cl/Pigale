@@ -45,6 +45,7 @@
 #define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
 #define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
 #define  A_EMBED_T_CONTACT          (A_EMBED+55)        // T_CONTACT
+#define  A_EMBED_3dSchnyder         (A_EMBED+56)        // EMBED-3d_SCHNYDER
 #define  A_EMBED_3d                 (A_EMBED+98)        // EMBED-3d
 #define  A_EMBED_END                (A_EMBED+99)
 
@@ -86,6 +87,9 @@
 #define  A_GENERATE_P_BIP           (A_GENERATE+17)     // GEN_PLANAR_BIP
 #define  A_GENERATE_P_BIP_2C        (A_GENERATE+18)     // GEN_PLANAR_BIP_2C
 #define  A_GENERATE_P_BIP_3C        (A_GENERATE+19)     // GEN_PLANAR_BIP_3C
+#define  A_GENERATE_P_OUTER_N       (A_GENERATE+20)     // GEN_P_OUTER_N
+#define  A_GENERATE_P_OUTER_NM      (A_GENERATE+21)     // GEN_P_OUTER_NM
+
 #define  A_GENERATE_END             (A_GENERATE+99)
 
 //Algo

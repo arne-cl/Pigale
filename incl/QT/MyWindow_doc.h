@@ -30,6 +30,29 @@ The original Schnyder algorithm to produce a Fary drawing\
 const char * tutte_circle_txt="The resulting embedding is similar to traditional spring embedders";
 const char * spring_txt ="General spring embedder\nESC to stop";
 const char * springPM_txt ="Spring embedder which preserves the map and the crossings\nESC to stop";
+const char * embed3dSchnyder_txt ="<qt>\
+The Schnyder algorithm is used to compute an embedding in 3-dimensional space.<br>\
+The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored\
+<b>Red</b>,<b>Green</b>,<b>Blue</b>\
+<H2><b>Mouse Action</b></H2>\
+<ul>\
+<li><b>Left button:</b>\
+ <ul>\
+  <li>Moving along X axis -> Rotate along Y\
+  <li>Moving along Y axis -> Rotate along X\
+  <li>Double Click -> Start/Stop Rotate (depends on vertical slider)\
+ </ul>\
+<li><b>Right button:</b> \
+ Moving along X axis -> Rotate along Z\
+ <li><b>Middle:</b>\
+    Translate\
+<li><b>Wheel:</b> \
+   Zoom\
+</ul>\
+<H2>Buttons</H2>\
+The spin boxes let you select the coordinates to display.\
+The <b>facet</b> button triangulate the graph and draw the faces.\
+</qt>"; 
 const char * embed3d_txt ="<qt>\
 The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored\
 <b>Red</b>,<b>Green</b>,<b>Blue</b>\
