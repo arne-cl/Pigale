@@ -49,7 +49,8 @@ $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f define.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
 Server: server.o  moc_server.o 
-	g++   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
+	g++   -o Server server.o moc_server.o  $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB) 
+#	g++   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
 
 Client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
 	g++   -o Client client.o moc_client.o $(UNIXLIB)
