@@ -759,6 +759,7 @@ void MyWindow::handler(int action)
   if(MacroRecording)macroRecord(action);
   if(action == A_PAUSE)
       {pauseDelay() = macroSpin->value();
+      qApp->processEvents();
       sleep(pauseDelay());
       return;
       }
