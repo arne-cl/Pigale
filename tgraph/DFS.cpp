@@ -25,18 +25,17 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   tbrin b0=cir[0];
   int n = nv();
   int m = ne();
-  svector<tbrin> tb(0,n); tb.clear();
-  svector<int> dfsnum(0,n);
-
+  svector<tbrin> tb(0,n); tb.clear(); tb.SetName("GDFSRenu:tb");
+  svector<int> dfsnum(0,n);  dfsnum.SetName("GDFSRenu:dfsnum");
   assert(m>=1); // pour les cas particuliers
-
+  nvin.clear();
   nvin[0]=0;
   tbrin b=b0;
   tedge y=1;
   tedge z=m;
   tvertex w;
   v = vin[b0];
-  tb[v]=(tbrin)b0;
+  tb[v]= b0;
   dfsnum[v]=1;
   do
       {
@@ -67,7 +66,7 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
       b = cir[b];
       } while(1);
 
-  if (y!=n) return 0;
+  if (y != n || z != n-1){DebugPrintf("GDFSRenum z=%d y=%d n=%d",z(),y(),n); return 0;}
   else return 1;
   }
 
@@ -116,6 +115,9 @@ int Graph::GDFS(const svector<tbrin> &cir, svector<tvertex>&nvin,
           }
       b = cir[b];
       } while(1);
+
+  //for(int i = 1;i <= m ;i++) DebugPrintf("%d %d",nvin[i](),nvin[-i]());
+
   if(y != n) return 0;
   else return 1;
   }
@@ -127,8 +129,9 @@ int bicon(int n,int m,const svector<tvertex> &nvin, _Bicon &Bicon,svector<tverte
   tedge z;
   tvertex nv;
 
-  low.clear();
+  low.clear(); low.SetName("bicon:low");
   low[1]=1;
+
   for (z=n;z<=m;z++)
       {nfrom = nvin[z.firsttbrin()];
       nto = nvin[z.secondtbrin()];       
@@ -239,6 +242,7 @@ int TopologicalGraph::DFSRenum(svector<tvertex> &nvin, svector<tedge> &ie, tbrin
           }
       b = cir[b];
       } while(1);
+
   cir[0] = 0; cir[acir[0]] = b0; acir[0] = 0;
   if(y != n) return 1;
   else return 0;

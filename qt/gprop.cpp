@@ -156,6 +156,10 @@ void Graph_Properties::update()
       Twait("memory error");
       }
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
+  if(Error())
+      {if(debug())DebugPrintf("GP Error:%d",Error());
+      else Tprintf("GP Error:%d",Error());
+      }
   int nloops = G.RemoveLoops();
   if(nloops)
       {QString t;
@@ -250,6 +254,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   menu->setItemEnabled(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
   menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
+  menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   //dual
   menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 

@@ -28,12 +28,19 @@ int TopologicalGraph::FindPlanarMap()
       {if(debug())DebugPrintf("Good Genus");
       Prop1<int> map(Set(),PROP_PLANARMAP);return 0;
       }
-  if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
-      {GeometricGraph GG(*this);
-      if(debug())DebugPrintf("Executing geometirc cir");
-      if(GG.ComputeGeometricCir() == 0)return 0;
-      }
-  if(debug())DebugPrintf("Calling LRALGO");
+   if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
+       {GeometricGraph GG(*this);
+       if(debug())DebugPrintf("Executing geometric cir");
+       svector<tbrin> cir0,acir0;
+       cir0 = cir; acir0 = acir;
+       if(GG.ComputeGeometricCir() == 0)
+	   {if(debug())DebugPrintf("Using geometric map");
+	   return 0;
+	   }
+       cir.vector() = cir0; acir.vector() = acir0; 
+       }
+
+  if(debug())DebugPrintf("FindPlanarMap:LRALGO");
   if(Planarity() == 1)
       {Prop1<int> map(Set(),PROP_PLANARMAP);
       Prop1<int> maptype(Set(),PROP_MAPTYPE);

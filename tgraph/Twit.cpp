@@ -55,12 +55,13 @@ int _Twit::DeleteRight(tvertex vi)
           if(--_current)return AGAIN;
           return FIN;
           }
-      if(Hist.Dus[Twin().ltop()] < 0)DebugPrintf("\nB");
+      if(Hist.Dus[Twin().ltop()] < 0)DebugPrintf("\n Twit.cpp B");
       }
   return STOP;
   }
 
 void _Twit::Deletion(tvertex vi)
+// erase all cotree edges above the current fork whose lower vertex is >= vi
   {int c;
   if (_current==_fork) return;
 
@@ -158,6 +159,8 @@ void _Twit::Efnp(tedge ej)  // toujours k=pile;
   }
 
 void _Twit::Thin(tedge ej)
+// align all lower cotree edges on the same side by fliping edges
+// in such a case we cannot find an obstruction to planarity and use the fast align method
   {int flipin;
 
   flipin = Hist.Flip[ej];
@@ -188,16 +191,17 @@ void _Twit::Align(tedge je,int flipin,tedge ej)
   }
 
 void _Twit::Thick()
-  {int _SauvCurrent = _current;
+// align all lower cotree edges on the same side by fliping edges calling flick
+// an obstruction to planarity may occur
+  {int SaveCurrent = _current;
 
   for(;_current > _fork ;--_current)
       {if(vin[Twin().ltop()] < vin[Twin().rtop()])
           Twin().Permute();
       }
-  _current = _SauvCurrent;
-  Flick();
-  FirstTwin().rbot() = 0;
-  FirstTwin().ltop() = Twin().ltop();
+  _current = SaveCurrent;
+  Flick(); 
+  FirstTwin().rbot() = 0;  FirstTwin().ltop() = Twin().ltop();
   GotoFirstTwin();
   }
 
@@ -235,7 +239,7 @@ void _Twit::Mflip()
 
 void _Twit::Flick()
   {tedge cv;
-  int SauvCurrent=_current;
+  int SaveCurrent=_current;
   cv = Couve();
 
   for(;_current > _fork;--_current)
@@ -249,8 +253,8 @@ void _Twit::Flick()
                   Drop();
               }
           }
-      if(_current < SauvCurrent)
+      if(_current < SaveCurrent)
           Hist.Link[NextTwin().lbot()] = Twin().ltop();
       }
-  _current = SauvCurrent;
+  _current = SaveCurrent;
   }

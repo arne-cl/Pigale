@@ -112,6 +112,12 @@
 #define  A_REORIENT_COLOR          (A_ORIENT+7)
 #define  A_ORIENT_END              (A_ORIENT+99)
 
+//User Test
+#define  A_TEST                    (800)
+#define  A_TEST_1                  (A_TEST+1)
+#define  A_TEST_2                  (A_TEST+2)
+#define  A_TEST_3                  (A_TEST+3)
+#define  A_TEST_END                (A_TEST+99)
 
 // Defines used by the server
 

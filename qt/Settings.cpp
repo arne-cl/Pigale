@@ -12,6 +12,7 @@
 #include <qapplication.h>
 #include "MyWindow.h"
 #include "mouse_actions.h"
+#include "LineEditNum.h"
 #include "gprop.h"
 #include <QT/Misc.h>
 #include <QT/Handler.h>
@@ -96,18 +97,24 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/geometry height",this->height());
   setting.writeEntry("/pigale/debug enable",debug());
   setting.writeEntry("/pigale/undo enable",IsUndoEnable);
+  // limits
   setting.writeEntry("/pigale/limits slow_algo",spin_MaxNS->value());
   setting.writeEntry("/pigale/limits display",spin_MaxND->value());
+  // embed
   setting.writeEntry("/pigale/embed/label show",ShowVertex());
   setting.writeEntry("/pigale/embed/schnyder rect",SchnyderRect());
   setting.writeEntry("/pigale/embed/schnyder longestface",SchnyderLongestFace());
   setting.writeEntry("/pigale/embed/schnyder color",SchnyderColor());
   setting.writeEntry("/pigale/embed/distance dist",useDistance());
+  // generate
   setting.writeEntry("/pigale/generate/gen N1",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen N2",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
-  setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
   setting.writeEntry("/pigale/generate/gen EraseMultiple",EraseMultipleEdges());
+  // macro
+//setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
+  setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getNum());
+  setting.writeEntry("/pigale/macro/macroRepeat macroMul",macroLine->getMul());
   // Printer
   setting.writeEntry("/pigale/printer colormode",printer->colorMode());
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
@@ -149,7 +156,7 @@ void MyWindow::LoadSettings()
   SchnyderRect() = setting.readBoolEntry("/pigale/embed/schnyder rect",false);
   SchnyderLongestFace() = setting.readBoolEntry("/pigale/embed/schnyder longestface",true);
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
-  useDistance() = setting.readNumEntry("/pigale/embed/distance dist",1);
+  useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
   EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   }

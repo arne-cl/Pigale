@@ -61,7 +61,7 @@ void Tclear()
   {if(!mw)return;
   mw->MessageClear();
   }
-void Tprintf(char *fmt,...)
+void Tprintf(const char *fmt,...)
   {if(!mw)return;
   va_list arg_ptr;
   char texte_print[200];

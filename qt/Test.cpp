@@ -2,22 +2,25 @@
 #include <Pigale.h> 
 
 
-void Test(GraphContainer &GC,int action)
-  {GeometricGraph G(GC);
+int Test(GraphContainer &GC,int action)
+  {TopologicalGraph G(GC);
+  int err = 0;
   if(action == 1)
-      {G.Planarity();
-	  /*qDebug("Number of vertices:%d",G.nv());
-      qDebug("Number of edges:%d",G.ne());
-      for(tvertex v = 1; v <= G.nv();v++)
-	  qDebug("vertex:%3.3d %3.0f %3.0f",v(),G.vcoord[v].x(),G.vcoord[v].y());
-       */
+      {err = G.Planarity();
+      //{err = (int)G.CheckBiconnected();
+      if(err != 1)
+	  {DebugPrintf("Test Planarity() err=%d  Error():%d",err,Error());
+	  Error() = -12345; 
+	  }
+      return 0;
       }
-  if(action == 2)//print incidences
-      {qDebug("Number of vertices:%d",G.nv());
-      qDebug("Number of edges:%d",G.ne());
-      for(tedge e = 1; e <= G.ne();e++)
-	  qDebug("edge:%3.3d  %3.3d %3.3d",e(),G.vin[e](),G.vin[-e]());
-      return;
+  if(action == 2)
+      {err = G.TestPlanar();
+      if(err != 1)
+	  {DebugPrintf("Test TestPlanar() err=%d  Error():%d",err,Error());
+	  Error() = -12345; 
+	  }
+      return 0;
       }
   if(action == 3) 
       // display  the properties of the current graph that would be saved in a tgf file.
@@ -50,5 +53,6 @@ void Test(GraphContainer &GC,int action)
       if (G.Set().exist(i))
 	  qDebug("  %d %s (%s)",i,PropName(0,i),PropDesc(0,i));
     }
+  return 0;
   }
 

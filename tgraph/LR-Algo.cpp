@@ -70,11 +70,12 @@ void LralgoSort(int n, int m, svector<tvertex> &vin, const _Bicon &Bicon ,const 
       Stack.PopNext(pje);
       }
   }
-
-
 int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSort &LrSort, _Hist &Hist,bool OnlyTest)
+// LrSort.tref[vertex] -> the DFS reference edge 
+// LrSort.tel[vertex]  -> the first not treated edge at the vertex 
   {
   _Twit Twit(m,n,vin, Hist);
+  // we use a copy of LrSort.tel, as we shall need it for computiong the map
   svector<tedge> ctel(LrSort.tel); ctel.SetName("ctel Lr-Algo.cpp");
   tvertex vi, vii;
   tedge ej;
@@ -83,9 +84,8 @@ int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSor
   while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 
 
   for(;;)
-      {if(ctel[vi] == 0)                                    // No Edge
-          {if(vi == tvertex(1))
-              return Twit.planar();
+      {if(ctel[vi] == 0)                                    // No more Edge
+          {if(vi == 1)return Twit.planar();                 // No bactracking from 1
           if(OnlyTest && !Twit.planar())return Twit.planar();
           vii =vi;
           vi = vin[treein(vi)];                             // Bactracking to the father of vi
@@ -103,7 +103,7 @@ int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSor
                   ej=Twit.Twin().lbot();
                   }
               Hist.Link[treein(vii)] = Twit.Twin().ltop();  // Hist.Link edge to left top
-              Twit.NextFork();                              // Looking for nex fork
+              Twit.NextFork();                              // We remove the fork and Look for nex fork
               Twit.Fusion(ej);                              // fusion
               }
           else                                              // Backtacking along an isthmus

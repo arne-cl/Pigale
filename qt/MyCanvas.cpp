@@ -42,9 +42,9 @@ GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name,
 GraphEditor::~GraphEditor()
   { }
 void GraphEditor::keyPressEvent(QKeyEvent *k)
-  {if(k->key() == Qt::Key_Escape)
-      Tprintf("ESC");
-  qDebug("Ackey pressed:%d",k->key());
+  {//if(k->key() == Qt::Key_Escape)
+   //   Tprintf("ESC");
+  qDebug("GraphEditor:key pressed:%d",k->key());
   }
 void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   {GeometricGraph & G = *(gwp->pGG);

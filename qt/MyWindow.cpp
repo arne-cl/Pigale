@@ -19,6 +19,7 @@
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
+#include "LineEditNum.h"
 #include <QT/MyWindow_doc.h> 
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
@@ -78,7 +79,7 @@
 #include "icones/macroplay.xpm"
 #include "icones/film.xpm"
 
-void Test(GraphContainer &GC,int action);
+int Test(GraphContainer &GC,int action);
 void macroRecord(int action);
 void UndoErase();
 void SaveSettings();
@@ -415,26 +416,40 @@ MyWindow::MyWindow()
   QPopupMenu *macroMenu = new QPopupMenu( this );
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
-  spinMacro = new QSpinBox(1,10000,1,macroMenu,"spinMacro");
+  //spinMacro = new QSpinBox(1,10000,100,macroMenu,"spinMacro");
 #if QT_VERSION >= 300
-  int Repeat = setting.readNumEntry("/pigale/generate/gen Repeat",100);
+  //int macroRepeat = setting.readNumEntry("/pigale/generate/gen Repeat",100);
+  int macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
+  int macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
 #else
-  int Repeat = 100;
+  int macroRepeat = 100;
+  int macroMul = 0;
 #endif
-  spinMacro->setValue(Repeat);spinMacro->setPrefix("Repeat: ");
+  //spinMacro->setValue(macroRepeat);spinMacro->setPrefix("Repeat: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
   macroMenu->insertItem("Continue recording",3);
   macroMenu->insertSeparator();
-  macroMenu->insertItem(spinMacro);
+  //macroMenu->insertItem(spinMacro);
+  
+  macroLine = new LineEditNum(macroMenu,"macroLineEditNum");
+  macroLine->setPrefix("Repeat:"); macroLine->setNum(macroRepeat); macroLine->setMul(macroMul);
+  macroMenu->insertItem(macroLine);
+  QSlider *macroSlider = new QSlider(0,100,0,macroRepeat,QSlider::Horizontal,macroMenu,"macroSlider");
+  QSlider *macroSliderM = new QSlider(0,100,0,macroMul,QSlider::Horizontal,macroMenu,"macroSliderM");
+  macroMenu->insertItem(macroSlider);
+  macroMenu->insertItem(macroSliderM);
+  //connect(macroSlider,SIGNAL(valueChanged(int)),spinMacro,SLOT(setValue(int)));
+  connect(macroSlider,SIGNAL(valueChanged(int)),macroLine,SLOT(setNum(int)));
+  connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
   macroMenu->insertItem("Repeat macro",4);
-
+ 
   QPopupMenu *userMenu = new QPopupMenu( this );
   menuBar()->insertItem("&UserMenu",userMenu);
-  connect(userMenu,SIGNAL(activated(int)),SLOT(userHandler(int)));
-  userMenu->insertItem("Test &1",1);
-  userMenu->insertItem("Test &2",2);
-  userMenu->insertItem("Test &3",3);
+  connect(userMenu,SIGNAL(activated(int)),SLOT(handler(int)));
+  userMenu->insertItem("Test &1",A_TEST_1);
+  userMenu->insertItem("Test &2",A_TEST_2);
+  userMenu->insertItem("Test &3",A_TEST_3);
 
   QPopupMenu *settings      = new QPopupMenu(this);
   QPopupMenu *popupLabel    = new QPopupMenu(this);
@@ -581,7 +596,7 @@ MyWindow::~MyWindow()
 void MyWindow::load()
   {QString FileName = QFileDialog::
   getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
-
+  Error() = 0;
   if(FileName.isEmpty())
       newgraph();
   else
@@ -600,7 +615,8 @@ void MyWindow::load()
       }
   }
 void MyWindow::load(int pos)
-  {QString m;
+  {Error() = 0;
+  QString m;
   if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
       {m.sprintf("file %s does not exist",(const char *)InputFileName);
       statusBar()->message(m,2000);
@@ -707,12 +723,13 @@ void MyWindow::next()
   {load(1);}
 void MyWindow::information()
   {MessageClear();
-  graph_properties ->update();
+  graph_properties->update();
   }
 void MyWindow::MessageClear()
   {e->setText("");}
 void MyWindow::Message(QString s)
-  {e->append(s);
+  {if(MacroRecording)return;
+  e->append(s);
 #if QT_VERSION == 300
   e->scrollToBottom ();
 #endif
@@ -720,37 +737,44 @@ void MyWindow::Message(QString s)
 void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
+  QTime t;
   //if(debug())DebugPrintf("handler:%d",action);
   if(MacroRecording)macroRecord(action);
   if(action < A_AUGMENT_END)
-      {UndoSave();timer.restart();
+      {UndoSave();t.start();
       ret = AugmentHandler(action);
       }
   else if(action < A_EMBED_END)
-      {timer.restart();
+      {t.start();
       ret = EmbedHandler(action,drawing);
       }
   else if(action < A_GRAPH_END)
-      {UndoClear();UndoSave();timer.restart();
+      {UndoClear();UndoSave();t.start();
       ret = DualHandler(action); UndoSave();
       }
   else if(action < A_REMOVE_END)
-      {UndoSave();timer.restart();
+      {UndoSave();t.start();
       ret = RemoveHandler(action);UndoTouch(false);
       }
   else if(action < A_GENERATE_END)
-      {UndoClear();UndoSave();timer.restart();
+      {UndoClear();UndoSave();Error() = 0;t.start();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       UndoSave();
       }
   else if(action < A_ALGO_END)
-      {timer.restart();
+      {t.start();
       ret = AlgoHandler(action,spin_N->value());
       }
   else if(action < A_ORIENT_END)
-      {timer.restart();
+      {t.start();
       ret = OrientHandler(action);
       menuBar()->setItemChecked(10020,ShowOrientation());
+      }
+  else if(action < A_TEST_END)
+      {t.start();
+      int err = Test(GC,action - A_TEST);
+      if(err && debug()) DebugPrintf("Test param=%d, error=%d",action - A_TEST,err);
+      ret = 2;
       }
   else if(action > 10000)
       {if(action == 10010){SetPigaleColors();return;}
@@ -773,15 +797,15 @@ void MyWindow::handler(int action)
   //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
   // 3:(Drawing) 4:(3d) 5:symetrie
   if(ret < 0)return;
-  double Time = timer.elapsed()/1000.;
+  double Time = t.elapsed()/1000.;
   if(ret == 1)
       gw->update();
   else if(ret == 2)
-      {information();
+      {if(!MacroRecording)information();
       gw->update();
       }
   else if(ret == 20)
-      {information();
+      {if(!MacroRecording)information();
       gw->update(false);
       }
   else if(ret == 3)
@@ -797,15 +821,17 @@ void MyWindow::handler(int action)
   else if(ret == 7)
       gw->SpringJacquard();
 
-  double TimeG = timer.elapsed()/1000.;
-  if(!MacroExecuting)
+  double TimeG = t.elapsed()/1000.;
+  if(!MacroLooping || !MacroRecording)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
-      if(Error()){Tprintf("Last Error:%d",Error());Error() = 0;}
-      }
-  else if(Error())
-      {Tprintf("Last Error:%d",Error());
-      Twait("ERROR");
-      Error() = 0;
+      if(Error())
+	  {Tprintf("Handler Last Error:%d",Error());
+	  if(debug())
+	      {QString m;
+	      m.sprintf("Error:%d",Error());
+	      Twait((const char *)m); 
+	      }
+	  }
       }
       
   }
@@ -829,11 +855,6 @@ void MyWindow::about()
   }
 void MyWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
-  }
-void MyWindow::userHandler(int event)
-  {Test(GC,event);
-  //Call the editor
-  gw->update();
   }
 void MyWindow::showLabel(int show)
   {//Now We can only show the index of a vertex or a long
@@ -965,5 +986,4 @@ void UndoErase()
   QFile undo_tgf(undofile);
   undo_tgf.remove();
   }
-
 

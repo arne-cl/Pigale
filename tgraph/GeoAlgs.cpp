@@ -85,15 +85,14 @@ tvertex GeometricGraph::FindVertex(const Tpoint & p,double node_radius) const
   return 0;
   }
 int GeometricGraph::ComputeGeometricCir()
-  {tvertex v;
+  {if(debug())DebugPrintf("    ComputeGeometricCir");
+  tvertex v;
   tbrin b0,b,opp;
   Tpoint p;
   int degree;
-  
   for(v = 1;v <= nv();v++)
       {degree = Degree(v);
       svector<OrderedBrin> ob(degree);
-      
       if((b0 = pbrin[v]) == 0)continue;
       // Put adjacent brins in the array.
       int i = 0; b = b0;

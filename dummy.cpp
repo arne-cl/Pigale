@@ -1,5 +1,5 @@
 #include  <TAXI/graphs.h>
 void DrawGraph(Graph &G) {}
 void DrawGraph(void) {}
-void Twait(char const *) {}
-void Tprintf(char *,...) {}
+void Twait(const char const *) {}
+void Tprintf(const char *,...) {}

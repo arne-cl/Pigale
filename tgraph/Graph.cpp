@@ -51,8 +51,8 @@ void  TopologicalGraph::init()
   vin[0]=0;
   for (tbrin b = -ne(); b <= ne(); b++)
       {v = vin[b];
-      if (!pbrin[v])
-          {pbrin[v]=b;
+      if(pbrin[v] == 0)
+          {pbrin[v] = b;
           cir[b] = acir[b] = b;
           }
       else
@@ -453,26 +453,36 @@ int TopologicalGraph::RemoveIsolatedVertices()
   }
 bool TopologicalGraph::DebugCir()
   {int i=0;
-  if (vin[0]!=0) {DebugPrintf("vin[0]=%d",vin[0]());return false;}
-  if (cir[0]!=0) {DebugPrintf("cir[0]=%d",cir[0]());return false;}
-  if (acir[0]!=0) {DebugPrintf("acir[0]=%d",acir[0]());return false;}
-  for (tvertex v = 1; v<=nv(); v++)
-      {if (!pbrin[v]) continue;
+  if(vin[0]!=0) {DebugPrintf("DC vin[0]=%d",vin[0]());return false;}
+  if(cir[0]!=0) {DebugPrintf("DC cir[0]=%d",cir[0]());return false;}
+  if(acir[0]!=0) {DebugPrintf("DC acir[0]=%d",acir[0]());return false;}
+  for(tvertex v = 1;v <= nv();v++)
+      {if(!pbrin[v]){DebugPrintf("DC NOT CONNECTED GRAPH");continue;}
       tbrin b0 = pbrin[v];
       tbrin b = b0;
-      do {if (!cir.InRange(b())){DebugPrintf("cir not in range b=%d",b());return false;}
-      if (!acir.InRange(cir[b]())){DebugPrintf("acir not in range b=%d",b());return false;}
-      if (acir[cir[b]]!=b){DebugPrintf(" b=%d cir=%d acir[cir]=%d",b(),cir[b](),acir[cir[b]]());return false;}
-      if (vin[b]!=v){DebugPrintf("vin[b]=%d v=%d",vin[b](),v());return false;}
-      if (vin[-b]==v){DebugPrintf("%d is a loop at v=%d",b(),v());return false;}
-      b = cir[b];
-      i++;
-      } while (b!=b0);
+      do 
+	  {if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
+	  if(!acir.InRange(cir[b]())){DebugPrintf("DC acir not in range b=%d",b());return false;}
+	  if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d",vin[b](),v());return false;}
+	  if(vin[-b]==v){DebugPrintf("DC %d is a loop at v=%d",b(),v());return false;}
+	  if(acir[cir[b]]!=b)
+	      {DebugPrintf("DC at v=%d b=%d cir=%d acir[cir]=%d",v(),b(),cir[b](),acir[cir[b]]());
+	      b = b0;
+	      DebugPrintf("DC Around v=%d",v());
+	      do
+		  {DebugPrintf("    %d cir:%d acir:%d",b(),cir[b](),acir[b]());
+		  }while((b = cir[b])!=b0);  
+	      return false;
+	      }
+	  b = cir[b];
+	  i++;
+	  }while (b!=b0);
       }
-  if (i != 2*ne()) 
-     { DebugPrintf("Did not reached some brins: m=%d, sums of the degrees=%d",ne(),i);
+  if(i != 2*ne()) 
+     {DebugPrintf("Did not reached some brins: m=%d, sums of the degrees=%d",ne(),i);
      return false;
      }
+  if(debug())DebugPrintf("DebugCir OK");
   return true;
   }
 int TopologicalGraph::NumFaces()

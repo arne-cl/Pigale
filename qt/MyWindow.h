@@ -36,6 +36,7 @@ class QCheckBox;
 class QToolButton;
 class QToolBar;
 class QPrinter;
+class LineEditNum;
 
 class MyWindow: public QMainWindow 
 {Q_OBJECT
@@ -60,7 +61,6 @@ private slots:
   void deleterecord();
   void switchInputOutput();
   void handler(int action);
-  void userHandler(int action);
   void macroHandler(int action);
   void macroPlay();
   void about();
@@ -104,7 +104,7 @@ public:
 private:
   QToolBar *tb;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*spinMacro;
-  QTime timer;
+  LineEditNum *macroLine;
   QPrinter *printer;
   QString InputFileName;
   QString OutputFileName;

@@ -299,7 +299,7 @@ int AugmentHandler(int action)
   switch(action)
       {case A_AUGMENT_CONNECT: 
 	   i = G.MakeConnected();
-	   Tprintf("Added %d Edges",i);
+	   if(debug())DebugPrintf("Added %d Edges",i);
 	   title() = "K-" + title();
 	   break;
       case A_AUGMENT_BICONNECT:
