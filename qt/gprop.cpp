@@ -293,7 +293,7 @@ void Graph_Properties::update(bool print)
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
-  if(getError())DebugPrintf("GP %s",(const char *)getErrorString());
+  if(getError())Tprintf("%s",(const char *)getErrorString());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;
