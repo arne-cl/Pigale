@@ -80,6 +80,7 @@ void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
 #else
 static char undofile[L_tmpnam] = "_undo.tgf" ;
+void initGraphDebug();
 #endif
 
 int InitPigaleServer(pigaleWindow *w);
@@ -95,6 +96,11 @@ pigaleWindow::pigaleWindow()
   {int id;
   // Initialze Error
   setError();
+
+#ifdef _WINDOWS
+   // as the compiler does not initialize static ...
+   initGraphDebug();
+#endif
 
   // Export some data
   DefineGraphContainer(&GC);
