@@ -135,9 +135,10 @@ int FindNPSet(TopologicalGraph &G)
 
 int TopologicalGraph::MaxPlanar(svector<bool>  &keep)
   {// Precondition the graph is simple
-  svector<tedge>  ToBeErased(1,ne());
-  svector<bool>  mark(1,ne()); mark.clear();
-  svector<tedge> tab(1,ne()); tab.SetName("tab");
+  if(!CheckSimple())return -1;
+  svector<tedge>  ToBeErased(1,ne());        ToBeErased.SetName("MxPl:ToBeErased");
+  svector<bool>  mark(1,ne()); mark.clear(); mark.SetName("MxPl:mark");
+  svector<tedge> tab(1,ne()); tab.SetName("MxPl:tab");
   tedge e;
   int n,i;
   int n0 = ne();
@@ -205,11 +206,12 @@ int TopologicalGraph::MaxPlanar(svector<bool>  &keep)
   return n0;
   }
 int TopologicalGraph::MaxPlanar()
-  {Simplify();
+  {if(!CheckSimple())return -1;
   int m_origin = ne();
   MakeConnected();
   svector<bool>  keep(1,ne());
   int n0 = MaxPlanar(keep);
+  if(n0 < 0)return n0;
   Prop<short> ecolor(Set(tedge()),PROP_COLOR);
   Prop<int> ewidth(Set(tedge()),PROP_WIDTH);
   tedge e;
