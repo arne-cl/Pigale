@@ -1,7 +1,8 @@
 ####################### MAY NEED EDITING ########################
 #Compiler options
 CC=g++
-CPU="-mcpu=i686"
+#CPU="-mcpu=i686"
+CPU=
 #OPT: if set to dbg > debug version
 #OPT: if set to opt > optimised version
 OPT=opt
@@ -26,7 +27,7 @@ P=Pigale_dbg
 endif
 
 # L = name of libray
-L=qt
+L=pigaleQt
 MMOC=$(MQTDIR)/bin/moc
 PIGALELIB =  -L$(PIGALEPATH)/lib    -l$(L)$(OPT) -ltgraph$(OPT)
 
@@ -49,11 +50,11 @@ CFLAGSdbg +=  -DQT_THREAD_SUPPORT
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
 DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
-FILE   := $(wildcard *.cpp)
-FILES   = $(filter-out client.cpp, $(FILE))
-INCLS  := $(wildcard *.h)
-INCL    = $(filter-out client.h, $(INCLS))
-MOC_CPP = $(patsubst %.h,moc_%.cpp, $(INCL))
+FILEALL := $(wildcard *.cpp)
+FILES   := $(filter-out client.cpp, $(FILEALL))
+INCLALL := $(wildcard *.h)
+INCL    := $(filter-out client.h, $(INCLALL))
+MOC_CPP := $(patsubst %.h,moc_%.cpp, $(INCL))
 FILES_WO_MOC := $(filter-out $(MOC_CPP), $(FILES))
 FILES_W_MOC  := $(FILES_WO_MOC)
 FILES_W_MOC  += $(MOC_CPP)
@@ -61,17 +62,17 @@ OBJECTS       =  $(patsubst %.cpp,%.o, $(FILES_W_MOC))
 OBJ           =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES_W_MOC))
 ALLOBJ        = $(wildcard $(VPATH)/*.o)
 
-all :   $(P)
+all : $(P)
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
-moc_%.cpp:%.h
-	$(MMOC) $< -o $@
+#moc_%.cpp:%.h
+#	$(MMOC) $< -o $@
 
 .cpp.o: $*.cpp
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o  $(VPATH)/$*.o   $*.cpp
-
+	
 $(DLIB):$(OBJECTS) 
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
 	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
@@ -83,6 +84,7 @@ clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
 
 test:
+	@echo OBJ=$(OBJ)
 	@echo OBJECTS=$(OBJECTS)
 	@echo FILES=$(FILES)
 	
