@@ -43,6 +43,11 @@ const int curs_z     = 129; // CursItem
 const int inforect_z = 131; // rect containing the info
 const int info_z     = 132; // InfoItem
 
+const double xorient = .4; 
+const int sizerect   = 12;  //size and space are used to draw the color palets
+const int sizerecth  = 8;   //size and space are used to draw the thick palets
+const int space      = 3;
+const int BORDER     = 30;  // free space around the graph drawing 
 
 class EdgeItem: public QCanvasLine
 {public:
@@ -193,5 +198,6 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* g);
 void  CreateColorItems(GraphWidgetPrivate* g,int color_node,int color_edge);
 void  CreateThickItems(GraphWidgetPrivate* g,int width_edge);
 InfoItem* CreateInfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p);
-
+EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g);
+void CreatePenBrush();
 #endif
