@@ -197,7 +197,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = tgraph qt ClientServer
-EXTRA_DIST = gnumakefile
+EXTRA_DIST = qt/icones Doc incl tgraph/propname.awk gnumakefile
 noinst_HEADERS = Doxyfile
 nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*)
 all: all-recursive
@@ -406,6 +406,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
+	$(mkdir_p) $(distdir)/qt $(distdir)/tgraph
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
