@@ -126,7 +126,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   LE_N->setReadOnly(true);
   }
 
-RoRadioButton::RoRadioButton(QWidget * parent,const char * name = 0)
+RoRadioButton::RoRadioButton(QWidget * parent,const char * name)
     :QRadioButton(parent,name)
   {}
 void RoRadioButton::mousePressEvent(QMouseEvent* e)
