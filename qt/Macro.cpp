@@ -287,7 +287,8 @@ void pigaleWindow::macroPlay()
           }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
-      ret_handler = handler(action);
+      handler(action);
+      ret_handler = getResultHandler();
       if(ret_handler == 1)
           InfoNeedUpdate = true;
       else if(ret_handler == 2)
@@ -295,8 +296,6 @@ void pigaleWindow::macroPlay()
       else if(ret_handler == 7 || ret_handler == 8)
           EditNeedUpdate = false;
 
-      //if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
-      //else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
       // update the editor and information if a pause 
       if(record != MacroNumActions && action == A_PAUSE)
           {if(EditNeedUpdate)

@@ -19192,7 +19192,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
-MYDEFS=" -DVERSION_BETA -DQT"
+MYDEFS=" -DVERSION_BETA -DQT -DQT_THREAD_SUPPORT"
 
 for ac_prog in gawk mawk nawk awk
 do

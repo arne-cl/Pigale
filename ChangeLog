@@ -14,7 +14,6 @@
 18/02/2005: There were some bugs in the editor when reversing the orientation of an edge.
 20/02/2005: Oriented edges can be drawn with an arrow
 25/02/2005: In all windows, the mouse wheel and the keyboard up, down and home are used to zoom.
-26/02/2005: Now the class QtGraphDebug  (used to display messages) has no direct graphic functions, but asynchronously post events.
-05/03/2005:Now Pigale uses a thread for non graphic functions.
-05/03/2005:Schnyder orientation was not displaying the orientation.
-	
+05/03/2005: Now Pigale uses a second thread for non graphic functions.
+05/03/2005: Schnyder orientation was not displaying the orientation.
+09/03/2005: Corrected a bug that could occur while saving a tgf file.	

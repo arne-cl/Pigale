@@ -67,9 +67,9 @@ int OrientHandler(int action)
           G.FixOrientation();
           break;
       case A_ORIENT_SCHNYDER:
-          ret = G.SchnyderOrient(0);
+          i = G.SchnyderOrient(0);
           G.FixOrientation();
-          if(ret != 0)Tprintf("ret=%d",i);
+          if(i != 0)Tprintf("i=%d",i);
           break;
       case A_ORIENT_BIPOLAR:
           first = 1;

@@ -22,18 +22,18 @@
 #include  <TAXI/Tmessage.h>
 
 // tags for TGF file format
-#define  TAG_NAME         512
-#define  TAG_N            513
-#define  TAG_M            514
-#define  TAG_ELIST        515
-#define  TAG_COORDLAB     516
-#define  TAG_VCOLOR       517
-#define  TAG_LEDA         518
+#define  TAG_NAME                  512
+#define  TAG_N                          513
+#define  TAG_M                          514
+#define  TAG_ELIST                   515
+#define  TAG_COORDLAB        516
+#define  TAG_VCOLOR              517
+#define  TAG_LEDA                    518
 #define  TAG_VERSION	  519
 
 #define  TAG_VCOORD	      520
 #define  TAG_VLABEL	      521
-#define  TAG_VIN	      522
+#define  TAG_VIN	                        522
 #define  TAG_ECOLOR	      523
 #define  TAG_ELABEL	      524
 #define  TAG_EWIDTH	      525
@@ -72,18 +72,7 @@ int DeleteTgfRecord(tstring filename,int index)
   }
 
 int GetNumRecords(tstring fname)
-  {
-  /*
-  if(!IsFileTgf(~fname))
-      {FILE *str;
-      if((str = fopen(~fname,"r")) == NULL)return -2;
-      fclose(str);
-      return 1;
-      }
-  */
-  if(!IsFileTgf(~fname))
-      //{basic_ifstream<char,char_traits<char> >  str(~fname);
-      //{basic_ifstream<char>  str(~fname);
+  { if(!IsFileTgf(~fname))
       {ifstream  str(~fname);
       if(!str)return -2;
       return 1;
@@ -130,8 +119,7 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   short version;
   if(!file.FieldRead(TAG_VERSION,version))version = 0;
   if(version >= 1)
-      {
-      ReadTGF(G.Set(),file,0);
+      {ReadTGF(G.Set(),file,0);
       Prop1<int> n(G.Set(),PROP_N);
       Prop1<int> m(G.Set(),PROP_M);
       G.setsize(n(),m());
@@ -139,10 +127,9 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
       ReadTGF(G.Set(tedge()),file,1);
       ReadTGF(G.Set(tbrin()),file,2);
       if(version == 1)// as PROP_NLOOPS has changed
-	  G.Set().erase(PROP_NLOOPS);
+          G.Set().erase(PROP_NLOOPS);
       return 0;
       }
-//  return 3;
 
   file.FieldRead(TAG_N, n);
   file.FieldRead(TAG_M, m);
@@ -224,7 +211,6 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
           vcoord[j].y() = yy*vcoord[j].y() + 5.;
           }
       }
- 
 
   // Lecture des couleurs des sommets
   if(file.GetTagLength(TAG_VCOLOR) == (long)(n*sizeof(short)))
@@ -236,13 +222,12 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
 
 int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   {if(filename == "")return 1;
-
   Tgf file;
   if(IsFileTgf(~filename) == 1)
       {if((file.open(~filename, Tgf::old)) == 0)
-	  {file.close();
+          {file.close();
           if((file.open(~filename, Tgf::create)) == 0)return 1;
-	  }
+          }
       }
   else
       {if((file.open(~filename, Tgf::create)) == 0)
@@ -250,19 +235,19 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
       }
 
   file.CreateRecord();
-  // tag should be 2
+// tag should be 2 in Pigale
   if(tag >= 1)
       {file.FieldWrite(TAG_VERSION,(short)tag);
-      Prop1<int> n(G.Set(),PROP_N);n()= G.nv();
-      Prop1<int> m(G.Set(),PROP_M);m()= G.ne();
+      Prop1<int> n(G.Set(),PROP_N); n()= G.nv();
+      Prop1<int> m(G.Set(),PROP_M); m()= G.ne();
       WriteTGF(G.Set(),file,0);
       WriteTGF(G.Set(tvertex()),file,0);
       WriteTGF(G.Set(tedge()),file,1);
       WriteTGF(G.Set(tbrin()),file,2);
       return 0;
       }
-
-  // write name, N and M
+// Old Format not used anymore
+// write name, N and M
   int n = G.nv();
   int m = G.ne();
   Prop1<tstring> title(G.Set(),PROP_TITRE);
@@ -305,10 +290,6 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   }
 int ReadGraphAscii(GraphContainer& G,tstring filename)
   { // Lecture d'une liste d'aretes
-  /*
-  FILE *stream;
-  if((stream = fopen(~filename,"rb")) == NULL)return -1;
-  */
   ifstream stream(~filename,ios::binary);
   if(!stream)return -1;
   char titre[80];
@@ -317,7 +298,6 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   G.clear();
   // Lecture du titre
   for(i = 0;i < 80;i++)
-      //{ch = fgetc(stream);
       {ch = stream.get();
       if(ch == EOF)
           return 1;
@@ -333,12 +313,9 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   smap<int>  map_label;      //label -> index
   svector<long> map_index;   //index -> long
 
-  //streampos pos = ftell(stream);
   streampos pos = stream.tellg();
   int m = 0;
   int n = 0;
-  //int fin;
-  //while((EOF != (fin = fscanf(stream,"%d %d\n",&iv1,&iv2))) && iv1)
   for(;;)
       {if(!stream.good())return 1;
       stream >> iv1 >> iv2;
@@ -354,18 +331,15 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
           }
       ++m;
       }
-  //if(fin == EOF)return 1;
   G.setsize(n,m);
   
   Prop<long> vlabel(G.PV(),PROP_LABEL);
   Prop<long> elabel(G.PE(),PROP_LABEL);
   Prop<tvertex> vin(G.PB(),PROP_VIN);
-  //fseek(stream,pos,0);
   stream.seekg(pos, ios::beg);
   // Lecture des aretes
   tbrin b = 0;
   for(;;)
-      //{fscanf(stream,"%d %d\n",&iv1,&iv2);
       {stream >> iv1 >> iv2;
       if(iv1 == 0)break;
       if(iv1 == iv2)continue;
@@ -376,7 +350,6 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   vin[0]=0;
   for (i=0; i<=m;i++) elabel[i] = i;
   for (i=0; i<=n;i++) vlabel[i] = map_index[i];
-  //fclose(stream);
 
   Prop<Tpoint> vcoord(G.PV(),PROP_COORD);
   // Calcul des coordonnes
@@ -388,21 +361,19 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   }
 
 int SaveGraphAscii(GraphAccess& G,tstring filename)
-//{FILE *out = fopen(~filename,"wt");
   {ofstream out(~filename,ios::binary|ios::trunc);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   if(title().length() == 0)title() = "No Name";
-  //fprintf(out,"%s\n",~title());
   out << title() <<endl;
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
   // write edge list
   for(int e = 1;e <= G.ne();e++)
-      //fprintf(out,"%d %d\n",vin[(tbrin)e](),vin[(tbrin)-e]());
       out << vin[(tbrin)e]() << " " << vin[(tbrin)-e]() << endl;
   out << "0 0" << endl;
-  //fprintf(out,"0 0\n");
-  //fclose(out);
   return 0;
   }
+
+
+
 
 

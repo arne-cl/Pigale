@@ -273,8 +273,7 @@ InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
 ArrowItem::ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g)
     : QCanvasPolygonalItem (g->canvas)
   {gwp = g;
-  pts.resize(3);
-  //refresh.resize(3);
+  pts.resize(4);
   refresh.resize(4);
   edgeItem = edgeitem;
   ComputeCoord(); 
@@ -290,30 +289,22 @@ void ArrowItem::ComputeCoord()
   {invalidate();
   QPoint u =  edgeItem->endPoint() - edgeItem->startPoint();
   int ml = (int)(sqrt(double(u.x()*u.x() + u.y()*u.y()))+1.5);
-  int diviseur = 10;
+  int diviseur = 12;
   // for short edges or long edges
-  if(ml < 40) {diviseur = (diviseur*ml)/40;}
+  if(ml > 10 && ml < 50){diviseur = (diviseur*ml)/50;}
   else if(ml > 100) {diviseur = (diviseur*ml)/100;}
   diviseur = Max(diviseur,1);
   QPoint v = QPoint(-u.y()/diviseur,u.x()/diviseur);
-  int diviseur2 = (diviseur*8)/10; diviseur2 = Max(diviseur2,1);
-  QPoint p1 =  edgeItem->endPoint() - v -u/diviseur2;
-  QPoint p2 =  edgeItem->endPoint() + v - u/diviseur2;
-   pts[0] = edgeItem->endPoint();  pts[1] = p1;  pts[2] = p2;
-   // compute the boundary (might be easyer to use a rectangle)
- //   int diviseur3 = (diviseur2*8)/10; diviseur3 = Max(diviseur3,1);
-//    QPoint vb = QPoint(-u.y()/diviseur2,u.x()/diviseur2);
-//    QPoint p1b =  edgeItem->endPoint() - vb -u/diviseur3;
-//   QPoint p2b =  edgeItem->endPoint() + vb - u/diviseur3;
-//   refresh[0] = edgeItem->endPoint() + u/diviseur;  refresh[1] = p1b;  refresh[2] = p2b;
+  QPoint p1 =  edgeItem->endPoint() - v -(u*2)/diviseur;
+  QPoint p2 =  edgeItem->endPoint() + v - (u*2)/diviseur;
+  QPoint p3 =  edgeItem->endPoint()  -u/diviseur;
+  pts[0] = edgeItem->endPoint();  pts[1] = p1;  pts[2] = p3;  pts[3] = p2;  
    int xmin = Min(edgeItem->endPoint().x(),p1.x(),p2.x()) -4;
    int xmax = Max(edgeItem->endPoint().x(),p1.x(),p2.x())+4;
    int ymin = Min(edgeItem->endPoint().y(),p1.y(),p2.y())-4;
    int ymax = Max(edgeItem->endPoint().y(),p1.y(),p2.y())+4;
-   refresh[0] = QPoint(xmin,ymin);
-   refresh[1] = QPoint(xmin,ymax);
-   refresh[2] = QPoint(xmax,ymax);
-   refresh[3] = QPoint(xmax,ymin);
+   refresh[0] = QPoint(xmin,ymin);   refresh[1] = QPoint(xmin,ymax);   
+   refresh[2] = QPoint(xmax,ymax);   refresh[3] = QPoint(xmax,ymin);
    update();
   }
 QPointArray ArrowItem::areaPoints () const
@@ -321,16 +312,14 @@ QPointArray ArrowItem::areaPoints () const
   }
 void ArrowItem::drawShape ( QPainter & p )
   {if(!ShowArrow())return;
-  p.drawLine(pts[1],pts[0]);
-  p.drawLine(pts[2],pts[0]);
-  //p.drawLine(refresh[1],refresh[0]); 
-  //p.drawLine(refresh[0],refresh[1]);   p.drawLine(refresh[1],refresh[2]);   
-  //p.drawLine(refresh[2],refresh[3]);   p.drawLine(refresh[3],refresh[0]); 
+//   p.drawLine(pts[0],pts[1]);  p.drawLine(pts[0],pts[2]);
+  p.drawPolygon(pts);
   }
 void ArrowItem::SetColor()
   {GeometricGraph & G = *(gwp->pGG);
   tp->setColor(color[G.ecolor[ edgeItem->e]]); // needed not to get the desaturated color
-  setPen(*tp);
+  tb->setColor(color[G.ecolor[ edgeItem->e]]); // needed not to get the desaturated color
+  setPen(*tp);setBrush(*tb);
   update();
   }
 int ArrowItem::rtti() const

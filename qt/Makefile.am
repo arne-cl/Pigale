@@ -52,7 +52,7 @@ pigale_DEPENDENCIES =tgraph pigale_fr.qm
 
 datadir = $(prefix)/translations
 data_DATA = pigale_fr.qm qt_fr.qm
-EXTRA_DIST = pigale_fr.ts pigale.pro qt_fr.ts
+EXTRA_DIST = pigale_fr.ts pigale.pro qt_fr.ts gnumakefile
 
 tgraph:
 	cd ../tgraph && make install

@@ -91,7 +91,7 @@
 #define PROP_BIRTH            (11)   //!< \c long  Start of validity
 #define PROP_DEATH            (12)   //!< \c long  End of validity
 #define PROP_VALUE            (13)   //!< \c double A value
-#define PROP_COLOR2           (14)   //!< \c short Color of the second brin
+
 //@}
 /** @name Property numbers for V.
   */
@@ -128,6 +128,7 @@
 #define PROP_INITIALE         (3)    //!< \c tedge   Initial Numbering
 #define PROP_CLASSE           (5)    //!< \c tedge   Class of edge
 #define PROP_REPRESENTATIVEE  (6)    //!< \c tedge   Representative of edge
+#define PROP_COLOR2           (14)   //!< \c short Color of the second brin
 #define PROP_WIDTH            (16)   //!< \c int     geometric width (editor)
 #define PROP_ORIENTED         (17)   //!< \c bool    edge is oriented
 #define PROP_REORIENTED       (18)   //!< \c bool    orientation should be reversed

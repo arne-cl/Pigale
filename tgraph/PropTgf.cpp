@@ -17,8 +17,7 @@
 #undef PRIVATE
 #include <TAXI/Tpoint.h>
 void WriteTGF(PSet &X,Tgf &file,int PNum)
-  {
-  pset_header h;
+  {pset_header h;
   h.start = X.start();
   h.finish = X.finish();
   file.FieldWrite(PSetHeaderTag(PNum),(char *)&h, sizeof(h));
@@ -30,8 +29,7 @@ void WriteTGF(PSet &X,Tgf &file,int PNum)
       }
   }
 void WriteTGF(PSet1 &X,Tgf &file,int PNum)
-  {
-  for (int i=X.PStart(); i< X.PEnd(); i++)
+  {for (int i=X.PStart(); i< X.PEnd(); i++)
       {if (i==128) break;
       if (!X.exist(i)) continue;
       if (X.declared(i))
@@ -46,10 +44,9 @@ void WriteTGF(PSet1 &X,Tgf &file,int PNum)
       }
   }
 void ReadTGF(PSet &X, Tgf &file, int PNum)
-  {
-  pset_header h;
+  {pset_header h;
   if (!file.FieldRead(PSetHeaderTag(PNum),(char *)&h, sizeof(h)))
-      return;
+      {DebugPrintf("could not readTGF::PNum;%d",PNum);return;}
   X.clear();
   X.resize(h.start,h.finish);
   for (int i=X.PStart(); i< X.PEnd(); i++)
@@ -63,8 +60,7 @@ void ReadTGF(PSet &X, Tgf &file, int PNum)
       }
   }
 void ReadTGF(PSet1 &X, Tgf &file, int PNum)
-  {
-  X.clear();
+  {X.clear();
   for (int i=X.PStart(); i< X.PEnd(); i++)
       {if (i==128) break;
       long size = file.GetTagLength(PSet1Tag(PNum,i));
@@ -74,3 +70,4 @@ void ReadTGF(PSet1 &X, Tgf &file, int PNum)
       X.swload(i,v);
       }
   }
+

@@ -50,6 +50,7 @@ Un fichier TGF contient: header,subheader,des IFD,des records
 #define _TGF_H_INCLUDED_
 
 #include <TAXI/Tbase.h>
+#include <TAXI/Tsvector.h>
 
 //TGF uses a very primitive dynamic array:
 template<class T> class TSArray
@@ -59,52 +60,49 @@ template<class T> class TSArray
     T init;
 
     void extend(int idx)
-        {int new_size = size, i;
+        {int new_size = size;
         T *new_ary;
         if (new_size <= 0) new_size = 1;
         while (new_size <= idx) new_size *= 2;
         new_ary = new T[new_size];
-        for (i = 0; i < size; i++) new_ary[i] = ary[i];
-        for (i = size; i < new_size; i++) new_ary[i] =  init;
+        for (int i = 0; i < size; i++) new_ary[i] = ary[i];
+        for (int i = size; i < new_size; i++) new_ary[i] =  init;
         size = new_size;
-        /*if(ary)*/delete [] ary;
+        if(ary)delete [] ary;
         ary = new_ary;
         }
 
 public:
     TSArray(T _init,int _size = 0) : size(_size),init(_init)
-        {//if(size == 0){ary = NULL;return;}
+        {if(size == 0){ary = NULL;return;}
         ary = new T[size];
         for(int i = 0; i < size; i++) ary[i] = init;
         }
 
-    ~TSArray(){/*if(ary)*/delete [] ary;}
+    ~TSArray(){if(ary)delete [] ary;}
 
 
     T & operator[] (int idx)
-        {return ary[idx];}
+        {
+#ifdef TDEBUG
+        if(idx >=size){DebugPrintf("ERROR TSArray %d >= %d",idx,size);myabort();}
+#endif
+        return ary[idx];
+        }
 
     const T & operator[] (int idx) const
-        {return ary[idx];}
+        {
+#ifdef TDEBUG
+        if(idx >=size){DebugPrintf("ERROR TSArray %d >= %d",idx,size);myabort();}
+#endif
+        return ary[idx];
+        }
 
     T & operator() (int idx)
         {if(idx >=size)extend(idx);
          return ary[idx];
         }
-/*
-    void resize(int NewSize)
-        {if(NewSize < 0)return;
-        if(NewSize == 0)
-            {delete [] ary;ary = NULL;size = 0;return;}
-        T *new_array = new T[NewSize];
-        for (int i = 0; i < size; i++) new_array[i] = ary[i];
-        for (i = size; i < NewSize; i++) new_array[i] = init;
-        size = NewSize;
-        delete [] ary;
-        ary = new_array;
-        }
-    void clear(){for(int i = 0;i < size;i++)ary[i] = init;}
-*/
+
 };
 
 const int BADFILE = -1;
@@ -152,8 +150,10 @@ struct  StructIfdHeader
 
 struct StructIfd :  StructIfdHeader
     {StructIfdHeader Header;
-    TSArray<StructField> field;
-    StructIfd() : Header(),field(StructField()) {}
+      TSArray<StructField> field;
+      //svector<StructField> field;
+      StructIfd() : Header(),field(StructField()) {}
+      //StructIfd() : Header(),field(0,0,StructField()) {}
     };
 
 struct StructTagList

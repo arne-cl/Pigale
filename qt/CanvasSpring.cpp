@@ -18,6 +18,7 @@
 #include <QT/Misc.h> 
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
+#include <QT/clientEvent.h>
 #include <qapplication.h> 
 #include <qprogressbar.h>
 
@@ -178,10 +179,16 @@ t current tanslation of v0
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
   pigaleWindow *mw = GetpigaleWindow();
-  mw->progressBar->setTotalSteps(G.nv());
-  mw->progressBar->setProgress(0);
-  mw->progressBar->show();
-  if (! draw) Normalise();
+  if(!draw) // called by thread
+      {progressEvent *event = new progressEvent(1,G.nv());
+      QApplication::postEvent(mw,event); 
+      Normalise();
+      }
+  else
+      {mw->progressBar->setTotalSteps(G.nv());
+      mw->progressBar->setProgress(0);
+      mw->progressBar->show();
+      }
   DoNormalise = true;
   //int option = Twait("option");
   int h = gwp->canvas->height(),w = gwp->canvas->width();
@@ -212,175 +219,177 @@ t current tanslation of v0
       // Compute mean length of edges
       len = .0;
       for(tedge e = 1; e <= m;e++)
-	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
-	  len += Distance(p0,p);
-	  }
+          {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
+          len += Distance(p0,p);
+          }
       len /= m;
       len02 = len*len;
       hw = expand*hw0;
       dep = .0;
       n_red = 0;
       for(tvertex v0 = 1;v0 <= n;v0++)
-	  {p0 = G.vcoord[v0];
-	  t.x() = t.y() = .0;
-	  // v0 repulse other vertices (1/d²)
-	  for(tvertex v = 1;v <= n;v++) 
-	      {if(v == v0)continue;
-	      p = G.vcoord[v];
-	      tbrin b0 =  G.pbrin[v0];
-	      tbrin b = b0;
-	      double count=0;
-	      Tpoint pmin;
-	      Tpoint pcenter=Tpoint(0,0);
-	      if (b0!=0)
-		do
-		  if (G.vin[-b]!=v)
-		    {double d2=dist_seg(p,p0,G.vcoord[G.vin[-b]],pmin);
-		    d2=Max(d2,1E-6);
-		    pcenter+=pmin/d2; 
-		    count+=1/d2;
-		    }
-		while ((b=G.cir[b])!=b0);
-	      if (count!=0)
-		pcenter /= count;
-	      else pcenter=p0;
-	      dist2 = Max(Distance2(pcenter,p),.1); // better than 1E-4
-	      strength = (hw/dist2);
-	      t += strength * (pcenter-p);
-	      }
+          {p0 = G.vcoord[v0];
+          t.x() = t.y() = .0;
+          // v0 repulse other vertices (1/d²)
+          for(tvertex v = 1;v <= n;v++) 
+              {if(v == v0)continue;
+              p = G.vcoord[v];
+              tbrin b0 =  G.pbrin[v0];
+              tbrin b = b0;
+              double count=0;
+              Tpoint pmin;
+              Tpoint pcenter=Tpoint(0,0);
+              if (b0!=0)
+                  do
+                      if (G.vin[-b]!=v)
+                          {double d2=dist_seg(p,p0,G.vcoord[G.vin[-b]],pmin);
+                          d2=Max(d2,1E-6);
+                          pcenter+=pmin/d2; 
+                          count+=1/d2;
+                          }
+                  while ((b=G.cir[b])!=b0);
+              if (count!=0)
+                  pcenter /= count;
+              else pcenter=p0;
+              dist2 = Max(Distance2(pcenter,p),.1); // better than 1E-4
+              strength = (hw/dist2);
+              t += strength * (pcenter-p);
+              }
+          //v0 is attracted or repulsed by its neighbours (1/d)
+          tbrin b0 = G.pbrin[v0];
+          tbrin b = b0;
+          do
+              {tvertex v=G.vin[-b];
+              p = G.vcoord[v];
+              dist2 = Max(Distance2(p0,p),.1);
+              double pond = .5*(1. + degree[v0]/(degree[v0]+degree[v]));
+              strength = Min(sqrt(hw/dist2),1)*pond;
+              if(dist2 > len02/4)
+                  t -= (p0-p)*strength*.5;
+              else if(dist2 < 4*len02) 
+                  t += (p0-p)*strength*.5;
+              }while((b = G.cir[b]) != b0);
+          // v0 is attracted by the center (1/d)
+          dist2 = Max(Distance2(p0,center),1.);
+          //strength = Min(sqrt(hw/dist2),.5)*.5;
+          //t -= (p0 - center)*strength;
 
-	  //v0 is attracted or repulsed by its neighbours (1/d)
-	  tbrin b0 = G.pbrin[v0];
-	  tbrin b = b0;
-	  do
-	      {tvertex v=G.vin[-b];
-	      p = G.vcoord[v];
-	      dist2 = Max(Distance2(p0,p),.1);
-	      double pond = .5*(1. + degree[v0]/(degree[v0]+degree[v]));
-	      strength = Min(sqrt(hw/dist2),1)*pond;
-	      if(dist2 > len02/4)
-		  t -= (p0-p)*strength*.5;
-	      else if(dist2 < 4*len02) 
-		  t += (p0-p)*strength*.5;
-	      }while((b = G.cir[b]) != b0);
-
-	  // v0 is attracted by the center (1/d)
- 	  dist2 = Max(Distance2(p0,center),1.);
- 	  //strength = Min(sqrt(hw/dist2),.5)*.5;
- 	  //t -= (p0 - center)*strength;
-
-	  // v0 is repulsed by non adjacent edges (1/d²)
-	  Tpoint p00 = p0 + t;
-	  for(tedge e = 1; e <= m;e++)
-	      {tvertex v = G.vin[e], w = G.vin[-e];
-	      if(v0 == v || v0 == w)continue;
-	      dist2 = dist_seg(p00,G.vcoord[v],G.vcoord[w],p);
-	      if(dist2 > 2.) //2. good value
-		  {strength = (hw/dist2)*2.; //better with *2
-		  t += (p00 - p)*strength;
-		  }
-	      else
-		{if (dist2!=0)
-		  tt=p00-p;
-		else // more diffcult
-		  {Tpoint t1=G.vcoord[v]-G.vcoord[w];
-		  tt.x()=-t1.y(); tt.y()=t1.x(); // compute vector orthogonal to (v,w)
-		  if ((p0-G.vcoord[v])*tt>0) tt=-tt;
-		  }
-		if (tt*tt!=0) tt = tt/sqrt(tt*tt); // normalize
-		else qDebug("null vector");
-		t += hw/2.*tt; // should not be decrease
-		}
-
-	      }
-	  t *= force;
-	  // Check crossings
-	  bool found=false;
-	  if (t*t!=0)
-	    {for (tbrin b=1; b<=G.ne(); b++)
-	      {tvertex v1=G.vin[b];
-	      tvertex v2=G.vin[-b];
-	      if (v1==v0 || v2==v0) continue;
-	      Tpoint p1=G.vcoord[v1];
-	      Tpoint p2=G.vcoord[v2];
-	      double d1=Determinant(p1-p0,t);
-	      double d2=Determinant(p2-p0,t);
-	      double d3=Determinant(p0-p1,p2-p1);
-	      double d4=Determinant(p0+t-p1,p2-p1);
-	      double x1 = d1*d2; double x2=d3*d4;
-	      if (x1<=0 && x2<0 || x1<0 && x2<=0)
-		{found=true; break; }
-	      }
-	    if (!found)
-	      {tbrin b0=G.pbrin[v0];
-	      tbrin b=b0;
-	      bool dobrk=false;
-	      do 
-		{Tpoint pp0=G.vcoord[G.vin[-b]];
-		for (tvertex z=1; z<=G.nv(); z++)
-		  {if (z==v0 || z==G.vin[-b]) continue;
-		  Tpoint p=G.vcoord[z];
-		  double d1=Determinant(p0-pp0,p-pp0);
-		  double d2=Determinant(p0+t-pp0,p-pp0);
-		  double d3=Determinant(pp0-p0,p-p0);
-		  double d4=Determinant(t,p-p0);
-		  double x1 = d1*d2; double x2=d3*d4;
-		  if (x1<0 && x2<=0 || x1<=0 && x2<0)
-		    {	dobrk=true; break;}
-		  }
-		if (dobrk) {found=true; break;}
-		} while ((b=G.cir[b])!=b0);
-	      }
-	    if(found)
-	      t=Tpoint(0,0);
-	    }
-
-	  if(!found)
-	      {G.vcoord[v0] += t; 
-	      dx = Abs(t.x()); dy = Abs(t.y());
-	      dep = Max(dep,dx,dy);  
-	      if (dx > 30./n || dy > 30./n)
-		{if (draw) nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
-	      else
-		  {if (draw) nodeitem[v0]->SetColor(red);
-		  ++n_red;
-		  }
-	      if (draw) nodeitem[v0]->moveTo(G.vcoord[v0],3.);
-	      }
-	  else
-	    { if (draw) nodeitem[v0]->SetColor(blue);
-	    ++n_red;
-	    }
-	  }
-
+          // v0 is repulsed by non adjacent edges (1/d²)
+          Tpoint p00 = p0 + t;
+          for(tedge e = 1; e <= m;e++)
+              {tvertex v = G.vin[e], w = G.vin[-e];
+              if(v0 == v || v0 == w)continue;
+              dist2 = dist_seg(p00,G.vcoord[v],G.vcoord[w],p);
+              if(dist2 > 2.) //2. good value
+                  {strength = (hw/dist2)*2.; //better with *2
+                  t += (p00 - p)*strength;
+                  }
+              else
+                  {if (dist2!=0)
+                      tt=p00-p;
+                  else // more diffcult
+                      {Tpoint t1=G.vcoord[v]-G.vcoord[w];
+                      tt.x()=-t1.y(); tt.y()=t1.x(); // compute vector orthogonal to (v,w)
+                      if ((p0-G.vcoord[v])*tt>0) tt=-tt;
+                      }
+                  if (tt*tt!=0) tt = tt/sqrt(tt*tt); // normalize
+                  t += hw/2.*tt; // should not be decrease
+                  }
+              }
+          t *= force;
+          // Check crossings
+          bool found=false;
+          if (t*t!=0)
+              {for (tbrin b=1; b<=G.ne(); b++)
+                  {tvertex v1=G.vin[b];
+                  tvertex v2=G.vin[-b];
+                  if (v1==v0 || v2==v0) continue;
+                  Tpoint p1=G.vcoord[v1];
+                  Tpoint p2=G.vcoord[v2];
+                  double d1=Determinant(p1-p0,t);
+                  double d2=Determinant(p2-p0,t);
+                  double d3=Determinant(p0-p1,p2-p1);
+                  double d4=Determinant(p0+t-p1,p2-p1);
+                  double x1 = d1*d2; double x2=d3*d4;
+                  if (x1<=0 && x2<0 || x1<0 && x2<=0)
+                      {found=true; break; }
+                  }
+              if (!found)
+                  {tbrin b0=G.pbrin[v0];
+                  tbrin b=b0;
+                  bool dobrk=false;
+                  do 
+                      {Tpoint pp0=G.vcoord[G.vin[-b]];
+                      for (tvertex z=1; z<=G.nv(); z++)
+                          {if (z==v0 || z==G.vin[-b]) continue;
+                          Tpoint p=G.vcoord[z];
+                          double d1=Determinant(p0-pp0,p-pp0);
+                          double d2=Determinant(p0+t-pp0,p-pp0);
+                          double d3=Determinant(pp0-p0,p-p0);
+                          double d4=Determinant(t,p-p0);
+                          double x1 = d1*d2; double x2=d3*d4;
+                          if (x1<0 && x2<=0 || x1<=0 && x2<0)
+                              {	dobrk=true; break;}
+                          }
+                      if (dobrk) {found=true; break;}
+                      } while ((b=G.cir[b])!=b0);
+                  }
+              if(found)
+                  t=Tpoint(0,0);
+              }
+          if(!found)
+              {G.vcoord[v0] += t; 
+              dx = Abs(t.x()); dy = Abs(t.y());
+              dep = Max(dep,dx,dy);  
+              if (dx > 30./n || dy > 30./n)
+                  {if (draw) nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
+              else
+                  {if (draw) nodeitem[v0]->SetColor(red);
+                  ++n_red;
+                  }
+              if (draw) nodeitem[v0]->moveTo(G.vcoord[v0],3.);
+              }
+          else
+              { if (draw) nodeitem[v0]->SetColor(blue);
+              ++n_red;
+              }
+          }
       // update the drawing
-      mw->progressBar->setProgress(n_red);
+      if(!draw)
+          {progressEvent *event = new progressEvent(0,n_red);
+          QApplication::postEvent(mw,event);
+          }
+      else
+          {mw->progressBar->setProgress(n_red);
+          qApp->processEvents(); // absolutely needed
+          }
       if(iter%2 == 0 && draw)canvas()->update();
-
       stop = (n_red == G.nv())? ++stop : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
-      qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       // Compute bounds ro adapt the expand factor (should not be too strong)
       ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
       if(sizex > sizex0 && sizey > sizey0)
-	  expand /= Max(sizex/sizex0,sizey/sizey0);
+          expand /= Max(sizex/sizex0,sizey/sizey0);
       else if(sizex < sizex0 && sizey < sizey0)
-	  expand *= Max(sizex0/sizex,sizey0/sizey);
+          expand *= Max(sizex0/sizex,sizey0/sizey);
       sizex0 = sizex;      sizey0 = sizey;
       }
   Normalise();
-  mw->progressBar->hide();
-  if (draw) 
-    {
-    // same as load(false) but much faster
-    for(v = 1;v <= n;v++)
-      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-      nodeitem[v]->moveTo(G.vcoord[v]);
-      }
-    canvas()->update();
-    }
+   if(!draw)
+          {progressEvent  * event = new progressEvent(-1);
+          QApplication::postEvent(mw,event);
+          }
+   else
+       {mw->progressBar->hide();
+       // same as load(false) but much faster
+       for(v = 1;v <= n;v++)
+           {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+           nodeitem[v]->moveTo(G.vcoord[v]);
+           }
+       canvas()->update();
+       }
 #ifdef  VERSION_ALPHA 
   if(debug())
       Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);

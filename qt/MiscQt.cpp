@@ -219,7 +219,7 @@ class QtGraphDebug : public GraphDebug
     va_start(arg_ptr,fmt);
     vsprintf(texte_print,fmt,arg_ptr);
     va_end(arg_ptr);
-     mw->postMessage( QString(texte_print));
+    mw->postMessage(QString(texte_print));
     }
 };
 static QtGraphDebug QtDefaultGraphDebug;

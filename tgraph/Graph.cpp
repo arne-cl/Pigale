@@ -424,10 +424,10 @@ bool TopologicalGraph::CheckNoLoops()
       return (nloops() == 0) ? true : false;
       }
   else if(ne() == 0)
-  {Prop1<int> nloops(Set(),PROP_NLOOPS);
-  nloops() = 0;
-  return true;
-  }		
+      {Prop1<int> nloops(Set(),PROP_NLOOPS);
+      nloops() = 0;
+      return true;
+      }		
   if(debug())DebugPrintf("  Executing CheckNoLoops");
   Prop1<int> nloops(Set(),PROP_NLOOPS);
   int n = 0;
@@ -442,10 +442,10 @@ int TopologicalGraph::RemoveLoops()
        return numloops();
        }
   else if(ne() == 0)
-  {Prop1<int> numloops(Set(),PROP_NLOOPS);
-  numloops() = 0;
-  return 0;
-  }		
+      {Prop1<int> numloops(Set(),PROP_NLOOPS);
+      numloops() = 0;
+      return 0;
+      }		
   if(debug())DebugPrintf("  Executing RemoveLoops");
   int n = 0;
   Prop<int> nloops(Set(tvertex()),PROP_NLOOPS); nloops.clear();
@@ -454,6 +454,7 @@ int TopologicalGraph::RemoveLoops()
       if(vin[e] == vin[-e]){++n; ++nloops[vin[e]]; DeleteEdge(e);}
   Prop1<int> numloops(Set(),PROP_NLOOPS);
   numloops() = 0;
+  if(debug())DebugPrintf("  End RemoveLoops: %d loops",n);
   return n;
   }
 int TopologicalGraph::RemoveIsolatedVertices()

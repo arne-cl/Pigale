@@ -173,8 +173,13 @@ int Tgf::CreateRecord()
       }
   ++Header.RecordNum;
   ++Header.IfdNum;
-  //Preparation D'un Ifd vide
+  //Preparation d'un Ifd vide (modified 08/03/2005)
   Ifd.Header.tag = TAG_FIRST;
+  Ifd.Header.FieldNum = 0;
+  Ifd.Header.FieldNumTotal = 0;
+  Ifd.Header.unused = 0;
+  Ifd.Header.NextIfd = 0;
+  Ifd.Header.NextRecord = 0;
   new_ifd = 1;
   return(1);
   }
@@ -306,13 +311,13 @@ int Tgf::FieldWrite(short t,const char *pointeur,long NumberBytes)
           }
       }
   new_data = 1;
+  //DebugPrintf("wrote field tag:%d field:%d (%d %d)",t,field,Ifd.Header.FieldNum,Ifd.Header.FieldNumTotal);
   return(1);
   }
 int Tgf::Flush()     //MODIFIE HEADER ou PRECEDENT  et ECRIT IFD
   {if(!new_data)return 1;
 
   if(!new_ifd){new_data = 0;return(IfdWrite(CurrentIfdOffset));}
-
   long offset;
   short tag;
 
@@ -325,8 +330,6 @@ int Tgf::Flush()     //MODIFIE HEADER ou PRECEDENT  et ECRIT IFD
       offset_new_data += ii;
       seek = 0;
       }
-
-
   //Modification du Header et du precedent Ifd
   //offset_new_data est l'endroit ou l'on va ecrire l'Ifd
   if(Header.IfdNum == 1)
@@ -341,7 +344,6 @@ int Tgf::Flush()     //MODIFIE HEADER ou PRECEDENT  et ECRIT IFD
   IfdOffset(Header.RecordNum) = offset_new_data;
   WriteHeader();
   new_ifd = new_data = 0;
-
   //Ecriture du nouvel ifd
   return(IfdWrite(offset_new_data));
   }

@@ -95,31 +95,26 @@ void ClientSocket::writeServer(const QString& msg)
   {T_STD cout << msg;  
   }
 void ClientSocket::readClient()
-  {
-  run();
+  {run();
   }
 void ClientSocket::run()
   {if(!getRemoteGraph)
       while (canReadLine())
-	  {QString str = cli.readLine();
-	  //qDebug("R:'%s'",(const char *)str);
-	  if(++line == 10000)line = 0;
-	  if(str.at(0) == '#')
-	      {cli << str << endl;
-	      cli << "!" << endl;
-	      }
-	  else if(str.at(0) == '!')
-	      {cli << ":END OF FILE" << endl;
-	      cli << "!" << endl;
-	      }
-	  else 
-                        {
-                       textEvent *event = new textEvent(str);
-                       QApplication::postEvent(this,event);
-                        //emit threadDataAction(str); 
-                        //xhandler(str);
-                       }
-	  }
+          {QString str = cli.readLine();
+          if(++line == 10000)line = 0;
+          if(str.at(0) == '#')
+              {cli << str << endl;
+              cli << "!" << endl;
+              }
+          else if(str.at(0) == '!')
+              {cli << ":END OF FILE" << endl;
+              cli << "!" << endl;
+              }
+          else 
+              {textEvent *event = new textEvent(str);
+              QApplication::postEvent(this,event);
+              }
+          }
   else
       {GetRemoteGraph();
       getRemoteGraph = false;
@@ -153,27 +148,23 @@ int ClientSocket::xhandler(const QString& dataAction)
   else if(action > A_AUGMENT && action < A_TEST_END)
       {if(mw->menuBar()->isItemEnabled(action))
           {mw->handler(action);
-//           clientEvent *event = new clientEvent(action," ");
-//           mw->ServerBusy = true;
-//           QApplication::postEvent(mw,event);
-//           qApp->processEvents() ;// a ! is sent when the action is over
-//           while(mw->ServerBusy == true){qDebug("waiting for server");qApp->processEvents (); msleep(10);}
+          //mw->getResultHandler();
           }
       else 
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
   else if(action > A_TRANS && action < A_TRANS_END)
       {if(action == A_TRANS_PNG)
-	  err = Png();
+          err = Png();
       else if(action == A_TRANS_GRAPH_GET)
-	  {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-	  indexRemoteGraph = 1;
-	  bool ok;
-	  if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
-	  if(!ok)return WRONG_PARAMETERS;
-	  getRemoteGraph = true;
-	  return 0;
-	  }
+          {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+          indexRemoteGraph = 1;
+          bool ok;
+          if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
+          if(!ok)return WRONG_PARAMETERS;
+          getRemoteGraph = true;
+          return 0;
+          }
       }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
@@ -181,8 +172,7 @@ int ClientSocket::xhandler(const QString& dataAction)
       err = UNKNOWN_COMMAND;
   if(getError())err = getError();
   if(err)
-      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> "
-           << mw->getActionString(err)<<endl;
+      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> " << mw->getActionString(err)<<endl;
       cli <<": " <<dataAction<< endl;
       }
   cli << "!" << endl;
@@ -217,7 +207,6 @@ int ClientSocket::GetRemoteGraph()
       Tprintf("%d (%d/%d)",nb,nread,size);
       if(++i > 50){setError(-1,"Timeout");return -1;}
       }
-  //clo.readRawBytes(buff,size);
   stream.writeRawBytes(buff,size);
   file.close();
   delete [] buff;
@@ -229,11 +218,8 @@ int ClientSocket::GetRemoteGraph()
   return 0;
   }
 int ClientSocket::ReadRemoteGraph(QString &dataParam)
-  {  
-  //if(GetRemoteGraph())return READ_ERROR;
-  // Read the graph
+  {// Read the graph
   QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-  //mw->InputFileName = GraphFileName;
   int num = 1;
   bool ok;
   if(fields.count() > 1)num = fields[1].toInt(&ok);

@@ -12,7 +12,6 @@
 #include "gprop.h"
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
-#include <QT/Action_def.h>
 
 #include <qvariant.h>   // first for gcc 2.7.2
 #include <qlabel.h>
@@ -20,15 +19,14 @@
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qlayout.h>
-#include <qmenubar.h>
+
 
 
 Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 				   ,const char* name,WFlags fl)
     : QWidget( parent,name,fl)
+    ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END),_updateMenu(true)
   {if(!name)setName("Graph_Properties");
-  menu = menubar;
-  //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
   setMinimumHeight(180); 
   //marge,spacing
   QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
@@ -212,60 +210,60 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
   bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;
-  menu->setItemEnabled(A_EMBED_3d,G.nv() > 3 && NotBigD);                   //Rn embedding
-  menu->setItemEnabled(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
-  menu->setItemEnabled(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
-  menu->setItemEnabled(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar
-  menu->setItemEnabled(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
-  menu->setItemEnabled(A_EMBED_POLAR,C1 && NotBigD);                        //polair
+  allowAction(A_EMBED_3d,G.nv() > 3 && NotBigD);                   //Rn embedding
+  allowAction(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
+  allowAction(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
+  allowAction(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar
+  allowAction(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
+  allowAction(A_EMBED_POLAR,C1 && NotBigD);                        //polair
   //Augment
-  menu->setItemEnabled(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
-  menu->setItemEnabled(A_AUGMENT_CONNECT_V,(G.nv() > 1) && !C1);               //make connected 
-  menu->setItemEnabled(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
-  menu->setItemEnabled(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
-  menu->setItemEnabled(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
-  menu->setItemEnabled(A_AUGMENT_BICONNECT_NP_V, !SMALL &&!C2);                  //make 2 connected NP  
-  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
-  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
-  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
-  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B && !MaxBi);    //Quadrangulate
-  menu->setItemEnabled( A_AUGMENT_BISSECT_ALL_E ,G.ne());    //Bissect all edges
+  allowAction(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
+  allowAction(A_AUGMENT_CONNECT_V,(G.nv() > 1) && !C1);               //make connected 
+  allowAction(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
+  allowAction(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
+  allowAction(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
+  allowAction(A_AUGMENT_BICONNECT_NP_V, !SMALL &&!C2);                  //make 2 connected NP  
+  allowAction(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
+  allowAction(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
+  allowAction(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
+  allowAction(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B && !MaxBi);    //Quadrangulate
+  allowAction( A_AUGMENT_BISSECT_ALL_E ,G.ne());    //Bissect all edges
   //Embed
-  menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
-  menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
-  menu->setItemEnabled(A_EMBED_FPP,!SMALL && S && P && NotBigD);              //FPP Fary
-  menu->setItemEnabled(A_EMBED_CCD,!SMALL && S && P && C3 && NotBigD);         //Convex Compact
-  menu->setItemEnabled(A_EMBED_CD,!SMALL && S && P && C3 && NotBigD);         //Convex 
-  menu->setItemEnabled(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
-  menu->setItemEnabled(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
-  menu->setItemEnabled(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
-  menu->setItemEnabled(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
-  menu->setItemEnabled(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
-  menu->setItemEnabled(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
-  menu->setItemEnabled(A_EMBED_GVISION,!SMALL  && NotBigD);                   //Gvision
-  menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
-  menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
-  menu->setItemEnabled(A_EMBED_SPRING_PM,NotBigD);                            //springPM
-  menu->setItemEnabled(A_EMBED_CURVES,!SMALL && NotBigD);                               //curves
-  menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
-  menu->setItemEnabled(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
+  allowAction(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
+  allowAction(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
+  allowAction(A_EMBED_FPP,!SMALL && S && P && NotBigD);              //FPP Fary
+  allowAction(A_EMBED_CCD,!SMALL && S && P && C3 && NotBigD);         //Convex Compact
+  allowAction(A_EMBED_CD,!SMALL && S && P && C3 && NotBigD);         //Convex 
+  allowAction(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
+  allowAction(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
+  allowAction(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
+  allowAction(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
+  allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
+  allowAction(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
+  allowAction(A_EMBED_GVISION,!SMALL  && NotBigD);                   //Gvision
+  allowAction(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
+  allowAction(A_EMBED_SPRING,NotBigD);                               //spring
+  allowAction(A_EMBED_SPRING_PM,NotBigD);                            //springPM
+  allowAction(A_EMBED_CURVES, NotBigD);                               //curves
+  allowAction(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
+  allowAction(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual
-  menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P && C1); 
-  menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P && C1);
-  menu->setItemEnabled(A_GRAPH_ANGLE,(G.nv() > 1) && C1 && P);
-  menu->setItemEnabled(A_GRAPH_ANGLE_G,(G.nv() > 1) && C1 && P);
+  allowAction(A_GRAPH_DUAL,(G.nv() > 1) && P && C1); 
+  allowAction(A_GRAPH_DUAL_G,(G.nv() > 1) && P && C1);
+  allowAction(A_GRAPH_ANGLE,(G.nv() > 1) && C1 && P);
+  allowAction(A_GRAPH_ANGLE_G,(G.nv() > 1) && C1 && P);
   //Algo
-  menu->setItemEnabled(A_ALGO_KURATOWSKI,!P);
-  menu->setItemEnabled(A_ALGO_COTREE_CRITICAL,!P);
-  menu->setItemEnabled(A_ALGO_COLOR_BIPARTI,B);
-  menu->setItemEnabled(A_ALGO_COLOR_EXT,P);
-  menu->setItemEnabled(A_ALGO_COLOR_NON_CRITIC,!P);
+  allowAction(A_ALGO_KURATOWSKI,!P);
+  allowAction(A_ALGO_COTREE_CRITICAL,!P);
+  allowAction(A_ALGO_COLOR_BIPARTI,B);
+  allowAction(A_ALGO_COLOR_EXT,P);
+  allowAction(A_ALGO_COLOR_NON_CRITIC,!P);
   //Orient
-  menu->setItemEnabled(A_ORIENT_TRICON,!SMALL && P && C3);       //planar 3-con 
-  menu->setItemEnabled(A_ORIENT_BIPAR,(G.nv() > 1) && P && B);   //biparti 
-  menu->setItemEnabled(A_ORIENT_SCHNYDER,!SMALL && P && S &C1);  //planar schnyder
-  menu->setItemEnabled(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
-  menu->setItemEnabled(A_ORIENT_BIPOLAR_NP,(G.nv() > 1) && C2);  //bipolar 
+  allowAction(A_ORIENT_TRICON,!SMALL && P && C3);       //planar 3-con 
+  allowAction(A_ORIENT_BIPAR,(G.nv() > 1) && P && B);   //biparti 
+  allowAction(A_ORIENT_SCHNYDER,!SMALL && P && S &C1);  //planar schnyder
+  allowAction(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
+  allowAction(A_ORIENT_BIPOLAR_NP,(G.nv() > 1) && C2);  //bipolar 
 
   if(!print)return;  
   // Modify the buttons

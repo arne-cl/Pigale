@@ -195,7 +195,7 @@ static int SchnyderOrientMaxPlanar(TopologicalGraph &G, tbrin brin)
   {SchnyderPacking SP(G,brin);
   GeometricGraph G0(G);
   IntList RevList;
-
+  
   // pack vertices.
   tbrin left_brin, right_brin, b;
   tvertex v;
@@ -209,7 +209,7 @@ static int SchnyderOrientMaxPlanar(TopologicalGraph &G, tbrin brin)
       if (b > 0) RevList.push(b.GetEdge()());
       b=G0.cir[b];
       while (b!=right_brin)
-          { if (b < 0) RevList.push(b.GetEdge()()); b=G0.cir[b]; }
+          {if (b < 0) RevList.push(b.GetEdge()()); b=G0.cir[b]; }
       if (b > 0) RevList.push(b.GetEdge()());
       }
   while (!RevList.empty()) G0.ReverseEdge(RevList.pop());

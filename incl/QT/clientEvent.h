@@ -18,6 +18,8 @@
 #define WAIT_EVENT 65435
 #define DRAWG_EVENT 65436
 #define HANDLER_EVENT 65437
+#define PROGRESS_EVENT 65438
+#define BANNER_EVENT 65439
 
 class clientEvent : public QCustomEvent
     {public:
@@ -39,6 +41,15 @@ class textEvent : public QCustomEvent
       QString str;
     };
 
+class bannerEvent : public QCustomEvent
+    {public:
+      bannerEvent( QString  txt)
+          : QCustomEvent( BANNER_EVENT),str(txt)  {}
+       QString getString() const { return str; }
+    private:
+      QString str;
+    };
+
 class waitEvent : public QCustomEvent
     {public:
       waitEvent( QString  txt)
@@ -50,10 +61,31 @@ class waitEvent : public QCustomEvent
 
 class handlerEvent : public QCustomEvent
     {public:
-      handlerEvent( int action)
-          : QCustomEvent(HANDLER_EVENT ), value( action )  {}
-        int getAction() const { return value; }
+      handlerEvent( int action,int drawingType,int saveType)
+          : QCustomEvent(HANDLER_EVENT ), _action( action ),_drawingType(drawingType),_saveType(saveType)  {}
+        int getAction() const { return _action; }
+        int getDrawingType() const { return _drawingType; }
+        int getSaveType() const { return _saveType; }
     private:
-      int value;
+      int _action;
+      int _drawingType;
+      int _saveType;
     };
+
+class progressEvent : public QCustomEvent
+/*
+action == 0   init step
+action == 1   show step
+action == -1  close
+*/
+    {public:
+      progressEvent( int action,int step = 0)
+          : QCustomEvent(PROGRESS_EVENT ), _action( action ),_step(step)  {}
+        int getAction() const { return _action; }
+        int getStep() const { return _step; }
+    private:
+      int _action;
+      int _step;
+    };
+
 #endif

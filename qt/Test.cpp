@@ -14,38 +14,35 @@ using namespace std;
 //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
 
 inline double abs(double x) {if(x>=0) return x; else return -x;}
-static int Test1(GraphContainer &GC);
-static int Test2(GraphContainer &GC);
-static int Test3(GraphContainer &GC);
+static int Test1(GraphContainer &GC,int &drawing);
+static int Test2(GraphContainer &GC,int &drawing);
+static int Test3(GraphContainer &GC,int &drawing);
 
 void initMenuTest()
   {pigaleWindow *mw =  GetpigaleWindow();
   mw->setUserMenu(1,"TestPlanar x1000");
-  mw->setUserMenu(2,"Color connected components");
+  mw->setUserMenu(2,"TestPlanar2 x1000");
   mw->setUserMenu(3,"Properties");
   }
-int Test(GraphContainer &GC,int action)
-  {if(action == 1)return Test1(GC);
-  else if(action == 2)return Test2(GC);
-  return Test3(GC);
+int Test(GraphContainer &GC,int action,int &drawing)
+  {if(action == 1)return Test1(GC,drawing);
+  else if(action == 2)return Test2(GC,drawing);
+  return Test3(GC,drawing);
   }
-int Test2(GraphContainer &GC)
+int Test2(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
-  G.ColorConnectedComponents();
-//   int err = G.TriconTriangulate();
-//   int diff = G.ne() - 3*G.nv() +6;
-//   if(diff)err = -2;
-//   if(err){setError(-1,"TriconTriangulate Error");return -1;}
-
-  return 1;
+   for (int i=1; i<=1000; i++)
+       G.TestPlanar2();
+   return 0;
   }
-int Test1(GraphContainer &GC)
+int Test1(GraphContainer &GC,int &drawing)
   {GeometricGraph GG(GC);
   for (int i=1; i<=1000; i++)
       GG.TestPlanar();
+  drawing = 0;
   return 0;
   }
-int Test3(GraphContainer &GC)
+int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.
   {TopologicalGraph G(GC);
   qDebug("Vertices:");
@@ -77,6 +74,7 @@ int Test3(GraphContainer &GC)
   for (i=G.Set().PStart(); i<G.Set().PEnd(); i++)
       if (G.Set().exist(i))
           qDebug("  %d %s (%s)",i,PropName(0,i),PropDesc(0,i));
+  drawing = 0;
   return 0;
   }
 

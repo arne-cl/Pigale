@@ -62,7 +62,12 @@ void Client::socketClosed()
   {infoText->append("Connection closed\n");
   }
 void Client::socketError(int e)
-  {infoText->append(QString("Error number %1 occurred\n").arg(e));
+  {if(e == QSocket::ErrConnectionRefused)
+      infoText->append(QString("Connection refused\n"));
+  else if(e  == QSocket::ErrHostNotFound) 
+      infoText->append(QString("Host not found\n"));           
+  else
+      infoText->append(QString("A read from the socket failed \n"));
   }
 void Client::writeToClient(QString str)
   {textEvent *e = new textEvent(str);

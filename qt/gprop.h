@@ -15,6 +15,9 @@
 #include <qvariant.h>
 #include <qwidget.h>
 #include <qradiobutton.h>
+#include <qmenubar.h>
+#include <QT/Action_def.h>
+#include <TAXI/Tsvector.h>
 
 class QVBoxLayout; 
 class QHBoxLayout; 
@@ -22,7 +25,6 @@ class QGridLayout;
 class QLabel;
 class QLineEdit;
 class QRadioButton;
-class QMenuBar;
  
 
 class RoRadioButton : public QRadioButton
@@ -43,7 +45,9 @@ public:
   Graph_Properties( QWidget* parent = 0,QMenuBar *menu = 0,
 		    const char* name = 0,WFlags fl = 0 );
   ~Graph_Properties();
+ 
   void update(bool print = true);
+  void updateMenu(bool val){_updateMenu = val;}
   bool Simple(){return S;}
   bool Planar(){return P;}
   bool Triangulation(){return T;}
@@ -60,6 +64,7 @@ public:
   int DegreeMax(){return dmax;}
   int NumSources(){return ns;}
   int NumSinks(){return nt;}
+  bool actionAllowed(int action){return  allow[action];}
 
   QLineEdit* LE_N,*LE_M,*LE_Min,*LE_Max;
   RoRadioButton* RBConnected;
@@ -81,8 +86,14 @@ public slots:
 
 private:
   QMenuBar *menu;
+  svector<bool> allow;
+  bool _updateMenu;
   int ns,nt,dmin,dmax;
   bool S,P,A,B,R,C1,C2,C3,T,Outer,Serie,MaxBi;
+  void allowAction(int action,bool condition)
+      {allow[action] = condition;
+      if(_updateMenu)menu->setItemEnabled(action,condition);
+      }
 };
 
 #endif // GRAPH_PROPERTIES_H

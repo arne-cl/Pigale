@@ -217,12 +217,6 @@ struct _PropName {
      desc[512+(13)]="A value";
      name[768+(13)]="PROP_VALUE";
      desc[768+(13)]="A value";
-     name[256+(14)]="PROP_COLOR2";
-     desc[256+(14)]="Color of the second brin";
-     name[512+(14)]="PROP_COLOR2";
-     desc[512+(14)]="Color of the second brin";
-     name[768+(14)]="PROP_COLOR2";
-     desc[768+(14)]="Color of the second brin";
      name[256+(3)]="PROP_INITIALV";
      desc[256+(3)]="Initial Numbering";
      name[256+(4)]="PROP_NEW";
@@ -269,6 +263,8 @@ struct _PropName {
      desc[512+(5)]="Class of edge";
      name[512+(6)]="PROP_REPRESENTATIVEE";
      desc[512+(6)]="Representative of edge";
+     name[512+(14)]="PROP_COLOR2";
+     desc[512+(14)]="Color of the second brin";
      name[512+(16)]="PROP_WIDTH";
      desc[512+(16)]="geometric width (editor)";
      name[512+(17)]="PROP_ORIENTED";

@@ -21,10 +21,11 @@ void TutteCircle(GeometricGraph &G, tbrin FirstBrin);
 int EmbedTutteCircle(TopologicalGraph &G)
   {if(!G.CheckSimple() || !G.CheckPlanar())return -1;
   int m = G.ne();
+  int n = G.nv();
   G.MakeConnected();
-  Prop<short> marke(G.Set(tedge()),PROP_MARK); marke.clear();
-  Prop<short> markv(G.Set(tvertex()),PROP_MARK);markv.clear();
-  markv.definit(1);
+//   Prop<short> marke(G.Set(tedge()),PROP_MARK); marke.clear();
+//   Prop<short> markv(G.Set(tvertex()),PROP_MARK);markv.clear();
+//   markv.definit(1);
     
   tbrin FirstBrin;
   int len;
@@ -74,7 +75,7 @@ int EmbedTutteCircle(TopologicalGraph &G)
 
   bool triang = !G.CheckSubdivTriconnected();
   if (triang)
-      {marke.definit(1);
+      {//marke.definit(1);
       G.ZigZagTriangulate();
       }
   GeometricGraph GG(G);
@@ -82,15 +83,21 @@ int EmbedTutteCircle(TopologicalGraph &G)
   b = newe[1].firsttbrin();
   if (G.vin[b]!=newv[1]) {b=-b; Tprintf("Orientation error");}
     
+
   TutteCircle(GG, b); // newe[1].firsttbrin());
-  Prop<short> vcolor (G.Set(tvertex()),PROP_COLOR);
-  Prop<short> ecolor (G.Set(tedge()),PROP_COLOR);
+//   Prop<short> vcolor (G.Set(tvertex()),PROP_COLOR);
+//   Prop<short> ecolor (G.Set(tedge()),PROP_COLOR);
     
-  for(v = G.nv();v > 0;v--)
-      if(markv[v] == 1) G.DeleteVertex(v);
-  if (triang)
-      for(tedge e = G.ne();e > 0;e--)
-          if(marke[e] == 1) G.DeleteEdge(e);
+//   for(v = G.nv();v > 0;v--)
+//       if(markv[v] == 1) G.DeleteVertex(v);
+//   if (triang)
+//       for(tedge e = G.ne();e > 0;e--)
+//           if(marke[e] == 1) G.DeleteEdge(e);
+//  for(tedge e = G.ne();e > m;e--)
+//      G.DeleteEdge(e);
+
+ for(v = G.nv();v > n;v--)
+      G.DeleteVertex(v);
  for(tedge e = G.ne();e > m;e--)
      G.DeleteEdge(e);
   return 0;

@@ -20,6 +20,8 @@
 #include <qmap.h>
 #include <qevent.h> 
 #include <qtimer.h>
+#include <qthread.h> 
+
 #include <Pigale.h> 
 
 #if QT_VERSION < 300
@@ -54,6 +56,20 @@ class LineEditNum;
 class QProgressBar;
 class QLineEdit;
 class QPalette;
+
+class PigaleThread : public QThread 
+{private:
+  int   action; 
+  int N,N1,N2,M;
+  int delay;
+ public:
+  PigaleThread( unsigned int stackSize = 0 ) 
+      : QThread (stackSize)
+      { }
+  virtual void run();
+  void run(int action,int N = 0,int N1 = 0,int N2 = 0,int M = 0,int delay = 0);
+  pigaleWindow *mw;
+};
 
 class pigaleWindow: public QMainWindow 
 {Q_OBJECT
@@ -90,9 +106,9 @@ private:
   int  macroLoad(QString FileName);
   void macroRecord(int action);
   void ParseArguments(); 
- void Message(QString s);
-  int postHandler(int action);
-
+  void Message(QString s);
+  int postHandler(QCustomEvent *ev);
+  //int  getResultHandler(int value = 0);
 public slots:
   void banner();
   void timerWait();
@@ -119,6 +135,7 @@ public:
   int publicLoad(int pos);
   void setUserMenu(int i, const QString &txt);
   void  setShowOrientation(bool val);
+  int  getResultHandler(int value = 0);
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *messages;
@@ -138,7 +155,9 @@ public:
   bool ServerExecuting;
   bool ServerBusy;
   int ServerClientId;
+  QTime timer;
 private:
+  PigaleThread pigaleThread;
   QToolBar *tb;
 #if QT_VERSION >= 300 || _WINDOWS
   QTextBrowser *browser;
@@ -170,7 +189,6 @@ private:
   IntStringMap mapActionsString;
   typedef QMap<QString,int> StringIntMap;
   StringIntMap mapActionsInt;   
-  QTime timer;
   int drawingType;
 };
 

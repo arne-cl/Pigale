@@ -56,6 +56,9 @@ lib_LTLIBRARIES = libtgraph.la
 libtgraph_la_LDFLAGS = -version-info @LIB_VERSION@
 libtgraph_la_DEPENDENCIES =$(top_srcdir)/incl/QT/Action.h
 
+datadir = .
+EXTRA_DIST=gnumakefile
+
 PropName.cpp : $(top_srcdir)/incl/TAXI/propdef.h
 	$(AWK) -f propname.awk ../incl/TAXI/propdef.h > PropName.cpp
 

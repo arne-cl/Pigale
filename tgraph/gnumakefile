@@ -568,6 +568,8 @@ SWShelling.opt: ../../pigale/incl/TAXI/Tflist.h
 SWShelling.opt: ../../pigale/incl/TAXI/Tstack.h
 SWShelling.opt: ../../pigale/incl/TAXI/Tarray.h
 Tgf.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tgf.h
+Tgf.opt: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
+Tgf.opt: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 TopoAlgs.opt: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tbase.h
 TopoAlgs.opt: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 TopoAlgs.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
