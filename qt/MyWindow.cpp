@@ -642,7 +642,6 @@ void MyWindow::load(int pos)
   TopologicalGraph G(GC);
   UndoSave();
   banner();
-  _PRINTFL(MacroExecuting);
   information(); gw->update();
   }
 void MyWindow::save()
