@@ -303,9 +303,9 @@ MyWindow::MyWindow()
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
   embed->insertItem("&Polar",                A_EMBED_POLAR);
-  id = embed->insertItem(xmanIcon,"Sprin&g",gw,SLOT(Spring()));
-  embed->setWhatsThis(id,spring_txt);
-  embed->insertItem(xmanIcon,"Spring &Jacquard",gw,SLOT(SpringJacquard()),0,A_EMBED_JACQUARD);
+  embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
+  embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
+  embed->insertItem(xmanIcon,"Spring &Jacquard",A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
@@ -790,6 +790,11 @@ void MyWindow::handler(int action)
       {graphgl->update(); 
       graphsym->update();
       }
+  else if(ret == 6)
+      gw->Spring();
+  else if(ret == 7)
+      gw->SpringJacquard();
+
   double TimeG = timer.elapsed()/1000.;
   if(!MacroExecuting || debug())Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
   }

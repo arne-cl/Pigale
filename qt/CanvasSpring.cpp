@@ -32,7 +32,7 @@ void GraphEditor::Spring()
   // during iteration keeep the drawing size
   double hw = .8*(mhw*mhw)/(n*m); 
   int iter,niter = 2000;
-  int n_red = 0;
+  int n_red;
   double dist2,strength;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
@@ -78,6 +78,7 @@ void GraphEditor::Spring()
 
       // update the drawing
       double dx,dy,dep = .0;
+      n_red = 0;
       for(tvertex v = 1;v <= n;v++)
 	  {G.vcoord[v] += translate[v];
 	  dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
@@ -85,7 +86,6 @@ void GraphEditor::Spring()
 	  if(dx > 1. || dy > 1.) 
 	      {nodeitem[v]->moveBy(translate[v].x(),-translate[v].y());
 	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      --n_red;
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
@@ -672,7 +672,7 @@ int GraphEditor::SpringJacquard()
   double k_electro =  K_ELECTRO;
   double k_spring  = .1;
   bool k_frontier  = false;
-  int n_red = 0;
+  int n_red;
   GeometricGraph & G = *(gwp->pGG);
   if(G.ComputeGeometricCir() == 0)
       {G.extbrin() = G.FindExteriorFace();
@@ -732,12 +732,13 @@ int GraphEditor::SpringJacquard()
       DoNormalise = true;Normalise();
       // Affichage du graphe
       double dx,dy;
+      n_red = 0;
       for(tvertex v = 1; v <= G.nv();v++)
 	  {dx = G.vcoord[v].x()- scoord[v].x();
 	  dy = G.vcoord[v].y()- scoord[v].y();
 	  if(Abs(dx) > 1. || Abs(dy) > 1.)
 	      {nodeitem[v]->moveBy(dx,-dy);
-	      nodeitem[v]->SetColor(color[G.vcolor[v]]);--n_red;
+	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}

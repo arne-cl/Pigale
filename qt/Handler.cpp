@@ -273,6 +273,10 @@ int EmbedHandler(int action,int &drawing)
 	  break;
       case A_EMBED_3d:ret = 4; //Embed3d
 	  break;
+      case  A_EMBED_SPRING :ret = 6;
+	  break;
+      case  A_EMBED_JACQUARD:ret = 7;
+	  break;
       default:
 	    return 0;
       }

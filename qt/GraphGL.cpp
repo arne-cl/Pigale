@@ -160,11 +160,10 @@ void GraphGL::Reload()
   }
 void GraphGL::Reload(int i)
   {if(i == 0){d->editor->initialize(false);return;}
-  GeometricGraph & GeoG = *(d->pGG);
   int i1,i2,i3;
-  i1 = spin_X->value(); i1 = Min(i1,GeoG.nv()-1);
-  i2 = spin_Y->value(); i2 = Min(i2,GeoG.nv()-1);
-  i3 = spin_Z->value(); i3 = Min(i3,GeoG.nv()-1);
+  i1 = spin_X->value(); i1 = Min(i1,d->pSG->nv()-1);
+  i2 = spin_Y->value(); i2 = Min(i2,d->pSG->nv()-1);
+  i3 = spin_Z->value(); i3 = Min(i3,d->pSG->nv()-1);
   // Compute min,max on three coord;
   double min1,min2,min3,max1,max2,max3;
   min1 = max1 = d->pSG->Coords[1][i1];
@@ -180,8 +179,8 @@ void GraphGL::Reload(int i)
   double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
   double alpha = Max(-min123,max123);
   alpha = (alpha < 1.E-10) ? .0 : 1./alpha;
-  Prop<Tpoint3> Coord3(GeoG.Set(tvertex()),PROP_COORD3);
-  for(int i = 1;i <= GeoG.nv();i++)
+  Prop<Tpoint3> Coord3(d->pSG->Set(tvertex()),PROP_COORD3);
+  for(int i = 1;i <= d->pSG->nv();i++)
       {Coord3[i].x() = alpha * d->pSG->Coords[i][i1];
        Coord3[i].y() = alpha * d->pSG->Coords[i][i2];
        Coord3[i].z() = alpha * d->pSG->Coords[i][i3];
