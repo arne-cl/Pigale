@@ -1,13 +1,13 @@
 /****************************************************************************
-**
-** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
-** All rights reserved.
-** This file is part of the PIGALE Toolkit.
-**
-** This file may be distributed under the terms of the GNU Public License
-** appearing in the file LICENSE.HTML included in the packaging of this file.
-**
-*****************************************************************************/
+ **
+ ** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+ ** All rights reserved.
+ ** This file is part of the PIGALE Toolkit.
+ **
+ ** This file may be distributed under the terms of the GNU Public License
+ ** appearing in the file LICENSE.HTML included in the packaging of this file.
+ **
+ *****************************************************************************/
 
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -52,55 +52,55 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   ColorItem *coloritem;
   if(FindItem(p,coloritem) != 0)
       {if(e->button() == QMouseEvent::LeftButton)
-	  {if(coloritem->node)
-	      {gwp->NodeColorItem[color_node]->SetPenColor(White);
-	      coloritem->SetPenColor(coloritem->brush_color);
-	      color_node = coloritem->brush_color;
-	      G.vcolor.definit(color_node);
-	      }
-	  else
-	      {gwp->EdgeColorItem[color_edge]->SetPenColor(White);
-	      coloritem->SetPenColor(coloritem->brush_color);
-	      color_edge = coloritem->brush_color;
-	      G.ecolor.definit(color_edge);
-	      }
-	  canvas()->update();
-	  return;
-	  }
+          {if(coloritem->node)
+              {gwp->NodeColorItem[color_node]->SetPenColor(White);
+              coloritem->SetPenColor(coloritem->brush_color);
+              color_node = coloritem->brush_color;
+              G.vcolor.definit(color_node);
+              }
+          else
+              {gwp->EdgeColorItem[color_edge]->SetPenColor(White);
+              coloritem->SetPenColor(coloritem->brush_color);
+              color_edge = coloritem->brush_color;
+              G.ecolor.definit(color_edge);
+              }
+          canvas()->update();
+          return;
+          }
       else if(e->button() == QMouseEvent::RightButton)
-	  {QString t;
-	  if(coloritem->node)
-	      t.sprintf("Vertex color:%s",ColorName[coloritem->brush_color]);
-	  else
-	      t.sprintf("Edge color:%s",ColorName[coloritem->brush_color]);
-	  gwp->info_item = CreateInfoItem(gwp,t,p);
+          {QString t;
+          if(coloritem->node)
+              t.sprintf("Vertex color:%s",ColorName[coloritem->brush_color]);
+          else
+              t.sprintf("Edge color:%s",ColorName[coloritem->brush_color]);
+          gwp->info_item = CreateInfoItem(gwp,t,p);
 #if QT_VERSION >= 300
-	  this->setCursor(QCursor(Qt::WhatsThisCursor));
+          this->setCursor(QCursor(Qt::WhatsThisCursor));
 #endif
-	  canvas()->update();
-	  return;
-	  }
+          canvas()->update();
+          return;
+          }
       }
   ThickItem *thickitem;
   if(FindItem(p,thickitem) != 0)
       {if(e->button() == QMouseEvent::LeftButton)
-	  {gwp->EdgeThickItem[width_edge]->SetBrushColor(White);
-	  thickitem->SetBrushColor(Yellow);
-	  width_edge = thickitem->width;
-	  G.ewidth.definit(width_edge);
-	  canvas()->update();
-	  return;
-	  }
+          {gwp->EdgeThickItem[width_edge]->SetBrushColor(White);
+          thickitem->SetBrushColor(Yellow);
+          width_edge = thickitem->width;
+          G.ewidth.definit(width_edge);
+          canvas()->update();
+          return;
+          }
       else if(e->button() == QMouseEvent::RightButton)
-	  {QString t;
-	  t.sprintf("Edge width:%d",thickitem->width);
-	  gwp->info_item = CreateInfoItem(gwp,t,p);
+          {QString t;
+          t.sprintf("Edge width:%d",thickitem->width);
+          gwp->info_item = CreateInfoItem(gwp,t,p);
 #if QT_VERSION >= 300
-	  this->setCursor(QCursor(Qt::WhatsThisCursor));
+          this->setCursor(QCursor(Qt::WhatsThisCursor));
 #endif
-	  canvas()->update();
-	  return;
-	  }
+          canvas()->update();
+          return;
+          }
       }
   if(e->button() == QMouseEvent::RightButton )
       {NodeItem* node;
@@ -109,18 +109,17 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,node,edge);
       if(rtt == 0)rtt = FindItem(p,edge);//augment the collision zone
       if(rtt == node_rtti)
-	  t.sprintf("vertex:%d Label:%ld",(node->v)()
-		    ,G.vlabel[node->v]);
+          t.sprintf("vertex:%d Label:%ld",(node->v)(),G.vlabel[node->v]);
       else if(rtt == edge_rtti)
-	  {double d = Distance(G.vcoord[G.vin[edge->e]],G.vcoord[G.vin[-(edge->e)]])+.5;
-	  t.sprintf("edge:%d Label:%ld len:%d",(edge->e)(),G.elabel[edge->e],(int)d);
-	  }
+          {double d = Distance(G.vcoord[G.vin[edge->e]],G.vcoord[G.vin[-(edge->e)]])+.5;
+          t.sprintf("edge:%d Label:%ld len:%d",(edge->e)(),G.elabel[edge->e],(int)d);
+          }
       else
-	   {t.sprintf("(%d,%d)",e->pos().x(),e->pos().y());
+          {t.sprintf("(%d,%d)",e->pos().x(),e->pos().y());
 #if QT_VERSION >= 300
-	   this->setCursor(QCursor(Qt::BlankCursor));
+          this->setCursor(QCursor(Qt::BlankCursor));
 #endif
-	   }
+          }
       gwp->info_item = CreateInfoItem(gwp,t,p);
       canvas()->update();
       return;
@@ -151,21 +150,21 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
       if(rtt == 0) //augment the collision zone
-	  {rtt = FindItem(p,edge);
-	  if(rtt == 0)return;
-	  } 
+          {rtt = FindItem(p,edge);
+          if(rtt == 0)return;
+          } 
       if(rtt == node_rtti)
-	  {gwp->mywindow->UndoTouch(false);
-	  G.vcolor[node->v] = color_node;
-	  node->SetColor(color[color_node]);
-	  }
+          {gwp->mywindow->UndoTouch(false);
+          G.vcolor[node->v] = color_node;
+          node->SetColor(color[color_node]);
+          }
       else if(rtt == edge_rtti)
-	  {gwp->mywindow->UndoTouch(false);
-	  G.ecolor[edge->e] = color_edge;
-	  G.ewidth[edge->e]  = width_edge;
-	  if(edge->lower) edge->SetColor(color[color_edge]);
-	  else edge->opp->SetColor(color[color_edge]);
-	  }
+          {gwp->mywindow->UndoTouch(false);
+          G.ecolor[edge->e] = color_edge;
+          G.ewidth[edge->e]  = width_edge;
+          if(edge->lower) edge->SetColor(color[color_edge]);
+          else edge->opp->SetColor(color[color_edge]);
+          }
       canvas()->update();
       return; 
       }
@@ -178,14 +177,14 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int h = gwp->canvas->height();
       int rtt = FindItem(p,node,edge);
       if(rtt != node_rtti)// add a vertex
-	  {Tpoint pp((double)p.x(),(double)(h - p.y()));
-	  v = G.NewVertex(pp);
-	  ToGrid(v);
-	  nodeitem[v] = node  = CreateNodeItem(v,gwp);
-	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-	  }
+          {Tpoint pp((double)p.x(),(double)(h - p.y()));
+          v = G.NewVertex(pp);
+          ToGrid(v);
+          nodeitem[v] = node  = CreateNodeItem(v,gwp);
+          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          }
       else
-	  v = node->v;
+          v = node->v;
       //start_position = e->pos(); // should be the vertex position if had moved by ToGrid
       start_position = QPoint((int)G.vcoord[v].x(),h-(int)G.vcoord[v].y());
       node->SetColor(Qt::red);
@@ -197,18 +196,18 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
       if(rtt == 0) //augment the collision zone
-	  {rtt = FindItem(p,edge);
-	  if(rtt == 0)return;
-	  } 
+          {rtt = FindItem(p,edge);
+          if(rtt == 0)return;
+          } 
       if(rtt == node_rtti)
-	  {gwp->mywindow->UndoTouch(true);
-	  G.DeleteVertex(node->v);
-	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-	  }
+          {gwp->mywindow->UndoTouch(true);
+          G.DeleteVertex(node->v);
+          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          }
       else
-	  {gwp->mywindow->UndoTouch(true);
-	  G.DeleteEdge(edge->e);
-	  }
+          {gwp->mywindow->UndoTouch(true);
+          G.DeleteEdge(edge->e);
+          }
       load(false);
       gwp->mywindow->information();// Informations
       PrintSizeGrid();
@@ -258,44 +257,48 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       return;
       }
   else if(MouseAction == 5) // Define Exterior face
-	  {GeometricGraph & G = *(gwp->pGG);
-	  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
-	  Tpoint pp((double)p.x(),(double)(gwp->canvas->height()-p.y()));
-	  if(G.FindExteriorFace(pp) == 0)return;
-	  //ColorExteriorface
-	  tedge e;
+      {GeometricGraph & G = *(gwp->pGG);
+      Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+      Tpoint pp((double)p.x(),(double)(gwp->canvas->height()-p.y()));
+      if(G.FindExteriorFace(pp) == 0)return;
+      //ColorExteriorface
+      tedge e;
 
-	  ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
-	  tbrin b0 = G.extbrin();
-	  tbrin b = b0;
-	  do
-	      {e = b.GetEdge();
-	      edgeitem[e]->SetColor(color[Red]);
-	      } while((b = G.cir[-b]) != b0);
-	  canvas()->update();
-	  return; 	  
-	  }
+      ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
+      tbrin b0 = G.extbrin();
+      tbrin b = b0;
+      do
+          {e = b.GetEdge();
+          edgeitem[e]->SetColor(color[Red]);
+          } while((b = G.cir[-b]) != b0);
+      canvas()->update();
+      return; 	  
+      }
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
       {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+      Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); 
       EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
       gwp->mywindow->UndoTouch(true);
       if(MouseAction == 2)
-	  {if(eoriented[edge->e])
-	      {G.ReverseEdge(edge->e); eoriented[edge->e] = true;}
-	  else
-	      eoriented[edge->e] = true;
-	  }
+          {if(eoriented[edge->e])
+              {G.ReverseEdge(edge->e); eoriented[edge->e] = true;
+              reoriented[edge->e] = false;
+              }
+          else
+              eoriented[edge->e] = true;
+          }
       else
-	  eoriented[edge->e] = false;
-      load(false);
+          eoriented[edge->e] = false;
+      load(false); // recreate the canvas items, but not the grid
+      gwp->mywindow->information();// Informations
       return;
       }
-  else if(MouseAction == 10)//Duplicate the sugraph of the current color
+  else if(MouseAction == 10)// Duplicate the sugraph of the current color
       {gwp->mywindow->UndoTouch(true);
       if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+          gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       short vcol;  G.vcolor.getinit(vcol);
       G.vcolor.definit((short)((vcol+1)%16));
@@ -303,20 +306,20 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       Tpoint translate(this->width()/2.,0);
       int n = G.nv();
       svector<tvertex> newvertex(1,n);
-	  tvertex v;
+      tvertex v;
       for(v = 1; v <= n;v++)//translate all the graph
-	  G.vcoord[v] /= 2.;
+          G.vcoord[v] /= 2.;
       for(v = 1; v <= n;v++)
-	  {if(G.vcolor[v] != vcol)continue;
-	  newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
-	  }
+          {if(G.vcolor[v] != vcol)continue;
+          newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
+          }
       int m = G.ne();
       tvertex v1,v2;
       for(tedge e = 1; e <= m;e++)
-	  {v1 = G.vin[e];v2 = G.vin[-e];
-	  if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
-	      G.NewEdge(newvertex[v1],newvertex[v2]);
-	  }
+          {v1 = G.vin[e];v2 = G.vin[-e];
+          if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
+              G.NewEdge(newvertex[v1],newvertex[v2]);
+          }
       load(true);
       gwp->mywindow->information();// Informations
       }
@@ -325,7 +328,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       // and add edges between a new vertex and its father
       {gwp->mywindow->UndoTouch(true);
       if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+          gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       short vcol;  G.vcolor.getinit(vcol);
@@ -334,32 +337,31 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       Tpoint translate(this->width()/2.,0);
       int n = G.nv();
       svector<tvertex> newvertex(1,n);
-	  tvertex v;
+      tvertex v;
       for(v = 1; v <= n;v++)//translate all the graph
-	  G.vcoord[v] /= 2.;
+          G.vcoord[v] /= 2.;
       for(v = 1; v <= n;v++)
-	  {if(G.vcolor[v] != vcol)continue;
-	  newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
-	  }
+          {if(G.vcolor[v] != vcol)continue;
+          newvertex[v] = G.NewVertex(G.vcoord[v] + translate);
+          }
       int m = G.ne();
       tvertex v1,v2;
       for(tedge e = 1; e <= m;e++)
-	  {v1 = G.vin[e];v2 = G.vin[-e];
-	  if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
-	      G.NewEdge(newvertex[v1],newvertex[v2]);
-	  }
+          {v1 = G.vin[e];v2 = G.vin[-e];
+          if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
+              G.NewEdge(newvertex[v1],newvertex[v2]);
+          }
       for(v = 1; v <= n;v++)
-	  {if(G.vcolor[v] != vcol)continue;
-	  G.NewEdge(v,newvertex[v]);
-	  }
+          {if(G.vcolor[v] != vcol)continue;
+          G.NewEdge(v,newvertex[v]);
+          }
       load(true);
       gwp->mywindow->information();// Informations
       }
   }
 void GraphEditor::contentsMouseMoveEvent(QMouseEvent* e)
   {if(gwp->moving_item)
-      {gwp->moving_item->moveBy(e->pos().x() - start_position.x(),
-		       e->pos().y() - start_position.y());
+      {gwp->moving_item->moveBy(e->pos().x() - start_position.x(), e->pos().y() - start_position.y());
       start_position = e->pos();
       canvas()->update();
       }
@@ -369,11 +371,10 @@ void GraphEditor::contentsMouseMoveEvent(QMouseEvent* e)
       short vcol;  G.vcolor.getinit(vcol);
       NodeItem * node;
       for(tvertex v = 1; v <= G.nv();v++)
-	  {node =(NodeItem *)nodeitem[v];
-	  if(G.vcolor[node->v] != vcol)continue;
-	  node->moveBy(e->pos().x() - start_position.x(),
-			      e->pos().y() - start_position.y());
-	  }
+          {node =(NodeItem *)nodeitem[v];
+          if(G.vcolor[node->v] != vcol)continue;
+          node->moveBy(e->pos().x() - start_position.x(), e->pos().y() - start_position.y());
+          }
       start_position = e->pos();
       canvas()->update();  
       }
@@ -395,7 +396,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       }
   if(gwp->moving_item) //end moving a vertex
       {if(!gwp->FitToGrid)
-	  {gwp->moving_item = 0;return;}
+          {gwp->moving_item = 0;return;}
       GeometricGraph & G = *(gwp->pGG);
       NodeItem *node = gwp->moving_item;
       tvertex v = node->v;
@@ -421,12 +422,12 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       NodeItem * node;
       // Find a vertex of the subgraph
       tvertex mv = 0;
-	  tvertex v;
+      tvertex v;
       for(v = 1; v <= G.nv();v++)
-	  {node =(NodeItem *)nodeitem[v];
-	  if(G.vcolor[node->v] != vcol)continue;
-	  else {mv = v;break;}
-	  }
+          {node =(NodeItem *)nodeitem[v];
+          if(G.vcolor[node->v] != vcol)continue;
+          else {mv = v;break;}
+          }
       if(!mv)return;
       double prev_x = G.vcoord[mv].x();
       double prev_y = G.vcoord[mv].y();
@@ -434,10 +435,10 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       double dx =  G.vcoord[mv].x() - prev_x;
       double dy =  G.vcoord[mv].y() - prev_y;
       for(v = 1;v <= G.nv();v++)
-	  {node =(NodeItem *)nodeitem[v];
-	  if(G.vcolor[node->v] != vcol)continue;
-	  node->moveBy(dx,-dy);
-	  }
+          {node =(NodeItem *)nodeitem[v];
+          if(G.vcolor[node->v] != vcol)continue;
+          node->moveBy(dx,-dy);
+          }
       canvas()->update();
       UpdateSizeGrid();
       PrintSizeGrid();
@@ -458,24 +459,24 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       int rtt = FindItem(p,node,edge);
       v2 = (rtt != node_rtti) ? 0 : node->v;
       if(rtt != node_rtti) //create a vertex
-	  {int h = gwp->canvas->height();
-	  Tpoint pp((double)p.x(),(double)(h - p.y()));
-	  v2 = G.NewVertex(pp);ToGrid(v2);
-	  nodeitem[v2] = CreateNodeItem(v2,gwp);
-	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-	  if(IsGrid)UpdateSizeGrid();
-	  }
+          {int h = gwp->canvas->height();
+          Tpoint pp((double)p.x(),(double)(h - p.y()));
+          v2 = G.NewVertex(pp);ToGrid(v2);
+          nodeitem[v2] = CreateNodeItem(v2,gwp);
+          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          if(IsGrid)UpdateSizeGrid();
+          }
       else
-	  v2 = node->v;
+          v2 = node->v;
       if(v1 != v2) // Create an edge 
-	  {tedge e = G.NewEdge(v1,v2);
-	  edgeitem[e] = CreateEdgeItem(e,gwp);
-	  }
+          {tedge e = G.NewEdge(v1,v2);
+          edgeitem[e] = CreateEdgeItem(e,gwp);
+          }
       delete gwp->curs_item;      gwp->curs_item = 0;
       canvas()->update();
       gwp->mywindow->information();// Informations
       if(v1 == v2) // We have created a vertex
-	  PrintSizeGrid();
+          PrintSizeGrid();
       return;
       }
   }
@@ -517,7 +518,7 @@ void GraphEditor::initialize()
   // very important to set here in case size was modified while hidden
   resize(sizeHint());
   if(gwp->canvas == 0)
-	  gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
+      gwp->canvas = new QCanvas(contentsRect().width(),contentsRect().height());
   if(!canvas())setCanvas(gwp->canvas);
   canvas()->update();
   //Compute the font size
@@ -529,7 +530,7 @@ void GraphEditor::initialize()
 
 void GraphEditor::load(bool initgrid) 
 // by default initgrid = true
-// when editng (erasing edges, vertices) initgrig = false
+// when editing (erasing edges, vertices,reorinetong) initgrid = false
   {if(!is_init)return;
   clear();// delete all items
   canvas()->update();
@@ -541,9 +542,9 @@ void GraphEditor::load(bool initgrid)
   if(initgrid)
       {Normalise();
       if(InitGrid(current_grid))
-	  DrawGrid(current_grid);
+          DrawGrid(current_grid);
       else
-	  DrawGrid(current_grid);
+          DrawGrid(current_grid);
       }
   else
       {DrawGrid(current_grid);
@@ -556,7 +557,7 @@ void GraphEditor::load(bool initgrid)
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
 
   for(tvertex v = 1;v <= G.nv();v++)
-       nodeitem[v] =  CreateNodeItem(v,gwp);
+      nodeitem[v] =  CreateNodeItem(v,gwp);
   for(tedge e = 1;e <= G.ne();e++)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
 
@@ -601,18 +602,18 @@ int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
   for(QCanvasItemList::Iterator it=l.begin();it!=l.end(); ++it)
       {rtt = (int)(*it)->rtti();
       if(rtt == ntxt_rtti)      
-	  {node = ((NodeTextItem *)(*it))->nodeitem;
-	  rtt = node_rtti;
-	  return rtt;
-	  }
+          {node = ((NodeTextItem *)(*it))->nodeitem;
+          rtt = node_rtti;
+          return rtt;
+          }
       else if(rtt == node_rtti) 
-	  {node = (NodeItem *)(*it);
-	  return rtt;
-	  }
+          {node = (NodeItem *)(*it);
+          return rtt;
+          }
       else if(rtt == edge_rtti) 
-	  {edge = (EdgeItem *)(*it);
-	  return rtt;
-	  }
+          {edge = (EdgeItem *)(*it);
+          return rtt;
+          }
       }
   return 0;
   }
@@ -636,9 +637,9 @@ int GraphEditor::FindItem(QPoint &p,ColorItem* &coloritem)
   for(QCanvasItemList::Iterator it=l.begin();it!=l.end(); ++it)
       {rtt = (int)(*it)->rtti();
       if(rtt == col_rtti) 
-	  {coloritem = (ColorItem *)(*it);
-	  return rtt;
-	  }
+          {coloritem = (ColorItem *)(*it);
+          return rtt;
+          }
       else  return 0;
       }
   return 0;
@@ -649,9 +650,9 @@ int GraphEditor::FindItem(QPoint &p,ThickItem* &thickitem)
   for(QCanvasItemList::Iterator it=l.begin();it!=l.end(); ++it)
       {rtt = (int)(*it)->rtti();
       if(rtt == thick_rtti) 
-	  {thickitem = (ThickItem *)(*it);
-	  return rtt;
-	  }
+          {thickitem = (ThickItem *)(*it);
+          return rtt;
+          }
       else  return 0;
       }
   return 0;

@@ -11,3 +11,4 @@
 		int TopologicalGraph::NpBiconnectVertex()
 11/02/2005: So now, triangulate by adding vertices and quandrangulate a graph by adding vertices work properly.	
 18/02/2005: The vision algorithm does not anymore compute a biporlar orientation if the graph is already biporlarly oriented.
+18/02/2005: There were some bugs in the editor when reversing the orientation of an edge..

@@ -631,23 +631,22 @@ pigaleWindow::pigaleWindow()
 				      ,QMessageBox::Ok
 				      ,QMessageBox::Cancel);
       if(rep == 1)
-	      {DirFileDoc = QFileDialog::
-	      getExistingDirectory(".",this,"find",
-				   tr("Choose the documentation directory <em>Doc</em>"),TRUE);
-	      if(!DirFileDoc.isEmpty())
-	          {QFileInfo fi =  
-		   QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
-		  if(fi.exists())
-		      {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
-		      browser->setSource("manual.html");
-		      SaveSettings();
-		      }
-		  else
-		      QMessageBox::information(this,"Pigale Editor"
-				      ,tr("I cannot find the inline manual<em>manual.html</em>")
-				      ,QMessageBox::Ok);
-	         }
-	      }
+          {DirFileDoc = QFileDialog::
+          getExistingDirectory(".",this,"find", tr("Choose the documentation directory <em>Doc</em>"),TRUE);
+          if(!DirFileDoc.isEmpty())
+              {QFileInfo fi =  
+              QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
+              if(fi.exists())
+                  {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
+                  browser->setSource("manual.html");
+                  SaveSettings();
+                  }
+              else
+                  QMessageBox::information(this,"Pigale Editor"
+                                           ,tr("I cannot find the inline manual<em>manual.html</em>")
+                                           ,QMessageBox::Ok);
+              }
+          }
       }
   else
       {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
@@ -779,6 +778,7 @@ void pigaleWindow::save()
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok) return;
+  //G.FixOrientation();
   if(SaveGraphTgf(G,(const char *)OutputFileName) == 1)
       {QString t;
       t.sprintf("Cannot open file:%s",(const char *)OutputFileName);

@@ -465,19 +465,19 @@ void NodeItem::moveBy(double dx, double dy)
       {ei = (EdgeItem *)(edgeitem[b.GetEdge()]); //lower part
       opp = ei->opp; //upper part
       if(b() > 0)  
-	  {x0 = opp->endPoint().x(); y0 = opp->endPoint().y();
-	  x  = (int)(nx * xorient + x0*(1.-xorient));
-	  y  = (int)(ny * xorient + y0*(1.-xorient));
-	  ei->setPoints((int)nx,(int)ny,(int)x,(int)y);
-	  opp->setFromPoint((int)x,(int)y);
-	  }
+          {x0 = opp->endPoint().x(); y0 = opp->endPoint().y();
+          x  = (int)(nx * xorient + x0*(1.-xorient));
+          y  = (int)(ny * xorient + y0*(1.-xorient));
+          ei->setPoints((int)nx,(int)ny,(int)x,(int)y);
+          opp->setFromPoint((int)x,(int)y);
+          }
       else  
-	  {x0 = ei->startPoint().x(); y0 = ei->startPoint().y();
-	  x  = (int)(x0 * xorient + nx*(1.-xorient));
-	  y  = (int)(y0 * xorient + ny*(1.-xorient));
-	  opp->setPoints((int)x,(int)y,(int)nx,(int)ny);
-	  ei->setToPoint((int)x,(int)y);   
-	  }
+          {x0 = ei->startPoint().x(); y0 = ei->startPoint().y();
+          x  = (int)(x0 * xorient + nx*(1.-xorient));
+          y  = (int)(y0 * xorient + ny*(1.-xorient));
+          opp->setPoints((int)x,(int)y,(int)nx,(int)ny);
+          ei->setToPoint((int)x,(int)y);   
+          }
       }
   canvas()->update();
   }
