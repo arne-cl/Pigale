@@ -161,6 +161,9 @@ void Graph_Properties::update(bool print)
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
       setError(-1,"vin[0] or cir[0] or acir[0] != 0");
       }
+#ifdef TDEBUG
+DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
+#endif
   
   int nloops = G.RemoveLoops();
   if(nloops)

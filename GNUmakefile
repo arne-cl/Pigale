@@ -14,6 +14,13 @@ clean:
 	cd qt ; make -e clean
 	cd ClientServer ; make -e clean
 	cd incl/TAXI ;rm -f *~ *.hh
+unix:
+	cd tgraph ; dos2unix -k *.cpp
+	cd qt ; dos2unix -k *.h ; dos2unix -k *.cpp
+	cd ClientServer ; dos2unix -k *.h ; dos2unix -k *.cpp
+	cd incl ; dos2unix -k *.h 
+	cd incl/TAXI ; dos2unix -k *.h 
+	cd incl/QT ; dos2unix -k *.h 
 
 rebuild:
 	cd tgraph ; touch *.cpp
