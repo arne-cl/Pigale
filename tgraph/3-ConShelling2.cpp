@@ -65,6 +65,11 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
               }
           // return FirstBrin at the last time.
           left = FirstBrin;
+          //All edges should be red except the FisrtBrin
+          int nred = 1;
+          for(tedge e = 1;e <= G.ne();e++)
+              if(ecolor[e] == Red) ++nred;
+          if(nred != G.ne())error= nred - G.ne();
           return 0; // no more vertex or face to shell.
           }
       i = Candidates.pop();
