@@ -32,9 +32,9 @@
 
 #include <TAXI/Tgf.h> 
 
-static TSArray<int> MacroActions(4);
-//static TSArray<int> ,MacroEwidth(4);
-//static TSArray<short> MacroVcolor(4),MacroEcolor(4);
+static TSArray<int> MacroActions(0,4);
+//static TSArray<int> ,MacroEwidth(0,4);
+//static TSArray<short> MacroVcolor(0,4),MacroEcolor(0,4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
 static int key = 0;

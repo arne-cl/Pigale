@@ -21,7 +21,7 @@
 
 using namespace std; 
 
-int IsFileTgf(char const *name)
+int IsFileTgf(const char *name)
   {char ID[4];
   fstream stream;
 
@@ -32,7 +32,7 @@ int IsFileTgf(char const *name)
   if(strncmp(ID,"TGF",3) != 0)return 0;
   return 1;
   }
-int Tgf::open(char const *name,open_mode mode)
+int Tgf::open(const char *name,open_mode mode)
   {if(mode == old)
       //stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); 
       {stream.open(name,ios::in|BINMODE); 

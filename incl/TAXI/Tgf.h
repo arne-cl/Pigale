@@ -163,7 +163,7 @@ struct StructTagList
     StructTagList() : number(0),tag(0),len(0) {}
     };
 
-int IsFileTgf(char const *name);
+int IsFileTgf(const char *name);
 inline int NumPadding(int n){return(3 - (n+3)%4);}
 
 class Tgf {
@@ -210,7 +210,7 @@ class Tgf {
             {if(!IsOpen)return;
             close();
             }
-        int open(char const *name, open_mode mode = old);
+        int open(const char *name, open_mode mode = old);
         void close()
             {if(IsOpen)
                 {Flush();

@@ -686,14 +686,43 @@ void MyWindow::load()
       }
 
   }
-void MyWindow::load(int pos)
+int MyWindow::publicLoad(int pos)
   {setError();
   QString m;
   if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
-      {m.sprintf("file %s does not exist",(const char *)InputFileName);
+      {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
       statusBar()->message(m,2000);
+      LogPrintf("%s\n",(const char *)m);
       gw->update();
-      return;
+      return -1;
+      }      
+  UndoClear();UndoSave();
+  int NumRecords =GetNumRecords((const char *)InputFileName);
+  *pGraphIndex = pos;
+  if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
+  else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
+  if(ReadGraph(GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
+      {m.sprintf("Could not read:%s",(const char *)InputFileName);
+      statusBar()->message(m,2000);
+      return -2;
+      }
+  if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
+  Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
+  TopologicalGraph G(GC);
+  UndoSave();
+  banner();
+  information(); gw->update();
+  return *pGraphIndex;
+  }
+int MyWindow::load(int pos)
+  {setError();
+  QString m;
+  if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
+      {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
+      statusBar()->message(m,2000);
+      LogPrintf("%s\n",(const char *)m);
+      gw->update();
+      return -1;
       }      
   UndoClear();UndoSave();
   int NumRecords =GetNumRecords((const char *)InputFileName);
@@ -704,7 +733,7 @@ void MyWindow::load(int pos)
   if(ReadGraph(GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
       {m.sprintf("Could not read:%s",(const char *)InputFileName);
       statusBar()->message(m,2000);
-      return;
+      return -2;
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
@@ -712,6 +741,7 @@ void MyWindow::load(int pos)
   UndoSave();
   banner();
   information(); gw->update();
+  return *pGraphIndex;
   }
 void MyWindow::save()
   {TopologicalGraph G(GC);

@@ -163,20 +163,18 @@ void Graph_Properties::update(bool print)
       setError(-1,(const char *)t);
       Twait((const char *)t);
       }
-  int ns,nt;
-  bool S = G.CheckSimple();
-  bool P = G.CheckPlanar();
+  S = G.CheckSimple();
+  P = G.CheckPlanar();
   bool SMALL = (G.nv() < 3) ? true : false;
   bool M = (!SMALL  && (G.ne() == 3*G.nv() - 6)) ? true : false;
-  bool T = (P && S && M) ? true : false;     //Triangulation
-  bool A = G.CheckAcyclic(ns,nt);
-  bool B = G.CheckBipartite();
-  int dmin,dmax;  G.MinMaxDegree(dmin,dmax);
-  bool R = (dmin == dmax) ? true :false;
-  bool C1,C2,C3;
+  T = (P && S && M) ? true : false;     //Triangulation
+  A = G.CheckAcyclic(ns,nt);
+  B = G.CheckBipartite();
+  G.MinMaxDegree(dmin,dmax);
+  R = (dmin == dmax) ? true :false;
   C1 = C2 = C3 = false;
-  bool Outer = false;
-  bool Serie = false;
+  Outer = false;
+  Serie = false;
  
   bool H = G.Set().exist(PROP_HYPERGRAPH);
   bool E;
@@ -289,18 +287,13 @@ void Graph_Properties::update(bool print)
       else if(E) Tprintf("No C3 Separator");
       else Tprintf("C3 Separator");
       }
-
-  else if(P && S && !M && dmin > 2  && G.CheckTriconnected())
-      {if(getError()){setError();Tprintf("Error CheckTriconnected");}
-      }
-
-  else if(P && S && !M && G.CheckSubdivTriconnected())
+  else if(!C3 && P && S && !M && G.CheckSubdivTriconnected())
       {if(getError()){setError();Tprintf("Error CheckSubdivTriconnected");}
       else Tprintf("Subdivision of a 3-Connected");
       }
       
   if(B && P && S && G.nv() > 3 && G.ne() == 2*G.nv()-4)
-      Tprintf("Maximal planar bipartite");
+      {MaxBi = true;Tprintf("Maximal planar bipartite");}
   else if(H) 
       {Prop1<int> hnv(G.Set(),PROP_NV);
       Prop1<int> hne(G.Set(),PROP_NE);

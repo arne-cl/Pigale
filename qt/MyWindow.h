@@ -50,13 +50,13 @@ public:
   ~MyWindow();
 
 public slots:
-  void load(int pos);
   void banner();
   void timer();
 
 private slots:
   void newgraph();
   void load();
+  int load(int pos);
   void previous();
   void reload();
   void next();
@@ -65,7 +65,6 @@ private slots:
   void saveAs();
   void deleterecord();
   void switchInputOutput();
-  int  handler(int action);
   void macroHandler(int action);
   void macroPlay();
   void about();
@@ -85,6 +84,7 @@ public slots:
   void information();
   void print();
   void png();
+  int  handler(int action);
 private:
   void mapActionsInit();
   int  macroLoad(QString FileName);
@@ -98,7 +98,7 @@ public:
   int MyWindow::getKey();
   QString getActionString(int action);
   int getActionInt(QString action_str);
-
+  int publicLoad(int pos);
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *e;
@@ -113,15 +113,15 @@ public:
   GraphContainer GC;
   QString DirFilePng;
   QPalette LightPalette;
- 
+  QString InputFileName;
+  QString OutputFileName;
+
 private:
   QToolBar *tb;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
   LineEditNum *macroLine;
   QLineEdit *seedEdit;
   QPrinter *printer;
-  QString InputFileName;
-  QString OutputFileName;
   QString DirFileMacro;
   QString MacroFileName;
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;

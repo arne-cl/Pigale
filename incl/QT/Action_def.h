@@ -25,7 +25,7 @@
 #define  A_AUGMENT_TRIANGULATE_V    (A_AUGMENT+5)       // TRIANGULATE_V
 #define  A_AUGMENT_TRIANGULATE_ZZ   (A_AUGMENT+6)       // TRIANGULATE_ZZ
 #define  A_AUGMENT_TRIANGULATE_3C   (A_AUGMENT+7)       // TRIANGULATE_3C
-#define  A_AUGMENT_QUADRANGULATE_V  (A_AUGMENT+8)       // QUADRANGULATE_V_
+#define  A_AUGMENT_QUADRANGULATE_V  (A_AUGMENT+8)       // QUADRANGULATE_V
 #define  A_AUGMENT_BISSECT_ALL_E    (A_AUGMENT+9)       // BISSECT_ALL_E
 #define  A_AUGMENT_END              (A_AUGMENT+99)
 
@@ -159,12 +159,12 @@
 
 // server message errors
 #define A_ERRORS               (-10000) 
-#define UNKNOWN_COMMAND        (A_ERRORS-1) 
-#define WRONG_PARAMETERS       (A_ERRORS-2) 
-#define PROP_NOT_DEFINED       (A_ERRORS-3) 
-#define ACTION_NOT_APPLICABLE  (A_ERRORS-4) 
-#define ACTION_NOT_INT         (A_ERRORS-5) 
-#define READ_ERROR             (A_ERRORS-6) 
+#define UNKNOWN_COMMAND        (A_ERRORS-1) // UNKNOWN_COMMAND
+#define WRONG_PARAMETERS       (A_ERRORS-2) // WRONG_PARAMETERS
+#define PROP_NOT_DEFINED       (A_ERRORS-3) // PROP_NOT_DEFINED
+#define ACTION_NOT_APPLICABLE  (A_ERRORS-4) // ACTION_NOT_APPLICABLE
+#define ACTION_NOT_INT         (A_ERRORS-5) // ACTION_NOT_INT
+#define READ_ERROR             (A_ERRORS-6) // READ_ERROR
 
 // server separators
 const char ACTION_SEP = ':';  //to separate actions

@@ -44,6 +44,22 @@ public:
 		    const char* name = 0,WFlags fl = 0 );
   ~Graph_Properties();
   void update(bool print = true);
+  bool Simple(){return S;}
+  bool Planar(){return P;}
+  bool Triangulation(){return T;}
+  bool Acyclic(){return A;}
+  bool Biparti(){return B;}
+  bool MaxBiparti(){return MaxBi;}
+  bool Con1(){return C1;}
+  bool Con2(){return C2;}
+  bool Con3(){return C3;}
+  bool OuterPlanar(){return Outer;}
+  bool SeriePlanar(){return Serie;}
+  bool Regular(){return R;}
+  int DegreeMin(){return dmin;}
+  int DegreeMax(){return dmax;}
+  int NumSources(){return ns;}
+  int NumSinks(){return nt;}
 
   QLabel* TextLabel3;
   QLabel* TextLabel1;
@@ -62,17 +78,21 @@ public:
   RoRadioButton* RBRegular;
   int MaxNSlow;
   int MaxNDisplay;
+  // graph properties (used by the server)
+
+
 public slots:
   void MaxNSlowChanged(int i);
   void MaxNDisplayChanged(int i);
-protected:
+private:
   QVBoxLayout* MainLayout;
   QHBoxLayout* Layout_NM;
   QHBoxLayout* Layout_CP;
   QVBoxLayout* Layout_C;
   QVBoxLayout* LayoutP;
   QMenuBar *menu;
-
+  int ns,nt,dmin,dmax;
+  bool S,P,A,B,R,C1,C2,C3,T,Outer,Serie,MaxBi;
 };
 
 #endif // GRAPH_PROPERTIES_H
