@@ -39,7 +39,7 @@ void GraphEditor::Spring()
   for(iter = 1;iter <= niter;iter++)
       {for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
-	  // vertices repulse each other, more when they are close to each other
+	  // vertices repulse each other (1/d²)
 	  for(tvertex v = 1;v <= n;v++)
 	      {if(v == v0)continue;
 	      p = G.vcoord[v];
@@ -47,7 +47,7 @@ void GraphEditor::Spring()
 	      strength = (hw/dist2);
 	      translate[v0]  = (p0 - p)*strength; 
 	      }
-	  // edges repulse non adjacent vertices
+	  // edges repulse non adjacent vertices (1/d²)
 	  // now too simple solution
 	  for(tedge e = 1; e <= m;e++)
 	      {tvertex v = G.vin[e], w = G.vin[-e];
@@ -59,7 +59,7 @@ void GraphEditor::Spring()
 	      }
 	  }
 
-      // adjacent vertices are attracted
+      // adjacent vertices are attracted (1/d)
       for(tedge e = 1; e <= m;e++)
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  dist2 = Max(Distance2(p0,p),1.);
@@ -68,7 +68,7 @@ void GraphEditor::Spring()
 	  translate[G.vin[-e]] += (p0-p)*strength;
 	  }
 
-      // vertices are attracted by the center
+      // vertices are attracted by the center (1/d)
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  dist2 = Max(Distance2(p0,center),1.);
