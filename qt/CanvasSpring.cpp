@@ -26,12 +26,12 @@ void GraphEditor::Spring()
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<Tpoint> translate(1,G.nv()); //translate.clear();
   double w = gwp->canvas->width();
-  // hw something like optimal mean distances
   double mhw = Min(gwp->canvas->width(),gwp->canvas->height()) - 2*BORDER;
   Tpoint center((w - space - sizerect)/2.,gwp->canvas->height()/2.); 
-  int n = G.nv();
-  double hw = .5*(mhw*mhw)/(n*n);
-  int iter,niter = 1000;
+  int n = G.nv(),m =G.ne();
+  // during iteration keeep the drawing size
+  double hw = .8*(mhw*mhw)/(n*m); 
+  int iter,niter = 2000;
   double dist2,strength;
   Tpoint p0,p;
 
@@ -48,7 +48,7 @@ void GraphEditor::Spring()
 	      }
 	  // edges repulse non adjacent vertices
 	  // now too simple solution
-	  for(tedge e = 1; e <= G.ne();e++)
+	  for(tedge e = 1; e <= m;e++)
 	      {tvertex v = G.vin[e], w = G.vin[-e];
 	      if(v0 == v || v0 == w)continue;
 	      p = (G.vcoord[v]+G.vcoord[w])/2.;
@@ -57,8 +57,9 @@ void GraphEditor::Spring()
 	      translate[v0] += (p0 - p)*strength;
 	      }
 	  }
+
       // adjacent vertices are attracted
-      for(tedge e = 1; e <= G.ne();e++)
+      for(tedge e = 1; e <= m;e++)
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  dist2 = Max(Distance2(p0,p),1.);
 	  strength = Min(sqrt(hw/dist2),.1);
@@ -70,7 +71,7 @@ void GraphEditor::Spring()
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  dist2 = Max(Distance2(p0,center),1.);
-	  strength = Min(sqrt(hw/dist2),.5);// if min too big -> unstability
+	  strength = Min(sqrt(hw/dist2),.25);
 	  translate[v0] -= (p0 - center)*strength;
 	  }
 
@@ -88,7 +89,7 @@ void GraphEditor::Spring()
       qApp->processEvents(5);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       }
-  Tprintf("Spring iter=%d",iter);
+  Tprintf("Spring iter=%d",iter-1);
   DoNormalise = true;
   Normalise();load(false);
   }
