@@ -277,16 +277,22 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   RBAcyclic->setChecked(A);
   RBConnected->setChecked(C1);
   RB2Connected->setChecked(C2);
-  if(!P)RB3Connected->setEnabled(false);
-  else  {RB3Connected->setEnabled(true);RB3Connected->setChecked(C3);}
+  // 3-connectivity
+  if(!P)RB3Connected->hide();
+  else  RB3Connected->show();
+  RB3Connected->setChecked(C3);
+
+  // Outerplanar
   RBOuPlanar->setChecked(Outer);
   if(Outer)
-      {if(C2) RBOuPlanar->setText("Max. OuterPlanar");
-      else    RBOuPlanar->setText("OuterPlanar");
+      {if(C2 && (G.ne() == 2*G.nv() - 3)) RBOuPlanar->setText(tr("Max. OuterPlanar"));
+      else    RBOuPlanar->setText(tr("OuterPlanar"));
       }
-  if(P && !C2)RBSerie->setEnabled(false);
-  if(Serie)
-      {RBSerie->setChecked(Serie);RBSerie->setEnabled(true);}
+  // Serie (test is only for 2-connected graphs)
+  if(P && !C2)
+      RBSerie->hide();
+  else
+      {RBSerie->show();  RBSerie->setChecked(Serie);}
 
   LE_N->setText(QString("%1").arg(G.nv()));
   LE_M->setText(QString("%1").arg(G.ne()));
