@@ -21,8 +21,9 @@
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qtextstream.h>
+#include <qdatastream.h>
 #include <qstringlist.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include <Pigale.h>
 #include "MyWindow.h"
@@ -59,6 +60,7 @@ private:
   int prId;
   int sdebug;
   QTextStream cli;
+  QDataStream clo;
   MyWindow *mw; 
 };
 

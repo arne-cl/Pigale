@@ -13,6 +13,8 @@
 #include "client.h"
 #include <QT/Action_def.h>
 #include <QT/Action.h>
+#include <qfile.h>
+#include <qfileinfo.h>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
                               + __GNUC_MINOR__ * 100 \
@@ -26,19 +28,24 @@
 using namespace std;
 
 /* 
-If the input is a file:
+In the input:
 - lines starting by '#' are treated as comments
 - lines starting by ':' are treated by the client
 - line  starting by ':!' signals the end of file
-- line  starting by ':D' signals the client to echo the commands
-- line  starting by ':d' signals the client not to echo the commands
+- line  starting by ':D' signals the client to echo the comments
+- line  starting by ':d' signals the client not to echo the comments
 
 - otherwise a line contains commands  separated by ':'
 - commands may contains arguments separated by ';'
+
+When reading from the server
+- lines starting with ! are commands
+- lines starting by : are diplayed in the text window
+otherwise they are output to the terminal 
 */
 
 Client::Client(const QString &host, Q_UINT16 port)
-    :debug(false)
+    :debug(false),numPng(0)
   {infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
@@ -52,6 +59,7 @@ Client::Client(const QString &host, Q_UINT16 port)
   // create the socket and connect various of its signals
   socket = new QSocket( this );
   cls.setDevice(socket);
+  clo.setDevice(socket);
   connect(socket, SIGNAL(connected()),SLOT(socketConnected()) );
   connect(socket, SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()) );
   connect(socket, SIGNAL(readyRead()),SLOT(socketReadyRead()) );
@@ -87,7 +95,8 @@ void Client::sendToServer()
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)return;
   //split str -> 1 command per line if not a comment
-  if(str.at(0) == '#'){cls <<str << "\n";return;}
+  if(str.at(0) == '#' ||str.at(0) == '!')
+      {cls <<str << endl;return;}
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
       Translate(fields[i].stripWhiteSpace());
@@ -108,10 +117,26 @@ void Client::Translate(QString str)
 void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
+      str = str.stripWhiteSpace();
       if(str.at(0) == ':')
 	  infoText->append(str.mid(1));
+      else if(str == "!PNG")// receiving a png image
+	  {QString PngFile = QString("image%1.png").arg(++numPng);
+	  QString m = QString("getting:%1").arg(PngFile);
+	  infoText->append(m);
+	  QFile file(PngFile);
+	  file.open(IO_ReadWrite);
+	  QDataStream stream(&file);
+	  char *buff;
+	  uint size;
+	  clo.readBytes(buff,size);
+	  stream.writeRawBytes(buff,size);
+	  file.close();
+	  delete [] buff;
+	  infoText->append("got image");
+	  }
       else if(str.at(0) != '!')
-	  cout << str;
+	  cout << str << endl;
       }
   }
 void Client::socketConnected()
@@ -146,7 +171,8 @@ void Client::run()
 	  {QChar c = str.at(1);
 	      switch(c)
 		  {case '!':
-		       infoText->append("EndOfFile");
+		       str = "!";
+		       emit threadSendToServer(str);
 		       return;
 		  case 'D':
 		      debug = true;

@@ -1,24 +1,19 @@
-#if a line starts by '#' or ':' only the 2 first characters are interpreted
+#if a line starts by '!' or ':' only the 2 first characters are interpreted
 #lines starting with '#' are comments
 #lines starting with ':' mofify the client-server behaviour
-:D //echo comments
-
-#Read graph 1 of tgf file ex.tgf (on server side)
-R_GRAPH;ex.tgf;1
+#:D //echo comments
+R_GRAPH;../../tgf/Sydney.tgf;3
 N:M
-#Read the graph of ascci file graph0.txt (on server side)
-R_GRAPH;graph0.txt
-#N
-N
-#M
-M
-#ask vertex labels
-VLAB
-#ask for a FPP embedding
-FPP_FARY
-#ask coords
-COORD
-#end 
+SPRING_PM
+PNG
+GVISION
+PNG
+FPP_RECTI
+PNG
+EMBED-3d
+PNG
+SYMETRIE
+PNG
 :!
 
 

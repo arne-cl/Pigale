@@ -22,6 +22,9 @@
 #include <QT/MyCanvas.h> 
 
 #include <qmenubar.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+
 
 void InitPigaleColors();
 void InitPigaleFont();
@@ -76,7 +79,7 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
   }
 ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
-    QSocket(parent,name),sdebug(0),cli(this),mw(p)
+    QSocket(parent,name),sdebug(0),cli(this),clo(this),mw(p)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this, SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
@@ -93,10 +96,12 @@ void ClientSocket::writeServer(QString& msg)
 void ClientSocket::readClient()
   {while (canReadLine())
       {QString str = cli.readLine();
-      //qDebug("R:%s",(const char *)str);
+      //qDebug("R:'%s'",(const char *)str);
       if(++line == 10000)line = 0;
       if(str.at(0) == '#')
 	  cli << str << endl;
+      else if(str.at(0) == '!')
+	  cli << ":END OF FILE" << endl;
       else 
 	  //parseSplitAction(str);  
 	  xhandler(str); // now the server split actions  
@@ -119,8 +124,8 @@ int ClientSocket::xhandler(const QString& dataAction)
   int err = 0;
   if(!ok)
       {err = ACTION_NOT_INT;
-      cli <<"# ERREUR '"<<dataAction <<"' -> "<<err << endl;
-      cli <<"# data param:" <<  beg << endl;
+      cli <<": ERREUR '"<<dataAction <<"' -> "<<mw->getActionString(err) << endl;
+      cli <<": data param:" <<  beg << endl;
       return err;
       }
   
@@ -133,16 +138,34 @@ int ClientSocket::xhandler(const QString& dataAction)
       {if(mw->menuBar()->isItemEnabled(action))
 	  mw->handler(action);
       else 
-	  cli <<"#Action not allowed:"<<mw->getActionString(action)<< endl;
+	  cli <<":Action not allowed:"<<mw->getActionString(action)<< endl;
       }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
+  else if(action == A_TRANS_PNG)
+      {cli <<":SENDING PNG" << endl;
+      mw->png();
+      QString InputFileName ="/tmp/server.png";
+      QFileInfo fi = QFileInfo(InputFileName);
+      if(InputFileName.isEmpty())
+	  {cli << "no png file" << endl;return -1;}
+      uint size = fi.size();
+      QFile file(InputFileName);
+      file.open(IO_ReadWrite);
+      QDataStream stream(&file);
+      char *buff = new char[size];
+      stream.readRawBytes(buff,size); 
+      cli <<"!PNG" << endl;
+      clo.writeBytes(buff,size);
+      delete [] buff;
+      file.remove();
+      }
   else
       err = UNKNOWN_COMMAND;
   if(err)
-      {cli <<"# ERREUR '"<<mw->getActionString(action)<<"' -> "
+      {cli <<": ERREUR '"<<mw->getActionString(action)<<"' -> "
 	   << mw->getActionString(err)<<endl;
-      cli <<"# " <<dataAction<< endl;
+      cli <<": " <<dataAction<< endl;
       }
   return err; 
   }
@@ -159,14 +182,10 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
 	   if(nfield > 1)num = fields[1].toInt(&ok);
 	   if(!ok)return WRONG_PARAMETERS;
 	   if(mw->publicLoad(num) < 0)return READ_ERROR;
-	   //msg = QString("R: '%1':%2").arg(mw->InputFileName).arg(num);
-	   //writeServer(msg);
 	   }
 	   break;
       case  A_INPUT_NEW_GRAPH:
-	  {Graph G(mw->GC);
-	  G.StrictReset();
-	  }
+	  mw->NewGraph();
 	  break;
       case A_INPUT_NEW_VERTEX:
 	  {int n = 1;

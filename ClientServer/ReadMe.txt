@@ -2,16 +2,58 @@
 This is the very first implementation of a simple Client-Server program.
 These two programs make use of the Qt library  but as the  client reads 
 its instructions from stdin and its results  to stdout 
-it should not be difficult for applications to communicate with the server.
-To experiment the program  two example files are provided (data1 and data2   which shows some 
-aspects of the proposed syntax.
+It should not be difficult for applications to communicate with the server.
+To experiment the program  two example files are provided (data1 and data2)
+which shows some aspects of the proposed syntax.
+
 To launch the application:
-./Server &
-./XClient < data1
+Client or Client < data1
+XServer (serves concurrently != clients)
+or pigale -server (serves one client at a time)
+
 Two graphs  are given: graph0.txt and ex.tgf. 
 The latter one is a binary file and can only be read on x86 compatible machines.
 The server and client use a TCP connection on port 4242.
-The commands that can be used are nearly all the ones found in QT/Action.h:
+
+The specific input of the client are:
+- lines starting with '#' are comments
+- lines starting with ':' which modify the client-server behaviour
+For example
+:D    // echo comments
+:d    // stop echoing
+:!    // end of file
+
+
+Commands not in found in  Pigale macros
+R_GRAPH   // load a  graph  (now on the server side)
+N_GRAPH	  // creates an emty graph
+N_V	  // create n vertices
+N_E	  // create an edge  
+S_DEBUG   // commands are echoed while being executed
+PNG       // to get a png image of the current drawing
+
+Commands to retrieve information:
+N  
+M  
+SIMPLE			// simple graph
+PLAN			// planar
+OPLAN			// outer planar
+SR			// serie-parallel
+MPLAN			// triangulated planar graph
+BI			// Bipartite graph
+MBI			// Max planar Bipartite graph
+REG			// Regular
+C1			// Connected
+C2			// 2-Connected	
+C3			// 3-Connected
+MIN_D			// minimal degree
+MAX_D			// maximal degree
+COORD			// retrieve coords
+VLAB			// retrieve labels (long integers)  
+
+The commands that can be used are nearly all the ones found in QT/Action.h.
+
+To augment the graph:
 CONNECT
 BICONNECT
 BICONNECT_NP
@@ -20,6 +62,8 @@ TRIANGULATE_ZZ
 TRIANGULATE_3C
 QUADRANGULATE_V_
 BISSECT_ALL_E
+
+Embeddings:
 SCHNYDER_E
 SCHNYDER_V
 FPP_FARY
@@ -35,14 +79,20 @@ FPP_RECTI
 GVISION 
 T_CONTACT 
 EMBED-3d 
+
+Duality and angle graphs:
 DUAL  
 DUAL_G  
 ANGLE  
 ANGLE_G  
+
+Remove options:
 REMOVE_ISOLATED_V  
 REMOVE_LOOPS  
 REMOVE_MULTIPLE_E  
-REMOVE_BRIDGES  
+REMOVE_BRIDGES 
+
+Generators: 
 GEN_GRID  
 GEN_COMPLETE  
 GEN_COMPLETE_BIP  
@@ -60,6 +110,8 @@ GEN_PLANAR_P_BIP
 GEN_PLANAR_BIP  
 GEN_PLANAR_BIP_2C  
 GEN_PLANAR_BIP_3C  
+
+Algorithms:
 KURATOWSKI  
 COTREE_CRITICAL  
 NPSET  
@@ -72,39 +124,19 @@ SYMETRIE
 COLOR_BIPARTI  
 COLOR_EXT_FACE  
 COLOR_NON_CRITIC  
+
+Orientation algorithms:
 ORIENT_EDGES  
 ORIENT_INF  
 ORIENT_TRICON  
 ORIENT_BIPARTITE  
 ORIENT_SCHNYDER  
 ORIENT_BIPOLAR  
-ORIENT_BIPOLAR_NON_PLANAR  
+ORIENT_BIPOLAR_NON_PLANAR
+
+User defined algorithms:  
 TEST_1  
 TEST_2  
 TEST_3  
-Informations that can be retrieved:
-N  
-M  
-SIMPLE  
-PLAN  
-OPLAN  
-SR  
-MPLAN  
-BI  
-MBI  
-REG  
-C1  
-C2  
-C3  
-MIN_D  
-MAX_D  
-COORD  
-VLAB  
 
-Commands not in Pigale
-R_GRAPH  
-N_GRAPH  
-N_V  
-N_E  
-S_DEBUG  
 

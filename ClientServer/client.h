@@ -54,11 +54,13 @@ private slots:
 private:
   QSocket *socket;
   QTextStream cls;
+  QDataStream clo;
   QTextView *infoText;
   QLineEdit *inputText;
   typedef QMap<QString, int> ActionMap;
   ActionMap mActions;
   bool debug;
+  int numPng;
 
   void initMap();
   void Client::Translate(QString str);

@@ -155,6 +155,10 @@
 #define A_INPUT_NEW_EDGE       (A_INPUT+4)    //  N_E
 #define A_INPUT_END            (A_INPUT+99)    
 
+#define A_TRANS                (A_SERVER+200)  
+#define A_TRANS_PNG            (A_TRANS+1)    // PNG  
+#define A_TRANS_END            (A_TRANS+99)  
+
 #define SERVER_DEBUG           (A_SERVER+999)  //  S_DEBUG  
 
 // server message errors

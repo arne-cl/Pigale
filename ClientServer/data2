@@ -1,7 +1,3 @@
-#if a line starts by '#' or ':' only the 2 first characters are interpreted
-#lines starting with '#' are comments
-#lines starting with ':' modify the client-server behaviour
-:D //echo comments
 #create a graph
 N_GRAPH
 #create 5 vertices
