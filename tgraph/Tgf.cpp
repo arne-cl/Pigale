@@ -4,8 +4,9 @@
 ** All rights reserved.
 ** This file is part of the PIGALE Toolkit.
 **
-** This file may be distributed under the terms of the GNU Public License
-** appearing in the file LICENSE.HTML included in the packaging of this file.
+** This file may be distributed under the terms of the GNU
+** Public License appearing in the file LICENSE.HTML
+** included in the packaging of this file.
 **
 *****************************************************************************/
 
@@ -16,16 +17,11 @@
 // ios::bin is deprecated
 // ios::nocreate does not exists anymore
 
-
-#define BINMODE ios::binary   
-#ifndef _WINDOWS
-using namespace std; 
-#endif
 int IsFileTgf(const char *name)
   {char ID[4];
   fstream stream;
 
-  stream.open(name,ios::in|BINMODE); 
+  stream.open(name,ios::in|ios::binary); 
   if(!stream.is_open())return -1;
   stream.read(ID,4);
   stream.close();
@@ -34,17 +30,17 @@ int IsFileTgf(const char *name)
   }
 int Tgf::open(const char *name,open_mode mode)
   {if(mode == old)
-      //stream.open(name,ios::in|ios::out|ios::nocreate|BINMODE); 
-      {stream.open(name,ios::in|BINMODE); 
+      //stream.open(name,ios::in|ios::out|ios::nocreate|ios::binary); 
+      {stream.open(name,ios::in|ios::binary); 
       IsOpen = stream.is_open();
       if(!IsOpen)return 0;
       stream.close();
-      stream.open(name,ios::in|ios::out|BINMODE); 
+      stream.open(name,ios::in|ios::out|ios::binary); 
       IsOpen = stream.is_open();
       if(!IsOpen)return 0;
       }
   else
-      {stream.open(name,ios::in|ios::out|BINMODE|ios::trunc); 
+      {stream.open(name,ios::in|ios::out|ios::binary|ios::trunc); 
       IsOpen = stream.is_open();
       if(!IsOpen)return 0;
       }

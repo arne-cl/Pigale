@@ -54,19 +54,6 @@
 #include <qprogressbar.h>
 #include <qrect.h> 
 
-#if QT_VERSION < 300
-#undef QTextEdit
-#include <qtextview.h>
-#define QTextEdit QTextView
-#if _WINDOWS
-#include <qtextbrowser.h>
-#endif
-#else
-#include <qtextedit.h>
-#include <qtextbrowser.h>
-#include <qsettings.h>
-#endif
-
 
 #include "icones/fileopen.xpm"
 #include "icones/filenew.xpm"
@@ -198,7 +185,7 @@ MyWindow::MyWindow()
   tabWidget->addTab(graphsym,""); 
 
 #if QT_VERSION >= 300 || _WINDOWS
-  QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
+  browser = new QTextBrowser(tabWidget,"doc");
   tabWidget->addTab(browser,tr("User Guide")); 
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
@@ -397,8 +384,8 @@ MyWindow::MyWindow()
   QPopupMenu *orient = new QPopupMenu( this );
   menuBar()->insertItem(tr("&Orient"),orient);
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
-  orient->insertItem(tr("&Show orientation"),   10020);
-  orient->setItemChecked(10020,ShowOrientation());
+  orient->insertItem(tr("&Show orientation"),   A_SET_ORIENT);
+  orient->setItemChecked(A_SET_ORIENT,ShowOrientation());
   orient->insertItem(tr("&Orient all edges"),     A_ORIENT_E);
   orient->insertItem(tr("&Color Poles"),          A_ORIENT_SHOW);
   orient->insertItem(tr("&ReOrient color edges"), A_REORIENT_COLOR);
@@ -452,8 +439,8 @@ MyWindow::MyWindow()
   generate->insertItem(tr("&Random (N1,M)"),                   A_GENERATE_RANDOM );
   generate->insertSeparator(); 
   // Erase multiple edges
-  generate->insertItem(tr("Erase multiple edges"),10006);
-  generate->setItemChecked(10006,randomEraseMultipleEdges());
+  generate->insertItem(tr("Erase multiple edges"),A_SET_ERASE_MULT);
+  generate->setItemChecked(A_SET_ERASE_MULT,randomEraseMultipleEdges());
   spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
   spin_N1->setFocusPolicy(QWidget::StrongFocus); 
@@ -467,7 +454,7 @@ MyWindow::MyWindow()
   seedEdit =  new QLineEdit(popupSeed,"seedEdit");
   seedEdit->setText(QString("%1").arg(randomSetSeed()));
   generate->insertItem(tr("Seed"),popupSeed);
-  popupSeed->insertItem(tr("Change Seed"),10008);
+  popupSeed->insertItem(tr("Change Seed"),A_SET_RANDOM_SEED_CHANGE);
   popupSeed->insertItem(seedEdit);
 
   QPopupMenu *macroMenu = new QPopupMenu( this );
@@ -525,19 +512,23 @@ MyWindow::MyWindow()
 #ifdef TDEBUG
 	debug() = 1;
 #endif
-  settings->insertItem(tr("&Debug"),10001);
-  settings->setItemChecked(10001,debug());
+  settings->insertItem(tr("&Debug"),A_SET_DEBUG);
+  settings->setItemChecked(A_SET_DEBUG,debug());
   //undoEnable
-  settings->insertItem(tr("&Undo Enable"),10005);
-  settings->setItemChecked(10005,IsUndoEnable);
+  settings->insertItem(tr("&Undo Enable"),A_SET_UNDO);
+  settings->setItemChecked(A_SET_UNDO,IsUndoEnable);
   undoL->setEnabled(false);
   undoS->setEnabled(IsUndoEnable);
   undoR->setEnabled(false);
   // randomSeed 
-  settings->insertItem(tr("&Random Seed"),10007);
-  settings->setItemChecked(10007,randomSeed());
+  settings->insertItem(tr("&Random Seed"),A_SET_RANDOM_SEED);
+  settings->setItemChecked(A_SET_RANDOM_SEED,randomSeed());
   //Pigale colors
-  settings->insertItem(tr("&Pigale Colors"),10010);
+  settings->insertItem(tr("&Pigale Colors"),A_SET_COLOR);
+#if QT_VERSION >= 300 || _WINDOWS
+  // Pigale Doc Path
+  settings->insertItem(tr("&Documentation path"),A_SET_DOC);
+#endif
   //Pigale limits
   settings->insertItem(tr("Limit number of vertices"),popupLimits);
   popupLimits->insertItem(tr("for slow algorithms"));
@@ -560,12 +551,12 @@ MyWindow::MyWindow()
   //Embed Settings
   settings->insertSeparator();
   settings->insertItem(tr("&Embed Options"),popupEmbed);
-  popupEmbed->insertItem(tr("Schnyder: &Rect"),        10002);
-  popupEmbed->insertItem(tr("Schnyder: &Longest Face"),10003);
-  popupEmbed->insertItem(tr("Schnyder: &Color Edges"), 10004);
-  popupEmbed->setItemChecked(10002,SchnyderRect());
-  popupEmbed->setItemChecked(10003,SchnyderLongestFace());
-  popupEmbed->setItemChecked(10004,SchnyderColor());
+  popupEmbed->insertItem(tr("Schnyder: &Rect"),        A_SET_SCH_RECT);
+  popupEmbed->insertItem(tr("Schnyder: &Longest Face"),A_SET_LFACE);
+  popupEmbed->insertItem(tr("Schnyder: &Color Edges"), A_SET_SCH_COLOR);
+  popupEmbed->setItemChecked(A_SET_SCH_RECT,SchnyderRect());
+  popupEmbed->setItemChecked(A_SET_LFACE,SchnyderLongestFace());
+  popupEmbed->setItemChecked(A_SET_SCH_COLOR,SchnyderColor());
   //Distance Settings 
   settings->insertItem(tr("&Distance Options"),popupDistance);
   popupDistance->insertItem(comboDistance);
@@ -580,7 +571,7 @@ MyWindow::MyWindow()
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
   settings->insertSeparator();
-  settings->insertItem(tr("&Save Settings"),10011);
+  settings->insertItem(tr("&Save Settings"),A_SET_SAVE);
 
   //End of the menuBar():window
   //help
@@ -597,9 +588,9 @@ MyWindow::MyWindow()
   
   //Resize
 #if TDEBUG
-  setCaption(tr("Pigale Editor 1.2.4 Debug Mode"));
+  setCaption(tr("Pigale Editor 1.2.5 Debug Mode"));
 #else
-  setCaption(tr("Pigale Editor 1.2.4"));
+  setCaption(tr("Pigale Editor 1.2.5"));
 #endif
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
   resize(MyWindowInitXsize,MyWindowInitYsize);
@@ -617,17 +608,26 @@ MyWindow::MyWindow()
   QFileInfo fdoc = QFileInfo(DirFileDoc);
   if(!fdoc.exists() || !fdoc.isDir())
       {int rep = QMessageBox::warning(this,"Pigale Editor"
-				      ,"I cannot find the repertory <b>Doc.<br>"
-				      "Load manually ?"
+				      ,tr("I cannot find the repertory <b>Doc<br>"
+					  "Load manually ?")
 				      ,QMessageBox::Ok
 				      ,QMessageBox::Cancel);
       if(rep == 1)
-	      {DirFileDoc = QFileDialog::getExistingDirectory(".",this,"find",
-						       "Choose the documentation directory",TRUE);
+	      {DirFileDoc = QFileDialog::
+	      getExistingDirectory(".",this,"find",
+				   tr("Choose the documentation directory <em>Doc</em>"),TRUE);
 	      if(!DirFileDoc.isEmpty())
-	          {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
-	          browser->setSource("manual.html");
-              SaveSettings();
+	          {QFileInfo fi =  
+		   QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
+		  if(fi.exists())
+		      {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
+		      browser->setSource("manual.html");
+		      SaveSettings();
+		      }
+		  else
+		      QMessageBox::information(this,"Pigale Editor"
+				      ,tr("I cannot find the inline manual<em>manual.html</em>")
+				      ,QMessageBox::Ok);
 	         }
 	      }
       }
@@ -879,38 +879,62 @@ int MyWindow::handler(int action)
   else if(action < A_ORIENT_END)
       {t.start();
       ret = OrientHandler(action);
-      menuBar()->setItemChecked(10020,ShowOrientation());
+      menuBar()->setItemChecked(A_SET_ORIENT,ShowOrientation());
       }
   else if(action < A_TEST_END)
       {t.start();
       ret  = Test(GC,action - A_TEST);
       }
-  else if(action > 10000)
-      {if(action == 10010)
+  else if(action > A_SET)
+      {if(action == A_SET_COLOR)
 	  {SetPigaleColors();
 	  return 0;
 	  }
-      else if(action == 10011) 
+      if(action == A_SET_DOC)
+	  {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
+	  DirFileDoc = QFileDialog::
+	  getExistingDirectory(StartDico,this,"find",
+			       tr("Choose the documentation directory <em>Doc</em>"),TRUE);
+	  if(!DirFileDoc.isEmpty())
+	      {QFileInfo fi =  
+	       QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
+	      if(fi.exists())
+		  {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
+		  browser->setSource("manual.html");
+		  SaveSettings();
+		  QMessageBox::information(this,"Pigale Editor"
+				      ,tr("You should restart Pigale"
+					  " to get the manual loaded")
+				      ,QMessageBox::Ok);
+		  }
+	      else 
+		  QMessageBox::information(this,"Pigale Editor"
+				      ,tr("I cannot find the inline manual <em>manual.html</em>")
+				      ,QMessageBox::Ok);
+	      }
+	  return 0;
+	  }
+      else if(action == A_SET_PAUSE_DELAY) 
 	  {pauseDelay() = macroSpin->value();
 	  SaveSettings();
 	  return 0;
 	  }
-      else if(action == 10008)
+      else if(action == A_SET_RANDOM_SEED_CHANGE)
 	  {randomSetSeed() = atol((const char *)seedEdit->text());
 	  return 0;
 	  }
       
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
-      debug()               =  menuBar()->isItemChecked(10001);
-      SchnyderRect()        =  menuBar()->isItemChecked(10002);
-      SchnyderLongestFace() =  menuBar()->isItemChecked(10003);
-      SchnyderColor()       =  menuBar()->isItemChecked(10004);
-      ShowOrientation()     =  menuBar()->isItemChecked(10020);
-      randomEraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
-      randomSeed()          =  menuBar()->isItemChecked(10007);
+      debug()               =  menuBar()->isItemChecked(A_SET_DEBUG);
+      SchnyderRect()        =  menuBar()->isItemChecked(A_SET_SCH_RECT);
+      SchnyderLongestFace() =  menuBar()->isItemChecked(A_SET_LFACE);
+      SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
+      ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
+      randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
+      randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
       pauseDelay() = macroSpin->value();
-      if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
-      if(action == 10020)gw->update();
+      if(action == A_SET_UNDO)UndoEnable(menuBar()->isItemChecked(action));
+      if(action == A_SET_ORIENT)gw->update();
       return 0;
       }
   else
@@ -984,7 +1008,7 @@ void MyWindow::banner()
   statusBar()->message(m);
   }
 void MyWindow::about()
-  {QMessageBox::about(this,"Pigale Editor 1.2.4", 
+  {QMessageBox::about(this,"Pigale Editor 1.2.5", 
 		      "<b>Copyright (C) 2001</b>"
 		      "<br>Hubert de Fraysseix"
 		      "<br>Patrice Ossona de Mendez "
@@ -997,16 +1021,6 @@ void MyWindow::showLabel(int show)
   {//Now We can only show the index of a vertex or a long
   int _show = ShowVertex();
   ShowVertex() = show -1;
-//   switch(show)
-//       {case 0:
-// 	   ShowVertex() = -1;
-// 	   break;
-//       case 1:// PROP_LABEL = 0
-// 	  ShowVertex() = PROP_LABEL; 
-// 	  break;
-//       default:
-// 	  return;
-//       }
   if(ShowVertex() != _show && GC.nv())gw->update();
   }
 void  MyWindow::distOption(int use)
@@ -1081,7 +1095,7 @@ void MyWindow::UndoSave()
 	  }
       }
   if(SaveGraphTgf(G,undofile) == 1)
-      {handler(10005);return;}
+      {handler(A_SET_UNDO);return;}
   UndoIndex=UndoMax=++nb;
   this->undoL->setEnabled(true);
   banner();

@@ -10,7 +10,6 @@
 using namespace std;
 #endif
 
-inline double abs(double x) {if(x>=0) return x; else return -x;}
 int EmbedCurves(TopologicalGraph &G)
 {
   GeometricGraph GG(G); 

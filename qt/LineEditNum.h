@@ -14,7 +14,7 @@
 #include <qlineedit.h>
 
 class LineEditNum : public QLineEdit
-{
+{ 
   Q_OBJECT
  private: 
   int num;

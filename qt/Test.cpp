@@ -19,8 +19,8 @@ int Test(GraphContainer &GC,int action)
   GeometricGraph GG(GC);
   
   if(action == 1)
-    {for (int i=1; i<=10000; i++)
-      GG.ComputeGeometricCir();
+    {for (int i=1; i<=1000; i++)
+      GG.TestPlanar();
     return 0;
     }
   if(action == 3) 

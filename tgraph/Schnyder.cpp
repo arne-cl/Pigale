@@ -387,9 +387,9 @@ int Embed3dSchnyder(TopologicalGraph &G0)
   embedp().ptr=&em;
   for (int i=1; i<= G0.nv();i++)
     {
-    double xx=sqrt(x[i])/sqrt(G0.nv()-1);
-    double yy=sqrt(y[i])/sqrt(G0.nv()-1);
-    double zz=sqrt(z[i])/sqrt(G0.nv()-1);
+    double xx=sqrt((double)x[i])/sqrt((double)G0.nv()-1.);
+    double yy=sqrt((double)y[i])/sqrt((double)G0.nv()-1.);
+    double zz=sqrt((double)z[i])/sqrt((double)G0.nv()-1.);
     double tmp1,tmp2;
     tmp1=xx; tmp2=yy; xx=tmp1*tmp1-tmp2*tmp2; yy=2*tmp1*tmp2;
     tmp1=yy; tmp2=zz; yy=tmp1*tmp1-tmp2*tmp2; zz=2*tmp1*tmp2;

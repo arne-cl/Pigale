@@ -1,32 +1,5 @@
 <!DOCTYPE TS><TS>
 <context>
-    <name>@default</name>
-    <message>
-        <source>Visibility</source>
-        <translation type="obsolete">Visibilité</translation>
-    </message>
-    <message>
-        <source>FPP Visibility</source>
-        <translation type="obsolete">FPP Visibilité</translation>
-    </message>
-    <message>
-        <source>General Visibility</source>
-        <translation type="obsolete">Visibilité</translation>
-    </message>
-    <message>
-        <source>Contact</source>
-        <translation type="obsolete">Contact</translation>
-    </message>
-    <message>
-        <source>Polar</source>
-        <translation type="obsolete">Polair</translation>
-    </message>
-    <message>
-        <source>T Contact</source>
-        <translation type="obsolete">Contact de T</translation>
-    </message>
-</context>
-<context>
     <name>Graph_Properties</name>
     <message>
         <source>Connected</source>
@@ -169,14 +142,6 @@
 </context>
 <context>
     <name>MyWindow</name>
-    <message>
-        <source>New</source>
-        <translation type="obsolete">Nouveau</translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation type="obsolete">Ouvrir</translation>
-    </message>
     <message>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
@@ -517,10 +482,6 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>4-regulier 3-connexe (M)</translation>
     </message>
     <message>
-        <source>4-regular bipartite (N1)</source>
-        <translation type="obsolete">4-regulier biparti (N1)</translation>
-    </message>
-    <message>
         <source>Bipartite (M)</source>
         <translation>Biparti (M)</translation>
     </message>
@@ -709,22 +670,6 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <source>About &amp;Qt</source>
-        <translation type="obsolete">À propos &amp;Qt</translation>
-    </message>
-    <message>
-        <source>&amp;About</source>
-        <translation type="obsolete">&amp;À propos</translation>
-    </message>
-    <message>
-        <source>Pigale Editor 1.2.4 Debug Mode</source>
-        <translation>Editeur Pigale 1.2.4 (mode debug)</translation>
-    </message>
-    <message>
-        <source>Pigale Editor 1.2.4</source>
-        <translation>Editeur Pigale 1.2.4</translation>
-    </message>
-    <message>
         <source>&amp;Polar</source>
         <translation>&amp;Polaire</translation>
     </message>
@@ -791,6 +736,38 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Seconds: </source>
         <translation>Secondes: </translation>
+    </message>
+    <message>
+        <source>&amp;Documentation path</source>
+        <translation>Chemmin de la &amp;Documentation</translation>
+    </message>
+    <message>
+        <source>Pigale Editor 1.2.5 Debug Mode</source>
+        <translation>Editeur Pigale 1.2.5 (mode debug)</translation>
+    </message>
+    <message>
+        <source>Pigale Editor 1.2.5</source>
+        <translation>Editeur Pigale 1.2.5</translation>
+    </message>
+    <message>
+        <source>Choose the documentation directory &lt;em&gt;Doc&lt;/em&gt;</source>
+        <translation>Choisir le répertoire de documentation: &lt;em&gt;Doc&lt;/em&gt;</translation>
+    </message>
+    <message>
+        <source>I cannot find the repertory &lt;b&gt;Doc&lt;br&gt;Load manually ?</source>
+        <translation>Je ne trouve pas le repertoire &lt;em&gt;Doc&lt;/em&gt;&lt;br&gt;Charger manuellement ?</translation>
+    </message>
+    <message>
+        <source>I cannot find the inline manual&lt;em&gt;manual.html&lt;/em&gt;</source>
+        <translation>Je ne trouve pas le fichier  &lt;em&gt;manual.html&lt;/em&gt;</translation>
+    </message>
+    <message>
+        <source>You should restart Pigale to get the manual loaded</source>
+        <translation>Relancer Pigale pour charger le manuel</translation>
+    </message>
+    <message>
+        <source>I cannot find the inline manual &lt;em&gt;manual.html&lt;/em&gt;</source>
+        <translation>Je ne trouve pas le fichier &lt;em&gt;manual.html&lt;/em&gt;</translation>
     </message>
 </context>
 </TS>

@@ -437,7 +437,7 @@ int EmbedRnGraph::ComputeQDistances()
   for(tedge e = 1;e <= ne();e++)
       {tvertex v = vin[e];
       tvertex w  = vin[-e];
-      d = 1.- 1./sqrt(degree[v] * degree[w]);
+      d = 1.- 1./sqrt((double)(degree[v] * degree[w]));
       Distances[v()][w()] = Distances[w()][v()] = d;
       }
   for(i = 1;i <= nv();i++)

@@ -468,7 +468,7 @@ long pmLuka1 (long n, long k, char *LkWrd )
   LkWrd[l]='\0';
   for (s=l-1; s>=0; s--){
     if (pmRandom(s+1)<=n) {
-      LkWrd[s]=k+'a'; n--;
+      LkWrd[s]=(char)(k+'a'); n--;
       h-=k-1;
     }else {
       LkWrd[s]=0+'a';
@@ -2263,7 +2263,7 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
     if (!Meth->core) Meth->core = 2;  // largest component enabled
     if (!Meth->pic)  Meth->pic  = 1;  // pic optimization enabled
     if (Size->t == -1)                // default tolerence n^(2/3)
-      Size->t = (long) exp(2*log(Size->v)/3);
+      Size->t = (long) exp(2*log((double)Size->v)/3);
     printvf("# Size interval: %ld, %ld\n",
 	    Size->v - Size->t, Size->v + Size->t);
   }
@@ -2289,10 +2289,10 @@ int pmMemoryInit(pmSize *S, pmMethod *Meth, pmMemory *M)
     if (S->m == 1)                   //    for dually 2-c
       M->sTree = S->v / 2;              
     else if (S->m == 2){             //    for dually 3-c
-      if (Meth->pic == 1) M->sTree = (long) ((S->v)+2-0.77*exp(2*log(S->v)/3));
+      if (Meth->pic == 1) M->sTree = (long) ((S->v)+2-0.77*exp(2*log((double)S->v)/3));
       else M->sTree = S->v;
     }else if (S->m == 3){             //    for dually 4-c
-      if (Meth->pic == 1) M->sTree = (long) (2*(S->v)+2-0.77*exp(2*log(S->v)/3));
+      if (Meth->pic == 1) M->sTree = (long) (2*(S->v)+2-0.77*exp(2*log((double)S->v)/3));
       else M->sTree = S->v * 2;
     }
     M->sWrd  = 3 * M->sTree + 1;     // nb letters in word
@@ -2321,7 +2321,7 @@ int pmMemoryInit(pmSize *S, pmMethod *Meth, pmMemory *M)
       }else M->rTree = M->gTree = 0;
       M->sTree = S->v - 1;                //     without 
     }else if (S->m == 6){                 //   for 3-c
-      if (Meth->pic == 1) M->sTree =(long)(3*(S->v)-1.22*exp(2*log(3*S->v)/3)); 
+      if (Meth->pic == 1) M->sTree =(long)(3*(S->v)-1.22*exp(2*log(3.*S->v)/3)); 
       else M->sTree = 3 * S->v;
       if (S->r){                          //   with color control
 	M->rTree = S->r * 3;                 //   (pic correction non ready)
@@ -2344,7 +2344,7 @@ int pmMemoryInit(pmSize *S, pmMethod *Meth, pmMemory *M)
       M->sTree = S->v / 2; 
     else if (S->m == 8){                //   for 2-c
       if (Meth->pic == 1) 
-	M->sTree = (long) (9*(S->v)/5+2-0.77*exp(2*log(9*S->v/5)/3));
+	M->sTree = (long) (9*(S->v)/5+2-0.77*exp(2*log(9.*S->v/5)/3));
       else M->sTree = 9*(S->v)/5+2;
     }
     M->sWrd  = 2 * M->sTree + 1;        // nb letters in word

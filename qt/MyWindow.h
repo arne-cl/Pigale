@@ -20,8 +20,18 @@
 #include <Pigale.h> 
 
 #if QT_VERSION < 300
+#undef QTextEdit
+#include <qtextview.h>
 #define QTextEdit QTextView
+#if _WIN32
+#include <qtextbrowser.h>
 #endif
+#else
+#include <qtextedit.h>
+#include <qtextbrowser.h>
+#include <qsettings.h>
+#endif
+
 
 class QTextEdit;
 class MyWindow;
@@ -96,7 +106,7 @@ public:
   void MessageClear();
   void UndoTouch(bool save=false);
   void blockInput(bool t);
-  int MyWindow::getKey();
+  int getKey();
   QString getActionString(int action);
   int getActionInt(QString action_str);
   int publicLoad(int pos);
@@ -120,6 +130,9 @@ public:
   int ServerClientId;
 private:
   QToolBar *tb;
+#if QT_VERSION >= 300 || _WINDOWS
+  QTextBrowser *browser;
+#endif
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
   LineEditNum *macroLine;
   QLineEdit *seedEdit;

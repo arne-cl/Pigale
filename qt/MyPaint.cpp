@@ -126,7 +126,7 @@ void DrawCurves(QPainter *p,MyPaint *paint)
        bez.setPoint(4,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(5,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(6,paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
-#ifndef _WINDOWS
+#if QT_VERSION >= 300
        p->drawCubicBezier(bez,0);
        p->drawCubicBezier(bez,3);
 #else

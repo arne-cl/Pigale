@@ -12,19 +12,15 @@
 #ifndef _TBASE_H_INCLUDED_
 #define _TBASE_H_INCLUDED_
 
+#ifdef __GNUC__
 #ifndef  GCC_VERSION
 #define GCC_VERSION (__GNUC__ * 10000 \
                               + __GNUC_MINOR__ * 100 \
                               + __GNUC_PATCHLEVEL__)
 #endif
+#endif 
 
-#if defined(_WINDOWS)
-#define T_STD
-#else
-#define T_STD std::
-#endif
-
-#ifdef _WINDOWS
+#if (__GNUC__ && GCC_VERSION < 30000) || (_WIN32 && _MSC_VER < 1300)
 #include <stdlib.h> 
 #include <stdio.h> 
 #include <stdarg.h>
@@ -36,20 +32,6 @@
 #include <assert.h>
 #include <time.h>
 #include <new.h>
-
-#elif GCC_VERSION < 30000
-#include <stdlib.h> 
-#include <stdio.h> 
-#include <stdarg.h>
-#include <string.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <setjmp.h>
-#include <math.h>
-#include <assert.h>
-#include <time.h>
-#include <new.h>
-
 #else
 #include <cstdlib> 
 #include <cstdio> 
@@ -64,6 +46,8 @@
 #include <new>
 #endif
 
+#define T_STD
+using namespace std; 
 
 #ifndef ALGOBASE_H
 template <class T,class U> inline T Min(const T a,const U b)
