@@ -647,7 +647,7 @@ void MyWindow::save_ascii()
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok)return;
   QString FileName = QFileDialog::getSaveFileName(DirFile,"Txt Files(*.txt)",this);
-  if(FileName.isNull())return; 
+  if(FileName.isEmpty())return; 
   if(QFileInfo(FileName).extension(false) != (const char *)"txt")
       FileName += (const char *)".txt";
   QString OutputAsciiFile = FileName;

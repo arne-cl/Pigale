@@ -51,7 +51,8 @@ fulfill the right properties for a given algorithm.<br>
 If you see a small manual " <IMG SRC="../icones/xman.xpm" > " at the left of a menu item,
  you can get a small help using the WhatisThis button <IMG SRC="../icones/help.xpm" ><br>
 The windows next, to the <b>Graph editor</b> window, are used to show 
-different views of a graph and these few notes.<br>
+different views of a graph and these few notes.<br> 
+They can be printed (except the one for 3d embeddings) or exported as png images.<br>
 The top right window is for messages (properties of the graph, warnings,etc).
 Just under are displayed the main properties of the graph, all of them are maintained
 in real time.
@@ -61,8 +62,7 @@ Among other things, the <b>Settings</b> menu allows you to:
 <ul>
 <li> be in <b>debug</b> mode to increase the verbosity of Pigale and print more messages in <tt>log.txt</tt>
 <li> enable or disable the <A HREF="#undo"><b>undo</b></A> feature
-<li> define the <b>Pigale colors</b> used by Pigale. These colors are save in a file <tt>settings.txt</tt>.
-To come back to the original colors, you only need to erase that file
+<li> define the <b>Pigale colors</b> used by Pigale.
 <li> define the <b>limits</b> of pigale: i.e. define the maximum number of vertices above which graph are not displayed and slow algorithms are not performed.
 <li>define what the <b>vertex show</b> i.e. their labels or their index (or whatever the user programmed).
 <li> define some <b>embed options</b>, now for Schnyder drawings.
@@ -73,11 +73,13 @@ To come back to the original colors, you only need to erase that file
 <li> the generator settings
 <li> the macro playback settings
 <li> the input and output tgf files,
-<li> the location of the documentation repertory,
+<li> the  documentation directory,
+<li> the png directtory,
 <li> the geometry and colors of the screen,
 <li> the printer settings.
 </ul> 
 </ul>
+Under Linux, the settings are saved in ~/.qt/pigalerc.
 The dashed line at the top of the settings menu, is used to create a floating settings menu.
 
 <br><A HREF="manual.html#home"><em>top</em></A>
@@ -124,13 +126,13 @@ The last 3 squares are used to define the thickness of the edges.
 
 <h3> Drawing on a grid</h3>
 The grid size is defined by the slider position.<br>
-When a graph is loaded, Pigale computes the minimum size on which the graph can be drawn, without
+When a graph is loaded, Pigale computes the minimum size grid on which the graph can be drawn, without
 moving the vertices.
 When you click on <b> Force G</b>, Pigale will force all the vertices to fall on grid points,
 checking overlapping of vertices and checking that the map is unchanged.
 
 The <b>undo G</b> button, let you come back to the previous state.
-When you click on <b>Fit grid</b>, you are only enable to
+When you click on <b>Fit grid</b>, you are forced to
 move or create vertices on grid points.
 
 <h3> <A NAME="undo"> Undo/Redo</A></h3>
