@@ -568,11 +568,17 @@ void GraphEditor::print(QPrinter *printer)
 
 void GraphEditor::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
-  if(FileName.isEmpty())return; 
-  if(QFileInfo(FileName).extension(false) != (const char *)"png")
-      FileName += (const char *)".png";
-  gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+  QString FileName;
+  if(!gwp->mywindow->ServerExecuting)
+      {FileName = QFileDialog::
+      getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
+      if(FileName.isEmpty())return; 
+      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+	  FileName += (const char *)".png";
+      gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      }
+  else
+      FileName = "/tmp/server.png";
   QPixmap pixmap = QPixmap::grabWidget(this,2,2,gwp->canvas->width()-space-sizerect-1
 				       ,gwp->canvas->height()); 
   pixmap.save(FileName,"PNG");

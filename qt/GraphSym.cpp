@@ -23,6 +23,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
+#include <qapplication.h>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -761,11 +762,18 @@ void GraphSym::print(QPrinter *printer)
   }
 void GraphSym::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(d->mywindow->DirFilePng,"Images(*.png)",this);
-  if(FileName.isEmpty())return; 
-  if(QFileInfo(FileName).extension(false) != (const char *)"png")
-      FileName += (const char *)".png";
-  d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+  qApp->processEvents();
+  QString FileName;
+  if(!d->mywindow->ServerExecuting)
+      {FileName = QFileDialog::
+      getSaveFileName(d->mywindow->DirFilePng,"Images(*.png)",this);
+      if(FileName.isEmpty())return; 
+      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+	  FileName += (const char *)".png";
+      d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      }
+  else
+      FileName = "/tmp/server.png";
   QPixmap pixmap = QPixmap::grabWidget (d->editor); 
   pixmap.save(FileName,"PNG");
   }

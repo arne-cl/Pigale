@@ -22,7 +22,7 @@
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qapplication.h>
-
+#include <unistd.h>
 //in QtMisc.cpp
 int & ShowVertex();
 
@@ -231,12 +231,20 @@ GLWindow::~GLWindow()
   glDeleteLists(object,1);
   }
 void GLWindow::png()
-  {QPixmap pixmap = QPixmap::grabWindow(this->winId());
-  QString FileName = QFileDialog::getSaveFileName(glp->mywindow->DirFilePng,"Images(*.png)",this);
-  if(FileName.isEmpty())return; 
-  if(QFileInfo(FileName).extension(false) != (const char *)"png")
-      FileName += (const char *)".png";
-  glp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+  {qApp->processEvents();
+  QPixmap pixmap = QPixmap::grabWindow(this->winId());
+  QString FileName;
+  if(!glp->mywindow->ServerExecuting)
+      {FileName = QFileDialog::
+      getSaveFileName(glp->mywindow->DirFilePng,"Images(*.png)",this);
+      if(FileName.isEmpty())return; 
+      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+	  FileName += (const char *)".png";
+      glp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      }
+  else
+      FileName = "/tmp/server.png";
+  
   pixmap.save(FileName,"PNG");
   }
 void GLWindow::initializeGL()

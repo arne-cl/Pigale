@@ -246,7 +246,7 @@ MyWindow::MyWindow()
   //ToolBar
   tb = new QToolBar(this,"toolbar" );
   QToolButton *fileopen,*filenew,*filesave,*fileprint,*savepng,*info,*macroplay;
-  filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(newgraph()),tb,"New");
+  filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(NewGraph()),tb,"New");
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
   QWhatsThis::add(fileopen,fileopen_txt);
   filesave = new QToolButton(saveIcon,"Save File",QString::null,this,SLOT(save()),tb,"Save graph" );
@@ -278,7 +278,7 @@ MyWindow::MyWindow()
   //PopMenus
   QPopupMenu * file = new QPopupMenu( this );
   menuBar()->insertItem( "&File", file );
-  file->insertItem(newIcon,"&New Graph",this, SLOT(newgraph()));
+  file->insertItem(newIcon,"&New Graph",this, SLOT(NewGraph()));
   id = file->insertItem(openIcon,"&Open",this, SLOT(load()));
   file->setWhatsThis(id,fileopen_txt);
   file->insertItem("Save &as ...", this, SLOT(saveAs()));
@@ -814,8 +814,9 @@ void MyWindow::switchInputOutput()
   pGraphIndex   =  &GraphIndex1;
   load(0);
   }
-void MyWindow::newgraph()
-  {statusBar()->message("New graph");
+void MyWindow::NewGraph()
+  {setError();
+  statusBar()->message("New graph");
   UndoClear();UndoSave();
   Graph G(GetMainGraph());
   G.StrictReset();

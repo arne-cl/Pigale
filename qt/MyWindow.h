@@ -54,7 +54,6 @@ public slots:
   void timer();
 
 private slots:
-  void newgraph();
   void load();
   int load(int pos);
   void previous();
@@ -85,6 +84,7 @@ public slots:
   void print();
   void png();
   int  handler(int action);
+  void NewGraph();
 private:
   void mapActionsInit();
   int  macroLoad(QString FileName);

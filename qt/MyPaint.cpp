@@ -20,6 +20,7 @@
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qtabwidget.h>
+#include <qapplication.h>
 
 void DrawPolar(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -360,11 +361,18 @@ void MyPaint::print(QPrinter* printer)
   }
 void MyPaint::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(father->DirFilePng,"Images(*.png)",this);
-  if(FileName.isEmpty())return; 
-  if(QFileInfo(FileName).extension(false) != (const char *)"png")
-      FileName += (const char *)".png";
-  father->DirFilePng = QFileInfo(FileName).dirPath(true);
+  qApp->processEvents();
+  QString FileName;
+  if(!father->ServerExecuting)
+      {FileName = QFileDialog::
+      getSaveFileName(father->DirFilePng,"Images(*.png)",this);
+      if(FileName.isEmpty())return; 
+      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+	  FileName += (const char *)".png";
+      father->DirFilePng = QFileInfo(FileName).dirPath(true);
+      }
+  else
+      FileName = "/tmp/server.png";
   QPixmap pixmap = QPixmap::grabWidget (this); 
   pixmap.save(FileName,"PNG");
   }
