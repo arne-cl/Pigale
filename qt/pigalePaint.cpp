@@ -509,18 +509,19 @@ void pigalePaint::resizeEvent(QResizeEvent* e)
   }
 void pigalePaint::keyPressEvent(QKeyEvent *k)
   {int key = k->key();
+
   if(key == Qt::Key_Up)
       zoom = 1.1;
   else if(key == Qt::Key_Down)
       zoom = 1/1.1;
-  else if(key == Qt::Key_Escape)
+  else if(key == Qt::Key_Home)
       {xtr = xtr0; ytr = ytr0;
       xscale = xscale0; yscale = yscale0;
       }
   else
       return;
-  k->accept();
-  if(key !=  Qt::Key_Escape)
+  //k->accept();
+  if(key !=  Qt::Key_Home)
       {double xx0 = ((double)posClick.x() - xtr)/xscale;
       double yy0 = -((double)posClick.y() + ytr - this->height())/yscale;
       xscale *= zoom ;yscale *= zoom;
@@ -532,7 +533,7 @@ void pigalePaint::keyPressEvent(QKeyEvent *k)
   drawIt(&p);
   }
 void pigalePaint::wheelEvent(QWheelEvent *event)
-  {event->accept();
+  {//event->accept();
   zoom = (event->delta() > 0) ? 1.1 : 1./1.1;
   double xx0 = ((double)posClick.x() - xtr)/xscale;
   double yy0 = -((double)posClick.y() + ytr - this->height())/yscale;

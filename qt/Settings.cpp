@@ -384,7 +384,7 @@ void pigaleWindow::SetPigaleColors()
   this->tabWidget->setPalette(LightPalette,TRUE);
   this->statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
   QBrush pb(QColorDialog::customColor(1));
-  this->e->setPaper(pb); 
+  this->messages->setPaper(pb); 
   }
 void InitPigaleColors()
   {// Set the colors of tha application

@@ -70,7 +70,7 @@ void Client::writeToClient(QString str)
   //qApp->processEvents (); 
   }
 void Client:: customEvent(QCustomEvent * e ) 
-  {if( e->type() != TEXTEVENT ) return;
+  {if( e->type() != TEXT_EVENT ) return;
   textEvent *event  =  (textEvent  *)e;
   infoText->append(event->getString());
   }

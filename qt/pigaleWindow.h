@@ -19,6 +19,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qevent.h> 
+#include <qtimer.h>
 #include <Pigale.h> 
 
 #if QT_VERSION < 300
@@ -57,14 +58,6 @@ class QPalette;
 class pigaleWindow: public QMainWindow 
 {Q_OBJECT
 
-public:
-  pigaleWindow();
-  ~pigaleWindow();
-
-public slots:
-  void banner();
-  void timer();
-
 private slots:
   void load();
   int load(int pos);
@@ -91,33 +84,44 @@ private slots:
   void SetPigaleColors();
   void SetPigaleFont();
   void keyPressEvent(QKeyEvent *k);
+  void settingsHandler(int action);
+private:
+  void mapActionsInit();
+  int  macroLoad(QString FileName);
+  void macroRecord(int action);
+  void ParseArguments(); 
+ void Message(QString s);
+  int postHandler(int action);
+
 public slots:
+  void banner();
+  void timerWait();
   void UndoSave();
   void information();
   void print();
   void png();
   int  handler(int action);
   void NewGraph();
-private:
-  void mapActionsInit();
-  int  macroLoad(QString FileName);
-  void macroRecord(int action);
-  void ParseArguments(); 
 public:
+  pigaleWindow();
+  ~pigaleWindow();
   void whenReady();
   void customEvent( QCustomEvent * e );
-  void Message(QString s);
-  void MessageClear();
+  void postMessage(const QString &msg);
+  void postWait(const QString &msg);
+  void postMessageClear();
+  void postDrawG();
   void UndoTouch(bool save=false);
   void blockInput(bool t);
   int getKey();
   QString getActionString(int action);
   int getActionInt(QString action_str);
   int publicLoad(int pos);
- void setUserMenu(int i, const QString &txt);
+  void setUserMenu(int i, const QString &txt);
+  void  setShowOrientation(bool val);
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
-  QTextEdit *e;
+  QTextEdit *messages;
   QProgressBar *progressBar;
   pigalePaint *mypaint;
   QTabWidget *tabWidget;
@@ -166,7 +170,8 @@ private:
   IntStringMap mapActionsString;
   typedef QMap<QString,int> StringIntMap;
   StringIntMap mapActionsInt;   
-
+  QTime timer;
+  int drawingType;
 };
 
 

@@ -45,7 +45,7 @@ void PigaleServer::newConnection(int socket)
   {if(nconnections == 0)
       {clientsocket = new ClientSocket(socket,mw,this,qApp);
       nconnections = 1;
-      mw->MessageClear();
+      mw->postMessageClear();
       Tprintf("Server: New connection");
       mw->ServerExecuting = true;      mw->blockInput(true);
       }
@@ -128,7 +128,7 @@ void ClientSocket::run()
       }
   }
 void ClientSocket::customEvent( QCustomEvent * e )
-  {if( e->type() != TEXTEVENT) return;
+  {if( e->type() != TEXT_EVENT) return;
   textEvent *event  =  (textEvent  *)e;
   QString msg = event->getString();
   xhandler(msg);

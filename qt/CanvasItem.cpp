@@ -40,7 +40,7 @@ void GraphWidget::update(int compute)
 // called when loading a graph compute = 1 or -1
 // if we only have erased edges and/or vertice compute = 0
   {if(!d->is_init)
-      {d->editor = new GraphEditor(d,this);
+      {d->editor = new GraphEditor(d,this,"graph editor");
       d->is_init = true;
       }
   else
@@ -133,18 +133,7 @@ void GraphWidget::sizegridChanged(int sg)
   d->editor->DrawGrid(d->editor->current_grid);// compute the grid
   d->editor->canvas()->update();
   }
-void GraphWidget::zoom()
-  {//d->editor->zoom *= 1.1;  d->editor->load(true);
-  d->editor->Zoom(1);
-  }
-void GraphWidget::ozoom()
-  {//d->editor->zoom = 1;  d->editor->load(true);
-  d->editor->Zoom(0);
-  }
-void GraphWidget::uzoom()
-  {//d->editor->zoom /= 1.1;  d->editor->load(true);
-  d->editor->Zoom(-1);
-  }
+
 
 
 //*****************************************************
@@ -577,6 +566,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
 // input: min_used_x, max_used_x, nxstep (id for y)
 // compute xstep and the grid
   {if(GridDrawn)clearGrid();
+  if( grid.delta.x() < 7 ||  grid.delta.y() < 7){clearGrid();return;}
   QCanvasLine *line;
   tp->setColor(color[Grey2]);tp->setWidth(1);
   double x0 = grid.orig.x() - (int)(grid.orig.x()/grid.delta.x())*grid.delta.x();
@@ -588,11 +578,10 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
   y1 =  (int)((y1-y0)/grid.delta.y())*grid.delta.y() + y0 +1.5;
   double x,y;
   double i = .0;
-  // we move the grid by one pisel
-  //x0 -= .5; y0 -= .5;
+  // we move the grid by one pixel
   x0 += .5; y0 += .5;
   for(;;) //horizontales
-      {y = i++ * grid.delta.y() + y0;
+      {y = i++ * grid.delta.y() + y0 +.5;
       if(y > y1 )break;
       line = new QCanvasLine(gwp->canvas);
       line->setPoints((int)x0,(int)y,(int)x1,(int)y);
@@ -602,7 +591,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
       }
   i = .0;
   for(;;) //verticales
-      {x =i++*grid.delta.x() + x0;
+      {x =i++*grid.delta.x() + x0 + .5;
       if(x > x1)break;
       line = new QCanvasLine(gwp->canvas);
       line->setPoints((int)x,(int)y0,(int)x,(int)y1);

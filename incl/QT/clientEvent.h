@@ -12,13 +12,17 @@
 #ifndef CLIENTEVENT_H 
 #define CLIENTEVENT_H
 
-#define CLIENTEVENT 65432
-#define TEXTEVENT 65433
+#define CLIENT_EVENT 65432
+#define TEXT_EVENT 65433
+#define CLEARTEXT_EVENT 65434
+#define WAIT_EVENT 65435
+#define DRAWG_EVENT 65436
+#define HANDLER_EVENT 65437
 
 class clientEvent : public QCustomEvent
     {public:
       clientEvent( int action,QString  param)
-          : QCustomEvent(CLIENTEVENT ), value( action ),str(param)  {}
+          : QCustomEvent(CLIENT_EVENT ), value( action ),str(param)  {}
        QString getParamString() const { return str; }
         int getAction() const { return value; }
     private:
@@ -29,10 +33,27 @@ class clientEvent : public QCustomEvent
 class textEvent : public QCustomEvent
     {public:
       textEvent( QString  txt)
-          : QCustomEvent( TEXTEVENT),str(txt)  {}
+          : QCustomEvent( TEXT_EVENT),str(txt)  {}
        QString getString() const { return str; }
     private:
       QString str;
     };
 
+class waitEvent : public QCustomEvent
+    {public:
+      waitEvent( QString  txt)
+          : QCustomEvent( WAIT_EVENT),str(txt)  {}
+       QString getString() const { return str; }
+    private:
+      QString str;
+    };
+
+class handlerEvent : public QCustomEvent
+    {public:
+      handlerEvent( int action)
+          : QCustomEvent(HANDLER_EVENT ), value( action )  {}
+        int getAction() const { return value; }
+    private:
+      int value;
+    };
 #endif

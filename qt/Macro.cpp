@@ -50,12 +50,7 @@ protected:
 };
 
 bool eventEater::eventFilter(QObject *o,QEvent *e)
-    {if(e->type() == QEvent::MouseButtonPress) 
-	return TRUE; // eat event
-//     if(e->type() == QEvent::KeyPress) 
-// 	{QKeyEvent *k = (QKeyEvent *)e;
-// 	if(k->key() != Qt::Key_Escape)return TRUE; 
-// 	}
+    {if(e->type() == QEvent::MouseButtonPress) return TRUE; // eat event
     return FALSE;
     }
 int & pauseDelay()
@@ -64,8 +59,8 @@ int & pauseDelay()
   }
 void pigaleWindow::keyPressEvent(QKeyEvent *k)
   {key = k->key();
-  //qDebug("win:%d",k->key());
-  //QWidget::keyPressEvent(k);
+//   qDebug("pigaleWindow::hasFocus %d",hasFocus());
+//   qDebug("pigaleWindow::key_pressed=%d",k->key());
   }
 int pigaleWindow::getKey()
   {int key0 = key;
@@ -89,7 +84,7 @@ void pigaleWindow::blockInput(bool t)
 #if QT_VERSION >= 300
       qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
 #else
-	   qApp->setOverrideCursor(QCursor(WaitCursor));	
+      qApp->setOverrideCursor(QCursor(WaitCursor));	
 #endif
       }
   else 
@@ -97,7 +92,7 @@ void pigaleWindow::blockInput(bool t)
       qApp->restoreOverrideCursor();
       }
   }
-void pigaleWindow::timer()
+void pigaleWindow::timerWait()
   {MacroWait = false;
   }
 void AllowAllMenus(QMenuBar *menubar)
@@ -133,7 +128,7 @@ int pigaleWindow::macroLoad(QString FileName)
       {str = stream.readLine();
       action = getActionInt(str);
       if(action < 99 || action > A_TEST_END)
-	  {Tprintf("Unknown action:%s",(const char *)str);continue;}
+          {Tprintf("Unknown action:%s",(const char *)str);continue;}
       Tprintf("Action (%d):%s",MacroNumActions,(const char *)str);
       MacroActions(++MacroNumActions) = action;
       }
@@ -161,110 +156,110 @@ void pigaleWindow::macroHandler(int event)
   int repeat0,record;
   switch(event)
       {case 1://start recording
-	   if(debug())LogPrintf("\nRecord macro\n");
-	   AllowAllMenus(menuBar());
-	   MessageClear();
-	   Tprintf("No info while recording");
-	   MacroRecording = true;
-	   MacroWait = false;
-	   MacroNumActions = 0;
-	   break;
+          if(debug())LogPrintf("\nRecord macro\n");
+          AllowAllMenus(menuBar());
+          postMessageClear();
+          Tprintf("No info while recording");
+          MacroRecording = true;
+          MacroWait = false;
+          MacroNumActions = 0;
+          break;
       case 2://stop recording
-	  MacroRecording = false;
-	  break;
+          MacroRecording = false;
+          break;
       case 3://continue recording
-	  MacroRecording = true;
-	  break; 
+          MacroRecording = true;
+          break; 
       case 4:// play repeat times
-	  MacroRecording = false;
-	  MacroWait = false;
-	  MacroLooping = true;
-	  MessageClear();
-	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
-	  t0.start();
+          MacroRecording = false;
+          MacroWait = false;
+          MacroLooping = true;
+          postMessageClear();
+          DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
+          t0.start();
 #ifndef _WINDOWS
-	  msg0 = QString("Macro started at %1").arg(t0.toString(Qt::TextDate));
+          msg0 = QString("Macro started at %1").arg(t0.toString(Qt::TextDate));
 #else
-	  msg0 = "Macro started";
+          msg0 = "Macro started";
 #endif
-	  DebugPrintf("%s",(const char *)msg0); 
-	  t0.restart();
-	  repeat0 = (repeat == 0) ? 1000 : repeat;
-	  progressBar->setTotalSteps(repeat0);
-	  progressBar->setProgress(0);
-	  progressBar->show();
-	  j = 0;
-	  for(i = 1;i <= repeat0;i++)
-	      {if(i == repeat0 && repeat == 0)i = 1;
-	      ++j;
-	      macroPlay();
-	      progressBar->setProgress(i);
-	      qApp->processEvents();
-	      // !MacroLooping if an error had occurred
-	      if(!MacroLooping || getKey() == Qt::Key_Escape)break;
-	      }
-	  progressBar->hide();
-	  MacroLooping = MacroExecuting = MacroWait = false;
-	  Time = t0.elapsed()/1000.;
-	  t0.restart();
+          DebugPrintf("%s",(const char *)msg0); 
+          t0.restart();
+          repeat0 = (repeat == 0) ? 1000 : repeat;
+          progressBar->setTotalSteps(repeat0);
+          progressBar->setProgress(0);
+          progressBar->show();
+          j = 0;
+          for(i = 1;i <= repeat0;i++)
+              {if(i == repeat0 && repeat == 0)i = 1;
+              ++j;
+              macroPlay();
+              progressBar->setProgress(i);
+              qApp->processEvents();
+              // !MacroLooping if an error had occurred
+              if(!MacroLooping || getKey() == Qt::Key_Escape)break;
+              }
+          progressBar->hide();
+          MacroLooping = MacroExecuting = MacroWait = false;
+          Time = t0.elapsed()/1000.;
+          t0.restart();
 #ifndef _WINDOWS
-	  msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
+          msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
 #else
-	  msg1 ="Macro stopped"; 
+          msg1 ="Macro stopped"; 
 #endif
-	  if(EditNeedUpdate)gw->update(-1);
-	  if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
-	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
-	  Tprintf("%s",(const char *)msg0); 
-	  DebugPrintf("%s",(const char *)msg1); 
-	  if(!getError())
-	      DebugPrintf("END PLAY OK iter:%d",j);
-	  else
-	      DebugPrintf("END PLAY ERROR iter=%d",j);
-	   blockInput(false);
-	  break;
+          if(EditNeedUpdate)gw->update(-1);
+          if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
+          DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
+          Tprintf("%s",(const char *)msg0); 
+          DebugPrintf("%s",(const char *)msg1); 
+          if(!getError())
+              DebugPrintf("END PLAY OK iter:%d",j);
+          else
+              DebugPrintf("END PLAY ERROR iter=%d",j);
+          blockInput(false);
+          break;
       case 5:// insert a pause
-	  if(MacroRecording)macroRecord(A_PAUSE);
-	  break;
+          if(MacroRecording)macroRecord(A_PAUSE);
+          break;
       case 6:// display
-	  MessageClear();
-	  for(record = 1;record <= MacroNumActions;record++)
-	      {Tprintf("Action (%d/%d):%s",record,MacroNumActions
-		       ,(const char *)getActionString(MacroActions[record]));
-	      }
-	  break;
+          postMessageClear();
+          for(record = 1;record <= MacroNumActions;record++)
+              {Tprintf("Action (%d/%d):%s",record,MacroNumActions
+                       ,(const char *)getActionString(MacroActions[record]));
+              }
+          break;
       case 7://save
-	  {QString FileName = QFileDialog::getSaveFileName(DirFileMacro,"Macros (*.mc)",this);
-	  if(FileName.isEmpty())break;
-	  if(QFileInfo(FileName).extension(false) != (const char *)"mc")
-	      FileName += (const char *)".mc";
-	  DirFileMacro = QFileInfo(FileName).dirPath(true);
-	  QFileInfo fi = QFileInfo(FileName);
-	  if(fi.exists())
-	      {int rep = QMessageBox::warning(this,"Pigale Editor"
-			    ,"This file already exixts.<br>"
-			    "Overwrite ?"
-			    ,QMessageBox::Ok 
-			    ,QMessageBox::Cancel);
-	      if(rep == 2)break;
-	      } 
-	  FILE *out = fopen((const char *)FileName,"wt");
-	  fprintf(out,"Macro Version:2\n");
-	  for(record = 1;record <= MacroNumActions;record++)
-	      fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
-	  fclose(out);
-	  }
-	  break;
+          {QString FileName = QFileDialog::getSaveFileName(DirFileMacro,"Macros (*.mc)",this);
+          if(FileName.isEmpty())break;
+          if(QFileInfo(FileName).extension(false) != (const char *)"mc")
+              FileName += (const char *)".mc";
+          DirFileMacro = QFileInfo(FileName).dirPath(true);
+          QFileInfo fi = QFileInfo(FileName);
+          if(fi.exists())
+              {int rep = QMessageBox::warning(this,"Pigale Editor"
+                                              ,"This file already exixts.<br>"
+                                              "Overwrite ?"
+                                              ,QMessageBox::Ok 
+                                              ,QMessageBox::Cancel);
+              if(rep == 2)break;
+              } 
+          FILE *out = fopen((const char *)FileName,"wt");
+          fprintf(out,"Macro Version:2\n");
+          for(record = 1;record <= MacroNumActions;record++)
+              fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
+          fclose(out);
+          }
+          break;
       case 8:// read
-	  {QString FileName = QFileDialog::
-	  getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
-	  MessageClear();
-	  if(macroLoad(FileName) == -1)break;
-	  MacroWait = false;
-	  }
-	  break;
+          {QString FileName = QFileDialog::
+          getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
+          postMessageClear();
+          if(macroLoad(FileName) == -1)break;
+          MacroWait = false;
+          }
+          break;
       default:
-	  break;
+          break;
       }
   pauseDelay() = macroSpin->value();
   }
@@ -273,7 +268,7 @@ void pigaleWindow::macroPlay()
 //  MacroExecuting = true => handler does not update of the editor
   {if(MacroNumActions == 0)return;
   blockInput(true);
-  if(!MacroLooping){MessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
+  if(!MacroLooping){postMessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
   int ret_handler = 0,action;
   EditNeedUpdate =  InfoNeedUpdate = true;
   MacroExecuting = true;
@@ -287,51 +282,49 @@ void pigaleWindow::macroPlay()
       {action = MacroActions[record];
       //macroDefColors(record);
       if(action != A_PAUSE && !menuBar()->isItemEnabled(action))
-	  {if(debug())
-	      LogPrintf("%s:initial conditons not satisfied\n"
-			,(const char *)getActionString(action));
-	  ++record;continue;
-	  }
+          {if(debug()) LogPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
+          ++record;continue;
+          }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
       ret_handler = handler(action);
       if(ret_handler == 1)
-	  InfoNeedUpdate = true;
+          InfoNeedUpdate = true;
       else if(ret_handler == 2)
-	  InfoNeedUpdate = EditNeedUpdate = true;
+          InfoNeedUpdate = EditNeedUpdate = true;
       else if(ret_handler == 7 || ret_handler == 8)
-	  EditNeedUpdate = false;
+          EditNeedUpdate = false;
 
       //if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
       //else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
       // update the editor and information if a pause 
       if(record != MacroNumActions && action == A_PAUSE)
-	  {if(EditNeedUpdate)
-	      {gw->update();EditNeedUpdate = false;}
-	  if(InfoNeedUpdate)
-	      {MacroExecuting = false; //Otherwise no information displayed
-	      information();InfoNeedUpdate = false;
-	      MacroExecuting = true;
-	      }
-	  }
+          {if(EditNeedUpdate)
+              {gw->update();EditNeedUpdate = false;}
+          if(InfoNeedUpdate)
+              {MacroExecuting = false; //Otherwise no information displayed
+              information();InfoNeedUpdate = false;
+              MacroExecuting = true;
+              }
+          }
       if(getError())
-	  {DebugPrintf("MACRO %s",(const char *)getErrorString());
-	  setError();
-	  MacroWait = MacroLooping = false;
-	  InfoNeedUpdate = false; // do not hide the error message
-	  break;
-	  }
+          {DebugPrintf("MACRO %s",(const char *)getErrorString());
+          setError();
+          MacroWait = MacroLooping = false;
+          InfoNeedUpdate = false; // do not hide the error message
+          break;
+          }
       do
-	  {qApp->processEvents();
-	  }while(MacroWait);
+          {qApp->processEvents();
+          }while(MacroWait);
       }
 
   MacroWait = MacroExecuting = false;
   if(!MacroLooping)
       {if(EditNeedUpdate)
-	  {gw->update(-1);EditNeedUpdate = false;}
+          {gw->update(-1);EditNeedUpdate = false;}
       if(InfoNeedUpdate)
-	  {information();InfoNeedUpdate = false;}
+          {information();InfoNeedUpdate = false;}
       blockInput(false);
       }
   }

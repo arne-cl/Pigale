@@ -1,5 +1,5 @@
  14/01/2005: Now the partition algorithm recolor the vertices between 1 and 16 (previously 0-15) and the colors  names are diplayed in the message window.
- 14/01/2005: added an algorithm to color connected components:
+ 14/01/2005: Added an algorithm to color connected components:
 		int TopologicalGraph::ColorConnectedComponents().
 14/01/2005: Corrected a bug occurring while forcing the computation of the map of a tree.
 04/02/2005: Corrected a bug occurring while drawing a not connected bipartite graph by contact of segments.
@@ -12,4 +12,8 @@
 11/02/2005: So now, triangulate by adding vertices and quandrangulate a graph by adding vertices work properly.	
 18/02/2005: The vision algorithm does not anymore compute a biporlar orientation if the graph is already biporlarly oriented.
 18/02/2005: There were some bugs in the editor when reversing the orientation of an edge.
-20/02/2005: There is now an arrow on oriented edges.
+20/02/2005: Oriented edges can be drawn with an arrow
+25/02/2005: In all windows, the mouse wheel and the keyboard up, down and home are used to zoom.
+26/02/2005: Now the class QtGraphDebug  (used to display messages) has no direct graphic functions, but asynchronously
+	post events.
+

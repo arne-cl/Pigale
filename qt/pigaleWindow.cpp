@@ -28,6 +28,7 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/clientEvent.h>
 
+#include <qmenudata.h> 
 #include <qmenubar.h>
 #include <qstatusbar.h>
 #include <qtoolbar.h>
@@ -52,7 +53,6 @@
 #include <qpalette.h>
 #include <qcolordialog.h> 
 #include <qprinter.h> 
-#include <qtimer.h>
 #include <qprogressbar.h>
 #include <qrect.h> 
 
@@ -178,11 +178,11 @@ pigaleWindow::pigaleWindow()
 
   //leftLayout: Graph editor,Paint,GL,Browser
   QHBoxLayout * leftLayout = new QHBoxLayout(topLayout,0,"leftLayout");
-  tabWidget = new  QTabWidget(mainWidget,"tab");
+  tabWidget = new  QTabWidget(mainWidget,"tabwidget");
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
   tabWidget->setPalette(LightPalette);
-  mypaint =  new pigalePaint(tabWidget,"paint",this);
+  mypaint =  new pigalePaint(tabWidget,"mypaint",this);
   gw = new  GraphWidget(tabWidget,"graphwidget",this);
   graphgl  = new GraphGL(tabWidget,"graphgl",this);
   graphgl->setPalette(LightPalette);
@@ -202,12 +202,12 @@ pigaleWindow::pigaleWindow()
  
    // rightLayout
   QGridLayout *rightLayout = new  QGridLayout(topLayout,2,4,-1,"rightLayout");
-  e = new QTextEdit(mainWidget,"informations");
-  e->setMinimumSize(pigaleEditorMinXsize,pigaleEditorMinYsize);
-  e->setMaximumWidth(pigaleEditorMaxXsize);
-  QBrush pb(QColorDialog::customColor(1)); e->setPaper(pb); 
+  messages = new QTextEdit(mainWidget,"informations");
+  messages->setMinimumSize(pigaleEditorMinXsize,pigaleEditorMinYsize);
+  messages->setMaximumWidth(pigaleEditorMaxXsize);
+  QBrush pb(QColorDialog::customColor(1)); messages->setPaper(pb); 
 #if QT_VERSION >= 300
-  e->setReadOnly(true);
+  messages->setReadOnly(true);
 #endif
   mouse_actions = new Mouse_Actions(mainWidget,"mouseactions",0,gw);
   mouse_actions->setPalette(LightPalette);
@@ -224,7 +224,7 @@ pigaleWindow::pigaleWindow()
   lab0->setMinimumSize(pigaleEditorMinXsize,20);  
   lab0->setMaximumSize(pigaleEditorMinXsize,25);
   rightLayout->addMultiCellWidget(lab0,1,1,1,2);
-  rightLayout->addMultiCellWidget(e,2,2,1,2);
+  rightLayout->addMultiCellWidget(messages,2,2,1,2);
   rightLayout->addMultiCellWidget(graph_properties,3,3,1,2);
   rightLayout->addMultiCellWidget(mouse_actions,4,4,1,2);
 
@@ -402,8 +402,6 @@ pigaleWindow::pigaleWindow()
   QPopupMenu *orient = new QPopupMenu( this );
   menuBar()->insertItem(tr("&Orient"),orient);
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
-  orient->insertItem(tr("&Show orientation"),   A_SET_ORIENT);
-  orient->setItemChecked(A_SET_ORIENT,ShowOrientation());
   orient->insertItem(tr("&Orient all edges"),     A_ORIENT_E);
   orient->insertItem(tr("&Color Poles"),          A_ORIENT_SHOW);
   orient->insertItem(tr("&ReOrient color edges"), A_REORIENT_COLOR);
@@ -519,7 +517,7 @@ pigaleWindow::pigaleWindow()
   spin_MaxNS                = new QSpinBox(0,10000,1,popupLimits,"spinMaxNS");
   spin_MaxND                = new QSpinBox(0,10000,1,popupLimits,"spinMaxND");
   menuBar()->insertItem(tr("&Settings"),settings);
-  connect(settings,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(settings,SIGNAL(activated(int)),SLOT(settingsHandler(int)));
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
   connect(spin_MaxND,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNDisplayChanged(int)));
   connect(comboLabel,SIGNAL(activated(int)),SLOT(showLabel(int)));
@@ -560,6 +558,9 @@ pigaleWindow::pigaleWindow()
   //Edge arrow
   settings->insertItem(tr("Show arrows"),A_SET_ARROW);
   settings->setItemChecked(A_SET_ARROW,ShowArrow());
+  //Show Orientation
+  settings->insertItem(tr("&Show orientation"),   A_SET_ORIENT);
+  settings->setItemChecked(A_SET_ORIENT,ShowOrientation());
    //Vertex Label Options
   settings->insertSeparator();
   settings->insertItem(tr("&Vertex show"),popupLabel);
@@ -665,23 +666,78 @@ pigaleWindow::~pigaleWindow()
   {delete printer;
   }
 void pigaleWindow::whenReady()
-  {if(MacroPlay && macroLoad(MacroFileName) != -1) 
-       macroPlay();
+  {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
   //#ifndef _WINDOWS
   ServerClientId = 0;
   if(Server)InitPigaleServer(this); 
   //#endif
   }
-void pigaleWindow::customEvent( QCustomEvent * e )
-  {if( e->type() != CLIENTEVENT) return;
-  clientEvent *event  =  (clientEvent  *)e;
-  int action  = event->getAction();
-  QString msg = event->getParamString();
-  //qDebug("message:-%d %s (%s)-",action,(const char *)getActionString(action),(const char *)msg);
-  if(action > A_AUGMENT && action < A_TEST_END)
-      handler(action);
-  ServerBusy = false;
+void pigaleWindow::customEvent( QCustomEvent * ev)
+  {switch( ev->type())
+      {case CLIENT_EVENT:
+          {clientEvent *event  =  (clientEvent  *)ev;
+          int action  = event->getAction();
+          QString msg = event->getParamString();
+          //qDebug("message:-%d %s (%s)-",action,(const char *)getActionString(action),(const char *)msg);
+          if(action > A_AUGMENT && action < A_TEST_END)
+              handler(action);
+          ServerBusy = false;
+          }
+          break;
+      case  TEXT_EVENT:
+          {textEvent *event  =  (textEvent  *)ev;
+          Message(event->getString());
+          }
+          break;
+      case CLEARTEXT_EVENT:
+          messages->setText("");
+          break;
+      case WAIT_EVENT:
+          {waitEvent *event  =  (waitEvent  *)ev;
+          QString msg = event->getString();
+          int rep = QMessageBox::information (this,"Wait",msg,"","CANCEL","EXIT",0,0);
+          if(rep == 2)close();
+          }
+      case DRAWG_EVENT:
+          gw->update();
+          break;
+      case HANDLER_EVENT:
+           {handlerEvent *event  =  (handlerEvent  *)ev;
+           postHandler(event->getAction());    
+           }
+          break;
+      default:
+          qDebug("UNKNOWN EVENT");
+          break;
+      }
   }
+void pigaleWindow::postMessage(const QString &msg)
+  {textEvent *e = new textEvent(msg);
+  QApplication::postEvent(this,e);
+  qApp->processEvents(); 
+  }
+void pigaleWindow::postMessageClear()
+  {QCustomEvent *e = new QCustomEvent(CLEARTEXT_EVENT);
+  QApplication::postEvent(this,e);
+  }
+void pigaleWindow::postWait(const QString &msg)
+  {waitEvent *e = new waitEvent(msg);
+  QApplication::postEvent(this,e);
+  qApp->processEvents(); 
+  }
+ void pigaleWindow::postDrawG()
+  {QCustomEvent *e = new QCustomEvent(DRAWG_EVENT);
+  QApplication::postEvent(this,e);
+  qApp->processEvents(); 
+  }
+
+void pigaleWindow::Message(QString s)
+  {messages->append(s);
+#if QT_VERSION >= 300
+  messages->scrollToBottom ();
+#endif
+  } 
+
 void pigaleWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));
   for(int i = 0;i < na;i++)
@@ -705,13 +761,13 @@ void pigaleWindow::load()
       *pGraphIndex = 1;
       int NumRecords =GetNumRecords((const char *)InputFileName);
       if(NumRecords > 1)
-	  {bool ok = FALSE;
-	  QString m;
-	  m.sprintf("Select a graph (1/%d)",NumRecords);
-	  *pGraphIndex = QInputDialog::
-	  getInteger("Pigale",m,1,1,NumRecords,1,&ok,this);
-	  if(ok)load(0);
-	  }
+          {bool ok = FALSE;
+          QString m;
+          m.sprintf("Select a graph (1/%d)",NumRecords);
+          *pGraphIndex = QInputDialog::
+          getInteger("Pigale",m,1,1,NumRecords,1,&ok,this);
+          if(ok)load(0);
+          }
       else load(0);
       }
   }
@@ -858,142 +914,146 @@ void pigaleWindow::reload()
 void pigaleWindow::next()
   {load(1);}
 void pigaleWindow::information()
-  {if(!getError() && !MacroExecuting && !ServerExecuting)MessageClear();
+  {if(!getError() && !MacroExecuting && !ServerExecuting)postMessageClear();
   graph_properties->update(!MacroExecuting && !ServerExecuting);
   }
-void pigaleWindow::MessageClear()
-  {e->setText("");}
-void pigaleWindow::Message(QString s)
-  {e->append(s);
-#if QT_VERSION >= 300
-  e->scrollToBottom ();
-#endif
-  } 
 
+void pigaleWindow::settingsHandler(int action)
+  {if(action == A_SET_COLOR)
+      {SetPigaleColors(); return;}
+  else if(action == A_SET_DOC)
+      {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
+      DirFileDoc = QFileDialog::
+      getExistingDirectory(StartDico,this,"find",
+                           tr("Choose the documentation directory <em>Doc</em>"),TRUE);
+      if(!DirFileDoc.isEmpty())
+          {QFileInfo fi =  QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
+          if(fi.exists())
+              {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
+              browser->setSource("manual.html");
+              SaveSettings();
+              QMessageBox::information(this,"Pigale Editor"
+                                       ,tr("You should restart Pigale"
+                                           " to get the manual loaded")
+                                       ,QMessageBox::Ok);
+              }
+          else 
+              QMessageBox::information(this,"Pigale Editor"
+                                       ,tr("I cannot find the inline manual <em>manual.html</em>")
+                                       ,QMessageBox::Ok);
+          }
+          return;
+      }
+  else if(action == A_SET_PAUSE_DELAY) 
+      {pauseDelay() = macroSpin->value();
+      SaveSettings();
+      return;
+      }
+  else if(action == A_SET_RANDOM_SEED_CHANGE)
+      {randomSetSeed() = atol((const char *)seedEdit->text()); return; 
+      }
+  
+// Change one parameter
+  menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
+  // Read parameters when one is changed
+  debug()               =  menuBar()->isItemChecked(A_SET_DEBUG);
+  SchnyderRect()        =  menuBar()->isItemChecked(A_SET_SCH_RECT);
+  SchnyderLongestFace() =  menuBar()->isItemChecked(A_SET_LFACE);
+  SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
+  ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
+  ShowArrow()     =  menuBar()->isItemChecked(A_SET_ARROW);
+  randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
+  randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
+  pauseDelay() = macroSpin->value();
+  UndoEnable(menuBar()->isItemChecked(A_SET_UNDO));
 
+  if(action == A_SET_ORIENT || action == A_SET_ARROW )
+      // update the editor
+      {handlerEvent *e = new handlerEvent(1);
+      QApplication::postEvent(this,e);
+      }
+  return;
+  }
 int pigaleWindow::handler(int action)
-  {int ret = 0;
-  int drawing;
-  QTime t;
+// Should not have any graphic action (so can be called from a thread)
+  {if(action > A_SET){settingsHandler(action);return 0;}
   //qDebug("handler:%s",(const char *)getActionString(action));
   if(MacroRecording)macroRecord(action);
   if(action == A_PAUSE)
       {pauseDelay() = macroSpin->value();
       qApp->processEvents();
       MacroWait = true;
-      QTimer::singleShot(1000*pauseDelay(),this,SLOT(timer()));
+      QTimer::singleShot(1000*pauseDelay(),this,SLOT(timerWait()));
       return 0;
       }
-  else if(action < A_AUGMENT_END)
-      {UndoSave();t.start();
+  if(action > A_TEST_END)return 0;
+  int ret = 0;
+  blockInput(true);
+  if(action < A_AUGMENT_END)
+      {UndoSave();
+      timer.start();
       ret = AugmentHandler(action);
       }
   else if(action < A_EMBED_END)
-      {t.start();
-      ret = EmbedHandler(action,drawing);
+      {timer.start();
+      ret = EmbedHandler(action,drawingType);
       }
   else if(action < A_GRAPH_END)
-      {UndoClear();UndoSave();t.start();
+      {UndoClear();UndoSave();
+      timer.start();
       ret = DualHandler(action); UndoSave();
       }
   else if(action < A_REMOVE_END)
-      {UndoSave();t.start();
+      {UndoSave();
+      timer.start();
       ret = RemoveHandler(action);UndoTouch(false);
       }
   else if(action < A_GENERATE_END)
-      {UndoClear();UndoSave();getError();t.start();
+      {UndoClear();UndoSave();
+      timer.start();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       UndoSave();
       }
   else if(action < A_ALGO_END)
-      {t.start();
+      {timer.start();
       ret = AlgoHandler(action,spin_N->value());
       }
   else if(action < A_ORIENT_END)
-      {t.start();
+      {timer.start();
       ret = OrientHandler(action);
-      menuBar()->setItemChecked(A_SET_ORIENT,ShowOrientation());
+      ShowOrientation() = true;
       }
   else if(action < A_TEST_END)
-      {t.start();
+      {timer.start();
       ret  = Test(GC,action - A_TEST);
-      }
-  else if(action > A_SET)
-      {if(action == A_SET_COLOR)
-	  {SetPigaleColors();
-	  return 0;
-	  }
-      if(action == A_SET_DOC)
-	  {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
-	  DirFileDoc = QFileDialog::
-	  getExistingDirectory(StartDico,this,"find",
-			       tr("Choose the documentation directory <em>Doc</em>"),TRUE);
-	  if(!DirFileDoc.isEmpty())
-	      {QFileInfo fi =  
-	       QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
-	      if(fi.exists())
-		  {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
-		  browser->setSource("manual.html");
-		  SaveSettings();
-		  QMessageBox::information(this,"Pigale Editor"
-				      ,tr("You should restart Pigale"
-					  " to get the manual loaded")
-				      ,QMessageBox::Ok);
-		  }
-	      else 
-		  QMessageBox::information(this,"Pigale Editor"
-				      ,tr("I cannot find the inline manual <em>manual.html</em>")
-				      ,QMessageBox::Ok);
-	      }
-	  return 0;
-	  }
-      else if(action == A_SET_PAUSE_DELAY) 
-	  {pauseDelay() = macroSpin->value();
-	  SaveSettings();
-	  return 0;
-	  }
-      else if(action == A_SET_RANDOM_SEED_CHANGE)
-	  {randomSetSeed() = atol((const char *)seedEdit->text());
-	  return 0;
-	  }
-      
-      menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
-      debug()               =  menuBar()->isItemChecked(A_SET_DEBUG);
-      SchnyderRect()        =  menuBar()->isItemChecked(A_SET_SCH_RECT);
-      SchnyderLongestFace() =  menuBar()->isItemChecked(A_SET_LFACE);
-      SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
-      ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
-      ShowArrow()     =  menuBar()->isItemChecked(A_SET_ARROW);
-      randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
-      randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
-      pauseDelay() = macroSpin->value();
-      if(action == A_SET_UNDO)UndoEnable(menuBar()->isItemChecked(action));
-      if(action == A_SET_ORIENT || action == A_SET_ARROW )gw->update();
-      return 0;
       }
   else
       return 0;
-  //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
+  handlerEvent *e = new handlerEvent(ret);
+  QApplication::postEvent(this,e);
+  return 0;
+  }
+int pigaleWindow::postHandler(int ret)
+  {// 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
-  if(ret < 0)return 0;
-  double Time = t.elapsed()/1000.;
+  //if(ret < 6)blockInput(false);
+  if(ret < 0){blockInput(false);return ret;}
+  // In case we called the orienthandler
+  menuBar()->setItemChecked(A_SET_ORIENT,ShowOrientation()); 
+  double Time = timer.elapsed()/1000.;
   if(ret == 1)
-      {if(!MacroExecuting )
-	  gw->update();
-      }
+      {if(!MacroExecuting )gw->update();}
   else if(ret == 2)
       {if(!MacroRecording)information();
-      if(!MacroExecuting )
-	  gw->update();
+      if(!MacroExecuting )gw->update();
       }
   else if(ret == 20) // Remove handler
       {if(!MacroRecording)information();
-      if(!MacroExecuting )
-	  gw->update(0);
+      if(!MacroExecuting ) gw->update(0);
       }
   else if(ret == 3)
-      mypaint->update(drawing); 
-  else if(ret == 4) //3d
+      mypaint->update(drawingType); 
+  else if(ret == 4) //3d drawings
       graphgl->update(); 
   else if(ret == 5) //symetrie
       {graphgl->update(); 
@@ -1001,39 +1061,28 @@ int pigaleWindow::handler(int action)
       }
   // cases 6-7-8 we need a canvas with the current graph loaded
   else if(ret == 6)
-      {blockInput(true);
-      gw->update();gw->Spring();
-      blockInput(false);
-      }
+      {gw->update();gw->Spring();}
   else if(ret == 7)
-      {blockInput(true);
-      gw->update();gw->SpringPreservingMap();
-      blockInput(false);
-      }
+      {gw->update();gw->SpringPreservingMap();}
   else if(ret == 8)
-      {blockInput(true);
-      gw->update();gw->SpringJacquard();
-      blockInput(false);
-      }
+      {gw->update();gw->SpringJacquard();}
 
-  double TimeG = t.elapsed()/1000.;
+  blockInput(false);
+  double TimeG = timer.elapsed()/1000.;
   if(!MacroLooping && !MacroRecording && !ServerExecuting)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
-	  {Tprintf("Handler Error:%s",(const char *)getErrorString());
-	  if(debug())Twait((const char *)getErrorString()); 
-	  }
+          {Tprintf("Handler Error:%s",(const char *)getErrorString());
+          if(debug())Twait((const char *)getErrorString()); 
+          }
       }
-  return ret;   
+  return ret;
   }
 void pigaleWindow::banner()
   {QString m;  
-  //QFileInfo fi((const char *)InputFileName);
-  //QFileInfo fo((const char *)OutputFileName);
   int NumRecords =GetNumRecords((const char *)InputFileName);
   int NumRecordsOut =GetNumRecords((const char *)OutputFileName);
   m.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
-	    //,(const char *)fi.fileName()
 	    ,(const char *)InputFileName
 	    ,*pGraphIndex,NumRecords
 	    ,(const char *)OutputFileName
@@ -1061,37 +1110,41 @@ void pigaleWindow::showLabel(int show)
 void  pigaleWindow::distOption(int use)
   {useDistance() = use;
   }
+void  pigaleWindow::setShowOrientation(bool val)
+  {ShowOrientation() = val;
+  menuBar()->setItemChecked(A_SET_ORIENT,val);
+  }
 void pigaleWindow::print()
   {switch(tabWidget->currentPageIndex())
       {case 0:
-	   gw->print(this->printer);
-	   break;
+          gw->print(this->printer);
+          break;
       case 1:
-	  mypaint->print(this->printer);
-	  break;
+          mypaint->print(this->printer);
+          break;
       case 3:
-	  graphsym->print(this->printer);
-	  break;
+          graphsym->print(this->printer);
+          break;
       default:
-	  break;
+          break;
       }
   }
 void pigaleWindow::png()
   {switch(tabWidget->currentPageIndex())
       {case 0:
-	   gw->png();
-	   break;
+          gw->png();
+          break;
       case 1:
-	  mypaint->png();
-	  break;
+          mypaint->png();
+          break;
       case 2:
-	  graphgl->png();
-	  break;
+          graphgl->png();
+          break;
       case 3:
-	  graphsym->png();
-	  break;
+          graphsym->png();
+          break;
       default:
-	  break;
+          break;
       }
   }
 void pigaleWindow::SetPigaleFont()
@@ -1134,9 +1187,9 @@ void pigaleWindow::UndoSave()
       {Tgf file;
       if(file.open(undofile, Tgf::old) == 0)return;
       while (last < nb)
-	  {file.DeleteRecord(nb);
-	  nb--;
-	  }
+          {file.DeleteRecord(nb);
+          nb--;
+          }
       }
   if(SaveGraphTgf(G,undofile) == 1)
       {handler(A_SET_UNDO);return;}

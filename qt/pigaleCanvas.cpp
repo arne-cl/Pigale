@@ -19,6 +19,7 @@
 #include <QT/Misc.h> 
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
+
 #include <qcursor.h>
 #include <qprinter.h>
 #include <qtoolbutton.h>
@@ -27,7 +28,9 @@
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qpaintdevicemetrics.h> 
+#include <qapplication.h> 
 
+//A QCanvasView is widget which provides a view of a QCanvas
 GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name, WFlags f)
     :QCanvasView(g->canvas,parent,name,f)
   {gwp = g;
@@ -44,11 +47,22 @@ GraphEditor::~GraphEditor()
   { }
 void GraphEditor::keyPressEvent(QKeyEvent *k)
   {key_pressed = k->key();
-  QWidget::keyPressEvent(k);
+  if(key_pressed  == Qt::Key_Up)Zoom(1);
+  else if(key_pressed  == Qt::Key_Down)Zoom(-1);
+  else if(key_pressed  == Qt::Key_Home)Zoom(0);
+  else k->ignore();
+  }
+void GraphEditor::wheelEvent(QWheelEvent *event)
+  {if(event->state() ==  QMouseEvent::ShiftButton)return;
+  int dir = (event->delta() > 0) ? 1 : -1;
+  Zoom(dir);
   }
 void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   {GeometricGraph & G = *(gwp->pGG);
   QPoint p(e->pos());
+  //if(qApp->focusWidget ()) qDebug("widget having focus:-%s-",(const char *)qApp->focusWidget ()->name());
+  setFocus(); // as we might loose the focus
+
   ColorItem *coloritem;
   if(FindItem(p,coloritem) != 0)
       {if(e->button() == QMouseEvent::LeftButton)
@@ -277,6 +291,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
       {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
       Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); 
+      gwp->mywindow->setShowOrientation(true);
       EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
@@ -541,7 +556,7 @@ void GraphEditor::load(bool initgrid)
   GeometricGraph & G = *(gwp->pGG);
   if(initgrid)
       {Normalise();
-      if(InitGrid(current_grid))
+      if(InitGrid(current_grid))  
           DrawGrid(current_grid);
       else
           DrawGrid(current_grid);

@@ -228,7 +228,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
-  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && !MaxBi);    //Quadrangulate
+  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B && !MaxBi);    //Quadrangulate
   menu->setItemEnabled( A_AUGMENT_BISSECT_ALL_E ,G.ne());    //Bissect all edges
   //Embed
   menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder

@@ -28,9 +28,9 @@ public:
   void png();
 public slots:
   void update(int compute=1);
-  void zoom();
-  void ozoom();
-  void uzoom();
+//   void zoom();
+//   void ozoom();
+//   void uzoom();
   void Spring();
   void SpringPreservingMap();
   void SpringJacquard();

@@ -52,9 +52,7 @@ public:
   QCheckBox* ButtonShowGrid;
   QPushButton* ButtonForceGrid;
   QPushButton* ButtonUndoGrid;
-  QPushButton* ButtonZoom;
-  QPushButton* ButtonOZoom;
-  QPushButton* ButtonUZoom;
+
   QLCDNumber* LCDNumber;
   QLCDNumber* LCDNumberX;
   QLCDNumber* LCDNumberY;

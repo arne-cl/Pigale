@@ -141,9 +141,9 @@ bool CheckCoordNotOverlap(GeometricGraph & G)
   for(i = 1;i < n;i++)
       {pos = G.vcoord[heap[i] + 1].x();
       if(Equal(pos,prevpos) &&  G.vcoord[heap[i] + 1].y() == G.vcoord[heap[i0] + 1].y())
-	  {ok = false;   
-	  break;
-	  }
+          {ok = false;   
+          break;
+          }
       prevpos = pos;
       i0 = i;
       }
@@ -194,25 +194,23 @@ void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)
   cir[0] = 0;
   }
 
-// Debug functions
-
-class QtGraphDebug : public GraphDebug {
- public:
+// Debug and message functions
+class QtGraphDebug : public GraphDebug 
+{ public:
   QtGraphDebug() {GraphDebug::gd=this;}
   void DrawGraph(Graph &G) {}
   void DrawGraph()
     {if(!mw)return;
-    mw->gw->update();
+    mw->postDrawG();
     }
   int wait(const char *s)
     {if(!mw)return 0;
-    int rep = QMessageBox::information (mw,"Wait",s,"","CANCEL","EXIT",0,0);
-    if(rep == 2)mw->close();
-    return (rep == 1) ? 0:1;
+    mw->postWait( QString(s));
+    return 0;
     }
   void clear()
     {if(!mw)return;
-    mw->MessageClear();
+    mw->postMessageClear();
     }
   void printf(const char *fmt,...)
     {if(!mw)return;
@@ -221,7 +219,7 @@ class QtGraphDebug : public GraphDebug {
     va_start(arg_ptr,fmt);
     vsprintf(texte_print,fmt,arg_ptr);
     va_end(arg_ptr);
-    mw->Message((const char *)texte_print);
+     mw->postMessage( QString(texte_print));
     }
 };
 static QtGraphDebug QtDefaultGraphDebug;

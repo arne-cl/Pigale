@@ -132,18 +132,6 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   ButtonUndoGrid->setText(tr("Undo G"));
   ButtonUndoGrid->setDisabled(true);
 
-  ButtonZoom = new QPushButton(this,"ButtonZoom");
-  ButtonZoom->setGeometry(QRect(ox2,oy2+98,32,20));
-  ButtonZoom->setText(tr("Z +"));
-
-  ButtonOZoom = new QPushButton(this,"ButtonOZoom");
-  ButtonOZoom->setGeometry(QRect(ox2+32,oy2+98,32,20));
-  ButtonOZoom->setText(tr("Z 0"));
-
-  ButtonUZoom = new QPushButton(this,"ButtonUZoom");
-  ButtonUZoom->setGeometry(QRect(ox2+64,oy2+98,32,20));
-  ButtonUZoom->setText(tr("Z -"));
-
   // signals and slots connections
   connect(ButtonGroup1,SIGNAL(clicked(int)),SLOT(valueChanged(int)));
   connect(Slider,SIGNAL(valueChanged(int)),LCDNumber,SLOT(display(int)));
@@ -152,9 +140,6 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   connect(ButtonFitGrid,SIGNAL(toggled(bool)),gw,SLOT(fitgridChanged(bool)));
   connect(ButtonForceGrid,SIGNAL(clicked()),gw,SLOT(ForceGrid()));
   connect(ButtonUndoGrid,SIGNAL(clicked()),gw,SLOT(UndoGrid()));
-  connect(ButtonZoom,SIGNAL(clicked()),gw,SLOT(zoom()));
-  connect(ButtonOZoom,SIGNAL(clicked()),gw,SLOT(ozoom()));
-  connect(ButtonUZoom,SIGNAL(clicked()),gw,SLOT(uzoom()));
   }
 Mouse_Actions::~Mouse_Actions()
 {}

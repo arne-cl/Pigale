@@ -381,13 +381,25 @@ void GraphEditor::Zoom(int dir)
   if(dir == -1)zoom /= 1.1;
   else if(dir == 0)zoom = 1.;
   else zoom *= 1.1;
-  if(IsGrid)
-      {load(true);return;}
-  DoNormalise = true;  Normalise();
   double zz = zoom/zoom_old;
+
+  // IsGrid == true <==>  the vertices are on a grid
+  //qDebug("IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
+  // load(true) compute the grid
+  if(IsGrid) {load(true);return;}
+//   if(IsGrid) // Recompute coords
+//       {xstep *= zz;  ystep *= zz;
+//       DoNormalise = true;  Normalise();
+//       current_grid = Tgrid(xstep,ystep,min_used_x,min_used_y);
+//       qDebug("-> IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
+//       load(true);
+//        qDebug("->-> IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
+//       return;
+//       }
+  DoNormalise = true;  Normalise();
   xstep *= zz;  ystep *= zz;
   current_grid = Tgrid(xstep,ystep,min_used_x,min_used_y);
-  load(false);
+  load(false); // do not recompute the grid
   }
 void GraphEditor::Normalise()
   {//qDebug("normalise:%d",DoNormalise);
@@ -425,26 +437,6 @@ void GraphEditor::Normalise()
   xtr = ((x_max+x_min)-xmul*(min_used_x+max_used_x))/2;
   ytr = ((y_max+y_min)-ymul*(min_used_y+max_used_y))/2;
 
-
-
-//   if(max_used_x > min_used_x + 1E-5)
-//       {xmul = (x_min - x_max)/(min_used_x - max_used_x);
-//       xtr  = (min_used_x*x_max - max_used_x*x_min)/(min_used_x - max_used_x);
-//       }
-//   else
-//       {xmul = 1.;
-//       xtr = (x_max + x_min)/2.-min_used_x;
-//       }
-
-//   if(max_used_y > min_used_y + 1E-5)
-//       {ymul = (y_min - y_max)/(min_used_y - max_used_y);
-//       ytr  = (min_used_y*y_max - max_used_y*y_min)/(min_used_y - max_used_y);
-//       }
-//   else
-//       {ymul = 1.;
-//       ytr = (y_max + y_min)/2.-min_used_y;
-//       }
- 
   max_used_x = min_used_x=G.vcoord[1].x()= xmul*G.vcoord[1].x() + xtr;
   max_used_y = min_used_y=G.vcoord[1].y()= ymul*G.vcoord[1].y() + ytr;
   for (i = 2;i <= G.nv();i++)

@@ -158,8 +158,7 @@ class NodeItem: public QCanvasRectangle
   NodeTextItem *nodetextitem;
 private:
   GraphWidgetPrivate* gwp;
-}
-;
+};
 
 class GraphEditor : public QCanvasView
 {public:
@@ -201,6 +200,7 @@ private:
   void contentsMousePressEvent(QMouseEvent*);
   void contentsMouseReleaseEvent(QMouseEvent*);
   void contentsMouseMoveEvent(QMouseEvent*);
+  void wheelEvent(QWheelEvent *event);
   void showEvent(QShowEvent*);
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent*);
