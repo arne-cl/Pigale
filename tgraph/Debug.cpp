@@ -23,8 +23,8 @@ static int Indent = 0;
 static bool first = true;
 static _Error MainError;
 
-_Error &ErrorPositioner(const char *f, int l)
-     {MainError.file=f; MainError.line=l; return MainError;}
+_T_Error &ErrorPositioner(const char *f, int l)
+     {MainError.file=f; MainError.line=l; return MainError.error;}
 
 int getError() 
   {return (int) MainError.error;}

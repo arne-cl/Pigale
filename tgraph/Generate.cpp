@@ -44,24 +44,24 @@ GraphContainer *GenerateGrid(int a, int b)
       int x; int y;
       tbrin bs[4];
       for (int j=0; j<b; j++)
-	  {for (int i=0; i<a; i++)
-	      {int nb=0;
-	      x=i*b+j+1; y=i+j*a+aa*b+1; v=i+a*j+1;
-	      vcoord[v]=Tpoint(i,j);
-	      if (i<aa)	bs[nb++]=x;
-	      if (j<bb)	bs[nb++]=y;
-	      if (i>0)	bs[nb++]=b-x;
-	      if (j>0)	bs[nb++]=a-y;
-	      nb--;
-	      for (int k=0; k<nb;k++)
-		  {cir[bs[k]]=bs[k+1];acir[bs[k+1]]=bs[k];vin[bs[k]]=v;}
-	      cir[bs[nb]]=bs[0];acir[bs[0]]=bs[nb];vin[bs[nb]]=v;
-	      pbrin[v]=bs[0];
-	      }
-	  }
+          {for (int i=0; i<a; i++)
+              {int nb=0;
+              x=i*b+j+1; y=i+j*a+aa*b+1; v=i+a*j+1;
+              vcoord[v]=Tpoint(i,j);
+              if (i<aa)        bs[nb++]=x;
+              if (j<bb)        bs[nb++]=y;
+              if (i>0)        bs[nb++]=b-x;
+              if (j>0)        bs[nb++]=a-y;
+              nb--;
+              for (int k=0; k<nb;k++)
+                  {cir[bs[k]]=bs[k+1];acir[bs[k+1]]=bs[k];vin[bs[k]]=v;}
+              cir[bs[nb]]=bs[0];acir[bs[0]]=bs[nb];vin[bs[nb]]=v;
+              pbrin[v]=bs[0];
+              }
+          }
       }
       else
-	  {pbrin[1]=0;vcoord[1] = Tpoint(1.,1.);}
+          {pbrin[1]=0;vcoord[1] = Tpoint(1.,1.);}
   return &GC;
 }
 GraphContainer *GenerateCompleteGraph(int a)
@@ -178,12 +178,12 @@ void set_name(int *Dyck, int *add_edges, int n, int i, char *file_name) {
     //    int *ns;
     int ns1=0, ns2=0;
     for (int j=1; j<=2*n-2; j++) {
-	if (Dyck[j]>Dyck[j-1])
-	    ns1+= puiss_2(j-1);
+        if (Dyck[j]>Dyck[j-1])
+            ns1+= puiss_2(j-1);
     }
     for (int j=0; j<=n-i-2; j++) {
-	if (add_edges[j] != 0)
-	    ns2+= puiss_2(j);
+        if (add_edges[j] != 0)
+            ns2+= puiss_2(j);
     }
     //sprinfoptf(file_name, "Out%.2d_%.4d_%.4d", n, ns1, ns2);
     sprintf(file_name, "OutD%.2d_%.4d_%.4d", n, ns1, ns2);
@@ -206,12 +206,12 @@ int gen_i(int n) {
     int i = 1;
     bool again = (randomGet((2*((2*n-2)-i)*(i+1)))<= (2*n-2-2*i)*(i+2));
     while(again) {
-	i++;
-	//	if (randomGet(10000) % 2) {
-	if (randomGet(10000)/1000 % 2 == 0) {
-	    i = 1;
-	}
-	again = (randomGet((2*((2*n-2)-i)*(i+1))) <= (2*n-2-2*i)*(i+2));
+        i++;
+        //        if (randomGet(10000) % 2) {
+        if (randomGet(10000)/1000 % 2 == 0) {
+            i = 1;
+        }
+        again = (randomGet((2*((2*n-2)-i)*(i+1))) <= (2*n-2-2*i)*(i+2));
     }
     return i;
 }
@@ -228,13 +228,13 @@ int gen_i_m(int n, int m) {
       return 1;
     bool again = (randomGet(2*((2*n-2)-i)*(i+1))<= ((2*n-2)-2*i)*(i+2));
     while(again) {
-	i++;
-	if (n != (i+1))
-	  if (randomGet(n-i-1) <= (m-n+1)) {
-	    i = 1;
-	  }
+        i++;
+        if (n != (i+1))
+          if (randomGet(n-i-1) <= (m-n+1)) {
+            i = 1;
+          }
 
-	again = (randomGet(2*((2*n-2)-i)*(i+1)) <= ((2*n-2)-2*i)*(i+2));
+        again = (randomGet(2*((2*n-2)-i)*(i+1)) <= ((2*n-2)-2*i)*(i+2));
     }
     return i;
 }
@@ -277,11 +277,11 @@ void gen_random(int *word, int length, int k) {
     int h = 0;
     for(int i=0; i< length;i++) {
       if (randomGet(length-i) <= (k-h)) {
-	word[i] = 1;
-	h++;
+        word[i] = 1;
+        h++;
       }
       else
-	word[i] = 0;
+        word[i] = 0;
     }
     assert(h==k);
 }
@@ -304,7 +304,7 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   int j;
   for (j=n-1;j>=0;j--) 
       if (add_edges[j] == 1)
-	  m++;
+          m++;
   if(debug())DebugPrintf("GenerateRandomGraph");  
   GraphContainer &GC = *new GraphContainer;
   GC.setsize(n,m);
@@ -341,35 +341,36 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
       assert(Dyck[t]>=0);
       assert(Dyck[t]!=Dyck[t+1]);
       if (Dyck[t]>Dyck[t+1]) {
-	  // New node
-	  k--;
-	  assert(!Stk.empty());
-	  e++;
+          // New node
+          k--;
+          assert(!Stk.empty());
+          e++;
           elabel[e]=e();
-	  k_m++;
-	  vin[k_m] = k;
-	  vin[-k_m] = Stk.peep();
-	  Stk.push(k);
+          k_m++;
+          vin[k_m] = k;
+          vin[-k_m] = Stk.peep();
+          Stk.push(k);
 
-	  if (k <2*n-2-i) {
-	    if (add_edges[ k()- 1 ] == 1) {
-		e++;
-		elabel[e]=e();
-		k_m++;
-		vin[k_m] = k;
-		vin[-k_m] = P1;
-	    }
-	  }
+          if (k <2*n-2-i) {
+            if (add_edges[ k()- 1 ] == 1) {
+                e++;
+                elabel[e]=e();
+                k_m++;
+                vin[k_m] = k;
+                vin[-k_m] = P1;
+            }
+          }
       }
       else {
-	  P1 = Stk.pop();
-	  angle += incr;
-	  x = cos(angle);
-	  y = sin(angle);
-	  vcoord[P1]=Tpoint(x,y);
+          P1 = Stk.pop();
+          angle += incr;
+          x = cos(angle);
+          y = sin(angle);
+          vcoord[P1]=Tpoint(x,y);
       }
   }
   assert(k == 1);
+  delete [] Dyck; delete [] add_edges;
   TopologicalGraph TG(GC);
   if(randomEraseMultipleEdges())
     TG.Simplify();
@@ -379,11 +380,12 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
 // Compute a random outerplanar map with n vertices
 GraphContainer *GenerateRandomOuterplanarGraph(int n) {      
     int i;
-    int add_edges[n-1];
-    int Dyck[2*n-1];
-    for(int k=0;k<=n-2;k++)
+        int *add_edges = new int[n-1];
+    int *Dyck = new int[2*n-1];
+        int k;
+    for(k=0;k<=n-2;k++)
       add_edges[k]=0;
-    for(int k=0;k<=2*n-2;k++)
+    for(k=0;k<=2*n-2;k++)
       Dyck[k]=0;
     long seed = randomSetSeed();
     randomStart();
@@ -407,19 +409,19 @@ GraphContainer *GenerateRandomOuterplanarGraph(int n) {
 GraphContainer *GenerateRandomOuterplanarGraph(int n,int m)
 {
 
-    int i;
-    int add_edges[n-1];
-    int Dyck[2*n-1];
-    for(int k=0;k<=n-2;k++)
+    int i,k;
+        int *add_edges = new int[n-1];
+    int *Dyck = new int[2*n-1];
+    for(k=0;k<=n-2;k++)
       add_edges[k]=0;
-    for(int k=0;k<=2*n-2;k++)
+    for(k=0;k<=2*n-2;k++)
       Dyck[k]=0;
     long seed = randomSetSeed();
     randomStart();
       if (m<n-1)
-	  m = n-1;
+          m = n-1;
       if (m > 2*n-3)
-	  m=2*n-3;
+          m=2*n-3;
       i = gen_i_m(n,m);
       assert(i<=2*n-2-m); 
       gen_Dyck_i(Dyck, i, 2*n-2);
