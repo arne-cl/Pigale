@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/Tdebug.h>
 #include <TAXI/graphs.h>
@@ -121,6 +122,48 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   for (v=1; v<=a; v++)
     for (tvertex vv=a+1; vv<=a+b; vv++)
       {vin[bb]=v;vin[-bb]=vv; bb++;}
+  TopologicalGraph TG(GC);
+  return &GC;
+}
+
+static int random(int range) 
+//returns a positve integer < range
+  {return (int)( ((rand())&0x7FFFFFFF) %(long)range);
+  }
+GraphContainer *GenerateRandomGraph(int a,int b)
+  {GraphContainer &GC = *new GraphContainer;
+  int n = a;
+  int m = b;
+  GC.setsize(n,m);
+  Prop1<tstring> title(GC.Set(),PROP_TITRE);
+  char titre[256];
+  sprintf(titre,"Random%d,%d", a,b);
+  title() = titre;
+  Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
+  Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
+  Prop<long> vlabel(GC.PV(),PROP_LABEL);
+  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  tvertex v,w;
+  tedge e;
+  vlabel[0]=0;
+  for(v=1; v <= n; v++)
+    {vlabel[v]=v();
+    double angle = 2.*acos(-1.)/a;
+    vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
+    }
+  for (e=0; e<=m; e++)
+    elabel[e]=e();
+  //init random seed
+  time_t time_seed;
+  time(&time_seed);
+  srand(time_seed);
+  tbrin bb=1;
+  do
+      {while((v = random(n+1)) == 0);
+      while((w = random(n+1)) == 0 || w == v);
+      vin[bb] = v;vin[-bb] = w;
+      }while(bb++ < m);
+      
   TopologicalGraph TG(GC);
   return &GC;
 }

@@ -36,6 +36,7 @@ GraphContainer& GetMainGraph();
 GraphContainer *GenerateGrid(int a, int b);
 GraphContainer *GenerateCompleteGraph(int a);
 GraphContainer *GenerateCompleteBiGraph(int a,int b);
+GraphContainer *GenerateRandomGraph(int a,int b);
 // in MyCanvas.cpp
 bool & ShowOrientation();
 //in here
@@ -169,7 +170,7 @@ int AlgoHandler(int action,int nn)
 	  return 1;
 	  break;
       case 603:
-	  G.Simplify();
+	  //G.Simplify();
 	  i = FindNPSet(G);
 	  if(i == 0)return 0;
 	  Tprintf("Max.planar (fast)");
@@ -177,7 +178,7 @@ int AlgoHandler(int action,int nn)
 	  return 1;
 	  break;
       case 604:
-	  G.Simplify();
+	  //G.Simplify();
 	  i = G.MaxPlanar();
 	  if(i == 0)return 0;
 	  Tprintf("Max.planar (slow)");
@@ -424,6 +425,9 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
 	   break;
       case 505:
 	   GC = GenerateCompleteBiGraph(n1_gen,n2_gen);
+	   break;
+      case 506:
+	   GC = GenerateRandomGraph(n1_gen,m_gen);
 	   break;
       default:
 	  return 0;
