@@ -940,7 +940,6 @@ int MyWindow::handler(int action)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
   if(ret < 0)return 0;
   double Time = t.elapsed()/1000.;
-  qDebug("ret=%d",ret);
   if(ret == 1)
       {if(!MacroExecuting )
 	  gw->update();
