@@ -83,7 +83,7 @@ int Test(GraphContainer &GC,int action);
 void macroRecord(int action);
 void UndoErase();
 void SaveSettings();
-static char undofile[L_tmpnam];
+static char undofile[L_tmpnam] = "undo_tgf_XXXXXX" ;
 
 
 MyWindow::MyWindow()
@@ -98,8 +98,8 @@ MyWindow::MyWindow()
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
   //Create an  undofile name
-  tmpnam(undofile);
-  // Atexit: Erase undo.tgf
+  mkstemp(undofile);
+  // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
 #if QT_VERSION >= 300
   LoadSettings();
