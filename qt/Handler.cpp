@@ -191,8 +191,8 @@ int AlgoHandler(int action,int nn)
 	  return 0;
 	  break;
       case A_ALGO_SYM://symetrie
-	  //ret = Embed3dbis(G);
-	  //if(ret >=0)return 5;
+	  ret = Embed3d(G);
+	  if(ret >=0)return 5;
 	  return 5;
 	  break;
       case A_ALGO_COLOR_BIPARTI://color bipartite
