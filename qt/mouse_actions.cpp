@@ -116,11 +116,11 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   Slider->setOrientation(QSlider::Vertical);
 
   ButtonFitGrid = new QCheckBox(this,"ButtonFitGrid");
-  ButtonFitGrid->setGeometry(QRect(ox2,oy2+35,85,20)); 
+  ButtonFitGrid->setGeometry(QRect(ox2,oy2+35,Width-ox2,20)); 
   ButtonFitGrid->setText(tr("Fit grid"));
 
   ButtonShowGrid = new QCheckBox(this,"ButtonShowGrid");
-  ButtonShowGrid->setGeometry(QRect(ox2,oy2+55,85,20)); 
+  ButtonShowGrid->setGeometry(QRect(ox2,oy2+55,Width-ox2,20)); 
   ButtonShowGrid->setText(tr("Show grid"));
   
   ButtonForceGrid = new QPushButton(this,"ButtonForceGrid");
