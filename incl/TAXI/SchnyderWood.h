@@ -41,13 +41,19 @@ class SchnyderWood {
     // Color of a brin
     svector<short> brin_color; 
 
+    // Returns true, if the tbrin b is the lowest of the face
+    bool isFirstBrinOfFace(tbrin b) const;
+
+    //Returns true if the face at the right of the brin is unpointed
+    bool is_unpointed_face(tbrin b) const;
 
     public:
 
     // b is the brin indicating the outer face.
     // Typically, b is the brin defined by the vertex v_n and the edge {v_1,v_n}.
     // This brin can be found by the function: GeometricGraph::FindExteriorface().
-    //Construct a SchnyderWood of G0.
+    // Construct THE minimal Schnyder wood of G0 (using the algorithm
+    // presented in E. Fusy, D. Poulalhon & G. Schaeffer, "Coding, counting and sampling 3-connected planar graphs", SODA'05).
     // In such SW, all edges are colored.
     SchnyderWood(Graph &G0, tbrin b);
 
@@ -166,6 +172,10 @@ class SchnyderWood {
 
     // counts the number of faces with a counterclockwise edge in each of the tree colors.
     int CountDeltaSmoothCCW () const;
+
+    // counts the number of unpointed faces
+    int CountUnpointedFaces() const;
+
 };
 
 

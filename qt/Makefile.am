@@ -41,6 +41,7 @@ LRELEASE=@LRELEASE@
 
 lib_LTLIBRARIES = libpigaleQt.la
 nodist_libpigaleQt_la_SOURCES=$(MOC_FILES)
+#libpigaleQt_la_SOURCES=$(MOC_FILES)
 libpigaleQt_la_SOURCES=$(ALL_FILES)
 libpigaleQt_la_LDFLAGS = -version-info @LIB_VERSION@
 
@@ -50,6 +51,7 @@ pigale_LDADD = -L$(prefix)/lib -ltgraph -lpigaleQt
 pigale_DEPENDENCIES =tgraph pigale_fr.qm 
 
 nodist_Client_SOURCES =  moc_client.cpp
+#Client_SOURCES =  moc_client.cpp client.cpp  
 Client_SOURCES = client.cpp  
 
 datadir = $(prefix)/translations

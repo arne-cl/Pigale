@@ -10,7 +10,7 @@ By default, the prefix for installation is /usr/local/pigale.
 If you do'nt have a write permission, you must provide  another directory where you have a write permission
 ./configure --prefix=/home/a_directory.
 Usually the location of the installation of Qt is defined by the environement variable QTDIR.
-For more options run "./configure --help" . These otions, in particular, let you enable a debug mode, let you precise the locations of the Qt libraries, etc.
+For more options run "./configure --help" . These options, in particular, let you enable a debug mode, let you precise the locations of the Qt libraries, etc.
 
 2/ Next run the following commands
 make
