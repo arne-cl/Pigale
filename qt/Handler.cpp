@@ -233,12 +233,10 @@ int EmbedHandler(int action,int &drawing)
   switch(action)
       {case A_EMBED_SCHNYDER_E:ret = 1;
 	   err = G.Schnyder(0);
-	   Tprintf("Schnyder");
 	   if(err)Tprintf("ret=%d",err);
 	  break;
       case A_EMBED_SCHNYDER_V:ret = 1;
           err = G.SchnyderV(0);
-	  Tprintf("Schnyder V");
           if(err)Tprintf("ret=%d",err);
 	  break;
       case A_EMBED_FPP:ret = 1;
@@ -247,11 +245,9 @@ int EmbedHandler(int action,int &drawing)
 	  break;
       case A_EMBED_TUTTE_CIRCLE:ret = 1;
           EmbedTutteCircle(G);
-	  Tprintf("Tutte circle");
 	  break;
       case A_EMBED_TUTTE:ret = 1;
           G0.Tutte();
-	  Tprintf("Tutte");
 	  break;
       case A_EMBED_VISION:ret = 3;
 	  err = EmbedVision(G);
@@ -276,7 +272,7 @@ int EmbedHandler(int action,int &drawing)
 	  break;
       case A_EMBED_T_CONTACT:ret = 3;
 	  err = EmbedTContact(G);
-	  if(err)Tprintf("TContact err=%d",err);
+	  if(err)Tprintf("T-Contact err=%d",err);
 	  drawing = 5;
 	  break;
       case A_EMBED_3d:ret = 4; //Embed3d
@@ -486,7 +482,7 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
       {GetMainGraph().swap(*GC);
       GeometricGraph GG(GetMainGraph());
       }
-  else {Tprintf("Error generating");LogPrintf("Error generating:%d",action);}
+  else {setError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}
   delete GC;
   return 2;
   }
