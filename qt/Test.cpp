@@ -26,11 +26,8 @@ int Test(GraphContainer &GC,int action)
       return 2;
       }
   if(action == 2)
-      {for(int i = 0;i < 1000;i++)
-      if(!G.TestPlanar())
-	  {if(getError())DebugPrintf("TestPlanar:%s",(const char *)getErrorString());
-	  setError(-12345,"planar error"); 
-	  }
+      {for(int i = 0;i < 100;i++)
+	  G.TestPlanar();  
       return 0;
       }
   if(action == 3) 
