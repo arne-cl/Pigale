@@ -24,7 +24,7 @@ CFLAGSopt = -O2 -m486 -fstrength-reduce $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith
 CFLAGSopt +=  -fomit-frame-pointer -pipe
 CFLAGSopt +=  -DQT
-CFLAGSopt +=  -DALPHA
+
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall  $(PIC)
@@ -32,7 +32,7 @@ CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith
 CFLAGSdbg +=  -fomit-frame-pointer
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT
-CFLAGSdbg +=  -DALPHA
+
 
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
