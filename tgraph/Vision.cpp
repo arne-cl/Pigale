@@ -265,6 +265,10 @@ int Vision(TopologicalGraph &xG,int morg)
   svector<tvertex> orig(0,n); 
   if (BipPlanarize(G,topin,order,orig,bst)!=0)
     return -3;
+  // move orig for added edges
+  for (tedge e=morg+1; e<=m; e++)
+    {orig[m]=G.vin[m]; orig[-m]=G.vin[-m];}
+    
 #ifdef TDEBUG
   if (!G.TestPlanar())
     return -4;
