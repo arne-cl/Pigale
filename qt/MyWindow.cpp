@@ -48,6 +48,7 @@
 #include <qbuttongroup.h>
 #include <qpalette.h>
 #include <qcolordialog.h> 
+#include <qprinter.h> 
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -82,6 +83,10 @@ MyWindow::MyWindow()
 
   QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
+  // Create a printer
+  printer = new QPrinter;
+  printer->setOrientation(QPrinter::Landscape); 
+  printer->setColorMode(QPrinter::Color); 
 
   // Windows
 #if QT_VERSION >= 300
@@ -164,7 +169,7 @@ MyWindow::MyWindow()
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
   QWhatsThis::add(fileopen,fileopen_txt);
   filesave = new QToolButton(saveIcon,"Save File",QString::null,this,SLOT(save()),tb,"Save graph" );
-  fileprint = new QToolButton(printIcon,"Print editor graph",QString::null,gw,SLOT(print()),tb,"Print" );
+  fileprint = new QToolButton(printIcon,"Print window",QString::null,this,SLOT(print()),tb,"Print" );
   info = new QToolButton(infoIcon,"Information",QString::null,this,SLOT(information()),tb,"info" );
   tb->addSeparator();
   left = new QToolButton(leftIcon,"Previous Graph",QString::null,this,SLOT(previous()),tb,"Previous");
@@ -189,7 +194,7 @@ MyWindow::MyWindow()
   file->insertItem("&Delete current record",this,SLOT(deleterecord()));
   file->insertItem("S&witch Input/Output files",this,SLOT(switchInputOutput()));
   file->insertSeparator();
-  file->insertItem(printIcon,"&Print",gw, SLOT(print()));
+  file->insertItem(printIcon,"&Print",this, SLOT(print()));
   file->insertSeparator();
   file->insertItem("&Quit",qApp,SLOT(closeAllWindows()));
 
@@ -414,8 +419,9 @@ MyWindow::MyWindow()
   load(0);
   }
 
-MyWindow::~MyWindow() {}
-
+MyWindow::~MyWindow()
+  {delete printer;
+  }
 void MyWindow::load()
   {QString FileName = QFileDialog::
   getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt)",this);
@@ -644,4 +650,19 @@ void MyWindow::showLabel(int show)
   }
 void  MyWindow::distOption(int use)
   {useDistance() = use;
+  }
+void MyWindow::print()
+  {switch(tabWidget->currentPageIndex())
+      {case 0:
+	   gw->print(this->printer);
+	   break;
+      case 1:
+	  mypaint->print(this->printer);
+	  break;
+      case 3:
+	  graphsym->print(this->printer);
+	  break;
+      default:
+	  break;
+      }
   }

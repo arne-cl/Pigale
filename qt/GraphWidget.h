@@ -15,6 +15,7 @@
 
 class GraphWidgetPrivate;
 class MyWindow; 
+class QPrinter;
 
 class GraphWidget : public QWidget
 {
@@ -23,12 +24,12 @@ public:
   GraphWidget( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
   ~GraphWidget();
   int init();
+  void print(QPrinter *printer);
 public slots:
   void update();
   void refresh();
   void zoom();
   void uzoom();
-  void print();
   void EraseColorVertices();
   void EraseColorEdges();
   void EraseThickEdges();

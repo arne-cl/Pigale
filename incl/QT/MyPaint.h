@@ -16,6 +16,7 @@
 #include <qwidget.h>
 
 class MyWindow;
+class QPrinter;
 
 class MyPaint : public QWidget 
 {
@@ -26,9 +27,10 @@ public:
   ~MyPaint();
   int to_x(double x);   
   int to_y(double y);   
-  void DrawSeg(Tpoint &a,Tpoint &b,int col);
+  void DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col);
   //public slots:
   void update(int index);
+  void print(QPrinter *printer);
 
 private:
   void drawIt(QPainter *);
@@ -37,14 +39,12 @@ private:
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent* e);
   void mousePressEvent(QMouseEvent * event);
-  int index;
-
-public:
-
 
 private:
   MyWindow *father;
   bool isHidden;
+  QPrinter* printer;
+  int index;
 
 public:
   GraphContainer GCP;

@@ -19,8 +19,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-
-
+#include <qprinter.h>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -743,7 +742,11 @@ int GraphSym::update()
   d->editor->FindSym();
   if(!d->editor->sym)Tprintf("No symetrie found");  
   return 0;
-  }  
+  }
+void GraphSym::print(QPrinter *printer)
+  {if(!d->is_init)return;
+  d->editor->print(printer);
+  }
 void GraphSym::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize(); 
   QWidget::resizeEvent(e);
@@ -877,7 +880,8 @@ void SymWindow::paintEvent(QPaintEvent *e)
   if(isHidden)return;
   QWidget::paintEvent(e);
   //Ne doit surtout pas effacer la background
-  if(sym)update();
+  QPainter p(this);
+  if(sym)update(&p);
   } 
 void SymWindow::DrawSym()
   {GeometricGraph & G = *(gsp->pGG);
@@ -885,27 +889,28 @@ void SymWindow::DrawSym()
   else FillCoords(G,axe1,axe2,1);
   Normalise();
   setBackgroundColor(Qt::white);
-  update();
-  }
-void SymWindow::update()
-  {GeometricGraph & G = *(gsp->pGG);
   QPainter p(this);
-  QPen pn = p.pen();
+  update(&p);
+  }
+void SymWindow::update(QPainter *p)
+  {GeometricGraph & G = *(gsp->pGG);
+  //QPainter p(this);
+  QPen pn = p->pen();
   QPoint ps,pt;
   QString t;
   QFont font;
   //Normalise();
   if(gsp->Factorial)//draw axes with labels
-      {pn.setColor(color[Grey2]);pn.setWidth(3); p.setPen(pn);
+      {pn.setColor(color[Grey2]);pn.setWidth(3); p->setPen(pn);
       ps = QPoint(0,this->height()-(int)ytr); pt = QPoint(this->width(),this->height()-(int)ytr);
-      p.drawLine(ps,pt);
-      pn.setWidth(1); p.setPen(pn);
+      p->drawLine(ps,pt);
+      pn.setWidth(1); p->setPen(pn);
       ps = QPoint((int)xtr,0); pt = QPoint((int)xtr,this->height());
-      p.drawLine(ps,pt);
+      p->drawLine(ps,pt);
       //draw labels
       font = QFont("lucida",14);
-      p.setFont(font);
-      pn.setColor(color[Violet]);p.setPen(pn);
+      p->setFont(font);
+      pn.setColor(color[Violet]);p->setPen(pn);
       t.sprintf("(%d)",axe1);
       drawText(this->width()-18,this->height()-(int)ytr-3,t);//hor
       t.sprintf("(%d)",axe2);
@@ -916,13 +921,13 @@ void SymWindow::update()
       {ps = QPoint((int)xcoord[G.vin[e]()],this->height() - (int)ycoord[G.vin[e]()]);
        pt = QPoint((int)xcoord[G.vin[-e]()],this->height() - (int)ycoord[G.vin[-e]()]);
        pn.setColor(color[G.ecolor[e]]); pn.setWidth(2);
-       p.setPen(pn);
-       p.drawLine(ps,pt);
+       p->setPen(pn);
+       p->drawLine(ps,pt);
       }
   //Draw vertices
   QColor  col;
-  font = QFont("lucida",fs);p.setFont(font);
-  QBrush pb = p.brush();pb.setStyle(Qt::SolidPattern);
+  font = QFont("lucida",fs);p->setFont(font);
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   for(tvertex v = 1; v <= G.nv();v++)
       {if(gsp->SymLabel)
@@ -937,11 +942,11 @@ void SymWindow::update()
       int y =  this->height() - (int) ycoord[v()];
       QRect rect = QRect(x-dx/2,y-dy/2,dx,dy);
       pn.setWidth(1); pn.setColor(Qt::black); pb.setColor(color[G.vcolor[v]]);
-      p.setPen(pn);p.setBrush(pb);
-      p.drawRect(rect);
+      p->setPen(pn);p->setBrush(pb);
+      p->drawRect(rect);
       col = color[G.vcolor[v]];
-      pn.setColor(OppCol(col));p.setPen(pn);
-      p.drawText(rect,Qt::AlignCenter,t);
+      pn.setColor(OppCol(col));p->setPen(pn);
+      p->drawText(rect,Qt::AlignCenter,t);
       }
   }
 void SymWindow::Normalise()
@@ -986,4 +991,10 @@ void SymWindow::Normalise()
        ycoord[i] = ymul*ycoord[i] + ytr;
       }
   
+  }
+void SymWindow::print(QPrinter *printer)
+  {if(printer->setup(this))
+      {QPainter pp(printer);
+      this->update(&pp);
+      }
   }

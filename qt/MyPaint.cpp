@@ -16,6 +16,7 @@
 #include <TAXI/Tmessage.h> 
 #include <QT/MyQcolors.h>
 #include <iostream.h>
+#include <qprinter.h>
 
 //in MyCanvas.cpp
 bool & ShowIndex();
@@ -40,21 +41,21 @@ void DrawPolar(QPainter *p,MyPaint *paint)
 
   for (tedge ee=1; ee<=m; ee++)
       {if (Erho[ee]==-1)
-          {paint->DrawSeg(Epoint1[ee],Epoint2[ee],Red);
+          {paint->DrawSeg(p,Epoint1[ee],Epoint2[ee],Red);
           continue;
           }
       if (Epoint11[ee]!=Tpoint(-1,-1))
-          {paint->DrawSeg(Epoint1[ee],Epoint11[ee],Pink);
-          paint->DrawSeg(Epoint11[ee],Epoint12[ee],Pink);
+          {paint->DrawSeg(p,Epoint1[ee],Epoint11[ee],Pink);
+          paint->DrawSeg(p,Epoint11[ee],Epoint12[ee],Pink);
           }
       else if (Epoint12[ee]!=Tpoint(-1,-1))
-          paint->DrawSeg(Epoint1[ee],Epoint12[ee],Pink);
+          paint->DrawSeg(p,Epoint1[ee],Epoint12[ee],Pink);
       if (Epoint21[ee]!=Tpoint(-1,-1))
-          {paint->DrawSeg(Epoint2[ee],Epoint21[ee],Pink);
-          paint->DrawSeg(Epoint21[ee],Epoint22[ee],Pink);
+          {paint->DrawSeg(p,Epoint2[ee],Epoint21[ee],Pink);
+          paint->DrawSeg(p,Epoint21[ee],Epoint22[ee],Pink);
           }
       else if (Epoint22[ee]!=Tpoint(-1,-1))
-          paint->DrawSeg(Epoint2[ee],Epoint22[ee],Pink);
+          paint->DrawSeg(p,Epoint2[ee],Epoint22[ee],Pink);
 	  
       pn.setColor(color[Blue]);pn.setWidth(2);p->setPen(pn);
       ox = paint->to_x(-Erho[ee]);
@@ -187,25 +188,25 @@ void DrawFPPRecti(QPainter *p,MyPaint *paint)
 	  {a.x() = b.x() = xje[e]; 
 	   a.y() = h1;  
 	   b.y() = h2 - 2*alpha;
-	  paint->DrawSeg(a,b,ecolor[e]);
+	  paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       else if(h1 > h2)
 	  {a.x() = b.x() = xje[e];
 	   a.y() = h2;
 	   b.y() = h1 - 2*alpha;
-	  paint->DrawSeg(a,b,ecolor[e]);
+	  paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       else if(x1 < x2)
 	  {a.x() = x1 + alpha;
 	   b.x() = x2 - alpha;
 	   a.y() = b.y() = h1 -alpha;
-	  paint->DrawSeg(a,b,ecolor[e]);
+	  paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       else if(x1 > x2)
-	  {a.x() = xriv[G.vin[-e]] - alpha;  
-	   b.x() = xliv[G.vin[e]] + alpha;
+	  {a.x() = xriv[G.vin[-e]] + alpha;  
+	   b.x() = xliv[G.vin[e]] - alpha;
 	   a.y() = b.y() = h1 -alpha;
-	  paint->DrawSeg(a,b,ecolor[e]);
+	   paint->DrawSeg(p,a,b,ecolor[e]);
 	  }
       }
   
@@ -287,11 +288,20 @@ DrawThing DrawFunctions[] =
     {0,0} 
     };
 
-MyPaint::~MyPaint(){}
+MyPaint::~MyPaint()
+  {delete printer;
+  }
 MyPaint::MyPaint(QWidget *parent, const char *name,MyWindow *f):
     QWidget(parent,name),father(f),isHidden(true)
   {index = -1;
   setBackgroundColor(Qt::white);
+  }
+void MyPaint::print(QPrinter* printer)
+  {if(index < 0)return;
+  if(printer->setup(this))
+      {QPainter pp(printer);
+      drawIt(&pp);
+      }
   }
 void MyPaint::drawIt(QPainter *p)
   {if(index < 0)return;
@@ -344,10 +354,11 @@ int MyPaint::to_x(double x)
 int MyPaint::to_y(double y)
   {return (int)(this->height() - y*yscale -ytr + .5);
   }
-void MyPaint::DrawSeg(Tpoint &a,Tpoint &b,int col)
-  {QPainter p(this);QPen pn = p.pen();
+void MyPaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col)
+  {QPen pn = p->pen();
   QPoint ps = QPoint(to_x(a.x()),to_y(a.y()));
   QPoint pt = QPoint(to_x(b.x()),to_y(b.y()));
-  pn.setColor(color[col]); pn.setWidth(2);p.setPen(pn);
-  p.drawLine(ps,pt);
+  pn.setColor(color[col]); pn.setWidth(2);
+  p->setPen(pn);
+  p->drawLine(ps,pt);
   }

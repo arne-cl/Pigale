@@ -58,13 +58,14 @@ public:
   void FindSym();
   void DrawSym();
   void Axes(int i1,int i2);
+  void print(QPrinter *printer);
 private:
   void paintEvent(QPaintEvent *e);
   void showEvent(QShowEvent*);
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent* e);
   void Normalise();
-  void update();
+  void update(QPainter *p);
 
   //QSize sizeHint() const;
 public:

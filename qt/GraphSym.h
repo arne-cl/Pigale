@@ -15,6 +15,7 @@
 
 class GraphSymPrivate;
 class MyWindow; 
+class QPrinter;
 
 class GraphSym : public QWidget
 {
@@ -22,6 +23,8 @@ class GraphSym : public QWidget
 public:
   GraphSym( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
   ~GraphSym();
+  void print(QPrinter *printer);
+
 public slots:
   int update();
   void Next();

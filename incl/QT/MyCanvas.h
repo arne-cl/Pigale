@@ -145,7 +145,7 @@ class GraphEditor : public QCanvasView
   void clear();
   void load(bool initgrid = true);
   void refresh();
-  void print();
+  void print(QPrinter* printer);
   void Normalise();
   int InitGrid();
   void UndoGrid();
@@ -170,7 +170,6 @@ private:
   void resizeEvent(QResizeEvent*);
   void paintEvent(QPaintEvent *);
 
-  QPrinter* printer;
   QPoint start_position;
   GraphWidgetPrivate* gwp;
   bool DoNormalise;

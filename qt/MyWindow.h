@@ -33,6 +33,7 @@ class QTabWidget;
 class QSpinBox;
 class QCheckBox;
 class QToolButton;
+class QPrinter;
 
 class MyWindow: public QMainWindow 
 {Q_OBJECT
@@ -64,7 +65,7 @@ private slots:
   void distOption(int use);
 public slots:
   void information();
-
+  void print();
 public:
   void Message(QString s);
   void MessageClear();
@@ -84,6 +85,7 @@ public:
 private:
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N;
   QTime timer;
+  QPrinter *printer;
   QString InputFileName;
   QString OutputFileName;
   QString DirFile;

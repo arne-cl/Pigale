@@ -158,8 +158,10 @@ void GraphWidget::refresh()
   {if(!d->is_init)return;
   d->editor->refresh();
   }  
-void GraphWidget::print()
-  {d->editor->print();}
+void GraphWidget::print(QPrinter *printer)
+  {if(!d->is_init)return;
+  d->editor->print(printer);
+  }
 void GraphWidget::zoom()
   {d->editor->zoom *= 1.1;
   d->editor->load(true);
@@ -532,12 +534,10 @@ GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name,
   color_node = Yellow;
   color_edge = Black;
   width_edge = 1;
-  printer = 0;
   zoom = 1.;
   }
 GraphEditor::~GraphEditor()
-  {delete printer;
-  }
+  { }
 int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
   {int rtt;
   QCanvasItemList l=canvas()->collisions(p);
@@ -1094,9 +1094,8 @@ void GraphEditor::load(bool initgrid)
   G.ewidth.definit(width_edge);
   canvas()->update();
   }
-void GraphEditor::print()
-  {if(!printer)printer = new QPrinter;
-  if(printer->setup(this))
+void GraphEditor::print(QPrinter *printer)
+  {if(printer->setup(this))
       {QPainter pp(printer);
       gwp->canvas->drawArea(QRect(0,0,gwp->canvas->width()-space-sizerect-20
 				  ,gwp->canvas->height()),&pp,FALSE);
@@ -1274,7 +1273,8 @@ int GraphEditor::InitGrid()
       {Tprintf("Forcegrid (%d) -> modified genus",gwp->SizeGrid);
       genuschanged = true;
       }
-  if(overlap || genuschanged)gwp->ForceGridOk = false;
+  if(overlap || genuschanged)
+      {gwp->ForceGridOk = false;IsGrid = false;}
 
 
   //Check if the extreme points changed
@@ -1299,6 +1299,7 @@ int GraphEditor::InitGrid()
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
   gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+  if(IsGrid)gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
 
   if(NeedNormalise)Normalise();
   if(GridDrawn)clearGrid();
