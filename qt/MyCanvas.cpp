@@ -603,9 +603,10 @@ void GraphEditor::print(QPrinter *printer)
   }
 void GraphEditor::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  QString FileName = QFileDialog::getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
+  gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
   QPixmap pixmap = QPixmap::grabWidget(this,2,2,gwp->canvas->width()-space-sizerect-1
 				       ,gwp->canvas->height()); 
   pixmap.save(FileName,"PNG");

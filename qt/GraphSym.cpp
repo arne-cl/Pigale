@@ -756,10 +756,11 @@ void GraphSym::print(QPrinter *printer)
   }
 void GraphSym::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  QString FileName = QFileDialog::getSaveFileName(d->mywindow->DirFilePng,"Images(*.png)",this);
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
-  QPixmap pixmap = QPixmap::grabWidget (this,10,10,this->width()-20,this->height()-50); 
+  d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+  QPixmap pixmap = QPixmap::grabWidget (this,11,11,this->width()-22,this->height()-52); 
   pixmap.save(FileName,"PNG");
   }
 void GraphSym::resizeEvent(QResizeEvent* e)

@@ -96,6 +96,7 @@ public:
   Graph_Properties *graph_properties;
   Mouse_Actions *mouse_actions;
   GraphContainer GC;
+  QString DirFilePng;
   bool MacroLooping;
  
 private:

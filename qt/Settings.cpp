@@ -111,6 +111,8 @@ void MyWindow:: SaveSettings()
   // Printer
   setting.writeEntry("/pigale/printer colormode",printer->colorMode());
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
+  // DirFilePng 
+  setting.writeEntry("/pigale/png dir",DirFilePng);
   // Custom colors
   int r,g,b;
   QColor col = QColor(QColorDialog::customColor(0));
@@ -149,6 +151,7 @@ void MyWindow::LoadSettings()
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",1);
   EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
+  DirFilePng = setting.readEntry("/pigale/png dir",".");
   }
 int GetPigaleColors()
   {QSettings setting;

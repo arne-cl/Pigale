@@ -359,9 +359,10 @@ void MyPaint::print(QPrinter* printer)
   }
 void MyPaint::png()
   {if(index < 0)return;
-  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  QString FileName = QFileDialog::getSaveFileName(father->DirFilePng,"Images(*.png)",this);
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
+  father->DirFilePng = QFileInfo(FileName).dirPath(true);
   QPixmap pixmap = QPixmap::grabWidget (this); 
   pixmap.save(FileName,"PNG");
   }
