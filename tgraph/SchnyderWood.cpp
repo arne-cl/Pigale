@@ -23,7 +23,7 @@
 SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   : G(G0), FirstBrin(fb),v_1(G.vin[fb]), v_2(G.vin[-fb]), v_n(G.vin[-G.acir[fb]]),
    ParentB(1,G.nv(),0), ParentG(1,G.nv(),0), ParentR(1,G.nv(),0), brin_color(-G.ne(),G.ne(), Black) {
-  svector<short> UnmarkedNeighbors(1, G.nv(), 0);
+  svector<short> UnmarkedNeighbors(1, G.nv(), short(0));
   tvertex v;
   tbrin left, right, b, bb;
   tedge e;

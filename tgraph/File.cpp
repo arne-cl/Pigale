@@ -63,6 +63,17 @@ struct e_struct{
 struct coord   {int label; double x,y ;};
 struct e_struct{long v1,v2,color,width;};
 #endif
+int IsFileAscii(const char *name)
+  {char ID[4];
+  fstream stream;
+
+  stream.open(name,ios::in|ios::binary); 
+  if(!stream.is_open())return -1;
+  stream.read(ID,4);
+  stream.close();
+  if(strncmp(ID,"PIG",3) != 0)return 0;
+  return 1;
+  }
 
 int DeleteTgfRecord(tstring filename,int index)
   {if(!IsFileTgf(~filename))return -1;
@@ -71,7 +82,7 @@ int DeleteTgfRecord(tstring filename,int index)
   return file.DeleteRecord(index);
   }
 
-int GetNumRecords(tstring fname)
+int GetTgfNumRecords(tstring fname)
   { if(!IsFileTgf(~fname))
       {ifstream  str(~fname);
       if(!str)return -2;
@@ -83,10 +94,15 @@ int GetNumRecords(tstring fname)
   return file.RecordsNumber();
   }
 int ReadGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
-  {if(IsFileTgf(~fname))
-      return ReadTgfGraph(G,fname,NumRecords,GraphIndex);
-  NumRecords = 1; GraphIndex = 1;
-  return ReadGraphAscii(G,fname);
+  {
+    int d=FileIOHandler.WhoseIs(fname);
+    if (d<0) return d;
+    return FileIOHandler.Read(d,G,fname,NumRecords,GraphIndex);
+    
+// if(IsFileTgf(~fname))
+//       return ReadTgfGraph(G,fname,NumRecords,GraphIndex);
+//   NumRecords = 1; GraphIndex = 1;
+//   return ReadGraphAscii(G,fname);
   }
 int ReadGeometricGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
   {int rc;
@@ -296,6 +312,14 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   int i,ch,iv1,iv2;
 
   G.clear();
+  // Lecture du header (1 ligne)
+  for(i = 0;i < 80;i++)
+      {ch = stream.get();
+      if(ch == EOF)
+          return 1;
+      else if(ch == 10 || ch == 13)
+          break;
+      }
   // Lecture du titre
   for(i = 0;i < 80;i++)
       {ch = stream.get();
@@ -363,6 +387,7 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
 int SaveGraphAscii(GraphAccess& G,tstring filename)
   {ofstream out(~filename,ios::binary|ios::trunc);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
+  out << "PIG:0" << endl;
   if(title().length() == 0)title() = "No Name";
   out << title() <<endl;
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);

@@ -81,7 +81,7 @@ private slots:
   void reload();
   void next();
   void save();
-  void save_ascii();
+  //void save_ascii();
   void saveAs();
   void deleterecord();
   void switchInputOutput();
@@ -153,6 +153,8 @@ public:
   QPalette LightPalette;
   QString InputFileName;
   QString OutputFileName;
+  int InputDriver;
+  int OutputDriver;
   bool ServerExecuting;
   bool ServerBusy;
   int ServerClientId;

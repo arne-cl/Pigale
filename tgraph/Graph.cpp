@@ -501,7 +501,7 @@ int TopologicalGraph::NumFaces()
   {tbrin brin_depart,brin_courant;
   int NumberOrbits=0;
   int m = ne();
-  svector<char> already_met(-m,m,0);
+  svector<char> already_met(-m,m,char(0));
 
   // Parcourt de toutes les faces 
   already_met[0]=(char)1;

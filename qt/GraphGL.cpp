@@ -461,7 +461,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x+size,y+size,z-size);
   glEnd();
   }
-void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
+void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor &col)
   {int r,g,b;
   col.rgb(&r,&g,&b);
   GLfloat xr = (GLfloat)r/255.;
