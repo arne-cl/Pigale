@@ -39,7 +39,7 @@ int compare(const void *b1, const void *b2)
 void GeometricGraph::init()
   {
   ecolor.SetName("ecolor");ewidth.SetName("ewidth");elabel.SetName("elabel");
-  vcolor.SetName("vcolor");vlabel.SetName("vlabel");
+  vcolor.SetName("vcolor");vlabel.SetName("vlabel");vcoord.SetName("vcoord");
 
   if(!nv()) maxvlabel=0;
   else
