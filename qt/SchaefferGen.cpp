@@ -2620,25 +2620,26 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  {Sizes.m = 4; Sizes.b = 4;
 	  n_ask = Max(n_ask,4);n_ask /= 2;
 	  Sizes.t = (int)(n_ask*.02 +.5);multiple = true;
-	  sprintf(t,"Quadric_%d",e_connectivity/2);
+	  sprintf(t,"4-Regular_%d",e_connectivity/2);
+	  loops = true;
 	  }
       else if(e_connectivity == 4)
 	  {Sizes.m = 5; Sizes.b = 5;
 	  n_ask = Max(n_ask,8);n_ask /= 2;
 	  Sizes.t = (int)(n_ask*.04 +.5);multiple = true;
-	  sprintf(t,"Quadric_%d",e_connectivity/2);
+	  sprintf(t,"4-Regular_%d",e_connectivity/2);
 	  }
       else if(e_connectivity == 6)
 	  {Sizes.m = 6; Sizes.b = 5;
 	  n_ask = Max(n_ask,12);n_ask /= 2;
 	  Sizes.t = (int)(n_ask*.20 +.5);
-	  sprintf(t,"Quadric_%d",e_connectivity/2);
+	  sprintf(t,"4-Regular_%d",e_connectivity/2);
 	  }
       else if(e_connectivity == 0)//BiQuadric
 	  {Sizes.m = 9; Sizes.b = 9; 
 	  n_ask = Max(n_ask,12);n_ask /= 2;
 	  n_ask += n_ask%2;multiple = true;
-	  sprintf(t,"BiQuadric_%d",e_connectivity/2);
+	  sprintf(t,"4-Regular-Bipartite_%d",e_connectivity/2);
 	  } 
       }
   else if(type == 2)// Bipartite
