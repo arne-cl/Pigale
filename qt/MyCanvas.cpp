@@ -482,7 +482,7 @@ void NodeItem::moveBy(double dx, double dy)
 //Move the left upper part of the item and
 // set the coordinates to the center
   {GeometricGraph & G = *(gwp->pGG);
-  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_EDGE);
+  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
   int h = gwp->canvas->height();
   double nx = x() + dx; //new x position
   double ny = y() + dy;
@@ -727,7 +727,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       return;
       }
   else if(MouseAction == 1) // Create an edge
-      {Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+      {Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       NodeItem* node;
       EdgeItem *edge;
       tvertex v;
@@ -873,7 +873,7 @@ void GraphEditor::contentsMouseMoveEvent(QMouseEvent* e)
       }
   else if(gwp->moving_subgraph)
       {GeometricGraph & G = *(gwp->pGG);
-      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       short vcol;  G.vcolor.getinit(vcol);
       NodeItem * node;
       for(tvertex v = 1; v <= G.nv();v++)
@@ -921,7 +921,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       {gwp->moving_subgraph = false;
       if(!IsGrid)return;
       GeometricGraph & G = *(gwp->pGG);
-      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       tvertex v = 1;
       double prev_x = G.vcoord[v].x();
       double prev_y = G.vcoord[v].y();
@@ -935,8 +935,8 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       }
   if(gwp->curs_item)// end creating an edge
       {GeometricGraph & G = *(gwp->pGG);
-      Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_EDGE);
-      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+      Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+      Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       NodeItem* node;
       EdgeItem *edge;
       tvertex v1,v2;
@@ -1081,8 +1081,8 @@ void GraphEditor::load(bool initgrid)
       if(gwp->ShowGrid)showGrid(true);
       }
 
-  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE,(NodeItem *)NULL);
-  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_EDGE,(EdgeItem *)NULL);
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM,(NodeItem *)NULL);
+  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
 
    for(tvertex v = 1;v <= G.nv();v++)
@@ -1153,10 +1153,10 @@ void GraphEditor::Normalise()
   }
 void GraphEditor::UndoGrid()
   {GeometricGraph & G = *(gwp->pGG);
-  Prop<Tpoint> scoord(G.Set(tvertex()),PROP_COORD_S);
+  Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
 //   G.vcoord = scoord;
 //   load();
-  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_NODE);
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   double dx,dy;
   for(tvertex v = 1; v <= G.nv();v++)
       {dx = scoord[v].x() - G.vcoord[v].x();
@@ -1169,7 +1169,7 @@ void GraphEditor::UndoGrid()
   }
 int GraphEditor::InitGrid()
   {GeometricGraph & G = *(gwp->pGG);
-  Prop<Tpoint> scoord(G.Set(tvertex()),PROP_COORD_S);
+  Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
   double pos,prevpos;
   int npos;
   int NeedNormalise = 0;
