@@ -2,36 +2,57 @@
 #define GLCONTROLWIDGET_H
 
 #include <qgl.h> 
-
+//! This class handles the user inputs to perform rotations, translations and zoom.
+/*! This class handles the user inputs to perform rotations, translations and zoom.
+  It derives from  QGLWidget, the Qt class allowing OpenGL operations
+ */
 class GLControlWidget : public QGLWidget
 {
     Q_OBJECT
 
 public:
-    GLControlWidget(QWidget *parent,const char *name = 0,QGLWidget *share = 0,WFlags f = 0);
-    virtual void transform();
+  GLControlWidget(QWidget *parent,const char *name = 0,QGLWidget *share = 0,WFlags f = 0);
+  //! apply geometric transform as defined by the translation, rotation and scale values
+  virtual void transform();
 public slots:
-    void setXRotation( double degrees );
-    void setYRotation( double degrees );
-    void setZRotation( double degrees );
-    void setScale( double s );
-    void setXTrans( double x );
-    void setYTrans( double y );
-    void setZTrans( double z );
-
-    virtual void setRotationImpulse( double x, double y, double z );
-    virtual void setTranslationImpulse( double x, double y, double z );
+  //! defines the rotation along the X axis
+  void setXRotation( double degrees );
+  //! defines the rotation along the Y axis
+  void setYRotation( double degrees );
+  //! defines the rotation along the Z axis
+  void setZRotation( double degrees );
+  //! defines the zoom factor
+  void setScale( double s );
+  //! defines the translation  along the X axis
+  void setXTrans( double x );
+  //! defines the translation  along the Y axis
+  void setYTrans( double y );
+  //! defines the translation  along the Z axis
+  void setZTrans( double z );
+  //! defines the rotation steps
+  virtual void setRotationImpulse( double x, double y, double z );
+  //! defines the translation steps
+  virtual void setTranslationImpulse( double x, double y, double z );
 
 protected:
-    void setAnimationDelay( int ms );
-    void mousePressEvent( QMouseEvent *e );
-    void mouseReleaseEvent( QMouseEvent *e );
-    void mouseMoveEvent( QMouseEvent * );
-    void mouseDoubleClickEvent( QMouseEvent * );
-    void wheelEvent( QWheelEvent * );
-    void  keyPressEvent( QKeyEvent *k );
-    void showEvent( QShowEvent * );
-    void hideEvent( QHideEvent * );
+  //! set the speed of automatic rotation
+  void setAnimationDelay( int ms );
+  //! record the mouse position
+  void mousePressEvent( QMouseEvent *e );
+  //! record the mouse position
+  void mouseReleaseEvent( QMouseEvent *e );
+  //! Rotates or translate the picture
+  void mouseMoveEvent( QMouseEvent * );
+  //! stops or starts automatic rotation
+  void mouseDoubleClickEvent( QMouseEvent * );
+  //! used to set the zoom factor
+  void wheelEvent( QWheelEvent * );
+  //! used to set the zoom factor
+  void keyPressEvent( QKeyEvent *k );
+  //! restore automatic rotation
+  void showEvent( QShowEvent * );
+  //! stops automatic rotation
+  void hideEvent( QHideEvent * );
 
     GLfloat xRot, yRot, zRot;
     GLfloat xTrans, yTrans, zTrans;

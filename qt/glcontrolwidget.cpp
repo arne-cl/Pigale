@@ -79,7 +79,8 @@ void GLControlWidget::mouseMoveEvent( QMouseEvent *e )
       setRotationImpulse(ry,0,rx);
   else if( e->state() == MidButton )
       setTranslationImpulse(rx,ry,0);
-  else if( e->state() == (LeftButton | RightButton ))
+  //else if( e->state() == (LeftButton | RightButton ))
+  else if( e->state() == (MidButton | ShiftButton ))
       setTranslationImpulse(rx,0,ry );
   }
 void GLControlWidget::wheelEvent(QWheelEvent *e)

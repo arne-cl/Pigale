@@ -51,7 +51,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   LayoutAllButtons->addLayout(LayoutRightButtons);
 
   QLabel*TextLabel3 = new QLabel(this,"TextLabel3");
-  TextLabel3->setText("<b>Graph Properties</b>");
+  TextLabel3->setText(tr("<b>Graph Properties</b>"));
   TextLabel3->setTextFormat(Qt::RichText);
   TextLabel3->setAlignment(int(QLabel::AlignCenter));
   TxtLayout->addWidget(TextLabel3);
@@ -90,45 +90,45 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 
   //***************************************************
   RBConnected = new RoRadioButton(this,"RBConnected");
-  RBConnected->setText("Connected");
+  RBConnected->setText(tr("Connected"));
   RBConnected->setChecked(TRUE);
   LayoutLeftButtons->addWidget(RBConnected);
 
   RB2Connected = new RoRadioButton(this,"RB2Connected");
-  RB2Connected->setText("2-Connected");
+  RB2Connected->setText(tr("2-Connected"));
   LayoutLeftButtons->addWidget(RB2Connected);
 
   RB3Connected = new RoRadioButton(this,"RB3Connected");
-  RB3Connected->setText("3-Connected");
+  RB3Connected->setText(tr("3-Connected"));
   LayoutLeftButtons->addWidget(RB3Connected);
 
   RBBipartite = new RoRadioButton(this,"RBBipartite");
-  RBBipartite->setText("Bipartite");
+  RBBipartite->setText(tr("Bipartite"));
   LayoutLeftButtons->addWidget(RBBipartite);
 
   RBAcyclic = new RoRadioButton(this,"RBAcyclic");
-  RBAcyclic->setText("Acyclic");
+  RBAcyclic->setText(tr("Acyclic"));
   LayoutLeftButtons->addWidget(RBAcyclic);
 
   //********************************************
   RBPlanar = new RoRadioButton(this,"RBPlanar");
-  RBPlanar->setText("Planar");
+  RBPlanar->setText(tr("Planar"));
   LayoutRightButtons->addWidget(RBPlanar);
 
   RBMxPlanar = new RoRadioButton(this,"RBMxPlanar");
-  RBMxPlanar->setText("Triangulation");
+  RBMxPlanar->setText(tr("Triangulation"));
   LayoutRightButtons->addWidget(RBMxPlanar);
 
   RBOuPlanar = new RoRadioButton(this,"RBOuPlanar");
-  RBOuPlanar->setText("Out. planar");
+  RBOuPlanar->setText(tr("Out. planar"));
   LayoutRightButtons->addWidget(RBOuPlanar);
 
   RBSerie = new RoRadioButton(this,"RBSerie");
-  RBSerie->setText("Series-//");
+  RBSerie->setText(tr("Series-//"));
   LayoutRightButtons->addWidget(RBSerie);
 
   RBSimple = new RoRadioButton(this,"Simple");
-  RBSimple->setText("Simple");
+  RBSimple->setText(tr("Simple"));
   LayoutRightButtons->addWidget(RBSimple);
   }
 
@@ -214,7 +214,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
   bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;
-  menu->setItemEnabled(A_EMBED_3d,!SMALL && NotBigD);                       //Rn embedding
+  menu->setItemEnabled(A_EMBED_3d,G.nv() > 3 && NotBigD);                   //Rn embedding
   menu->setItemEnabled(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
   menu->setItemEnabled(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
   menu->setItemEnabled(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar

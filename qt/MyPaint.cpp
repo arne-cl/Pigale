@@ -14,6 +14,7 @@
 #include <QT/MyQcolors.h>
 #include <QT/Misc.h>
 
+
 void DrawPolar(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
@@ -326,15 +327,15 @@ struct DrawThing {
     const char	*name;
 };
 
-DrawThing DrawFunctions[] = 
+static DrawThing DrawFunctions[] = 
     {
-    {DrawVisibility,"Visibility"},
-    {DrawFPPVisibility,"FPP Visibility"},
-    {DrawGeneralVisibility,"General Visibility"},
-    {DrawBipContact,"Contact"},
-    {DrawPolar,"Polar"},
-    {DrawTContact,"T Contact"},
-    {0,0} 
+    {DrawVisibility,QT_TRANSLATE_NOOP("MyPaint","Visibility")},
+    {DrawFPPVisibility,QT_TRANSLATE_NOOP("MyPaint","FPP Visibility")},
+    {DrawGeneralVisibility,QT_TRANSLATE_NOOP("MyPaint","General Visibility")},
+    {DrawBipContact,QT_TRANSLATE_NOOP("MyPaint","Contact")},
+    {DrawPolar,QT_TRANSLATE_NOOP("MyPaint","Polar")},
+    {DrawTContact,QT_TRANSLATE_NOOP("MyPaint","T Contact")}, 
+    {0,QT_TRANSLATE_NOOP("MyPaint"," ")}  
     };
 const int border = 20;
 
@@ -390,9 +391,9 @@ void MyPaint::update(int i)
   yscale0 = yscale = Wy_max/(ymax - ymin);
   ytr0 = ytr  =   - ymin*yscale +border;
 #if QT_VERSION < 300
-  father->tabWidget->changeTab(this,DrawFunctions[index].name);
+  father->tabWidget->changeTab(this,qApp->translate("MyPaint",DrawFunctions[index].name));
 #else
-  father->tabWidget->setTabLabel(this,DrawFunctions[index].name);
+  father->tabWidget->setTabLabel(this,qApp->translate("MyPaint",DrawFunctions[index].name));
 #endif
   father->tabWidget->showPage(this);
   }

@@ -56,33 +56,33 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
   ButtonGroup1 = new QButtonGroup(this,"ButtonGroup1");
   ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,6*dy+oy+5)); 
-  ButtonGroup1->setTitle("Left Button");
+  ButtonGroup1->setTitle(tr("Left Button"));
   ButtonGroup1->setRadioButtonExclusive(TRUE);
 
   ButtonAddV = new QRadioButton(ButtonGroup1,"ButtonAddV");
   ButtonAddV->setGeometry(QRect(ox1,oy,dx,20)); 
-  ButtonAddV->setText("Col/Thick");
+  ButtonAddV->setText(tr("Col/Thick"));
 
   ButtonAddE = new QRadioButton(ButtonGroup1,"ButtonAddE");
   ButtonAddE->setGeometry(QRect(ox1,oy+dy,dx,20)); 
-  ButtonAddE->setText("Add/Del");
+  ButtonAddE->setText(tr("Add/Del"));
 
   ButtonDel = new QRadioButton(ButtonGroup1,"ButtonDel");
   ButtonDel->setGeometry(QRect(ox1,oy+2*dy,dx,20)); 
-  ButtonDel->setText("Orient");
+  ButtonDel->setText(tr("Orient"));
 
   ButtonMove = new QRadioButton(ButtonGroup1,"ButtonMove");
   ButtonMove->setGeometry(QRect(ox1,oy+3*dy,dx,20)); 
-  ButtonMove->setText("Move");
+  ButtonMove->setText(tr("Move"));
   ButtonMove->setChecked(TRUE);
 
   ButtonBissect = new QRadioButton(ButtonGroup1,"ButtonBisect");
   ButtonBissect->setGeometry(QRect(ox1,oy+4*dy,dx,20)); 
-  ButtonBissect->setText("Bis./Cont.");
+  ButtonBissect->setText(tr("Bis./Cont."));
 
   ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
   ButtonContract->setGeometry(QRect(ox1,oy+5*dy,dx,20)); 
-  ButtonContract->setText("Ext Face");
+  ButtonContract->setText(tr("Ext Face"));
 
     //****************************************************************
   gw->sizegridChanged(sizegrid);
@@ -123,32 +123,32 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
   ButtonFitGrid = new QCheckBox(this,"ButtonFitGrid");
   ButtonFitGrid->setGeometry(QRect(ox2,oy2+35,85,20)); 
-  ButtonFitGrid->setText("Fit grid");
+  ButtonFitGrid->setText(tr("Fit grid"));
 
   ButtonShowGrid = new QCheckBox(this,"ButtonShowGrid");
   ButtonShowGrid->setGeometry(QRect(ox2,oy2+55,85,20)); 
-  ButtonShowGrid->setText("Show grid");
+  ButtonShowGrid->setText(tr("Show grid"));
 
   ButtonForceGrid = new QPushButton(this,"ButtonForceGrid");
   ButtonForceGrid->setGeometry(QRect(ox2,oy2+78,48,20));
-  ButtonForceGrid->setText("Force G");
+  ButtonForceGrid->setText(tr("Force G"));
 
   ButtonUndoGrid = new QPushButton(this,"ButtonUndoGrid");
   ButtonUndoGrid->setGeometry(QRect(ox2+48,oy2+78,48,20));
-  ButtonUndoGrid->setText("Undo G");
+  ButtonUndoGrid->setText(tr("Undo G"));
   ButtonUndoGrid->setDisabled(true);
 
   ButtonZoom = new QPushButton(this,"ButtonZoom");
   ButtonZoom->setGeometry(QRect(ox2,oy2+98,32,20));
-  ButtonZoom->setText("Z +");
+  ButtonZoom->setText(tr("Z +"));
 
   ButtonOZoom = new QPushButton(this,"ButtonOZoom");
   ButtonOZoom->setGeometry(QRect(ox2+32,oy2+98,32,20));
-  ButtonOZoom->setText("Z 0");
+  ButtonOZoom->setText(tr("Z 0"));
 
   ButtonUZoom = new QPushButton(this,"ButtonUZoom");
   ButtonUZoom->setGeometry(QRect(ox2+64,oy2+98,32,20));
-  ButtonUZoom->setText("Z -");
+  ButtonUZoom->setText(tr("Z -"));
 
   // signals and slots connections
   connect(ButtonGroup1,SIGNAL(clicked(int)),SLOT(valueChanged(int)));

@@ -32,7 +32,7 @@
  
 
 class PigaleServer;
-
+ 
 
 class ClientSocket : public QSocket, QThread
 // created each time a client connects

@@ -192,14 +192,14 @@ MyWindow::MyWindow()
   graphgl->setPalette(LightPalette);
   graphsym = new GraphSym(tabWidget,"graphsym",this);
 
-  tabWidget->addTab(gw,"Graph Editor");
+  tabWidget->addTab(gw,tr("Graph Editor"));
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
 
 #if QT_VERSION >= 300 || _WINDOWS
   QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
-  tabWidget->addTab(browser,"User Guide"); 
+  tabWidget->addTab(browser,tr("User Guide")); 
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
 #endif
@@ -275,57 +275,57 @@ MyWindow::MyWindow()
   
   //PopMenus
   QPopupMenu * file = new QPopupMenu( this );
-  menuBar()->insertItem( "&File", file );
-  file->insertItem(newIcon,"&New Graph",this, SLOT(NewGraph()));
-  id = file->insertItem(openIcon,"&Open",this, SLOT(load()));
+  menuBar()->insertItem( tr("&File"), file );
+  file->insertItem(newIcon,tr("&New Graph"),this, SLOT(NewGraph()));
+  id = file->insertItem(openIcon,tr("&Open"),this, SLOT(load()));
   file->setWhatsThis(id,fileopen_txt);
-  file->insertItem("Save &as ...", this, SLOT(saveAs()));
-  file->insertItem(saveIcon,"&Save", this, SLOT(save()));
-  file->insertItem(saveIcon,"Save Asc&ii", this, SLOT(save_ascii()));
+  file->insertItem(tr("Save &as ..."), this, SLOT(saveAs()));
+  file->insertItem(saveIcon,tr("&Save"), this, SLOT(save()));
+  file->insertItem(saveIcon,tr("Save Asc&ii"), this, SLOT(save_ascii()));
   file->insertSeparator();
-  file->insertItem("&Delete current record",this,SLOT(deleterecord()));
-  file->insertItem("S&witch Input/Output files",this,SLOT(switchInputOutput()));
+  file->insertItem(tr("&Delete current record"),this,SLOT(deleterecord()));
+  file->insertItem(tr("S&witch Input/Output files"),this,SLOT(switchInputOutput()));
   file->insertSeparator();
-  file->insertItem(printIcon,"&Print",this, SLOT(print()));
+  file->insertItem(printIcon,tr("&Print"),this, SLOT(print()));
   file->insertSeparator();
-  file->insertItem("&Quit",qApp,SLOT(closeAllWindows()));
+  file->insertItem(tr("&Quit"),qApp,SLOT(closeAllWindows()));
 
   QPopupMenu * augment = new QPopupMenu(this);
-  menuBar()->insertItem("&Augment",augment);
+  menuBar()->insertItem(tr("&Augment"),augment);
   connect(augment,SIGNAL(activated(int)),SLOT(handler(int)));
-  augment->insertItem(xmanIcon,"Make &Connected",        A_AUGMENT_CONNECT);
-  augment->setWhatsThis(A_AUGMENT_CONNECT,"Make a graph 2-connected");
-  augment->insertItem(xmanIcon,"Make &2-Connected",      A_AUGMENT_BICONNECT);
-  augment->setWhatsThis(A_AUGMENT_BICONNECT,"Make a PLANAR graph 2-connected");
-  augment->insertItem(xmanIcon,"Make 2-Connected &Opt",  A_AUGMENT_BICONNECT_6);
+  augment->insertItem(xmanIcon,tr("Make &Connected"),        A_AUGMENT_CONNECT);
+  augment->setWhatsThis(A_AUGMENT_CONNECT,tr("Make a graph 2-connected"));
+  augment->insertItem(xmanIcon,tr("Make &2-Connected"),      A_AUGMENT_BICONNECT);
+  augment->setWhatsThis(A_AUGMENT_BICONNECT,tr("Make a PLANAR graph 2-connected"));
+  augment->insertItem(xmanIcon,tr("Make 2-Connected &Opt"),  A_AUGMENT_BICONNECT_6);
   augment->setWhatsThis(A_AUGMENT_BICONNECT_6
-			,"Make a PLANAR graph 2-connected\n with a minimal degree increase");
-  augment->insertItem(xmanIcon,"Make 2-Connected &NP",   A_AUGMENT_BICONNECT_NP);
-  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP,"Make a graph 2-connected");
-  augment->insertItem(xmanIcon,"&Vertex Triangulate",    A_AUGMENT_TRIANGULATE_V);
-  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_V,"Triangulate a PLANAR graph by adding vertices");
-  augment->insertItem(xmanIcon,"&ZigZag Triangulate",    A_AUGMENT_TRIANGULATE_ZZ);
-  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_ZZ,"Triangulate a PLANAR graph by adding edges");
-  augment->insertItem(xmanIcon,"T&ricon. Triangulate",   A_AUGMENT_TRIANGULATE_3C);
-  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_3C,"Optimally triangulate a PLANAR graph by adding edges");
-  augment->insertItem(xmanIcon,"Vertex &Quadrangulate",  A_AUGMENT_QUADRANGULATE_V);
-  augment->setWhatsThis(A_AUGMENT_QUADRANGULATE_V,"Quadrangulate a planar bipartite graph");
+			,tr("Make a PLANAR graph 2-connected\n with a minimal degree increase"));
+  augment->insertItem(xmanIcon,tr("Make 2-Connected &NP"),   A_AUGMENT_BICONNECT_NP);
+  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP,tr("Make a graph 2-connected"));
+  augment->insertItem(xmanIcon,tr("&Vertex Triangulate"),    A_AUGMENT_TRIANGULATE_V);
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_V,tr("Triangulate a PLANAR graph by adding vertices"));
+  augment->insertItem(xmanIcon,tr("&ZigZag Triangulate"),    A_AUGMENT_TRIANGULATE_ZZ);
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_ZZ,tr("Triangulate a PLANAR graph by adding edges"));
+  augment->insertItem(xmanIcon,tr("T&ricon. Triangulate"),   A_AUGMENT_TRIANGULATE_3C);
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_3C,tr("Optimally triangulate a PLANAR graph by adding edges"));
+  augment->insertItem(xmanIcon,tr("Vertex &Quadrangulate"),  A_AUGMENT_QUADRANGULATE_V);
+  augment->setWhatsThis(A_AUGMENT_QUADRANGULATE_V,tr("Quadrangulate a planar bipartite graph"));
   augment->insertSeparator();
-  augment->insertItem("&Bisect all edges",     A_AUGMENT_BISSECT_ALL_E);
+  augment->insertItem(tr("&Bisect all edges"),     A_AUGMENT_BISSECT_ALL_E);
 
   QPopupMenu *remove = new QPopupMenu( this );
-  menuBar()->insertItem("&Remove",remove);
+  menuBar()->insertItem(tr("&Remove"),remove);
   connect(remove,SIGNAL(activated(int)),SLOT(handler(int)));
-  remove->insertItem("&Isolated vertices",   A_REMOVE_ISOLATED_V);
-  remove->insertItem("&Multiple edges",      A_REMOVE_MULTIPLE_E); 
-  remove->insertItem("Ist&hmus",             A_REMOVE_BRIDGES);
+  remove->insertItem(tr("&Isolated vertices"),   A_REMOVE_ISOLATED_V);
+  remove->insertItem(tr("&Multiple edges"),      A_REMOVE_MULTIPLE_E); 
+  remove->insertItem(tr("Ist&hmus"),             A_REMOVE_BRIDGES);
   remove->insertSeparator();
-  remove->insertItem("Colored &vertices",    A_REMOVE_COLOR_V);
-  remove->insertItem("Colored &edges",       A_REMOVE_COLOR_E);
-  remove->insertItem("&Thick edges",         A_REMOVE_THICK_E);
+  remove->insertItem(tr("Colored &vertices"),    A_REMOVE_COLOR_V);
+  remove->insertItem(tr("Colored &edges"),       A_REMOVE_COLOR_E);
+  remove->insertItem(tr("&Thick edges"),         A_REMOVE_THICK_E);
 
   QPopupMenu *embed = new QPopupMenu(this);
-  menuBar()->insertItem("E&mbed",embed);
+  menuBar()->insertItem(tr("E&mbed"),embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
   embed->insertItem(xmanIcon,"&FPP Fary",    A_EMBED_FPP);
   embed->setWhatsThis(A_EMBED_FPP,fpp_txt);
@@ -338,74 +338,74 @@ MyWindow::MyWindow()
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
   embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
-  embed->insertItem("&Visibility",           A_EMBED_VISION );
-  embed->insertItem("FPP Visi&bility",       A_EMBED_FPP_RECTI);
-  embed->insertItem("&General Visibility",   A_EMBED_GVISION);
-  embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
-  embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
+  embed->insertItem(tr("&Visibility"),           A_EMBED_VISION );
+  embed->insertItem(tr("FPP Visi&bility"),       A_EMBED_FPP_RECTI);
+  embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);
+  embed->insertItem(tr("&T Contact"),            A_EMBED_T_CONTACT);
+  embed->insertItem(tr("&Contact Biparti"),      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
 #if VERSION_ALPHA
-  embed->insertItem("&Polar",                A_EMBED_POLAR);
+  embed->insertItem(tr("&Polar"),                A_EMBED_POLAR);
   embed->insertItem(xmanIcon,"Sprin&g",      A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
 #endif
-  embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
+  embed->insertItem(xmanIcon,tr("Spring (Map &Preserving)"),A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
-  embed->insertItem(xmanIcon,"Spring Planar",           A_EMBED_JACQUARD);
+  embed->insertItem(xmanIcon,tr("Spring Planar"),           A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
-  embed->insertItem(xmanIcon,"&Embedding in Rn",        A_EMBED_3d);
+  embed->insertItem(xmanIcon,tr("&Embedding in Rn"),        A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
-  embed->insertItem(xmanIcon,"Schnyder in R3",         A_EMBED_3dSCHNYDER);
+  embed->insertItem(xmanIcon,tr("Schnyder in R3"),          A_EMBED_3dSCHNYDER);
   embed->setWhatsThis(A_EMBED_3dSCHNYDER,embed3dSchnyder_txt);
 
   QPopupMenu *dual = new QPopupMenu( this );
-  menuBar()->insertItem("&Dual/Angle",dual);
+  menuBar()->insertItem(tr("&Dual/Angle"),dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));
-  dual->insertItem("&Dual",                 A_GRAPH_DUAL);
-  dual->insertItem(xmanIcon,"&Geometric Dual",A_GRAPH_DUAL_G);
+  dual->insertItem(tr("&Dual"),                 A_GRAPH_DUAL);
+  dual->insertItem(xmanIcon,tr("&Geometric Dual"),A_GRAPH_DUAL_G);
   dual->setWhatsThis(A_GRAPH_DUAL_G,dual_g_txt);
   dual->insertSeparator();
-  dual->insertItem("&Angle",                A_GRAPH_ANGLE);
+  dual->insertItem(tr("&Angle"),                A_GRAPH_ANGLE);
   dual->insertItem(xmanIcon,"G&eometric Angle",A_GRAPH_ANGLE_G);
   dual->setWhatsThis(A_GRAPH_ANGLE_G,angle_g_txt);
   QPopupMenu *algo = new QPopupMenu( this );
-  menuBar()->insertItem("&Algo",algo);
+  menuBar()->insertItem(tr("&Algo"),algo);
   connect(algo,SIGNAL(activated(int)),SLOT(handler(int)));
-  algo->insertItem("Find &Kuratowski",                A_ALGO_KURATOWSKI);
-  algo->insertItem("Find &Cotree Critical",           A_ALGO_COTREE_CRITICAL);
-  algo->insertItem("Color red  non critical edges ",  A_ALGO_COLOR_NON_CRITIC);
-  algo->insertItem("Max.Planar (simple graph) Fast",  A_ALGO_NPSET);
-  algo->insertItem("&Max.Planar (simple graph) Slow ",A_ALGO_MAX_PLANAR);
+  algo->insertItem(tr("Find &Kuratowski"),                A_ALGO_KURATOWSKI);
+  algo->insertItem(tr("Find &Cotree Critical"),           A_ALGO_COTREE_CRITICAL);
+  algo->insertItem(tr("Color red  non critical edges "),  A_ALGO_COLOR_NON_CRITIC);
+  algo->insertItem(tr("Max.Planar (simple graph) Fast"),  A_ALGO_NPSET);
+  algo->insertItem(tr("&Max.Planar (simple graph) Slow "),A_ALGO_MAX_PLANAR);
   algo->insertSeparator();
-  algo->insertItem("Use &Geometric Map",              A_ALGO_GEOMETRIC_CIR);
-  algo->insertItem("Use &LRALGO Map",                 A_ALGO_LRALGO_CIR);
+  algo->insertItem(tr("Use &Geometric Map"),              A_ALGO_GEOMETRIC_CIR);
+  algo->insertItem(tr("Use &LRALGO Map"),                 A_ALGO_LRALGO_CIR);
   algo->insertSeparator();
-  algo->insertItem("&Color everything",               A_ALGO_RESET_COLORS);
-  algo->insertItem("Color &bipartite",                A_ALGO_COLOR_BIPARTI);
-  algo->insertItem("Color current e&xterior face",    A_ALGO_COLOR_EXT);
+  algo->insertItem(tr("&Color everything"),               A_ALGO_RESET_COLORS);
+  algo->insertItem(tr("Color &bipartite"),                A_ALGO_COLOR_BIPARTI);
+  algo->insertItem(tr("Color current e&xterior face"),    A_ALGO_COLOR_EXT);
   algo->insertSeparator();
-  algo->insertItem("&Symmetry",                       A_ALGO_SYM);
+  algo->insertItem(tr("&Symmetry"),                       A_ALGO_SYM);
   algo->insertSeparator();
   spin_N = new QSpinBox(2,50,1,algo,"spinN");
-  spin_N->setValue(2);     spin_N->setPrefix("Number of classes: ");
+  spin_N->setValue(2);     spin_N->setPrefix(tr("Number of classes: "));
   algo->insertItem(spin_N);
-  algo->insertItem("&Partition",                       A_ALGO_NETCUT );
+  algo->insertItem(tr("&Partition"),                       A_ALGO_NETCUT );
 
   QPopupMenu *orient = new QPopupMenu( this );
-  menuBar()->insertItem("&Orient",orient);
+  menuBar()->insertItem(tr("&Orient"),orient);
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
-  orient->insertItem("&Show orientation",   10020);
+  orient->insertItem(tr("&Show orientation"),   10020);
   orient->setItemChecked(10020,ShowOrientation());
-  orient->insertItem("&Orient all edges",     A_ORIENT_E);
-  orient->insertItem("&Color Poles",          A_ORIENT_SHOW);
-  orient->insertItem("&ReOrient color edges", A_REORIENT_COLOR);
-  orient->insertItem("&Inf Orientation",      A_ORIENT_INF);
-  orient->insertItem("Planar &3-Con.",        A_ORIENT_TRICON);
-  orient->insertItem("Planar &Biparti",       A_ORIENT_BIPAR);
-  orient->insertItem("Planar &Schnyder",      A_ORIENT_SCHNYDER);
-  orient->insertItem("B&ipolarOrient Planar", A_ORIENT_BIPOLAR);
-  orient->insertItem("BipolarOrient",         A_ORIENT_BIPOLAR_NP);
+  orient->insertItem(tr("&Orient all edges"),     A_ORIENT_E);
+  orient->insertItem(tr("&Color Poles"),          A_ORIENT_SHOW);
+  orient->insertItem(tr("&ReOrient color edges"), A_REORIENT_COLOR);
+  orient->insertItem(tr("&Inf Orientation"),      A_ORIENT_INF);
+  orient->insertItem(tr("Planar &3-Con."),        A_ORIENT_TRICON);
+  orient->insertItem(tr("Planar &Biparti"),       A_ORIENT_BIPAR);
+  orient->insertItem(tr("Planar &Schnyder"),      A_ORIENT_SCHNYDER);
+  orient->insertItem(tr("B&ipolarOrient Planar"), A_ORIENT_BIPOLAR);
+  orient->insertItem(tr("BipolarOrient"),         A_ORIENT_BIPOLAR_NP);
 
   QPopupMenu *generate      = new QPopupMenu( this );
   QPopupMenu *popupCubic    = new QPopupMenu(this);
@@ -414,7 +414,7 @@ MyWindow::MyWindow()
   QPopupMenu *popupPlan     = new QPopupMenu(this);
   QPopupMenu *popupOuter    = new QPopupMenu(this);
   QPopupMenu *popupSeed     = new QPopupMenu(this);
-  menuBar()->insertItem("&Generate",generate);
+  menuBar()->insertItem(tr("&Generate"),generate);
   connect(generate,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupCubic,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupQuadric,SIGNAL(activated(int)),SLOT(handler(int)));
@@ -422,35 +422,35 @@ MyWindow::MyWindow()
   connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupOuter,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupSeed,SIGNAL(activated(int)),SLOT(handler(int)));
-  generate->insertItem("&Outer Planar",popupOuter);
-  popupOuter->insertItem("&Outer Planar (N1)",             A_GENERATE_P_OUTER_N);
-  popupOuter->insertItem("O&uter Planar (N1,M)",           A_GENERATE_P_OUTER_NM);
-  generate->insertItem("&Planar",popupPlan);
-  popupPlan->insertItem("connnected (M)",                  A_GENERATE_P);
-  popupPlan->insertItem("2-connnected (M)",                A_GENERATE_P_2C);
-  popupPlan->insertItem("3-connnected (M)",                A_GENERATE_P_3C);
-  generate->insertItem("Planar &cubic",popupCubic);
-  popupCubic->insertItem("2-connnected (M)",               A_GENERATE_P_3R_2C);
-  popupCubic->insertItem("3-connnected (M)",               A_GENERATE_P_3R_3C);
-  popupCubic->insertItem("dual:4-connnected (M)",          A_GENERATE_P_3R_D4C);
-  generate->insertItem("Planar &4-regular",popupQuadric);
-  //popupQuadric->insertItem("connnected (M)",             A_GENERATE_P_4R_C);
-  popupQuadric->insertItem("4-regular 2-connnected (M)",   A_GENERATE_P_4R_2C);
-  popupQuadric->insertItem("4-regular 3-connnected (M)",   A_GENERATE_P_4R_3C);
-  popupQuadric->insertItem("4-regular bipartite (N1)",     A_GENERATE_P_4R_BIP);
-  generate->insertItem("Planar &bipartite",popupBipar);
-  popupBipar->insertItem("Bipartite (M)",                  A_GENERATE_P_BIP);
-  popupBipar->insertItem("Bipartite cubic 2-connected (M)",A_GENERATE_P_BIP_2C );
-  popupBipar->insertItem("Bipartite cubic 3-connected (M)",A_GENERATE_P_BIP_3C);
-  generate->insertItem("&Grid (N1,N2)",                    A_GENERATE_GRID);
+  generate->insertItem(tr("&Outer Planar"),popupOuter);
+  popupOuter->insertItem(tr("&Outer Planar (N1)"),              A_GENERATE_P_OUTER_N);
+  popupOuter->insertItem(tr("O&uter Planar (N1,M))"),           A_GENERATE_P_OUTER_NM);
+  generate->insertItem(tr("&Planar"),popupPlan);
+  popupPlan->insertItem(tr("connected (M)"),                  A_GENERATE_P);
+  popupPlan->insertItem(tr("2-connected (M)"),                A_GENERATE_P_2C);
+  popupPlan->insertItem(tr("3-connected (M))"),               A_GENERATE_P_3C);
+  generate->insertItem(tr("Planar &cubic"),popupCubic);
+  popupCubic->insertItem(tr("2-connected (M)"),               A_GENERATE_P_3R_2C);
+  popupCubic->insertItem(tr("3-connected (M)"),               A_GENERATE_P_3R_3C);
+  popupCubic->insertItem(tr("dual:4-connected (M)"),          A_GENERATE_P_3R_D4C);
+  generate->insertItem(tr("Planar &4-regular"),popupQuadric);
+  //popupQuadric->insertItem("connected (M)",             A_GENERATE_P_4R_C);
+  popupQuadric->insertItem(tr("4-regular 2-connected (M)"),   A_GENERATE_P_4R_2C);
+  popupQuadric->insertItem(tr("4-regular 3-connected (M)"),   A_GENERATE_P_4R_3C);
+  popupQuadric->insertItem(tr("4-regular bipartite (N1)"),     A_GENERATE_P_4R_BIP);
+  generate->insertItem(tr("Planar &bipartite"),popupBipar);
+  popupBipar->insertItem(tr("Bipartite (M)"),                  A_GENERATE_P_BIP);
+  popupBipar->insertItem(tr("Bipartite cubic 2-connected (M)"),A_GENERATE_P_BIP_2C );
+  popupBipar->insertItem(tr("Bipartite cubic 3-connected (M))"),A_GENERATE_P_BIP_3C);
+  generate->insertItem(tr("&Grid (N1,N2)"),                    A_GENERATE_GRID);
   generate->insertSeparator();
-  generate->insertItem("&Complete (N1)",                   A_GENERATE_COMPLETE);
-  generate->insertItem("&Bipartite complete (N1,N2)",      A_GENERATE_COMPLETE_BIP);
+  generate->insertItem(tr("&Complete (N1)"),                   A_GENERATE_COMPLETE);
+  generate->insertItem(tr("&Bipartite complete (N1,N2)"),      A_GENERATE_COMPLETE_BIP);
   generate->insertSeparator();
-  generate->insertItem("&Random (N1,M)",                   A_GENERATE_RANDOM );
-  generate->insertSeparator();
+  generate->insertItem(tr("&Random (N1,M)"),                   A_GENERATE_RANDOM );
+  generate->insertSeparator(); 
   // Erase multiple edges
-  generate->insertItem("Erase multiple edges",10006);
+  generate->insertItem(tr("Erase multiple edges"),10006);
   generate->setItemChecked(10006,randomEraseMultipleEdges());
   spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
@@ -464,8 +464,8 @@ MyWindow::MyWindow()
   generate->insertItem(spin_M);
   seedEdit =  new QLineEdit(popupSeed,"seedEdit");
   seedEdit->setText(QString("%1").arg(randomSetSeed()));
-  generate->insertItem("Seed",popupSeed);
-  popupSeed->insertItem("Change Seed",10008);
+  generate->insertItem(tr("Seed"),popupSeed);
+  popupSeed->insertItem(tr("Change Seed"),10008);
   popupSeed->insertItem(seedEdit);
 
   QPopupMenu *macroMenu = new QPopupMenu( this );
@@ -473,19 +473,19 @@ MyWindow::MyWindow()
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
   macroSpin = new QSpinBox(0,60,1,macroMenu,"macroSpin");
   macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
-  macroMenu->insertItem("Start recording",1);
-  macroMenu->insertItem("Stop  recording",2);
-  macroMenu->insertItem("Continue recording",3);
+  macroMenu->insertItem(tr("Start recording"),1);
+  macroMenu->insertItem(tr("Stop  recording"),2);
+  macroMenu->insertItem(tr("Continue recording"),3);
   macroMenu->insertSeparator();
-  macroMenu->insertItem("Display Macro",6);
-  macroMenu->insertItem("Save Macro",7);
-  macroMenu->insertItem("Read Macro",8);
+  macroMenu->insertItem(tr("Display Macro"),6);
+  macroMenu->insertItem(tr("Save Macro"),7);
+  macroMenu->insertItem(tr("Read Macro"),8);
   macroMenu->insertSeparator();
   macroMenu->insertItem(macroSpin);
-  macroMenu->insertItem("Insert a Pause",5);
+  macroMenu->insertItem(tr("Insert a Pause"),5);
   macroMenu->insertSeparator();
   macroLine = new LineEditNum(macroMenu,"macroLineEditNum");
-  macroLine->setPrefix("Repeat:"); macroLine->setNum(macroRepeat); macroLine->setMul(macroMul);
+  macroLine->setPrefix(tr("Repeat:")); macroLine->setNum(macroRepeat); macroLine->setMul(macroMul);
   macroMenu->insertItem(macroLine);
   QSlider *macroSlider = new QSlider(0,100,0,macroRepeat,QSlider::Horizontal,macroMenu,"macroSlider");
   QSlider *macroSliderM = new QSlider(0,100,0,macroMul,QSlider::Horizontal,macroMenu,"macroSliderM");
@@ -493,10 +493,10 @@ MyWindow::MyWindow()
   macroMenu->insertItem(macroSliderM);
   connect(macroSlider,SIGNAL(valueChanged(int)),macroLine,SLOT(setNum(int)));
   connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
-  macroMenu->insertItem("Repeat macro",4);
+  macroMenu->insertItem(tr("Repeat macro"),4);
  
   QPopupMenu *userMenu = new QPopupMenu( this );
-  menuBar()->insertItem("&UserMenu",userMenu);
+  menuBar()->insertItem(tr("&UserMenu"),userMenu);
   connect(userMenu,SIGNAL(activated(int)),SLOT(handler(int)));
   userMenu->insertItem("Test &1",A_TEST_1);
   userMenu->insertItem("Test &2",A_TEST_2);
@@ -511,7 +511,7 @@ MyWindow::MyWindow()
   QComboBox *comboDistance  = new QComboBox(popupDistance,"DistCombo");
   spin_MaxNS                = new QSpinBox(0,10000,1,popupLimits,"spinMaxNS");
   spin_MaxND                = new QSpinBox(0,10000,1,popupLimits,"spinMaxND");
-  menuBar()->insertItem("&Settings",settings);
+  menuBar()->insertItem(tr("&Settings"),settings);
   connect(settings,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
   connect(spin_MaxND,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNDisplayChanged(int)));
@@ -523,80 +523,80 @@ MyWindow::MyWindow()
 #ifdef TDEBUG
 	debug() = 1;
 #endif
-  settings->insertItem("&Debug",10001);
+  settings->insertItem(tr("&Debug"),10001);
   settings->setItemChecked(10001,debug());
   //undoEnable
-  settings->insertItem("&Undo Enable",10005);
+  settings->insertItem(tr("&Undo Enable"),10005);
   settings->setItemChecked(10005,IsUndoEnable);
   undoL->setEnabled(false);
   undoS->setEnabled(IsUndoEnable);
   undoR->setEnabled(false);
   // randomSeed 
-  settings->insertItem("&Random Seed",10007);
+  settings->insertItem(tr("&Random Seed"),10007);
   settings->setItemChecked(10007,randomSeed());
   //Pigale colors
-  settings->insertItem("&Pigale Colors",10010);
+  settings->insertItem(tr("&Pigale Colors"),10010);
   //Pigale limits
-  settings->insertItem("Limit number of vertices",popupLimits);
-  popupLimits->insertItem("for slow algorithms");
+  settings->insertItem(tr("Limit number of vertices"),popupLimits);
+  popupLimits->insertItem(tr("for slow algorithms"));
   spin_MaxNS->setValue(MaxNS);    
-  spin_MaxNS->setPrefix("Slow algorithms: ");
+  spin_MaxNS->setPrefix(tr("Slow algorithms: "));
   popupLimits->insertItem(spin_MaxNS);
-  popupLimits->insertItem("for displaying graph");
+  popupLimits->insertItem(tr("for displaying graph"));
   spin_MaxND->setValue(MaxND);      
-  spin_MaxND->setPrefix("Display: ");
+  spin_MaxND->setPrefix(tr("Display: "));
   popupLimits->insertItem(spin_MaxND);
    //Vertex Label Options
   settings->insertSeparator();
-  settings->insertItem("&Vertex show",popupLabel);
+  settings->insertItem(tr("&Vertex show"),popupLabel);
   popupLabel->insertItem(comboLabel);
-  comboLabel->insertItem("Index");
-  comboLabel->insertItem("Label");
-  comboLabel->insertItem("Nothing");
+  comboLabel->insertItem(tr("Index"));
+  comboLabel->insertItem(tr("Label"));
+  comboLabel->insertItem(tr("Nothing"));
   int current = ShowVertex();++current;
   comboLabel->setCurrentItem(current);showLabel(current);
   //Embed Settings
   settings->insertSeparator();
-  settings->insertItem("&Embed Options",popupEmbed);
-  popupEmbed->insertItem("Schnyder: &Rect",        10002);
-  popupEmbed->insertItem("Schnyder: &Longest Face",10003);
-  popupEmbed->insertItem("Schnyder: &Color Edges", 10004);
+  settings->insertItem(tr("&Embed Options"),popupEmbed);
+  popupEmbed->insertItem(tr("Schnyder: &Rect"),        10002);
+  popupEmbed->insertItem(tr("Schnyder: &Longest Face"),10003);
+  popupEmbed->insertItem(tr("Schnyder: &Color Edges"), 10004);
   popupEmbed->setItemChecked(10002,SchnyderRect());
   popupEmbed->setItemChecked(10003,SchnyderLongestFace());
   popupEmbed->setItemChecked(10004,SchnyderColor());
   //Distance Settings 
-  settings->insertItem("&Distance Options",popupDistance);
+  settings->insertItem(tr("&Distance Options"),popupDistance);
   popupDistance->insertItem(comboDistance);
-  comboDistance->insertItem("Czekanovski-Dice");
-  comboDistance->insertItem("Bisect");
-  comboDistance->insertItem("Adjacence");
-  comboDistance->insertItem("Adjacence M");
-  comboDistance->insertItem("Laplacian");
-  comboDistance->insertItem("Oriented");
-  comboDistance->insertItem("R2");
+  comboDistance->insertItem(tr("Czekanovski-Dice"));
+  comboDistance->insertItem(tr("Bisect"));
+  comboDistance->insertItem(tr("Adjacence"));
+  comboDistance->insertItem(tr("Adjacence M"));
+  comboDistance->insertItem(tr("Laplacian"));
+  comboDistance->insertItem(tr("Oriented"));
+  comboDistance->insertItem(tr("R2"));
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
   settings->insertSeparator();
-  settings->insertItem("&Save Settings",10011);
+  settings->insertItem(tr("&Save Settings"),10011);
 
   //End of the menuBar():window
   //help
   QPopupMenu * help = new QPopupMenu(this);
-  menuBar()->insertItem("&Help",help);
-  help->insertItem(infoIcon,"&Graph properties",this,SLOT(information())
+  menuBar()->insertItem(tr("&Help"),help);
+  help->insertItem(infoIcon,tr("&Graph properties"),this,SLOT(information())
 		   ,SHIFT+Key_F2);
   help->insertSeparator();
-  help->insertItem(helpIcon,"What is ?",this,SLOT(whatsThis()),SHIFT+Key_F1);
+  help->insertItem(helpIcon,tr("What is ?"),this,SLOT(whatsThis()),SHIFT+Key_F1);
   help->insertSeparator();
-  help->insertItem("About &Qt", this, SLOT(aboutQt()));
-  help->insertItem("&About", this, SLOT(about()),Key_F1);
+  help->insertItem(tr("About &Qt..."), this, SLOT(aboutQt()));
+  help->insertItem(tr("&About..."), this, SLOT(about()),Key_F1);
   
   
   //Resize
 #if TDEBUG
-  setCaption("Pigale Editor 1.2.4 Debug Mode");
+  setCaption(tr("Pigale Editor 1.2.4 Debug Mode"));
 #else
-  setCaption("Pigale Editor 1.2.4");
+  setCaption(tr("Pigale Editor 1.2.4"));
 #endif
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
   resize(MyWindowInitXsize,MyWindowInitYsize);

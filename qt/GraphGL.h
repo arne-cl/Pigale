@@ -43,7 +43,6 @@ private slots:
 private:
   void resizeEvent(QResizeEvent*);
   GraphGLPrivate* d;
-  QSpinBox *spin_X,*spin_Y,*spin_Z;
 };
 
 #endif

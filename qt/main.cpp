@@ -20,6 +20,8 @@
 
 
 #include <qapplication.h>
+#include <qtextcodec.h> 
+#include <qtranslator.h>
 #include "MyWindow.h"
 #include <QT/Misc.h>
 
@@ -27,14 +29,26 @@ void InitPigaleColors();
 void InitPigaleFont();
 
 int main(int argc,char ** argv)
-  {QApplication a(argc,argv);
+  {QApplication app(argc,argv);
   // Set the font for all widgets
   InitPigaleFont();
+
   // Set the colors of tha application
   InitPigaleColors();
+
+  // translation file for Qt
+  QTranslator qt( 0 );
+  qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
+  app.installTranslator( &qt );
+
+  // translation file for application strings
+  QTranslator myapp( 0 );
+  myapp.load( QString( "pigale_" ) + QTextCodec::locale(), "." );
+  app.installTranslator( &myapp );
+
   MyWindow *mw = new MyWindow();
   mw->show();
-  a.connect( &a, SIGNAL(lastWindowClosed()),&a,SLOT(quit()));
-  int result = a.exec();
+  app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));
+  int result = app.exec();
   return result;
   }

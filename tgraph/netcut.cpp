@@ -13,47 +13,17 @@
 #include <TAXI/color.h>
 #include <TAXI/Tmessage.h>
 
-
+//! local structure 
 static Locals *l;
 
+//! defines the distance that will be used to isometrically embed the graph in \f$\mathbb{R}^{n-1}\f$
 int & useDistance()
   {static int _dist = 4;
   return _dist;
   }
 
+//! Embed the graph in \f$\mathbb{R}^{n-1}\f$ and fill the coordinates of the point in an \f$\mathbb{R}^3\f$ projection
 int Embed3d(TopologicalGraph &G0)
-  {if(G0.nv() < 3 || G0.ne() < 2)return -1;
-  EmbedRnGraph G(G0);
-
-  if(!G.ok){Tprintf("DIAG ERROR (Complete Graph?)"); return -1; }
-      
-  // Compute min,max on three coord;
-  double min1,min2,min3,max1,max2,max3;
-  min1 = max1 = G.Coords[1][1];
-  min2 = max2 = G.Coords[1][2];
-  min3 = max3 = G.Coords[1][3];
-  int i;
-  for(i = 2;i <= G.nv();i++)
-      {min1 = Min(min1, G.Coords[i][1]); max1 = Max(max1,G.Coords[i][1]);
-       min2 = Min(min2, G.Coords[i][2]); max2 = Max(max2,G.Coords[i][2]);
-       min3 = Min(min3, G.Coords[i][3]); max3 = Max(max3,G.Coords[i][3]);
-      }
-  double min123 = min1; min123 = Min(min123,min2);min123 = Min(min123,min3);
-  double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
-  double alpha = Max(-min123,max123);
-  alpha = (alpha < 1.E-12) ? .0 : 1./alpha;
-  Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
-  for(i = 1;i <= G.nv();i++)
-      {Coord3[i].x() = alpha*G.Coords[i][1];
-       Coord3[i].y() = alpha*G.Coords[i][2];
-       Coord3[i].z() = alpha*G.Coords[i][3];
-      }
-  Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);
-  for(i = 1;i <= G.nv();i++)
-      EigenValues[i] = G.EigenValues[i];
-  return 0;
-  }
-int Embed3dbis(TopologicalGraph &G0)
   {if(G0.nv() < 3 || G0.ne() < 2)return -1;
   EmbedRnGraph G(G0);
 
@@ -73,7 +43,16 @@ int Embed3dbis(TopologicalGraph &G0)
       EigenValues[i] = G.EigenValues[i];
   return 0;
   }
-
+//! Split a graph in a prescribed number of classes
+/*!
+   \param G0 a simple graph with at least 3 vertices and 2 edges
+   \param NumberOfClasses the number of desired classes
+   \par Actions:
+      \li creates a SplitGraph which derives from EmbedRnGraph which
+       embeds the graph in \f$\mathbb{R}^{n-1}\f$
+      \li calls SplitGraph::Segment to perform the partition 
+      \li color the vertices according to its class G.ClassNumber[v()]
+*/
 int split(Graph &G0,int &NumberOfClasses)
 // Pas de boucles ou aretes multiples
   {if(G0.nv() < 3 || G0.ne() < 2)return -1;
@@ -118,6 +97,7 @@ int split(Graph &G0,int &NumberOfClasses)
 
 
 /******************************************************************************************/
+//! Computes a distance among the vertices of the graph and embed it in \f$\mathbb{R}^{n-1}\f$
 void EmbedRnGraph::init()
   {EigenValues.resize(1,nv());
   // Allocation du tableau Distances
@@ -169,6 +149,7 @@ void EmbedRnGraph::init()
 
   if(diag(Coords,nv(),Distances,EigenValues,project))ok = false;
   }
+//! release the memory
 void EmbedRnGraph::release()
   {// Desallocation du tableau Distances
   int i;	
@@ -181,6 +162,7 @@ void EmbedRnGraph::release()
       delete [] Coords[i];
   delete [] Coords;
   }
+
 int EmbedRnGraph::ComputeOrientDistances()
   {// Compute indegrees and outdegrees
   indegree.resize(1,nv());  outdegree.resize(1,nv()); 
@@ -305,6 +287,8 @@ double EmbedRnGraph::ComputeOutDist(int vertex1,int vertex2)
   int d = outdegree[vertex1] +  outdegree[vertex2] + 2;
   return (double)(d - 2.*outgoing )/d;
   }
+
+
 int EmbedRnGraph::ComputeAdjacenceMatrix()
   {// Allocation du tableau d'adjacence circulaire des brins (OrderCir)
   svector<tbrin>OrderCir(-ne(),ne());     OrderCir.SetName("OrderCir");
@@ -354,75 +338,26 @@ int EmbedRnGraph::ComputeAdjacenceMatrix()
       }
   return 0;
   }
-int EmbedRnGraph::ComputeBisectDistances()
-  {// Compute degrees
-  degree.resize(1,nv()); 
-  
-  for(tvertex v = 1 ;v <= nv();v++)
-      degree[v()] = Degree(v);
-  int i,j;	
-  for(i = 1;i <= nv();i++)
-      for(j = 1;j <= nv();j++)
-	  Distances[i][j] = 1.;
-  double d;
-  for(tedge e = 1;e <= ne();e++)
-      {tvertex v = vin[e];
-      tvertex w  = vin[-e];
-      d = (degree[v] + degree[w])/(double)(degree[v] + degree[w] + 2);
-      Distances[v()][w()] = Distances[w()][v()] = d;
+double EmbedRnGraph::ComputeCzekanovskiDistance(int vertex1,int vertex2)
+  {int position1 = 1, position2 = 1;
+  int NCommonVertices = 0;
+  int v1,v2;
+  bool adjacent = false;
+  while(position1 <= degree[vertex1] + 1 && position2 <= degree[vertex2] + 1)
+      {v1 = vvadj[vertex1][position1]; v2 = vvadj[vertex2][position2];
+      if(v1 < v2)
+          ++position1;
+      else if(v1 > v2)
+          ++position2;
+      else 
+          {++NCommonVertices;
+          ++position1; ++position2;
+	  if(v1 == vertex1)adjacent = true;
+          }
       }
-  for(i = 1;i <= nv();i++)
-      Distances[i][i] = .0;
-  return 0;
-  }
-int EmbedRnGraph::ComputeAdjacenceDistances()
-  {int i,j;
-  for(i = 1;i <= nv();i++)
-      for(j = 1;j <= nv();j++)
-	  Distances[i][j] = 1.;
-  for(tedge e = 1;e <= ne();e++)
-      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .0;
-  for(i = 1;i <= nv();i++)
-      Distances[i][i] = .0;
-  return 0;
-  }
-int EmbedRnGraph::ComputeLaplacianDistances()
-// Compute the laplacian fo the complement
-  {int i,j;
-  for(i = 1;i <= nv();i++)
-      for(j = 1;j <= nv();j++)
-	  Distances[i][j] = -1.;
-  for(tedge e = 1;e <= ne();e++)
-      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .0;
-  for(tvertex v = 1;v <= nv();v++)
-      //Distances[v()][v()] = (double)Degree(v);
-        Distances[v()][v()] = (double)(nv()-Degree(v));
-  return 0;
-  }
-int EmbedRnGraph::ComputeR2Distances()
-  {int i,j;
-  Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
-  for(i = 1;i <= nv();i++)
-      Distances[i][i] = .0;
-  for(i = 1;i <= nv();i++)
-      for(j = 1;j < i;j++)
-	  {Distances[i][j] = (vcoord[i].x() - vcoord[j].x())*(vcoord[i].x() - vcoord[j].x())
-	  + (vcoord[i].y() - vcoord[j].y())*(vcoord[i].y() - vcoord[j].y());
-	  Distances[j][i] = Distances[i][j];
-	  }
-  return 0;
-  }
-int EmbedRnGraph::ComputeAdjacenceMDistances()
-  {int i,j;
-  double a = 1. - 2./nv();
-  for(i = 1;i <= nv();i++)
-      for(j = 1;j <= nv();j++)
-	  Distances[i][j] = 1.;
-  for(tedge e = 1;e <= ne();e++)
-      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = a;
-  for(i = 1;i <= nv();i++)
-      Distances[i][i] = .0;
-  return 0;
+  int SymDiff = degree[vertex1] + degree[vertex2] + 2 -2*NCommonVertices;
+  double d = (double)SymDiff/(double)(degree[vertex1] + degree[vertex2] + 2);
+  return d;
   }
 int EmbedRnGraph::ComputeCzekanovskiDistances()
   {int i;
@@ -447,7 +382,7 @@ int EmbedRnGraph::ComputeCzekanovskiDistances()
   double d;
   for(vertex1 = 2; vertex1 <= nv(); vertex1 ++)
       for(i = 1; i < vertex1; i++)
-          {d = ComputeDistance(vertex1,i);
+          {d = ComputeCzekanovskiDistance(vertex1,i);
           Distances[vertex1][i] = Distances[i][vertex1] = d;
 	  }
 
@@ -457,30 +392,83 @@ int EmbedRnGraph::ComputeCzekanovskiDistances()
   delete [] vvadj;
   return 0;
   }
-double EmbedRnGraph::ComputeDistance(int vertex1,int vertex2)
-  {int position1 = 1, position2 = 1;
-  int NCommonVertices = 0;
-  int v1,v2;
-  bool adjacent = false;
-  while(position1 <= degree[vertex1] + 1 && position2 <= degree[vertex2] + 1)
-      {v1 = vvadj[vertex1][position1]; v2 = vvadj[vertex2][position2];
-      if(v1 < v2)
-          ++position1;
-      else if(v1 > v2)
-          ++position2;
-      else 
-          {++NCommonVertices;
-          ++position1; ++position2;
-	  if(v1 == vertex1)adjacent = true;
-          }
-      }
 
-  //if(useDistance() == 1) NCommonVertices = adjacent ? 1 : 0; //Bissection
+
+int EmbedRnGraph::ComputeBisectDistances()
+  {// Compute degrees
+  degree.resize(1,nv()); 
   
-  int SymDiff = degree[vertex1] + degree[vertex2] + 2 -2*NCommonVertices;
-  double d = (double)SymDiff/(double)(degree[vertex1] + degree[vertex2] + 2);
-  return d;
+  for(tvertex v = 1 ;v <= nv();v++)
+      degree[v()] = Degree(v);
+  int i,j;	
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = 1.;
+  double d;
+  for(tedge e = 1;e <= ne();e++)
+      {tvertex v = vin[e];
+      tvertex w  = vin[-e];
+      d = (degree[v] + degree[w])/(double)(degree[v] + degree[w] + 2);
+      Distances[v()][w()] = Distances[w()][v()] = d;
+      }
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  return 0;
   }
+
+int EmbedRnGraph::ComputeAdjacenceDistances()
+  {int i,j;
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = 1.;
+  for(tedge e = 1;e <= ne();e++)
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .0;
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  return 0;
+  }
+
+int EmbedRnGraph::ComputeAdjacenceMDistances()
+  {int i,j;
+  double a = 1. - 2./nv();
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = 1.;
+  for(tedge e = 1;e <= ne();e++)
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = a;
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  return 0;
+  }
+
+int EmbedRnGraph::ComputeLaplacianDistances()
+// Compute the laplacian fo the complement
+  {int i,j;
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = -1.;
+  for(tedge e = 1;e <= ne();e++)
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .0;
+  for(tvertex v = 1;v <= nv();v++)
+      Distances[v()][v()] = (double)(nv()-Degree(v));
+  return 0;
+  }
+
+int EmbedRnGraph::ComputeR2Distances()
+  {int i,j;
+  Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j < i;j++)
+	  {Distances[i][j] = (vcoord[i].x() - vcoord[j].x())*(vcoord[i].x() - vcoord[j].x())
+	  + (vcoord[i].y() - vcoord[j].y())*(vcoord[i].y() - vcoord[j].y());
+	  Distances[j][i] = Distances[i][j];
+	  }
+  return 0;
+  }
+
+
 
 
 /**************************************************************************/	

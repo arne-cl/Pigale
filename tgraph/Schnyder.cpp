@@ -180,10 +180,10 @@ static void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolo
       ecolor[right_brin.GetEdge()] = Green;
       }
 
-  // color three exterior edges Black.
+  // color three exterior edges Grey1,Grey2,Black.
   GeometricGraph G0(G);
-  ecolor[brin.GetEdge()] = Black;
-  ecolor[G0.acir[brin].GetEdge()] = Black;
+  ecolor[brin.GetEdge()] = Grey1;
+  ecolor[G0.acir[brin].GetEdge()] = Grey2;
   ecolor[G0.cir[-brin].GetEdge()] = Black;
   }
 
@@ -342,14 +342,50 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
 int Embed3dSchnyder(TopologicalGraph &G0)
 {
   if(G0.nv() < 3 || G0.ne() < 2)return -1;
-  if (!G0.TestPlanar()) return -1;
+  if (!G0.TestPlanar() || !G0.CheckSimple()) return -1;
+  //
+  int OldNumEdge = G0.ne();
+  G0.MakeConnected();
+  if(!G0.CheckPlanar())return -1;
+  bool MaxPlanar = (G0.ne() != 3 * G0.nv() - 6) ? false : true;
+  int len;
+  tbrin FirstBrin = 1;
+  if(!MaxPlanar && SchnyderLongestFace())G0.LongestFace(FirstBrin,len);
+  if(!MaxPlanar && G0.ZigZagTriangulate())return -2;
+
+  // Creating a new vertex and an edge incident to it
+  tvertex v = G0.NewVertex();
+  tbrin nb,b,b0;
+  b = b0 = FirstBrin;
+  G0.incsize(tedge()); nb = G0.ne();  
+  G0.acir[nb] = G0.acir[b0];   G0.acir[b0] = G0.cir[G0.acir[nb]] = nb; 
+  G0.cir[nb] = b0;  G0.vin[nb] = G0.vin[b0];
+  nb = -nb; 
+  G0.vin[nb] = v;   G0.pbrin[v] = nb; 
+  G0.cir[nb] = nb;  G0.acir[nb] = nb;
+  // Triangulate the face
+  b0 = -nb;   
+  while((b = G0.cir[-b]) != b0) 
+      {G0.incsize(tedge());
+      tbrin bb = G0.ne();
+      G0.acir[bb]  = G0.acir[nb]; G0.acir[nb] = G0.cir[G0.acir[bb]] = bb; G0.cir[bb] = nb;
+      G0.acir[-bb] = G0.acir[b]; G0.acir[b] = G0.cir[G0.acir[-bb]] = -bb; G0.cir[-bb] = b;
+      G0.vin[bb] = G0.vin[nb];    G0.vin[-bb] = G0.vin[b];
+      nb = bb;    // for next insertion
+      }
+
+  //
   svector<int> x(1,G0.nv(),0), y(1,G0.nv(),0), z(1,G0.nv(),0);
-  G0.SchnyderXYZ(0,x,y,z);
+  svector<short> eecolor(1,G0.ne());
+  SchnyderDecomp(G0,FirstBrin,eecolor);
+  CalcXYZ(G0,FirstBrin,eecolor,x,y,z);
+
+  //G0.SchnyderXYZ(0,x,y,z);
   RnEmbedding &em = *new RnEmbedding(G0.nv(),3,1);  
   Prop1<RnEmbeddingPtr> embedp(G0.Set(),PROP_RNEMBED);
   if (embedp().ptr!=0) delete embedp().ptr;
   embedp().ptr=&em;
-  for (int i=1; i<=G0.nv();i++)
+  for (int i=1; i<= G0.nv();i++)
     {
     double xx=sqrt(x[i])/sqrt(G0.nv()-1);
     double yy=sqrt(y[i])/sqrt(G0.nv()-1);
@@ -363,6 +399,12 @@ int Embed3dSchnyder(TopologicalGraph &G0)
     em.y(i)=yy;
     em.z(i)=zz;
     }
+  // delete extra vertex
+  G0.DeleteVertex(v);
+  // delete the edges added by Connexity and Triangulation
+  for(tedge e = G0.ne();e > OldNumEdge;e--)G0.DeleteEdge(e);
+  G0.extbrin() = FirstBrin;
+
   return 0;
 }
 

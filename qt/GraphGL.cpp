@@ -25,7 +25,12 @@
 // glut: library to draw the labels
 #include <GL/glut.h>
 
-
+//! GraphGL creates a GraphGLPrivate and GLWindow contains a pointer to it
+/*! This class take care of all the widgets and signals and contains GLWindow which
+ is responsible for the display.
+ GLWindow derives from  GLControlWidget, a general widget whih takes care of the user inputs to
+ perform rotations, translations and zoom.
+ */
 class GraphGLPrivate
 {public:
   GraphGLPrivate()
@@ -52,6 +57,7 @@ class GraphGLPrivate
   QCheckBox* bt_color;
   QSlider *Slider;
   QHButtonGroup* bt_group;
+  QSpinBox *spin_X,*spin_Y,*spin_Z;
   MyWindow *mywindow;
   RnEmbedding *pSG;
   GraphContainer *pGC;
@@ -61,7 +67,7 @@ class GraphGLPrivate
   GraphContainer &GC() {return *pGC;}
 };
 
-//*****************************************************
+//! takes care of the widgets and connections
 GraphGL::GraphGL(QWidget *parent,const char *name,MyWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphGLPrivate;
@@ -117,19 +123,19 @@ int GraphGL::update()
       rb_x->setChecked(FALSE);
       rb_y->setChecked(FALSE);
       rb_z->setChecked(TRUE);
-      spin_X = new QSpinBox(1,100,1,this,"spinX");
-      spin_Y = new QSpinBox(1,100,1,this,"spinY");
-      spin_Z = new QSpinBox(1,100,1,this,"spinZ");
-      spin_X->setValue(1);     spin_X->setPrefix("X: ");
-      spin_Y->setValue(2);     spin_Y->setPrefix("Y: ");
-      spin_Z->setValue(3);     spin_Z->setPrefix("Z: ");
-      hb->addWidget(spin_X); hb->addWidget(spin_Y); hb->addWidget(spin_Z);
+      d->spin_X = new QSpinBox(1,100,1,this,"spinX");
+      d->spin_Y = new QSpinBox(1,100,1,this,"spinY");
+      d->spin_Z = new QSpinBox(1,100,1,this,"spinZ");
+      d->spin_X->setValue(1);     d->spin_X->setPrefix("X: ");
+      d->spin_Y->setValue(2);     d->spin_Y->setPrefix("Y: ");
+      d->spin_Z->setValue(3);     d->spin_Z->setPrefix("Z: ");
+      hb->addWidget(d->spin_X); hb->addWidget(d->spin_Y); hb->addWidget(d->spin_Z);
       d->is_init = true;
       connect(spin_Edge,SIGNAL(valueChanged(int)),SLOT(EdgeWidth(int)));
       connect(spin_Vertex,SIGNAL(valueChanged(int)),SLOT(VertexWidth(int)));
-      connect(spin_X,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(spin_Y,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(spin_Z,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(d->spin_X,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(d->spin_Y,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(d->spin_Z,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
       connect(d->bt_facet,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_color,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_label,SIGNAL(clicked()),SLOT(Reload()));
@@ -163,8 +169,10 @@ int GraphGL::update()
 #else
   d->mywindow->tabWidget->setTabLabel(this,"3-d Embedding");
 #endif
-  spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
-  spin_X->setMaxValue(d->embed().dmax);  spin_Y->setMaxValue(d->embed().dmax);  spin_Z->setMaxValue(d->embed().dmax);
+  d->spin_X->setValue(1);  d->spin_Y->setValue(2);  d->spin_Z->setValue(3);
+  d->spin_X->setMaxValue(d->embed().dmax);  
+  d->spin_Y->setMaxValue(d->embed().dmax);  
+  d->spin_Z->setMaxValue(d->embed().dmax);
   Reload(1);
   return 0;
   }
@@ -186,9 +194,9 @@ void GraphGL::Reload(int i)
   {if(i == 0){d->editor->initialize(false);return;}
   RnEmbedding &em = d->embed();
   int i1,i2,i3;
-  i1 = spin_X->value(); i1 = Min(i1,em.dmax);
-  i2 = spin_Y->value(); i2 = Min(i2,em.dmax);
-  i3 = spin_Z->value(); i3 = Min(i3,em.dmax);
+  i1 = d->spin_X->value(); i1 = Min(i1,em.dmax);
+  i2 = d->spin_Y->value(); i2 = Min(i2,em.dmax);
+  i3 = d->spin_Z->value(); i3 = Min(i3,em.dmax);
   em.SetAxes(i1,i2,i3);
   d->editor->initialize(true);
   }
@@ -256,9 +264,7 @@ void GLWindow::initializeGL()
   glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
   GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
   glFogfv(GL_FOG_COLOR,fog_color);
-//#ifndef _WINDOWS
   CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
-//#endif
   }
 void GLWindow::initialize(bool init) 
   {if(!is_init){is_init=true;initializeGL();return;}

@@ -191,8 +191,7 @@ int AlgoHandler(int action,int nn)
 	  return 0;
 	  break;
       case A_ALGO_SYM://symetrie
-	  //ret = Embed3d(G);
-	  ret = Embed3dbis(G);
+	  ret = Embed3d(G);
 	  if(ret >=0)return 5;
 	  return 5;
 	  break;
@@ -279,7 +278,7 @@ int EmbedHandler(int action,int &drawing)
 	  drawing = 5;
 	  break;
       case A_EMBED_3d:ret = 4; //Embed3d
-	  err = Embed3dbis(G);
+	  err = Embed3d(G);
 	break;
       case A_EMBED_3dSCHNYDER:ret = 4; //Embed3d
 	  err = Embed3dSchnyder(G);

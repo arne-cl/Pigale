@@ -50,6 +50,7 @@ void PigaleServer::newConnection(int socket)
   {if(nconnections == 0)
       {clientsocket = new ClientSocket(socket,mw,this,qApp);
       nconnections = 1;
+      mw->MessageClear();
       Tprintf("Server: New connection");
       mw->ServerExecuting = true;
       mw->blockInput(true);
@@ -67,6 +68,7 @@ void PigaleServer::OneClientClosed()
 //ClientSocket: public QSocket
 ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,const char *name) :
     QSocket(parent,name),line(0),prId(id),sdebug(0)
+// Constructor for XServer
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this,SIGNAL(threadDataAction(const QString&)),SLOT(xhandler(const QString&)));
@@ -90,6 +92,7 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   }
 ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
     QSocket(parent,name),sdebug(0),mw(p)
+// Constructor for pigale server
   {connect(this,SIGNAL(readyRead()),SLOT(readClient()));
   connect(this,SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
@@ -113,6 +116,7 @@ void ClientSocket::ClientClosed()
 #ifndef _WINDOWS
   terminate();
 #endif
+  wait();
   }
 void ClientSocket::writeServer(const QString& msg)
   {T_STD cout << msg;  
@@ -141,6 +145,8 @@ void ClientSocket::run()
   else
       {GetRemoteGraph();
       getRemoteGraph = false;
+      cli << ":READ GRAPH" <<endl;
+      cli << "!" << endl;
       }
   }
 int ClientSocket::GetRemoteGraph()
@@ -150,13 +156,13 @@ int ClientSocket::GetRemoteGraph()
   file.remove();
   file.open(IO_ReadWrite);
   QDataStream stream(&file);
-  emit logText("READING GRAPH\n");
+  if(sdebug)cli << ":SERVER: reading graph" << endl;
+  Tprintf("Reading graph");
   uint size = 0;
   uint nb = bytesAvailable();
-  while(bytesAvailable() < 4){waitForMore(100);emit logText(".");} 
+  while(bytesAvailable() < 4)waitForMore(100);
   clo >>  size;
   if(size <= 0)return -1;
-  if(sdebug)emit logText(QString("should read:%1 bytes\n").arg(size));
   char *buff  = new char[size+1];
   int i = 0;
   uint nread = 0;
@@ -168,17 +174,15 @@ int ClientSocket::GetRemoteGraph()
       if(nread > size)return READ_ERROR;
       clo.readRawBytes(pbuff,nb);
       pbuff += nb;
-      emit logText(QString("%1 (%2/%3)\n").arg(nb).arg(nread).arg(size));
+      if(sdebug)cli << QString(":%1 (%2/%3)").arg(nb).arg(nread).arg(size) << endl;
+      Tprintf("%d (%d/%d)",nb,nread,size);
       if(++i > 50){setError(-1,"Timeout");return -1;}
       }
   //clo.readRawBytes(buff,size);
   stream.writeRawBytes(buff,size);
   file.close();
   delete [] buff;
-  if(sdebug)
-      {msg.sprintf("%s:%d bytes\n",(const char *)GraphFileName,size);
-      emit logText(msg);
-      }
+  if(sdebug)cli << QString(":%1:%2 bytes").arg(GraphFileName).arg(size) << endl;
   QFileInfo fi = QFileInfo(GraphFileName);
   if(fi.size() !=  size)return READ_ERROR;
   mw->InputFileName = GraphFileName;
@@ -208,8 +212,8 @@ int ClientSocket::xhandler(const QString& dataAction)
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
-  if(sdebug)cli <<"#DEBUG:'"<<dataAction<<"'-> "<<action<<endl;
-
+  //if(sdebug)cli <<"#DEBUG:'"<<dataAction<<"'-> "<<action<<endl;
+  Tprintf("%s",(const char *)dataAction);
   // call the right handler
   int err = 0;
   if(action == 0)
@@ -234,6 +238,7 @@ int ClientSocket::xhandler(const QString& dataAction)
 	  if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
 	  if(!ok)return WRONG_PARAMETERS;
 	  getRemoteGraph = true;
+	  return 0;
 	  }
       }
   else if(action == SERVER_DEBUG)
@@ -255,7 +260,7 @@ int ClientSocket::Png()
   QFileInfo fi = QFileInfo(PngFileName);
   if(PngFileName.isEmpty())
       {cli << ":NO PNG FILE" << endl;return -1;}
-  else
+  else if(sdebug)
       cli << ":SENDING:" << PngFileName << endl;
   uint size = fi.size();
   QFile file(PngFileName);
@@ -320,7 +325,7 @@ int ClientSocket::handlerInfo(int action)
   {TopologicalGraph G(mw->GC);
   mw->information();
   Graph_Properties *inf = mw->graph_properties;
-  cli << mw->getActionString(action) << ":";
+  cli  << mw->getActionString(action) << ":";
   switch(action)
       {case A_INFO_N:
            cli << G.nv() << endl;

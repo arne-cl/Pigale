@@ -47,14 +47,14 @@ CFLAGSopt = -O3  $(PIC) $(CPU)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror  -pipe
 CFLAGSopt +=  -fomit-frame-pointer 
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
-#CFLAGSopt +=  -DQT_THREAD_SUPPORT 
+CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
-CFLAGSopt +=  -DQT_THREAD_SUPPORT 
+CFLAGSdbg +=  -DQT_THREAD_SUPPORT 
 
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
