@@ -578,7 +578,7 @@ void GraphEditor::png()
       gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = "/tmp/server.png";
+      FileName = QString("/tmp/server%1.png").arg(gwp->mywindow->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget(this,2,2,gwp->canvas->width()-space-sizerect-1
 				       ,gwp->canvas->height()); 
   pixmap.save(FileName,"PNG");

@@ -15,7 +15,7 @@
 #include <qsocket.h>
 #include <qserversocket.h>
 #include <qapplication.h>
-#include <qvbox.h>
+#include <qvbox.h> 
 #include <qtextview.h>
 #include <qlabel.h>
 #include <qpushbutton.h>

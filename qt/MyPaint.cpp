@@ -372,7 +372,7 @@ void MyPaint::png()
       father->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = "/tmp/server.png";
+      FileName = QString("/tmp/server%1.png").arg(father->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (this); 
   pixmap.save(FileName,"PNG");
   }

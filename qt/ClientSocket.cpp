@@ -66,7 +66,7 @@ void PigaleServer::OneClientClosed()
 
 //ClientSocket: public QSocket
 ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,const char *name) :
-    QSocket(parent,name),line(0),prId(id),sdebug(0),cli(this)
+    QSocket(parent,name),line(0),prId(id),sdebug(0),cli(this),clo(this)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   
@@ -74,6 +74,9 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   InitPigaleFont(); 
   InitPigaleColors();
   mw = new MyWindow();
+  mw->ServerExecuting = true;
+  mw->blockInput(true);
+  mw->ServerClientId = prId;
   mw->show();
   if(!display)mw->showMinimized(); 
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
@@ -86,9 +89,12 @@ ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *pa
   setSocket(sock);
   prId = 1;
   line = 1;
+  mw->ServerClientId = prId;
   }
 void ClientSocket::ClientClosed()
-  {mw->close();
+  {mw->ServerExecuting = false;
+  mw->blockInput(false);
+  mw->close();
   }
 void ClientSocket::writeServer(QString& msg)
   {emit logText(QString("  %1->%2: %3\n").arg(prId).arg(line).arg(msg));
@@ -143,12 +149,13 @@ int ClientSocket::xhandler(const QString& dataAction)
   else if(action == SERVER_DEBUG)
       sdebug = 1;
   else if(action == A_TRANS_PNG)
-      {cli <<":SENDING PNG" << endl;
-      mw->png();
-      QString InputFileName ="/tmp/server.png";
+      {mw->png();
+      QString InputFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
       QFileInfo fi = QFileInfo(InputFileName);
       if(InputFileName.isEmpty())
 	  {cli << "no png file" << endl;return -1;}
+      else
+	  cli << ":SENDING:" << InputFileName << endl;
       uint size = fi.size();
       QFile file(InputFileName);
       file.open(IO_ReadWrite);

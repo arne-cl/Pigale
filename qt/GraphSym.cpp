@@ -773,7 +773,7 @@ void GraphSym::png()
       d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = "/tmp/server.png";
+      FileName = QString("/tmp/server%1.png").arg(d->mywindow->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (d->editor); 
   pixmap.save(FileName,"PNG");
   }

@@ -1,7 +1,5 @@
 #if a line starts by '!' or ':' only the 2 first characters are interpreted
 #lines starting with '#' are comments
-#lines starting with ':' mofify the client-server behaviour
-#:D //echo comments
 R_GRAPH;../../tgf/Sydney.tgf;3
 N:M
 SPRING_PM

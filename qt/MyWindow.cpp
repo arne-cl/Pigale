@@ -89,7 +89,7 @@ int InitPigaleServer(MyWindow *w);
 
 MyWindow::MyWindow()
     :QMainWindow(0,"_Pigale",WDestructiveClose )
-     ,ServerExecuting(false)
+     ,ServerExecuting(false),ServerClientId(0)
      ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
      ,UndoIndex(0),UndoMax(0)
      ,IsUndoEnable(true)
@@ -346,9 +346,11 @@ MyWindow::MyWindow()
   embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
+#ifdef VERSION_ALPHA
   embed->insertItem("&Polar",                A_EMBED_POLAR);
   embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
+#endif
   embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
   embed->insertItem(xmanIcon,"Spring Planar",A_EMBED_JACQUARD);
@@ -356,7 +358,6 @@ MyWindow::MyWindow()
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
-
   QPopupMenu *dual = new QPopupMenu( this );
   menuBar()->insertItem("&Dual/Angle",dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));

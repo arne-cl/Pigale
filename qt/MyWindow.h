@@ -116,6 +116,7 @@ public:
   QString InputFileName;
   QString OutputFileName;
   bool ServerExecuting;
+  int ServerClientId;
 private:
   QToolBar *tb;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;

@@ -243,7 +243,7 @@ void GLWindow::png()
       glp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = "/tmp/server.png";
+      FileName = QString("/tmp/server%1.png").arg(glp->mywindow->ServerClientId);
   
   pixmap.save(FileName,"PNG");
   }
