@@ -65,6 +65,18 @@ tedge GeometricGraph::FindEdge(const Tpoint &p,double node_radius) const
       }
   return 0;
   }
+tedge GeometricGraph::FindEdge(const Tpoint &p) const
+  {Tpoint ps, pt;
+  double d,d_min = DBL_MAX;
+  tedge e0;
+  if(!ne()) return 0;
+  for (tedge e=1; e<=ne(); e++)
+      {ps = vcoord[vin[-e]]; pt = vcoord[vin[e]];
+      d = dist_seg((const Tpoint &)p,(const Tpoint &)ps,(const Tpoint &)pt);
+      if(d < d_min){d_min = d;e0 = e;}
+      }
+  return e0;
+  }
 tvertex GeometricGraph::FindVertex(const Tpoint & p,double node_radius) const
   {for (tvertex v=1; v<=nv(); v++)
       {Tpoint q = vcoord[v];
@@ -135,6 +147,42 @@ tbrin GeometricGraph::FindExteriorFace()
           }
       }while((b = cir[b]) != b0);
   return cir[-lb];
+  }
+tbrin  GeometricGraph::FindExteriorFace(Tpoint& pp)
+// set extbrin() or returns 0
+  {tedge e0 = FindEdge(pp);
+  if(e0 == 0)return 0;
+  tvertex v1 = vin[e0];	  tvertex v2 = vin[-e0];
+  bool right = (Determinant(pp - vcoord[v1],vcoord[v2] - vcoord[v1]) > 0) ? true:false;
+  tvertex vh = v2;
+  if(ComputeGeometricCir())return 0;
+  if(vcoord[v1].y() > vcoord[v2].y()
+     || ((vcoord[v1].y() == vcoord[v2].y()) && (vcoord[v1].x() > vcoord[v2].x())) )
+      {vh = v1;
+      right  = !right;
+      }
+  tbrin b = ((right && vh == v2) || (!right && vh == v1)) ? e0() : -e0();
+  extbrin() = b;
+  return b;
+  }
+int GeometricGraph::ColorExteriorface()
+  {if(FindPlanarMap())
+      {DebugPrintf("Exterior face of non planar graph");return -1;}
+  short ecol;  ecolor.getinit(ecol);
+  int width; ewidth.getinit(width);
+  tedge e;
+  for(e=1; e<= ne();e++){ecolor[e] = ecol; ewidth[e] = width;}
+  tbrin b0 = extbrin();
+  tbrin b = b0;
+  int len = 1;
+  while((b = cir[-b]) != b0)
+      {e = b.GetEdge();
+      ecolor[e] = Red;      ewidth[e] = 2;
+      ++len;
+      }
+  e = b0.GetEdge();
+  ecolor[e] = Green; ewidth[e] = 2;
+  return len;
   }
 GraphContainer * GeometricGraph::GeometricDualGraph()
   {if(!CheckConnected() || !CheckPlanar())
@@ -408,3 +456,4 @@ int GeometricGraph::Tutte()
   ForAllVerticesOfG(v) vcoord[v] = Tpoint(x[v()-1], y[v()-1]);
   return 1;
   }
+

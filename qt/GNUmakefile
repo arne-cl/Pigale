@@ -65,6 +65,7 @@ $(P)$(OPT) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so
 
 clean:
 	@rm -f $(VPATH)/*.o
+	@rm -f moc_*.cpp
 
 test:
 	@echo objects=$(ALLOBJ)

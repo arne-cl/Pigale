@@ -325,7 +325,7 @@ MyWindow::MyWindow()
   algo->insertSeparator();
   algo->insertItem("&Color everything",             605);
   algo->insertItem("Color &bipartite",              610);
-  algo->insertItem("Color e&xterior face",          611);
+  algo->insertItem("Color current e&xterior face",  611);
   algo->insertSeparator();
   algo->insertItem("&Symmetry",                     609);
   algo->insertSeparator();

@@ -366,7 +366,6 @@ bool GraphEditor::InitGrid(Tgrid &g)
 	  else {IsGrid = false;break;}
 	  }
       }
-
   // y-coordinates
   for(i = 1;i <= n;i++)coord[i] = G.vcoord[i].y();
   HeapSort (Cmp,1,n,heap);
@@ -449,6 +448,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
       gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
       gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
       }
+  // if IsGrid == false, may be we should not have modified xstep and ystep ?
   gwp->RedrawGrid = false;
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);

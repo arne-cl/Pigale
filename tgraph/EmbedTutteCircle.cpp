@@ -14,6 +14,8 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
 
+//in Schnyder.cpp
+bool & SchnyderLongestFace();
 void TutteCircle(GeometricGraph &G, tbrin FirstBrin);
 
 int EmbedTutteCircle(TopologicalGraph &G)
@@ -26,7 +28,11 @@ int EmbedTutteCircle(TopologicalGraph &G)
     
   tbrin FirstBrin;
   int len;
-  G.LongestFaceWalk(FirstBrin,len);G.extbrin() = FirstBrin;
+  if(SchnyderLongestFace())
+      {G.LongestFaceWalk(FirstBrin,len);G.extbrin() = FirstBrin;}
+  else
+      {FirstBrin = G.extbrin();len = G.FaceWalkLength(FirstBrin);}
+
   len++;
   svector<tbrin> fb(1,len);
   svector<tvertex> newv(1,len);

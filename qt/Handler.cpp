@@ -31,34 +31,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
 bool & ShowOrientation();
 // in Generate.cpp
 bool & EraseMultipleEdges();
-//in here
-int ColorExteriorface(GeometricGraph &G);
-
-
-
-int ColorExteriorface(GeometricGraph &G)
-  {if(G.FindPlanarMap())
-      {DebugPrintf("Exterior face of non planar graph");return -1;}
-  short ecol;  G.ecolor.getinit(ecol);
-  int width; G.ewidth.getinit(width);
-  tedge e;
-  ForAllEdges(e,G) {G.ecolor[e] = ecol; G.ewidth[e] = width;}
-  tbrin b0 = G.extbrin();
-  if(debug())DebugPrintf("b0=%d v=%d",b0(),G.vin[b0]());
-  tbrin b = b0;
-  int len = 1;
-  while((b = G.cir[-b]) != b0)
-      {e = b.GetEdge();
-      G.ecolor[e] = Red;      G.ewidth[e] = 2;
-      ++len;
-      }
-  e = b0.GetEdge();
-  G.ecolor[e] = Green; G.ewidth[e] = 2;
-  Tprintf("Ext.Face L=%d",len);
-  return 0;
-  }
-
-
 
 // Those handlers return:
 // -1 if error
@@ -216,7 +188,8 @@ int AlgoHandler(int action,int nn)
 	  G.CheckBipartite(true);
 	  break;
       case 611://color exterior face
-	  ret = ColorExteriorface(G);
+	  i = G.ColorExteriorface();
+	  ret = (i > 0) ? 0:1;
 	  break;
       case 612://show non critical edges
 	  {tedge e;

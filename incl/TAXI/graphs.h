@@ -328,6 +328,7 @@ public :
     GraphContainer * AngleGraph();
     
     tedge FindEdge(const Tpoint &p,double node_radius) const;
+    tedge FindEdge(const Tpoint &p) const;
     tvertex FindVertex(const Tpoint & p,double node_radius) const;
     tvertex NewVertex(const Tpoint &p)
         {tvertex v=me().NewVertex(); vcoord[v]=p;
@@ -353,10 +354,13 @@ public :
         vcolor[v] = vcolor[v1];
         return v;
         }
-    int ComputeGeometricCir();
-    tbrin FindExteriorFace();
-    int Tutte();
-int Jacquard(int maxgen, double k_angle, double k_mindist, double k_electro, double k_spring, bool k_frontier);
+  int ComputeGeometricCir();
+  tbrin FindExteriorFace();
+  tbrin FindExteriorFace(Tpoint& p);
+  int Tutte();
+  int ColorExteriorface();
+ 
+  int Jacquard(int maxgen, double k_angle, double k_mindist, double k_electro, double k_spring, bool k_frontier);
 
 };
 // Other Prototypes
