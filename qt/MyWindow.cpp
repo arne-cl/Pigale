@@ -70,12 +70,15 @@
 #include "icones/sreload.xpm"
 #include "icones/help.xpm"
 #include "icones/xman.xpm"
+#include "icones/sleftarrow.xpm"
+#include "icones/srightarrow.xpm"
+#include "icones/sfilesave.xpm"
 
 void Test(GraphContainer &GC,int action);
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose ),
-      GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
+      GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1),IsUndoEnable(true)
   {int id;
   // Export some data
   DefineGraphContainer(&GC);
@@ -152,14 +155,15 @@ MyWindow::MyWindow()
   rightLayout->addMultiCellWidget(e,2,2,1,2);
   rightLayout->addMultiCellWidget(graph_properties,3,3,1,2);
   rightLayout->addMultiCellWidget(mouse_actions,4,4,1,2);
-  
+   
 
   //Pixmaps
   QPixmap openIcon = QPixmap(fileopen),newIcon = QPixmap(filenew),saveIcon = QPixmap(filesave);
   QPixmap leftIcon = QPixmap(sleft),   rightIcon = QPixmap(sright);
   QPixmap reloadIcon = QPixmap(sreload);
   QPixmap infoIcon = QPixmap(info), helpIcon = QPixmap(help),printIcon = QPixmap(fileprint);
-  QPixmap xmanIcon = QPixmap(xman);
+  QPixmap xmanIcon = QPixmap(xman), undoLIcon = QPixmap(sleftarrow),undoRIcon = QPixmap(srightarrow);
+  QPixmap undoSIcon = QPixmap(sfilesave);
 
   //ToolBar
   QToolBar *tb = new QToolBar(this,"toolbar" );
@@ -179,8 +183,12 @@ MyWindow::MyWindow()
   right = new QToolButton(rightIcon,"Next Graph",QString::null,this,SLOT(next()),tb,"Next");
   QWhatsThis::add(right,right_txt);
   tb->addSeparator();
+  undoL = new QToolButton(undoLIcon,"Undo",QString::null,this,SLOT(Undo()),tb,"Undo L");
+  undoS = new QToolButton(undoSIcon,"Save",QString::null,this,SLOT(UndoSave()),tb,"Save");
+  undoR = new QToolButton(undoRIcon,"Redo",QString::null,this,SLOT(Redo()),tb,"Redo");
+  tb->addSeparator();
   (void)QWhatsThis::whatsThisButton(tb);
-
+  tb->addSeparator();
   //PopMenus
   QPopupMenu * file = new QPopupMenu( this );
   menuBar()->insertItem( "&File", file );
@@ -342,6 +350,9 @@ MyWindow::MyWindow()
   //debug()
   settings->insertItem("&Debug",10001);
   settings->setItemChecked(10001,debug());
+  //undoEnable
+  settings->insertItem("&Undo Enable",10005);
+  settings->setItemChecked(10005,IsUndoEnable);
   //Pigale colors
   settings->insertItem("&Pigale Colors",10010);
   //Pigale limits
@@ -462,6 +473,7 @@ void MyWindow::load(int pos)
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
+  UndoClear();
   banner();
   information(); gw->update();
   }
@@ -533,6 +545,7 @@ void MyWindow::newgraph()
   G.StrictReset();
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   if(debug())DebugPrintf("**** New graph");
+  UndoClear();
   information();gw->update();
   }
 void MyWindow::previous()
@@ -559,15 +572,21 @@ void MyWindow::handler(int action)
   int ret = 0;
   int drawing;
   if(action < 200)
+      {UndoSave();
       ret = AugmentHandler(action);
+      }
   else if(action < 300)
       ret = EmbedHandler(action,drawing);
   else if(action < 400)
       ret = DualHandler(action);
   else if(action < 500)
+      {UndoSave();
       ret = RemoveHandler(action);
+      }
   else if(action < 600)
-      ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
+      {ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
+      UndoClear();
+      }
   else if(action < 700)
       ret = AlgoHandler(action,spin_N->value());
   else if(action < 800)
@@ -582,6 +601,7 @@ void MyWindow::handler(int action)
       SchnyderLongestFace() =  menuBar()->isItemChecked(10003);
       SchnyderColor()       =  menuBar()->isItemChecked(10004);
       ShowOrientation()     =  menuBar()->isItemChecked(10020);
+      if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
       if(action == 10020)gw->update();
       return;
       }
@@ -612,8 +632,9 @@ void MyWindow::banner()
   QFileInfo fo((const char *)OutputFileName);
   int NumRecords =GetNumRecords((const char *)InputFileName);
   int NumRecordsOut =GetNumRecords((const char *)OutputFileName);
-  m.sprintf("Input file: %s %d/%d  Output file: %s %d",(const char *)fi.fileName()
-	    ,*pGraphIndex,NumRecords,(const char *)fo.fileName(),NumRecordsOut);
+  m.sprintf("Input file: %s %d/%d  Output file: %s %d Undo:%d/%d",(const char *)fi.fileName()
+	    ,*pGraphIndex,NumRecords,(const char *)fo.fileName(),NumRecordsOut
+      ,UndoIndex,UndoMax);
   statusBar()->message(m);
   }
 void MyWindow::about()
@@ -665,4 +686,57 @@ void MyWindow::print()
       default:
 	  break;
       }
+  }
+
+/*
+The copies are cleared when a new graph is loaded or generated
+A copy is created when edges/vertices are added/deleted outside the editor
+
+UndoMax  : #of save graphs
+UndoSave : index of graph to restore [1,UndoMax]
+Should always be possible to restore 1
+*/
+void MyWindow::Undo()
+  {if(UndoIndex > 1)--UndoIndex;
+  if(ReadGraph(GC,"undo.tgf",UndoMax,UndoIndex) != 0)return;
+  banner();
+  information(); gw->update();
+  this->undoR->setEnabled(UndoMax !=0 && UndoIndex < UndoMax);
+  }
+void MyWindow::UndoSave()
+  {if(!IsUndoEnable)return;
+  TopologicalGraph G(GC);
+  if(SaveGraphTgf(G,"undo.tgf",1) == 1)
+      {handler(10005);
+      return;
+      }
+  UndoMax = GetNumRecords("undo.tgf");
+  UndoIndex = UndoMax;
+  this->undoL->setEnabled(true);
+  banner();
+  }
+void MyWindow::Redo()
+  {if(UndoIndex < UndoMax)++UndoIndex;
+  if(ReadGraph(GC,"undo.tgf",UndoMax,UndoIndex) != 0)return;
+  banner();
+  information(); gw->update();
+  this->undoR->setEnabled(UndoIndex < UndoMax);
+  }
+void MyWindow::UndoClear()
+  {if(!IsUndoEnable)return;
+  UndoIndex = UndoMax = 0;
+  this->undoL->setEnabled(false);
+  this->undoR->setEnabled(false);
+  QFileInfo fi("undo.tgf");
+  if(!fi.exists())return;
+  QFile undo_tgf("undo.tgf");
+  if(!undo_tgf.remove())
+      {Twait("Cannot remove undo.tgf");
+      menuBar()->setItemChecked(10005,false);
+      }
+  }
+void MyWindow::UndoEnable(bool enable)
+  {this->undoS->setEnabled(enable);
+  if(!enable){UndoClear();banner();}
+  IsUndoEnable = enable;
   }
