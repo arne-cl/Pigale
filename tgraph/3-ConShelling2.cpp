@@ -14,6 +14,7 @@
 #include  <TAXI/KantShel.h>
 #include  <TAXI/color.h>
 #include  <TAXI/Tmessage.h>
+#include  <TAXI/Tflist.h>
 
 int KantShelling::FindNext(tbrin &left, tbrin &right)
 // return = 0: if there is no vertex nor face to shell.
@@ -351,4 +352,71 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
 
 
 
+
+
+LMCShelling::LMCShelling(Graph &G0, tbrin bref) : KantShelling(G0, bref), LeftBrin(0,G0.nv(),0), RightBrin(0,G0.nv(),0), NbBrin(0,G0.nv(),0), NewLeftBrin(0,G0.nv(),0), NewRightBrin(0,G0.nv(),0), NewNbBrin(0,G0.nv(),0),current(0) {
+  tbrin left, right, b;
+  tvertex LeftVertex, RightVertex;
+  int i = 1;
+  int new_current;
+  int nb_sets;
+  do {
+    NbBrin[i] = KantShelling::FindNext(left,right);
+    LeftBrin[i] = left;
+    RightBrin[i] = right;
+    NewNbBrin[i] = NbBrin[i];
+    NewLeftBrin[i] = LeftBrin[i];
+    NewRightBrin[i] = RightBrin[i];
+
+    i++;
+  } while(NbBrin[i-1] != 0);
+  nb_sets = i-2;
+
+  stack<tvertex>  OuterFace; // List of vertices of on the outerface
+
+  // for each vertex v, the list of set-index such that it is its rightvertex
+  IntList RightVertexSets[G0.nv()+1];
+
+  for(i = 1; i <= nb_sets; i++) {
+    RightVertex = G.vin[-RightBrin[i]];
+    RightVertexSets[RightVertex()].push(i);
+  }
+
+  OuterFace.push(G.vin[-RightBrin[nb_sets]]);
+
+  new_current = nb_sets;
+
+  while (!OuterFace.empty()) {
+    RightVertex = OuterFace.pop();
+    OuterFace.push(RightVertex); // Keep RightVertex on the top of the stack
+
+    if (!RightVertexSets[RightVertex()].empty()) {
+      int set_index = RightVertexSets[RightVertex()].pop();
+      NewRightBrin[new_current] = RightBrin[set_index];
+      NewLeftBrin[new_current] = LeftBrin[set_index];
+      NewNbBrin[new_current] = NbBrin[set_index];
+
+      b=G.acir[RightBrin[set_index]]; 
+      if (NbBrin[set_index] != 1)
+	while (b !=-LeftBrin[set_index]) {
+	  OuterFace.push(G.vin[b]);
+	  b=G.acir[-b];
+	}
+      OuterFace.push(G.vin[b]);
+      new_current --;
+    }
+    else 
+      OuterFace.pop();
+  }
+  assert (new_current == 0);
+  current=1;
+
+}
+
+int LMCShelling::FindNext(tbrin &left, tbrin &right) {
+  left = NewLeftBrin[current];
+  right = NewRightBrin[current];
+  current ++;
+  return NewNbBrin[current-1];
+}
 
