@@ -12,8 +12,8 @@
 #include<unistd.h>
 
 //PMdef.c
-#define TRUE -1
-#define FALSE 0
+#define PMTRUE -1
+#define PMFALSE 0
 
 #define MSK 'a'
 #define BLACK  2
@@ -34,7 +34,7 @@
 #define DONE   42
 
 #define printvf if (Meth->verbose) printf
-#define printwf if (Meth->verbose == TRUE+TRUE) printf
+#define printwf if (Meth->verbose == PMTRUE+PMTRUE) printf
 
 /* les aretes sont toutes pareilles, aussi bien pour les arbres
    que pour les cartes */
@@ -288,8 +288,8 @@ void pmCreateBloc(long n)
   pmBlocEnd=-1;
 }
 int pmIsBloc(){
-  if (pmBlocBeg == pmBlocEnd) return(FALSE);
-  else return(TRUE);
+  if (pmBlocBeg == pmBlocEnd) return(PMFALSE);
+  else return(PMTRUE);
 }
 void pmFreeBloc()
 {
@@ -317,8 +317,8 @@ void pmCreateComp(long n)
   pmCompEnd=-1;
 }
 int pmIsComp(){
-  if (pmCompBeg == pmCompEnd) return(FALSE);
-  else return(TRUE);
+  if (pmCompBeg == pmCompEnd) return(PMFALSE);
+  else return(PMTRUE);
 }
 void pmFreeComp()
 {
@@ -352,8 +352,8 @@ void pmCreatePost(long n)
   pmPostEnd=-1;
 }
 int pmIsPost(){
-  if (pmPostBeg == pmPostEnd) return(FALSE);
-  else return(TRUE);
+  if (pmPostBeg == pmPostEnd) return(PMFALSE);
+  else return(PMTRUE);
 }
 void pmResetPost()
 {
@@ -397,8 +397,8 @@ void pmCreateSeed(long n)
   pmSeedEnd=-1;
 }
 int pmIsSeed(){
-  if (pmSeedBeg == pmSeedEnd) return(FALSE);
-  else return(TRUE);
+  if (pmSeedBeg == pmSeedEnd) return(PMFALSE);
+  else return(PMTRUE);
 }
 void pmFreeSeed()
 {
@@ -430,7 +430,7 @@ pm_edge *pmNextSeed(void)
 /******************************/
 int pmInitRND(pmMethod *Meth){
   srand48(Meth->seed); printvf("# Seed: %ld\n",Meth->seed);
-  return(TRUE);
+  return(PMTRUE);
 }
 
 /******************************/
@@ -1120,12 +1120,12 @@ long pmLabelCanon(pm_edge *Root)
 	}
       }while (Cur2 != Cur1->prev);
     }
-    if ((Cur1->oppo->mark == mark && Cur1->oppo->from != Cur1->from) ||
+   if ((Cur1->oppo->mark == mark && Cur1->oppo->from != Cur1->from) ||
 	Cur1->oppo->from->mark != mark){
       Cur1->mark = mark;
       Cur1       = Cur1->oppo;
     }
-    Cur1 = Cur1->next;
+   Cur1 = Cur1->next;
   }
   return(edge);
 }
@@ -1299,7 +1299,8 @@ long pmBicolorFaces(pm_edge *Root)
 
 void pmEdgeMap(pmMap *Map)
 {
-  pm_edge *Cur1, *Root = Map->root;
+  pm_edge *Cur1;
+  pm_edge *Root = Map->root;
   pm_vertex *Face = Root->face;
   pm_vertex *Vtx  = Root->from;
   short t = Face->type;
@@ -1454,13 +1455,13 @@ pm_edge *pmVide4cocycle(pm_edge *Root, pm_edge *Cot1, pm_edge *Cot2, pm_edge *Co
 
 
 // on commence par une procedure pour decomposer en somme horiz.
-// si la composante est indecomposable on renvoie TRUE, sinon FALSE
+// si la composante est indecomposable on renvoie PMTRUE, sinon PMFALSE
 // et les composantes resultantes sont ajoutees dans Fut
 
 int pmInSum(pm_edge *Root){
   pm_edge *Edge, *Edg1, *Edg2;
   long mark = pmNewMark();
-  short indec = TRUE;
+  short indec = PMTRUE;
 
   Edg1 = Root;
   Edg2 = Root->next;
@@ -1481,7 +1482,7 @@ int pmInSum(pm_edge *Root){
       pmNewBloc(pmVide4cocycle(Edg1, Edge->oppo->face->root, Edge, Edg2));
       Edg1 = Edge->oppo->face->root->oppo;
       Edg2 = Edge->oppo;
-      indec = FALSE;
+      indec = PMFALSE;
     } else
       Edge->oppo->face->mark = mark;
   }
@@ -2135,7 +2136,7 @@ int pmParseArgs(int argc, char *argv[],
       }
     }
   }
-  return(TRUE);
+  return(PMTRUE);
 }
 
 
@@ -2160,7 +2161,7 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
   if (Size->e + Size->v + Size->f + Size->r + Size->g == 0 &&
       Size->dgArr == NULL){
     fprintf(stderr,"Size must be given somehow\n");
-    return(FALSE);
+    return(PMFALSE);
   }
 
   switch(Size->m){
@@ -2176,7 +2177,7 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
 	Size->f  = Size->e + 2 - Size->v;
       }else{
 	fprintf(stderr,"nb vertex must be even for cubic\n");
-	return(FALSE);
+	return(PMFALSE);
       }
     }else if (Size->f){
       Size->e = 3 * Size->f - 6;
@@ -2187,22 +2188,22 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
 	Size->v = 2*Size->e / 3;
       }else{
 	fprintf(stderr,"nb edges must be multiple of three for bicubic\n");
-	return(FALSE);
+	return(PMFALSE);
       }
     }else{
       fprintf(stderr,"degrees or colors not available for cubic\n");
-      return(FALSE);
+      return(PMFALSE);
     }break;
 
   case 9:                     // all type of quartic
     if (Size->v % 2 != 0){
       fprintf(stderr,"vtx number must be even for bi-quartic\n");
-      return(FALSE);
+      return(PMFALSE);
     }// no break here !
   case 4:
     if (Size->g || Size->r){
       fprintf(stderr,"color control only for 2-c or 3-c quartic\n");
-      return(FALSE);
+      return(PMFALSE);
     }// no break here !
   case 5:
   case 6: 
@@ -2219,7 +2220,7 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
 	Size->f = Size->v + 2;
       }else{
 	fprintf(stderr,"nb edges must be even for quartic\n");
-	return(FALSE);
+	return(PMFALSE);
       }
     }else if (Size->f){
       Size->v = Size->f - 2;
@@ -2229,13 +2230,13 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
     if (Size->r) Size->g = Size->f - Size->r;
     if (Size->g < 0 || Size->r < 0){
       fprintf(stderr,"not enough faces for colors \n");
-      return(FALSE);
+      return(PMFALSE);
     }break;
 
   case 10:                         // eulerian
     if (Size->g || Size->r){
       fprintf(stderr,"color control not implemented for eulerian\n");
-      return(FALSE);
+      return(PMFALSE);
     }else{
       Size->e = 0; 
       Size->v = 0;
@@ -2261,7 +2262,7 @@ int pmSetParameters(pmSize *Size, pmMethod *Meth)
   }
   
 
-  return(TRUE);
+  return(PMTRUE);
 }
 
 
@@ -2354,12 +2355,12 @@ int pmMemoryInit(pmSize *S, pmMethod *Meth, pmMemory *M)
     break;
   default:
     fprintf(stderr,"unknown type of map %d", (int) S->m);
-    return(FALSE);
+    return(PMFALSE);
   }
   printvf("# Size of tree: %ld\n", M->sTree);
   printvf("# Memory       : %ld vtx, %ld edgs\n", M->sVtx, M->sEdge);
 
-  return(TRUE);
+  return(PMTRUE);
 }
 
 /******************************/
@@ -2368,8 +2369,8 @@ int pmMemoryInit(pmSize *S, pmMethod *Meth, pmMemory *M)
 int pmExtendMemory(pmSize *S, pmMethod *Meth, pmMemory *M, char OtherReason)
 {
   char map = S->m;
-
-  if (OtherReason == TRUE &&
+  printvf("# Memory (extd) map:%d:\n",S->m); 
+  if (OtherReason == PMTRUE &&
       (map == 1 || map == 2 || map == 4 || map == 5 || map == 7)) map++;
 
   switch(map){                   // cubic 2c
@@ -2394,7 +2395,7 @@ int pmExtendMemory(pmSize *S, pmMethod *Meth, pmMemory *M, char OtherReason)
   printvf("# Memory (extd): %ld vtx, %ld edgs\n", 
 	  M->sVtx, M->sEdge);
 
-  return(TRUE);
+  return(PMTRUE);
 }
 
 /******************************/
@@ -2443,14 +2444,13 @@ int pmTreeConjugation(pmSize *S, pmMemory *M,
   Root = pmSuppress(Root);
   pmFreeStck(Stack);      
 
-  
   Map->e = pmLabelCanon(Root);      // set labels and create faces
   Map->v = pmChainVtx(Root);
   Map->f = pmAddFaces(Root);
   Map->root = Root;
 
 
-  return(TRUE);
+  return(PMTRUE);
 }
 
 /******************************/
@@ -2545,7 +2545,7 @@ int pmPlanMap(pmSize *S, pmMethod *Meth, pmMemory *M, pmMap *Map)
     printwf("# NbTry%ld = %ld; Final Size = %ld;\n",Map->i, numTry, Map->v);
   }
   
-  return(TRUE);
+  return(PMTRUE);
 }
 
 int pmFreeMap(pmMap *Map)
@@ -2553,7 +2553,7 @@ int pmFreeMap(pmMap *Map)
   Map->root=NULL;
   pmFreeEdge();
   pmFreeVtx();
-  return (TRUE);
+  return (PMTRUE);
 }
 
 
@@ -2562,22 +2562,22 @@ int pmFreeMap(pmMap *Map)
 #include <TAXI/Tdebug.h>
 #include <TAXI/graphs.h>
 #include <time.h>
-
 bool & EraseMultipleEdges();
 
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 //n_ask must be even
-  {pmSize Size;
+  {pmSize Sizes;
   pmMethod Meth;
   pmMemory Mem;
   pmMap Map;
   pmOutput Outp;
+  Outp.transform=0;
 
-  /* Size preinit */
-  Size.m = 5; 
-  Size.e = 0; Size.v = 0; Size.f = 0;
-  Size.r = 0; Size.g = 0; Size.d = 0;
-  Size.t = -1; Size.dgArr = NULL;
+  /* Sizes preinit */
+  Sizes.m = 5; 
+  Sizes.e = 0; Sizes.v = 0; Sizes.f = 0;
+  Sizes.r = 0; Sizes.g = 0; Sizes.d = 0;
+  Sizes.t = -1; Sizes.dgArr = NULL;
   /* Meth preinit */
   //init random seed
   static bool init = false;
@@ -2591,104 +2591,108 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   Meth.core = 0; Meth.pic = 0;
   Meth.verbose = 0;
   //Allowed approximation on n,m
-  Size.t = -1;
+  Sizes.t = -1;
 
   char t[256];
   bool loops = false;
   bool multiple = false;
   if(type == 3)// Cubic
-     {Size.b = 1; Size.t = 0; 
+     {Sizes.b = 1;
      if(e_connectivity == 2)      
 	 {n_ask = Max(n_ask,6); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
-	 Size.m = 1;multiple = true;
+	 Sizes.m = 1;multiple = true;
+	 Sizes.t = 0; 
 	 }
       else if(e_connectivity == 3)
 	  {n_ask = Max(n_ask,6); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
-	  Size.m = 2;
-	  Size.t = (int)(n_ask*.01 +.5);
+	  Sizes.m = 2;
+	  Sizes.t = (int)(n_ask*.01 +.5);
 	  }
       else if(e_connectivity == 4)
-	  {Size.m = 3;
+	  {Sizes.m = 3;
 	  n_ask = Max(n_ask,12); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
-	  Size.t = (int)(n_ask*.02 +.5);
+	  Sizes.t = (int)(n_ask*.02 +.5);
 	  }
       sprintf(t,"Cubic_%d",e_connectivity);
      }
   else if(type == 4)// Quadric
       {if(e_connectivity == 2)    
-	  {Size.m = 4; Size.b = 4;
+	  {Sizes.m = 4; Sizes.b = 4;
 	  n_ask = Max(n_ask,4);n_ask /= 2;
-	  Size.t = (int)(n_ask*.02 +.5);multiple = true;
+	  Sizes.t = (int)(n_ask*.02 +.5);multiple = true;
+	  sprintf(t,"Quadric_%d",e_connectivity/2);
 	  }
       else if(e_connectivity == 4)
-	  {Size.m = 5; Size.b = 5;
+	  {Sizes.m = 5; Sizes.b = 5;
 	  n_ask = Max(n_ask,8);n_ask /= 2;
-	  Size.t = (int)(n_ask*.04 +.5);multiple = true;
+	  Sizes.t = (int)(n_ask*.04 +.5);multiple = true;
+	  sprintf(t,"Quadric_%d",e_connectivity/2);
 	  }
       else if(e_connectivity == 6)
-	  {Size.m = 6; Size.b = 5;
+	  {Sizes.m = 6; Sizes.b = 5;
 	  n_ask = Max(n_ask,12);n_ask /= 2;
-	  Size.t = (int)(n_ask*.20 +.5);
+	  Sizes.t = (int)(n_ask*.20 +.5);
+	  sprintf(t,"Quadric_%d",e_connectivity/2);
 	  }
       else if(e_connectivity == 0)//BiQuadric
-	  {Size.m = 9; Size.b = 9; 
+	  {Sizes.m = 9; Sizes.b = 9; 
 	  n_ask = Max(n_ask,12);n_ask /= 2;
 	  n_ask += n_ask%2;multiple = true;
+	  sprintf(t,"BiQuadric_%d",e_connectivity/2);
 	  } 
-      sprintf(t,"Quadric_%d:%d",type,e_connectivity/2);
       }
   else if(type == 2)// Bipartite
       {if(e_connectivity == 1)
 	  {sprintf(t,"Bipartite");
 	  Outp.transform = 1;
 	  n_ask += n_ask%2;
-	  Size.m = 9; Size.b = 9;multiple = true;
+	  Sizes.m = 9; Sizes.b = 9;multiple = true;
 	  }
       else if(e_connectivity == 2)
 	   {sprintf(t,"CubicBipartite_2");
 	   n_ask = Max(n_ask,6);
 	   n_ask = (n_ask*2)/3;
 	   n_ask += n_ask%2;
-	   Size.m = 7; Size.b = 7;multiple = true;
+	   Sizes.m = 7; Sizes.b = 7;multiple = true;
 	   }
       else if(e_connectivity == 3)
 	   {sprintf(t,"CubicBipartite_3");
 	   n_ask = Max(n_ask,12);
 	   n_ask = (n_ask*2)/3;
 	   n_ask += n_ask%2;
-	   Size.m = 8; Size.b = 7;Size.t = (int)(n_ask*.04 +.5);
+	   Sizes.m = 8; Sizes.b = 7;Sizes.t = (int)(n_ask*.04 +.5);
 	   }
       }
   else if(type == 1)// Planar
       {Outp.transform = 1;
       sprintf(t,"Planar_%d",e_connectivity);
       if(e_connectivity == 1)
-	  {Size.m = 4; Size.b = 4;
-	  Size.t = (int)(n_ask*.02 +.5);
+	  {Sizes.m = 4; Sizes.b = 4;
+	  Sizes.t = (int)(n_ask*.02 +.5);
 	  loops = multiple = true;
 	  }
       else if(e_connectivity == 2)
-	  {Size.m = 5; Size.b = 5;
+	  {Sizes.m = 5; Sizes.b = 5;
 	  n_ask = Max(n_ask,2);
-	  Size.t = (int)(n_ask*.04 +.5);
+	  Sizes.t = (int)(n_ask*.04 +.5);
 	  multiple = true;
 	  }
       else if(e_connectivity == 3)
-	  {Size.m = 6; Size.b = 5;
+	  {Sizes.m = 6; Sizes.b = 5;
 	  n_ask = Max(n_ask,6);
-	  Size.t = (int)(n_ask*.06 +.5);
+	  Sizes.t = (int)(n_ask*.06 +.5);
 	  }
       }
   
   if(debug())LogPrintf("<%d",n_ask);
-  Size.v = n_ask; 
+  Sizes.v = n_ask; 
   if(!pmInitRND(&Meth))return NULL;
-  if(!pmSetParameters(&Size, &Meth))return NULL;
-  if(!pmMemoryInit(&Size, &Meth, &Mem))return NULL;
-  if(!pmExtendMemory(&Size, &Meth, &Mem,0))return NULL;
+  if(!pmSetParameters(&Sizes,&Meth))return NULL;
+  if(!pmMemoryInit(&Sizes,&Meth,&Mem))return NULL;
+  if(!pmExtendMemory(&Sizes,&Meth,&Mem,0))return NULL;
   Map.i=0;
-  pmPlanMap(&Size, &Meth, &Mem, &Map);
-
+  if(!pmPlanMap(&Sizes,&Meth,&Mem,&Map))return NULL;
+  if(debug())LogPrintf(":");
   //Output transform
   if(Outp.transform)
       {pmBicolorFaces(Map.root);
@@ -2713,7 +2717,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   //printf("n: %d m:%d\n",n,m);
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
-  
   title() = t;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
@@ -2765,12 +2768,15 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
 	  }
       }
-  TopologicalGraph TG(GC);
-  int nloops = 0;
-  if(loops)nloops = TG.RemoveLoops();
-  if(EraseMultipleEdges() && multiple)TG.Simplify();
   pmFreeMap(&Map);
-  if(debug())LogPrintf("%d:%d %d>",n,m,nloops);
+  TopologicalGraph TG(GC);
+  int erased  = 0;
+  if(EraseMultipleEdges() && multiple)
+      erased = TG.Simplify();
+  else if(loops)
+      erased = TG.RemoveLoops();
+
+  if(debug())LogPrintf("%d:%d %d>",TG.nv(),TG.ne(),erased);
   return &GC;
   }
 
