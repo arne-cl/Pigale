@@ -240,9 +240,9 @@ private :
   tedge Couve() // Toujours kk+1
       {tedge l = FirstTwin().lbot();
       tedge r = FirstTwin().rbot();
-
-      if(r() && (vin[r]< vin[l])) return r ;
-      else return l;
+      tedge e = l;
+      if(!l || (r() &&  vin[r]< vin[l]))e = r;
+      return e;
       }
   int Cover(const tedge &cv) // ik = pile -1
       {return((vin[cv]<vin[PrevTwin().ltop()]) 
@@ -328,9 +328,9 @@ private :
   tedge Couve() // Toujours kk+1
       {tedge l = FirstTwin().lbot();
       tedge r = FirstTwin().rbot();
-
-      if(r() && (vin[r]< vin[l])) return r ;
-      else return l;
+      tedge e = l;
+      if(!l || (r() &&  vin[r]< vin[l]))e = r;
+      return e;
       }
   int Cover(const tedge &cv) // ik = pile -1
       {return((vin[cv]<vin[PrevTwin().ltop()]) 
