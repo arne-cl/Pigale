@@ -12,7 +12,7 @@ nodist_Client_SOURCES =  moc_client.cpp
 Client_SOURCES = client.cpp client.h
 Client_LDFLAGS=@LDFLAGS@
 
-EXTRA_DIST=ClientReadMe.txt Clientdata.txt ex.tgf gnumakefile
+EXTRA_DIST=ClientReadMe.txt Clientdata.txt ex.tgf symm.tgf gnumakefile qmake.pro
 
 OPT=@OPTIM@
 DEFS=-DQT_THREAD_SUPPORT  -DQT 
