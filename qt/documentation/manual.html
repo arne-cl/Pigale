@@ -53,7 +53,7 @@ If you see a small manual " <IMG SRC="../icones/xman.xpm" > " at the left of a m
 The windows next, to the <b>Graph editor</b> window, are used to show 
 different views of a graph and these few notes.<br> 
 They can be printed (except the one for 3d embeddings) or exported as png images.<br>
-The top right window is for messages (properties of the graph, warnings,etc).
+The top right window is for messages (properties of the graph, warnings, etc.).
 Just under are displayed the main properties of the graph, all of them are maintained
 in real time.
 
@@ -158,8 +158,10 @@ There is no limit of the number of copies which are placed in a temporary file,
 
 <HR><H2> <A NAME="macro">M</A>acro </H2> 
 
-You can record any number of functions from the menus Augment, Remove, Dual, Orient and Generate.
-The functions  will use the colors and thickness defined at the recording time.
+You can record any number of functions from the menus Augment, Remove, Dual/Angle, Algo, Orient, Generate and
+UserMenu.<br>
+During the execution, no checking is done that the functions are allowed in the current context.<br>
+The functions  will use the colors and thickness defined at the recording time.<br>
 When you execute a macro, the recording is stopped but you can restart it. 
 
 <center><table>
@@ -170,7 +172,9 @@ When you execute a macro, the recording is stopped but you can restart it.
 </tr>
 </table></center>
 If the first record is not a graph generator, the macro will start loading the next graph
-of the current file.
+of the current file.<br>
+If the repeat macro value is 0, the macro will be repeated until you quit that function by typing
+<b>ESC</b>, or if an error occurs..
 <br><A HREF="manual.html#home"><em>top</em></A>
 
 <HR><H2> <A NAME="3d">E</A>mbedding a graph  in space </H2> 
@@ -221,7 +225,7 @@ To get reasonable performance, we allow the algoritms to generate graphs with sl
 than the prescribed one.<br>
 Loops are always erased (1-connected graphs get less edges than asked).<br>
 If the option <b> Erase multiple edges</b> is on, we erase multiple edges
-after the generation process, therefore we do not maintain the degree propertie.
+after the generation process, therefore we do not maintain the degree property.
 <br><A HREF="manual.html#home"><em>top</em></A>
 
 <HR><H2> <A NAME="tgf">T</A>gf and ASCII files </H2> 
@@ -234,7 +238,7 @@ We use a very simple <b>ASCII</b> file structure to store graphs. <br>
 For example, the following file defines a graph called <tt>Triangle</tt> 
 with three vertices labeled <tt>10,20,30</tt>
 and three edges. The first 0 at the last line indicates the end of the list of edges,
-the second one indicates the end of the graph datas.
+the second one indicates the end of the graph data.
 <tt><br>
 Triangle<br>
 10 20<br>
