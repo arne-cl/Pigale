@@ -292,19 +292,20 @@ MyWindow::MyWindow()
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
-  embed->insertItem("&FPP Fary",             A_EMBED_FPP);
+  embed->insertItem(xmanIcon,"&FPP Fary",             A_EMBED_FPP);
+  embed->setWhatsThis(A_EMBED_FPP,fpp_txt);
   embed->insertItem(xmanIcon,"&Schnyder",    A_EMBED_SCHNYDER_E);
   embed->setWhatsThis(A_EMBED_SCHNYDER_E,schnyder_txt);
-  embed->insertItem("Schnyder &V ", A_EMBED_SCHNYDER_V);
+  embed->insertItem(xmanIcon,"Schnyder &V ", A_EMBED_SCHNYDER_V);
+  embed->setWhatsThis(A_EMBED_SCHNYDER_V,schnyder_txt);
   embed->insertSeparator();
   embed->insertItem("&Tutte"      ,          A_EMBED_TUTTE);
-  embed->insertItem("Tutte &Circle",         A_EMBED_TUTTE_CIRCLE);
+  embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
+  embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
   embed->insertItem("&Visibility",           A_EMBED_VISION );
   embed->insertItem("FPP Visi&bility",       A_EMBED_FPP_RECTI);
-  //#ifdef VERSION_ALPHA 
   embed->insertItem("&General Visibility",   A_EMBED_GVISION);
-  //#endif
   embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
@@ -323,11 +324,12 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Dual/Angle",dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));
   dual->insertItem("&Dual",                 A_GRAPH_DUAL);
-  dual->insertItem("&Geometric Dual",       A_GRAPH_DUAL_G);
+  dual->insertItem(xmanIcon,"&Geometric Dual",A_GRAPH_DUAL_G);
+  dual->setWhatsThis(A_GRAPH_DUAL_G,dual_g_txt);
   dual->insertSeparator();
   dual->insertItem("&Angle",                A_GRAPH_ANGLE);
-  dual->insertItem("G&eometric Angle",      A_GRAPH_ANGLE_G);
-
+  dual->insertItem(xmanIcon,"G&eometric Angle",A_GRAPH_ANGLE_G);
+  dual->setWhatsThis(A_GRAPH_ANGLE_G,angle_g_txt);
   QPopupMenu *algo = new QPopupMenu( this );
   menuBar()->insertItem("&Algo",algo);
   connect(algo,SIGNAL(activated(int)),SLOT(handler(int)));

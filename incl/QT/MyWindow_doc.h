@@ -15,10 +15,11 @@ const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>
 const char * left_txt = "Opens <b>previous</b> graph from  the current <em>tgf</em> file";
 const char * redo_txt = "Reload the <b>current</b> graph from the current  opened <em>tgf</em> file";
 const char * right_txt = "Opens <b>next</b> graph of the current opened <em>tgf</em> file";
-const char * spring_txt ="General spring embedder\nESC to stop";
-const char * springPM_txt ="Spring embedder which preserves the map and the crossings\nESC to stop";
+
+const char * fpp_txt = "The original Fraysseix Pach Pollack algorithm to produce a Fary drawing";
 const char * jacquard_txt ="Jacquard spring embedder which preserves planarity\nTutte circle may give better results\nESC to stop";
 const char *schnyder_txt ="<qt>
+The original Schnyder algorithm to produce a Fary drawing
 <ul>
 <li> <b>Schnyder</b> triangulates the graph by adding edges.
 <li> <b>Schnyder V</b> triangulates the graph by adding vertices.
@@ -27,6 +28,9 @@ const char *schnyder_txt ="<qt>
 <li>The edges will be colored <b>R G B</b> if the options menu <b>Schnyder: Color Edges</b> is set.
 </ul>
 ";
+const char * tutte_circle_txt="The resulting embedding is similar to traditional spring embedders";
+const char * spring_txt ="General spring embedder\nESC to stop";
+const char * springPM_txt ="Spring embedder which preserves the map and the crossings\nESC to stop";
 const char * embed3d_txt ="<qt>
 The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored
 <b>Red</b>,<b>Green</b>,<b>Blue</b>
@@ -50,6 +54,9 @@ The spin boxes let you select the coordinates to display.
 The <b>facet</b> button triangulate the graph, if it is planar, and draw the faces.
 </qt>
 "; 
+const char * dual_g_txt ="The dual graph without the vertex corresponding to the outer face";
+const char * angle_g_txt ="The angle graph without the vertex corresponding to the outer face";
+
 const char * license ="
  <HTML>
  <HEAD>
