@@ -27,6 +27,7 @@
 #include <qinputdialog.h> 
 #include <qtabwidget.h> 
 #include <qtabbar.h> 
+#include <qcursor.h> 
 
 #include <TAXI/Tgf.h> 
 
@@ -34,14 +35,25 @@ static TSArray<int> MacroActions(4),MacroEwidth(4);
 //static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
-static int  key = 0;
+static int key = 0;
 
+class MousePressEater : public QObject
+{public:
+  MousePressEater(){};
+  ~MousePressEater(){};
+protected:
+  bool eventFilter(QObject *o,QEvent *e);
+};
 
+bool MousePressEater::eventFilter(QObject *o,QEvent *e)
+    {if( e->type() == QEvent::MouseButtonPress) 
+	return TRUE; // eat event
+    return FALSE;
+    }
 int & pauseDelay()
   {static int delay;
   return delay;
   }
-
 void MyWindow::keyPressEvent(QKeyEvent *k)
   {key = k->key();
   //qDebug("k:%d",k->key());
@@ -56,12 +68,22 @@ int MyWindow::getKey()
   }
 void MyWindow::blockInput(bool t)
   {static bool _inputBlocked = false;
+  static MousePressEater *MouseEater = 0;
   if(_inputBlocked == t)return;
   _inputBlocked = t;
-  menuBar()->setDisabled(t); 
-  tb->setDisabled(t);
-  mouse_actions->setDisabled(t);
-  tabWidget->setDisabled(t); 
+   menuBar()->setDisabled(t); 
+//   tb->setDisabled(t);
+//   mouse_actions->setDisabled(t);
+//   tabWidget->setDisabled(t);
+  if(!MouseEater)MouseEater = new MousePressEater();
+  if(t)
+      {qApp->installEventFilter(MouseEater);
+      qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
+      }
+  else 
+      {qApp->removeEventFilter(MouseEater);
+      qApp->restoreOverrideCursor();
+      }
   }
 void MyWindow::timer()
   {MacroWait = false;
