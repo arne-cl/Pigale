@@ -2776,7 +2776,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   else if(loops)
       erased = TG.RemoveLoops();
 
-  if(debug())LogPrintf("%d:%d %d>",TG.nv(),TG.ne(),erased);
+  if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
   return &GC;
   }
 
