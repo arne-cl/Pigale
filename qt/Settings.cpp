@@ -264,6 +264,9 @@ void pigaleWindow::LoadSettings()
   randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   randomSetSeed() = (long) setting.readNumEntry("/pigale/randomSeed seed",1);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);
+  // Printer
+  PrinterOrientation = setting.readNumEntry("/pigale/printer orientation",0);
+  PrinterColorMode = setting.readNumEntry("/pigale/printer colormode",0);
   // limits to display and execute slow algos
   MaxNS = setting.readNumEntry("/pigale/limits slow_algo",500);
   MaxND = setting.readNumEntry("/pigale/limits display",500);
@@ -299,7 +302,7 @@ void pigaleWindow::LoadSettings()
   QWidget *d = QApplication::desktop();
   int h = d->height();
 #endif
-  int fontSize = (h > 600) ? 12 : 10;
+  int fontSize = (h > 600) ? 9 : 8;
   QString family = setting.readEntry("/pigale/font/family","Helvetica");
   fontSize = setting.readNumEntry("/pigale/font/size",fontSize);
   QFont font = QFont(family,fontSize);
