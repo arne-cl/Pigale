@@ -149,14 +149,13 @@ void Graph_Properties::MaxNSlowChanged(int i)
 void Graph_Properties::MaxNDisplayChanged(int i)
   {MaxNDisplay = i;//if(GetMainGraph().nv())update();
   }
-void Graph_Properties::update()
+void Graph_Properties::update(bool print)
   {GeometricGraph G(GetMainGraph());
   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
       setError(-1,"vin[0] or cir[0] or acir[0] != 0");
       }
-  if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  if(getError())DebugPrintf("GP Error:%d",getError());
+  
   int nloops = G.RemoveLoops();
   if(nloops)
       {QString t;
@@ -206,22 +205,6 @@ void Graph_Properties::update()
   if(C3)C2 = true;
   if(C2)C1 = true;
 
-  RBSimple->setChecked(S);
-  RBPlanar->setChecked(P);
-  RBMxPlanar->setChecked(T);
-  RBBipartite->setChecked(B);
-  RBRegular->setChecked(R);
-  RBConnected->setChecked(C1);
-  RB2Connected->setChecked(C2);
-  if(!P)RB3Connected->setEnabled(false);
-  else  {RB3Connected->setEnabled(true);RB3Connected->setChecked(C3);}
-  RBOuPlanar->setChecked(Outer);
-  RBSerie->setChecked(Serie);
-  QString m;
-  m.sprintf("%d",G.nv());
-  LE_N->setText(m);
-  m.sprintf("%d",G.ne());
-  LE_M->setText(m);
   //Modify the enable menus
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
@@ -251,8 +234,10 @@ void Graph_Properties::update()
   menu->setItemEnabled(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
   menu->setItemEnabled(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   menu->setItemEnabled(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
+  menu->setItemEnabled(A_EMBED_GVISION,!SMALL  && NotBigD);                   //Gvision
   menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
+  menu->setItemEnabled(A_EMBED_SPRING_PM,NotBigD);                            //springPM
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   //dual
   menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 
@@ -270,10 +255,31 @@ void Graph_Properties::update()
   menu->setItemEnabled(A_ORIENT_BIPAR,(G.nv() > 1) && P && B);   //biparti 
   menu->setItemEnabled(A_ORIENT_SCHNYDER,!SMALL && P && S);      //planar schnyder
   menu->setItemEnabled(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
-
+  
+  // Modify the buttons
+  RBSimple->setChecked(S);
+  RBPlanar->setChecked(P);
+  RBMxPlanar->setChecked(T);
+  RBBipartite->setChecked(B);
+  RBRegular->setChecked(R);
+  RBConnected->setChecked(C1);
+  RB2Connected->setChecked(C2);
+  if(!P)RB3Connected->setEnabled(false);
+  else  {RB3Connected->setEnabled(true);RB3Connected->setChecked(C3);}
+  RBOuPlanar->setChecked(Outer);
+  RBSerie->setChecked(Serie);
+  QString m;
+  m.sprintf("%d",G.nv());
+  LE_N->setText(m);
+  m.sprintf("%d",G.ne());
+  LE_M->setText(m);
+  
   //Print informations
+  if(!print)return;
+  if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
+  if(getError())DebugPrintf("GP %s",(const char *)getErrorString());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;

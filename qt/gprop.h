@@ -43,7 +43,7 @@ public:
   Graph_Properties( QWidget* parent = 0,QMenuBar *menu = 0,
 		    const char* name = 0,WFlags fl = 0 );
   ~Graph_Properties();
-  void update();
+  void update(bool print = true);
 
   QLabel* TextLabel3;
   QLabel* TextLabel1;
