@@ -215,6 +215,12 @@ int TopologicalGraph::Planarity()
       pbrin[vin[b]] = b;
       }
     
+  if(ret)
+      {int g;
+      if((g = ComputeGenus()) != 0)
+	  {DebugPrintf("ERROR genus:%d",g);Twait("Planarity Error");}
+      }
+
   if(m != m_origin)
       {for(tedge e = m; e() > m_origin;--e)
           DeleteEdge(e);
@@ -225,9 +231,6 @@ int TopologicalGraph::Planarity()
       maptype() = PROP_MAPTYPE_LRALGO;
       Prop1<int> isplanar(Set(),PROP_PLANAR);
       Prop1<int> planarmap(Set(),PROP_PLANARMAP);
-      int g;
-      if((g = ComputeGenus()) != 0)
-	  {DebugPrintf("ERROR genus:%d",g);Twait("Planarity Error");}
       }
   if(debug())DebugPrintf("    END Planarity");
   return ret;
