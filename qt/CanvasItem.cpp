@@ -359,8 +359,9 @@ EdgeItem::EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
   e = ee;
   setPoints(x_from,y_from,x_to,y_to);
   if(lower)
-      {arrow = new  ArrowItem(this,g);
-      }
+      arrow = new  ArrowItem(this,g);
+  else 
+      arrow = NULL;
   setPen(*tp);
   setZ(edge_z);
   show();

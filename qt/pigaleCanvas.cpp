@@ -291,6 +291,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
       {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
       Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); 
+      Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
       gwp->mywindow->setShowOrientation(true);
       EdgeItem *edge;
       int rtt = FindItem(p,edge);
@@ -300,15 +301,32 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
           {if(eoriented[edge->e])
               {G.ReverseEdge(edge->e); eoriented[edge->e] = true;
               reoriented[edge->e] = false;
+              edgeitem[edge->e] = CreateEdgeItem(edge->e,gwp); 
+              if( edge->arrow){delete edge->arrow;delete edge->opp; delete edge;}
+              else {delete edge->opp->arrow;delete edge->opp;delete edge;}
+              canvas()->update();
+              gwp->mywindow->information();// Informations
+              return;
               }
           else
-              eoriented[edge->e] = true;
+              {eoriented[edge->e] = true;
+              edgeitem[edge->e] = CreateEdgeItem(edge->e,gwp); 
+              if( edge->arrow){delete edge->arrow;delete edge->opp; delete edge;}
+              else {delete edge->opp->arrow;delete edge->opp;delete edge;}
+               canvas()->update();
+              gwp->mywindow->information();// Informations
+              return;
+              }
           }
       else
-          eoriented[edge->e] = false;
-      load(false); // recreate the canvas items, but not the grid
-      gwp->mywindow->information();// Informations
-      return;
+          {eoriented[edge->e] = false;
+          edgeitem[edge->e] = CreateEdgeItem(edge->e,gwp); 
+          if( edge->arrow){delete edge->arrow;delete edge->opp; delete edge;}
+          else {delete edge->opp->arrow;delete edge->opp;delete edge;}
+          canvas()->update();
+          gwp->mywindow->information();// Informations
+          return;
+          }
       }
   else if(MouseAction == 10)// Duplicate the sugraph of the current color
       {gwp->mywindow->UndoTouch(true);

@@ -17,3 +17,4 @@
 05/03/2005: Now Pigale uses a second thread for non graphic functions.
 05/03/2005: Schnyder orientation was not displaying the orientation.
 09/03/2005: Corrected a bug that could occur while saving a tgf file.	
+11/03/2005: Now the zoom keeps the graph on a grid if any.

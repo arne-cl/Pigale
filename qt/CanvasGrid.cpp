@@ -383,21 +383,21 @@ void GraphEditor::Zoom(int dir)
   else zoom *= 1.1;
   double zz = zoom/zoom_old;
 
-  // IsGrid == true <==>  the vertices are on a grid
-  //qDebug("IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
-  // load(true) compute the grid
-  if(IsGrid) {load(true);return;}
-//   if(IsGrid) // Recompute coords
-//       {xstep *= zz;  ystep *= zz;
-//       DoNormalise = true;  Normalise();
-//       current_grid = Tgrid(xstep,ystep,min_used_x,min_used_y);
-//       qDebug("-> IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
-//       load(true);
-//        qDebug("->-> IsGrid:%d step:%d %d",IsGrid,(int)xstep,(int)ystep);
-//       return;
-//       }
   DoNormalise = true;  Normalise();
   xstep *= zz;  ystep *= zz;
+  if(IsGrid) // Recompute coords 
+      {GeometricGraph & G = *(gwp->pGG);
+      double pos;
+      int npos;
+      for(tvertex v = 1;v <= G.nv();v++)
+          {pos = G.vcoord[v].x() - min_used_x;  
+          npos = pos>0 ? (int) (.5 + pos/xstep) :(int) (-.5 + pos/xstep) ;
+          G.vcoord[v].x() =  min_used_x + npos*xstep;
+          pos = G.vcoord[v].y() - min_used_y;        
+          npos = pos>0 ? (int) (.5 + pos/ystep) :(int) (-.5 + pos/ystep) ;
+          G.vcoord[v].y() =  min_used_y + npos*ystep;
+          }
+      }
   current_grid = Tgrid(xstep,ystep,min_used_x,min_used_y);
   load(false); // do not recompute the grid
   }
