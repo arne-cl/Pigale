@@ -62,9 +62,10 @@ int Embed3dbis(TopologicalGraph &G0)
   if (embedp().ptr!=0) delete embedp().ptr;
   embedp().ptr=&em;
   for (int i=1; i<=em.dmax;i++)
-    memcpy(em.vector(i).begin(),G.Coords[i],em.vector(i).getsize());  
+    for (int v=1; v<= G0.nv(); v++)
+      em.vector(i)[v]=G.Coords[v][i];
   Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
-  Coord3.vector()=em.Coord3;
+  Coord3.vector()=em.Coord();
   Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);
   for(int i = 1;i <= G.nv();i++)
       EigenValues[i] = G.EigenValues[i];

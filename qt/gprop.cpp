@@ -28,12 +28,13 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
     : QWidget( parent,name,fl)
   {if(!name)setName("Graph_Properties");
   menu = menubar;
-  //QFont font = QFont("helvetica",12);
   QFont fnt = this->font();
   fnt.setBold(true);
   setFont(fnt,true);
+  setMinimumHeight(180); 
   //marge,spacing
   QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
+
   QHBoxLayout *TxtLayout = new QHBoxLayout(0,0,0,"TxtLayout"); 
   QHBoxLayout *Layout_NM = new QHBoxLayout(0,0,0,"Layout_NM");
   QHBoxLayout *LayoutDegrees = new QHBoxLayout(0,0,0,"LayoutDegrees");
@@ -240,6 +241,7 @@ void Graph_Properties::update(bool print)
   menu->setItemEnabled(A_EMBED_SPRING,NotBigD);                               //spring
   menu->setItemEnabled(A_EMBED_SPRING_PM,NotBigD);                            //springPM
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
+  menu->setItemEnabled(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual
   menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 
   menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P);

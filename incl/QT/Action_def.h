@@ -46,7 +46,7 @@
 #define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
 #define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
 #define  A_EMBED_T_CONTACT          (A_EMBED+55)        // T_CONTACT
-#define  A_EMBED_3dSchnyder         (A_EMBED+56)        // EMBED-3d_SCHNYDER
+#define  A_EMBED_3dSCHNYDER         (A_EMBED+56)        // EMBED-3d_SCHNYDER
 #define  A_EMBED_3d                 (A_EMBED+98)        // EMBED-3d
 #define  A_EMBED_END                (A_EMBED+99)
 

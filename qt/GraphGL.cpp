@@ -14,6 +14,7 @@
 #include "glcontrolwidget.h"
 #include "mouse_actions.h"
 #include <QT/GLWindow.h>
+#include <QT/Misc.h>
 #include <QT/MyQcolors.h>
 #include <TAXI/netcut.h>
 #include <GL/glut.h>
@@ -23,17 +24,14 @@
 #include <qfiledialog.h>
 #include <qapplication.h>
 #include <unistd.h>
-//in QtMisc.cpp
-int & ShowVertex();
-/*
+
 class GraphGLPrivate
 {public:
   GraphGLPrivate()
       {is_init = false;
       isHidden = true;
-      //pGG = 0;
-      pSG=0;
-      pGC=0;
+      pSG = 0;
+      pGC = 0;
       editor = 0;
       idelay = 1;
       edge_width = 2.;  // -> *2 
@@ -61,48 +59,11 @@ class GraphGLPrivate
   RnEmbedding &embed() {return *pSG;}
   GraphContainer &GC() {return *pGC;}
 };
-*/
-
-class GraphGLPrivate
-{public:
-  GraphGLPrivate()
-      {is_init = false;
-      isHidden = true;
-      pGG = 0;
-      editor = 0;
-      idelay = 1;
-      edge_width = 2.;  // -> *2
-      vertex_width = 1.;// -> *5
-      }
-  ~GraphGLPrivate()
-      {delete editor;}
-  bool is_init;
-  bool isHidden;
-  int delay;
-  int idelay;
-  bool rX,rY,rZ;
-  double edge_width;
-  double vertex_width;
-  QCheckBox* bt_facet;
-  QCheckBox* bt_label;
-  QCheckBox* bt_color;
-  QSlider *Slider;
-  QHButtonGroup* bt_group;
-  MyWindow *mywindow;
-  GeometricGraph* pGG;
-  GraphContainer *pGC;
-  EmbedRnGraph   *pSG;
-  GraphGL  *GL;
-  GLWindow *editor;
-};
-
-
 
 //*****************************************************
 GraphGL::GraphGL(QWidget *parent,const char *name,MyWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphGLPrivate;
-  d->pGC = new GraphContainer;    //chez pom a supp
   d->mywindow = mywindow;
   d->GL = this;
   d->delay = -1;
@@ -116,7 +77,7 @@ void GraphGL::png()
   {if(!d->is_init)return;
   d->editor->png();
   }
-/* pom
+
 int GraphGL::update()
   {if(!d->is_init)
       {QVBoxLayout* vb = new QVBoxLayout(this,2,0);
@@ -203,88 +164,8 @@ int GraphGL::update()
   Reload(1);
   return 0;
   }
-*/
-int GraphGL::update()
-  {if(!d->is_init)
-      {QVBoxLayout* vb = new QVBoxLayout(this,2,0);
-      d->editor = new GLWindow(d,this);
-      vb->addWidget(d->editor);
-      QHBoxLayout* hb = new QHBoxLayout(vb);
-      QHBoxLayout* hb2 = new QHBoxLayout(vb);
-      d->Slider = new QSlider(Qt::Horizontal,this,"Slider");
-      d->Slider->setMinValue(2);d->Slider->setMaxValue(100);d->Slider->setValue(2);
-      d->Slider->setMaximumHeight(10);
-      connect(d->Slider,SIGNAL(valueChanged(int)),SLOT(delayChanged(int)));
-      hb2->addWidget(d->Slider);
 
-      d->bt_facet = new QCheckBox("Facet",this); d->bt_facet->setChecked(false);
-      d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(false);
-      d->bt_color = new QCheckBox("Color",this); d->bt_color->setChecked(false);
-      hb->addWidget(d->bt_facet); hb->addWidget(d->bt_label); hb->addWidget(d->bt_color);
 
-      QSpinBox *spin_Edge = new QSpinBox(1,10,1,this,"spinEdge");
-      spin_Edge->setValue((int)d->edge_width*2); spin_Edge->setPrefix("Ew: ");
-      QSpinBox *spin_Vertex = new QSpinBox(1,20,1,this,"spinVertex");
-      spin_Vertex->setValue((int)d->vertex_width*5); spin_Vertex->setPrefix("Vw: ");
-      hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
-
-      d->bt_group = new QHButtonGroup(this);
-      d->bt_group->setFrameShape(QFrame::NoFrame); 
-      d->bt_group->setPalette(d->mywindow->LightPalette);
-      d->bt_group->setMaximumHeight(30); d->bt_group->setInsideMargin(5);
-      hb->addWidget(d->bt_group);
-      QRadioButton* rb_x = new QRadioButton("X",d->bt_group,"x");
-      QRadioButton* rb_y = new QRadioButton("Y",d->bt_group,"y");
-      QRadioButton* rb_z = new QRadioButton("Z",d->bt_group,"z");
-      rb_x->setChecked(FALSE);
-      rb_y->setChecked(FALSE);
-      rb_z->setChecked(TRUE);
-      spin_X = new QSpinBox(1,100,1,this,"spinX");
-      spin_Y = new QSpinBox(1,100,1,this,"spinY");
-      spin_Z = new QSpinBox(1,100,1,this,"spinZ");
-      spin_X->setValue(1);     spin_X->setPrefix("X: ");
-      spin_Y->setValue(2);     spin_Y->setPrefix("Y: ");
-      spin_Z->setValue(3);     spin_Z->setPrefix("Z: ");
-      hb->addWidget(spin_X); hb->addWidget(spin_Y); hb->addWidget(spin_Z);
-      d->is_init = true;
-      connect(spin_Edge,SIGNAL(valueChanged(int)),SLOT(EdgeWidth(int)));
-      connect(spin_Vertex,SIGNAL(valueChanged(int)),SLOT(VertexWidth(int)));
-      connect(spin_X,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(spin_Y,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(spin_Z,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(d->bt_facet,SIGNAL(clicked()),SLOT(Reload()));
-      connect(d->bt_color,SIGNAL(clicked()),SLOT(Reload()));
-      connect(d->bt_label,SIGNAL(clicked()),SLOT(Reload()));
-      connect(d->bt_group,SIGNAL(clicked(int)),SLOT(axisChanged(int)));
-      }
-  else
-      {delete d->pSG; delete d->pGG;}
-
-  this->setPalette(d->mywindow->LightPalette);
-  d->Slider->setPalette(d->mywindow->LightPalette);
-  d->bt_group->setPalette(d->mywindow->LightPalette);
-
-  //Copy the graph
-  *(d->pGC) = d->mywindow->GC;
-  d->pGG = new GeometricGraph(*(d->pGC));
-
-  //Compute the embedding
-  GeometricGraph & GeoG = *(d->pGG);
-  if(GeoG.nv() < 3 || GeoG.ne() < 2)return -1;
-  d->bt_facet->setEnabled(GeoG.TestPlanar());
-  d->pSG = new EmbedRnGraph(GeoG);
-  if(!d->pSG->ok){Tprintf("DIAG ERROR (Complete Graph?)");return -1;}
-  d->mywindow->tabWidget->showPage(this);
-#if QT_VERSION < 300
-  d->mywindow->tabWidget->changeTab(this,"3-d Embedding");
-#else
-  d->mywindow->tabWidget->setTabLabel(this,"3-d Embedding");
-#endif
-  spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
-  spin_X->setMaxValue(GeoG.nv()-1);  spin_Y->setMaxValue(GeoG.nv()-1);  spin_Z->setMaxValue(GeoG.nv()-1);
-  Reload(1);
-  return 0;
-  }
 void GraphGL:: EdgeWidth(int i)
   {d->edge_width = i /2.;
   d->editor->initialize(false);
@@ -297,7 +178,6 @@ void GraphGL::Reload()
   {//if Qt < 3.0 Reload(int i =0) does not work
   d->editor->initialize(false);
   }
-/*pom
 void GraphGL::Reload(int i)
   {if(i == 0){d->editor->initialize(false);return;}
   RnEmbedding &em = d->embed();
@@ -306,36 +186,6 @@ void GraphGL::Reload(int i)
   i2 = spin_Y->value(); i2 = Min(i2,em.dmax);
   i3 = spin_Z->value(); i3 = Min(i3,em.dmax);
   em.SetAxes(i1,i2,i3);
-  d->editor->initialize(true);
-  }
-*/
-void GraphGL::Reload(int i)
-  {if(i == 0){d->editor->initialize(false);return;}
-  int i1,i2,i3;
-  i1 = spin_X->value(); i1 = Min(i1,d->pSG->nv()-1);
-  i2 = spin_Y->value(); i2 = Min(i2,d->pSG->nv()-1);
-  i3 = spin_Z->value(); i3 = Min(i3,d->pSG->nv()-1);
-  // Compute min,max on three coord;
-  double min1,min2,min3,max1,max2,max3;
-  min1 = max1 = d->pSG->Coords[1][i1];
-  min2 = max2 = d->pSG->Coords[1][i2];
-  min3 = max3 = d->pSG->Coords[1][i3];
-
-  for(int i = 2;i <= d->pSG->nv();i++)
-      {min1 = Min(min1, d->pSG->Coords[i][i1]); max1 = Max(max1,d->pSG->Coords[i][i1]);
-       min2 = Min(min2, d->pSG->Coords[i][i2]); max2 = Max(max2,d->pSG->Coords[i][i2]);
-       min3 = Min(min3, d->pSG->Coords[i][i3]); max3 = Max(max3,d->pSG->Coords[i][i3]);
-      }
-  double min123 = min1; min123 = Min(min123,min2);min123 = Min(min123,min3);
-  double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
-  double alpha = Max(-min123,max123);
-  alpha = (alpha < 1.E-10) ? .0 : 1./alpha;
-  Prop<Tpoint3> Coord3(d->pSG->Set(tvertex()),PROP_COORD3);
-  for(int i = 1;i <= d->pSG->nv();i++)
-      {Coord3[i].x() = alpha * d->pSG->Coords[i][i1];
-       Coord3[i].y() = alpha * d->pSG->Coords[i][i2];
-       Coord3[i].z() = alpha * d->pSG->Coords[i][i3];
-      }
   d->editor->initialize(true);
   }
 void GraphGL::resizeEvent(QResizeEvent* e)
@@ -410,7 +260,6 @@ void GLWindow::initialize(bool init)
   object = load(init);
   updateGL();
   }
-/*pom
 GLuint GLWindow::load(bool init)
   {GLfloat ds = (1./40.)*glp->vertex_width;
   if(init)
@@ -505,106 +354,6 @@ void GLWindow::loadFaces()
   for(tedge e = G.ne();e >m;e--)
       G.DeleteEdge(e);
   }
-*/
-
-
-GLuint GLWindow::load(bool init)
-  {GLfloat ds = (1./40.)*glp->vertex_width;
-  if(init)
-      {xRot = yRot = zRot = 0.0;
-      xTrans = yTrans = 0.0;
-      zTrans = -10.0;
-      scale = 1.41;
-      }
-  GeometricGraph & G = *(glp->pGG);
-  Prop<Tpoint3> Coord3(G.Set(tvertex()),PROP_COORD3);
-  GLuint list;
-  list = glGenLists(1);
-  glNewList(list,GL_COMPILE);
-
-  bool WithFaces = G.TestPlanar() && glp->bt_facet->isChecked();
-  glLineWidth(glp->edge_width);
-  glBegin(GL_LINES);
-  tvertex v0,v1;
-  GLfloat x0,y0,z0,x1,y1,z1;
-  for(tedge e = 1;e <= G.ne();e++)
-      {v0 = G.vin[e]; v1 = G.vin[-e];
-      x0 = (GLfloat)Coord3[v0].x();y0 = (GLfloat)Coord3[v0].y();z0 = (GLfloat)Coord3[v0].z();
-      x1 = (GLfloat)Coord3[v1].x();y1 = (GLfloat)Coord3[v1].y();z1 = (GLfloat)Coord3[v1].z();
-
-      if(G.ecolor[e] == Black && WithFaces)glColor3f(.5,.5,.5);
-      else if(G.ecolor[e] == Black)glColor3f(1.,1.,.8);
-      else qglColor(color[G.ecolor[e]]);
-      glVertex3f(x0,y0,z0);      glVertex3f(x1,y1,z1);
-      }
-  glEnd();
-  glColor3f(1.,1.,.0);
-  if(WithFaces)loadFaces();
-
-  drawCube(.0,.0,.0, .5*ds);
-  if(glp->bt_color->isChecked())
-      for(tvertex  v = 1;v <= G.nv();v++)
-	  drawCube((GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y(),(GLfloat)Coord3[v].z(),ds
-		   ,color[G.vcolor[v]]);
-  else
-      for(tvertex  v = 1;v <= G.nv();v++)
-	  drawCube((GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y(),(GLfloat)Coord3[v].z(),ds);
-  
-  if(glp->bt_label->isChecked())
-      { glLineWidth(1.0);
-      for(tvertex  v = 1;v <= G.nv();v++)
-	  {if(ShowVertex() == -1)
-	      drawInt(v(),(GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y(),(GLfloat)Coord3[v].z(),ds);
-	  else
-	      drawInt((int)G.vlabel[v],(GLfloat)Coord3[v].x(),(GLfloat)Coord3[v].y()
-		      ,(GLfloat)Coord3[v].z(),ds);
-	  }
-      }
-
- glLineWidth(1.0);
- glBegin(GL_LINES);
- qglColor(red);   glVertex3f(.0,.0,.0);   glVertex3f(.25,0.,0.);
- qglColor(green); glVertex3f(.0,.0,.0);   glVertex3f(.0,.25,0.);
- qglColor(blue);  glVertex3f(.0,.0,.0);   glVertex3f(.0,0.,.25);
- glEnd();
- glEndList();
- return list;
-  }
-void GLWindow::loadFaces()
-  {GeometricGraph & G = *(glp->pGG);
-  Prop<Tpoint3> Coord3(G.Set(tvertex()),PROP_COORD3);
-  int m = G.ne();
-  G.ZigZagTriangulate();
-  svector<tbrin> & Fpbrin = G.ComputeFpbrin();
-  GLfloat x1,y1,z1,x2,y2,z2,x3,y3,z3;
-  tbrin b;
-  for (int i=1; i <= Fpbrin.n(); i++)
-      {if(G.FaceWalkLength(Fpbrin[i]) != 3)continue;
-      // add a triangle
-      b = Fpbrin[i];
-      x1 = (GLfloat)Coord3[G.vin[b]].x();
-      y1 = (GLfloat)Coord3[G.vin[b]].y();
-      z1 = (GLfloat)Coord3[G.vin[b]].z();
-      b = -b;
-      x2 = (GLfloat)Coord3[G.vin[b]].x();
-      y2 = (GLfloat)Coord3[G.vin[b]].y();
-      z2 = (GLfloat)Coord3[G.vin[b]].z();
-      b = -G.cir[b];
-      x3 = (GLfloat)Coord3[G.vin[b]].x();
-      y3 = (GLfloat)Coord3[G.vin[b]].y();
-      z3 = (GLfloat)Coord3[G.vin[b]].z();
-
-      glBegin(GL_TRIANGLES);
-      glVertex3f(x1,y1,z1); glVertex3f(x2,y2,z2); glVertex3f(x3,y3,z3);
-      glEnd();
-      }
-  delete &Fpbrin;
-  for(tedge e = G.ne();e >m;e--)
-      G.DeleteEdge(e);
-  }
-
-
-
 void GLWindow::setAnimationDelay(int ms)
   {GLControlWidget::setAnimationDelay(ms);
   }
