@@ -63,10 +63,13 @@ clean:
 md: 
 	@if ! test -d .obj ; then mkdir .obj ; fi
 
+depend:
+	@makedepend -o.$(OPT) -f gnumakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
+
+nodepend:
+	@makedepend -o.$(OPT) -f gnumakefile  -Y  2> /dev/null
+
 
 
 .PHONY: md all
 # DO NOT DELETE
-
-
-

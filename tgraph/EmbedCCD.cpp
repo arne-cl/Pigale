@@ -12,6 +12,7 @@
 
 #include <TAXI/Tbase.h>
 #include <TAXI/graphs.h>
+#include <TAXI/Tprop.h>
 #include <TAXI/SchnyderWood.h>
 #include <TAXI/Tstack.h>
 #include "Pigale.h"
@@ -309,7 +310,7 @@ int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
   }
 
   svector<int> x(1,G.nv(),0), y(1,G.nv(),0), z(1,G.nv(),0);
-
+  Prop<short> ecolor2(G.Set(tedge()),PROP_COLOR2,1);
   double a11, a12, a21, a22;
   a11 = 1.0;
   a12 = 0.0;
@@ -326,12 +327,12 @@ int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
       if (c2 != Black) 
 	c1 = c2;
       G0.ecolor[e] = c1;
-      G0.ecolor2[e] = c1;
+      ecolor2[e] = c1;
       
     }
     else {
       G0.ecolor[e] = SW.GetBrinColor(e.firsttbrin());
-      G0.ecolor2[e] = SW.GetBrinColor(e.secondtbrin());
+      ecolor2[e] = SW.GetBrinColor(e.secondtbrin());
     }
   }
     ForAllVertices(v,G) {

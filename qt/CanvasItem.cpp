@@ -12,6 +12,7 @@
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
+#include <TAXI/Tprop.h>
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
 #include <QT/pigaleCanvas.h>
@@ -317,8 +318,9 @@ void ArrowItem::drawShape ( QPainter & p )
   }
 void ArrowItem::SetColor()
   {GeometricGraph & G = *(gwp->pGG);
-  tp->setColor(color[G.ecolor[ edgeItem->e]]); // needed not to get the desaturated color
-  tb->setColor(color[G.ecolor[ edgeItem->e]]); // needed not to get the desaturated color
+  int col = bound(G.ecolor[ edgeItem->e],1,16);
+  tp->setColor(color[col]); // needed not to get the desaturated color
+  tb->setColor(color[col]); // needed not to get the desaturated color
   setPen(*tp);setBrush(*tb);
   update();
   }
@@ -335,8 +337,15 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   int x1 = (int)G.vcoord[v1].x();  int y1 =  (int)G.vcoord[v1].y();
   int x  = (int)(x0 * xorient + x1*(1.-xorient));
   int y  = (int)(y0 * xorient + y1*(1.-xorient));
-  QColor col = color[G.ecolor[e]];
-  QColor col2 = color[G.ecolor2[e]];
+  //if(G.ecolor[e] > 16)qDebug("edge:%d col:%d",e(),G.ecolor[e]);
+  QColor col = color[bound(G.ecolor[e],1,16)];
+  QColor col2 = col;
+  if (G.Set(tedge()).exist(PROP_COLOR2))
+      {Prop<short> ecolor2(G.Set(tedge()),PROP_COLOR2);
+       ecolor2.definit(1);
+       //qDebug("edge:%d col2:%d",e(),ecolor2[e]);
+       col2 = color[bound(ecolor2[e],1,16)];
+      }
   tp->setColor(col);tp->setWidth(G.ewidth[e]);
   EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
   if(ShowOrientation() && eoriented[e])

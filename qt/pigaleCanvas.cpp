@@ -584,8 +584,8 @@ void GraphEditor::load(bool initgrid)
       if(gwp->ShowGrid)showGrid(true);
       }
 
-  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM,(NodeItem *)NULL);
-  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
+   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM,(NodeItem *)NULL);
+   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
   nodeitem.SetName("nodeitem");edgeitem.SetName("edgeitem");
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
 
@@ -595,6 +595,8 @@ void GraphEditor::load(bool initgrid)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
 
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+//   Prop<long> elabel(G.Set(tedge()),PROP_LABEL);  elabel.definit(0);
+//   Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL); vlabel.definit(0);
   CreateColorItems(gwp,color_node,color_edge);
   G.vcolor.definit(color_node);
   G.ecolor.definit(color_edge);

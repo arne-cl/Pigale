@@ -248,7 +248,7 @@ int TopologicalGraph::MakeConnectedVertex()
   tbrin b,b0;
   int ncc = 0;
   svector<tvertex> stack(1,nv()); stack.SetName("stack");
-  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("Comp");
+  svector<tvertex> comp(0,nv()+1); comp.clear(); comp.SetName("Comp");
   int rank =0;
   int max_rank = 0;
   tvertex v0 = 1;
