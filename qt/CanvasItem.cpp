@@ -300,10 +300,10 @@ void ArrowItem::ComputeCoord()
   QPoint p2 =  edgeItem->endPoint() + v - (u*2)/diviseur;
   QPoint p3 =  edgeItem->endPoint()  -u/diviseur;
   pts[0] = edgeItem->endPoint();  pts[1] = p1;  pts[2] = p3;  pts[3] = p2;  
-   int xmin = Min(edgeItem->endPoint().x(),p1.x(),p2.x()) -4;
-   int xmax = Max(edgeItem->endPoint().x(),p1.x(),p2.x())+4;
-   int ymin = Min(edgeItem->endPoint().y(),p1.y(),p2.y())-4;
-   int ymax = Max(edgeItem->endPoint().y(),p1.y(),p2.y())+4;
+   int xmin = Min(edgeItem->endPoint().x(),p1.x(),p2.x()) -12;
+   int xmax = Max(edgeItem->endPoint().x(),p1.x(),p2.x())+12;
+   int ymin = Min(edgeItem->endPoint().y(),p1.y(),p2.y())-12;
+   int ymax = Max(edgeItem->endPoint().y(),p1.y(),p2.y())+12;
    refresh[0] = QPoint(xmin,ymin);   refresh[1] = QPoint(xmin,ymax);   
    refresh[2] = QPoint(xmax,ymax);   refresh[3] = QPoint(xmax,ymin);
    update();
@@ -315,6 +315,7 @@ void ArrowItem::drawShape ( QPainter & p )
   {if(!ShowArrow())return;
 //   p.drawLine(pts[0],pts[1]);  p.drawLine(pts[0],pts[2]);
   p.drawPolygon(pts);
+  //tp->setWidth(1);  setPen(*tp);  p.drawPolyline(refresh);
   }
 void ArrowItem::SetColor()
   {GeometricGraph & G = *(gwp->pGG);
