@@ -14,12 +14,16 @@
 #include <TAXI/Errors.h>
 
 bool & debug();
-int& Error();
+int & Error();
 void myabort();
 void DebugPuts(const char *str);
 void DebugPrintf(const char *fmt,...);
 void LogPrintf(const char *fmt,...);
 void DebugIndent(int i);
+
+
+#define _PERRORFL       {if(Error())DebugPrintf("%s line:%d error:%d",__FILE__, __LINE__,Error());}
+#define _PRINTFL(arg)   DebugPrintf("%s line:%d -> %d",__FILE__, __LINE__,arg)
 
 #ifdef TDEBUG
   #include  <stdlib.h>
