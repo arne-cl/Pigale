@@ -150,8 +150,10 @@ void EmbedRnGraph::init()
       else if(useDistance() == 4) 
 	  DebugPrintf("Distance: Laplacian"); 
       else if(useDistance() == 5) 
+	  DebugPrintf("Distance: Q-distance");
+      else if(useDistance() == 6) 
 	  DebugPrintf("Distance: Orient");
-       else if(useDistance() == 6) 
+      else if(useDistance() == 7) 
 	  DebugPrintf("Distance: R2");
       else
 	  DebugPrintf("Distance: Czekanovski-Dice!!!!"); 
@@ -167,9 +169,11 @@ void EmbedRnGraph::init()
       ComputeAdjacenceMDistances();
   else if(useDistance() == 4)        // Laplacian 
       {ComputeLaplacianDistances();project = false;}
-  else if(useDistance() == 5)        // Orient 
+  else if(useDistance() == 5)        // Q-distance 
+      ComputeQDistances();
+  else if(useDistance() == 6)        // Orient 
       ComputeOrientDistances();
-  else if(useDistance() == 6)        // R2 
+  else if(useDistance() == 7)        // R2 
       ComputeR2Distances();
   else
       ComputeCzekanovskiDistances(); //Neigbour
@@ -420,6 +424,26 @@ int EmbedRnGraph::ComputeCzekanovskiDistances()
   return 0;
   }
 
+int EmbedRnGraph::ComputeQDistances()
+  {// Compute degrees
+  degree.resize(1,nv()); 
+  for(tvertex v = 1 ;v <= nv();v++)
+      degree[v()] = Degree(v);
+  int i,j;	
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = 1.;
+  double d;
+  for(tedge e = 1;e <= ne();e++)
+      {tvertex v = vin[e];
+      tvertex w  = vin[-e];
+      d = 1.- 1./sqrt(degree[v] * degree[w]);
+      Distances[v()][w()] = Distances[w()][v()] = d;
+      }
+  for(i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  return 0;
+  }
 
 int EmbedRnGraph::ComputeBisectDistances()
   {// Compute degrees

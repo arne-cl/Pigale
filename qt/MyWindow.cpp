@@ -572,6 +572,7 @@ MyWindow::MyWindow()
   comboDistance->insertItem(tr("Adjacence"));
   comboDistance->insertItem(tr("Adjacence M"));
   comboDistance->insertItem(tr("Laplacian"));
+  comboDistance->insertItem(tr("Q-distance"));
   comboDistance->insertItem(tr("Oriented"));
   comboDistance->insertItem(tr("R2"));
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());

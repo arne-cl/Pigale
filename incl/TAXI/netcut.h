@@ -236,8 +236,8 @@ class EmbedRnGraph : public TopologicalGraph
    \f[ d^2(i,j)=x^2(i)+y^2(i),\f]
    where \f$ x(i) \f$ and \f$ y(i) \f$ are the coordinates of \f$ i \f$ in the plane.
  */
- int ComputeR2Distances(); //!< Computes distances in \f$ \mathbb{R}^2\f$ 
-  
+  int ComputeR2Distances(); //!< Computes distances in \f$ \mathbb{R}^2\f$ 
+  int ComputeQDistances();
  //! Constructor
  /*!
    \param G Graph to be embedded
