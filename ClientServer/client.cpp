@@ -207,7 +207,7 @@ void threadRead::run()
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
   while(!stream.atEnd())
-      {int retry = 0;
+      { int retry = 0;
       while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
           if(++retry %100 == 0 && pclient->debug())

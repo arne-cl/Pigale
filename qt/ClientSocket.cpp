@@ -280,6 +280,15 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
               }
           TopologicalGraph G(mw->GC);
           for(int i = 0;i < n;i++)G.NewVertex();
+          // Labels
+          Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+          for(int i = 0;i <= n;i++)vlabel[i] = i;
+          // Calcul des coordonnes
+          Prop<Tpoint> vcoord(G.PV(),PROP_COORD);
+          double angle = 2.*acos(-1.)/G.nv();
+          vcoord[0]=Tpoint(0,0);
+          for (int i=1; i<=G.nv(); i++)
+              vcoord[i] = Tpoint(cos(angle*i),sin(angle*i));
           }
           break;
       case A_INPUT_NEW_EDGE:
@@ -303,6 +312,7 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
   }
 int ClientSocket::handlerInfo(int action)
   {TopologicalGraph G(mw->GC);
+  mw->graph_properties->updateMenu(false);
   mw->information();
   Graph_Properties *inf = mw->graph_properties;
   cli  << mw->getActionString(action) << ":";
