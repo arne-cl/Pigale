@@ -51,11 +51,11 @@ void MyWindow::macroHandler(int event)
       case 4:// play repeat times
 	  looping = true;
 	  for(int i = 1;i <= repeat;i++)
-	      {if(escape)break;
-	      if(i == repeat)looping = false;
+	      {if(i == repeat || escape)looping = false;
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat));
+	      if(escape)break;
 	      qApp->processEvents(5);
 	      }
 	  escape = 0;
