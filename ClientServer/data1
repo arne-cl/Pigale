@@ -12,8 +12,8 @@ N:M
 SPRING_PM
 # asks to create and transfer to the client a png file
 PNG
-GVISION
-PNG
+#GVISION
+#PNG
 FPP_RECTI
 PNG
 EMBED-3d

@@ -30,18 +30,22 @@ h2.c1  {color: #33663C;
 	font-family: Helvetica;
 	font-size: 144%;
 	}
+
 table.c2{color: #000000;
-	background-color: #ABBCAE;
-	width: 100%;
+	background-color: #d0f0d0;
+	font-color: #000000;
+	width: 90%;
 	padding: 2px;
 	}
-td.c2   {color: #33663C;
-	background-color: #ABBCAE;
+td.c2   {color: #000000;
+	background-color: #d0f0d0;
 	font-family: Helvetica;
-	font-size: 144%;
+	font-color: #000000;
+	font-size: 180%;
+	font-weight: bolder;
 	}
-h2.c2  {color: #33663C;
-	background-color: #ABBCAE;
+h2.c2  {color: #000000;
+	background-color: #d0f0d0;
 	font-family: Helvetica;
 	font-size: 144%;
 	}
