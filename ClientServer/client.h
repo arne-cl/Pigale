@@ -60,7 +60,7 @@ private:
   bool debug;
 
   void initMap();
-  void Client::Translate(QString &str);
+  void Client::Translate(QString str);
 };
 
 #endif 

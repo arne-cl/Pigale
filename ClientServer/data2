@@ -20,9 +20,8 @@ N_E;3;5
 N:M
 #graph planar:
 PLAN:
-N_E;4;5
-#graph planar:
-PLAN
+TUTTE_CIRCLE
+SPRING_PM
 :!
 
 

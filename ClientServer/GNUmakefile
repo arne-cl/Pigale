@@ -10,8 +10,12 @@ PIGALEPATH=../../pigale
 MMOC=$(MQTDIR)/bin/moc
 IFLAGS = -I$(MQTDIR)/include
 IFLAGS +=  -I$(PIGALEPATH)/incl
+IFLAGS +=  -I$(PIGALEPATH)/qt
+
 PIGALELIB =  -L$(PIGALEPATH)/lib  -ltgraph$(OPT)  
+PIGALELIBS =  -L$(PIGALEPATH)/lib  -ltgraph$(OPT)  -lqt$(OPT)
 UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt  
+UNIXLIBS   =  -L$(MQTDIR)/lib -lqt-mt  -lqt-mt -L/usr/local/lib -lglut -lGL -lGLU
 .SUFFIXES:.cpp .o
 
 #OPTIMIZED OPTIONS
@@ -36,7 +40,7 @@ FILES_W_MOC  += $(MOC_CPP)
 CFLAGS  = $(CFLAGS$(OPT))
 
 
-all :Server Client
+all :Server Client XServer
 
 moc_cpp:    $(MOC_CPP)
 
@@ -48,10 +52,15 @@ moc_%.cpp:%.h
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f define.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
- 
+
+XServer: xserver.o  moc_xserver.o 
+	$(CC)   -o XServer xserver.o moc_xserver.o $(PIGALELIBS)   $(UNIXLIBS)  
+
 Server: server.o  moc_server.o 
 	$(CC)   -o Server server.o moc_server.o  $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB) 
 #	$(CC)   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
+
+
 
 Client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
 	$(CC)   -o Client client.o moc_client.o $(UNIXLIB)
@@ -72,7 +81,7 @@ test:
 	@echo moc: $(MOC_CPP)
 	@echo without moc: $(FILES_WO_MOC)
 	@echo all: $(FILES_W_MOC)
-
+	@echo  $(PIGALELIBS)
 
 # DO NOT DELETE
 

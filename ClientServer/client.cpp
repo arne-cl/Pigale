@@ -88,14 +88,16 @@ void Client::sendToServer(QString &str)
   if(str.at(0) == '#'){os <<str << "\n";return;}
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
-      Translate(fields[i]);
+      Translate(fields[i].stripWhiteSpace());
   }
-void Client::Translate(QString &str)
-  {int pos = str.find(';');
+void Client::Translate(QString str)
+  {//str = str.stripWhiteSpace();
+  if(str.isEmpty())return;
+  int pos = str.find(';');
   QString str_action = str.left(pos);
   int action = mActions[str_action];
   if(!action)
-      {cout <<"# ERREUR '"<<str <<"' -> "<<"UNKNOWN ACTION" << endl;return;}
+      {cout <<"# ERREUR_T '"<<str <<"' -> "<<"UNKNOWN ACTION" << endl;return;}
   QTextStream os(socket);
   os << action<<str.mid(pos)<<endl;
   }
@@ -127,7 +129,7 @@ void Client::socketError(int e)
 void Client::writeToClient(QString & str)
   {cout << str << endl;
   }
-void Client::run()
+void Client::run() 
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
