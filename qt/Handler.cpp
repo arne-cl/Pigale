@@ -42,8 +42,11 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
 
 // in MyCanvas.cpp
 bool & ShowOrientation();
+// in Generate.cpp
+bool & EraseMultipleEdges();
 //in here
 int ColorExteriorface(GeometricGraph &G);
+
 
 
 int ColorExteriorface(GeometricGraph &G)
@@ -461,34 +464,34 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
 	   GC = GenerateSchaeffer(m_gen,1,3);
 	   break;
       case 510:
-	   GC = GenerateSchaeffer(n1_gen,3,2);
+	   GC = GenerateSchaeffer(m_gen,3,2);
 	   break;
       case 511:
-	   GC = GenerateSchaeffer(n1_gen,3,3);
+	   GC = GenerateSchaeffer(m_gen,3,3);
 	   break;
       case 512:
-	   GC = GenerateSchaeffer(n1_gen,3,4);
+	   GC = GenerateSchaeffer(m_gen,3,4);
 	   break;
       case 513:
-	   GC = GenerateSchaeffer(n1_gen,4,2);
+	   GC = GenerateSchaeffer(m_gen,4,2);
 	   break;
       case 514:
-	   GC = GenerateSchaeffer(n1_gen,4,4);
+	   GC = GenerateSchaeffer(m_gen,4,4);
 	   break;
       case 515:
-	   GC = GenerateSchaeffer(n1_gen,4,6);
+	   GC = GenerateSchaeffer(m_gen,4,6);
 	   break;
       case 516:
-	   GC = GenerateSchaeffer(n1_gen,4,0);
+	   GC = GenerateSchaeffer(m_gen,4,0);
 	   break;
       case 517:
 	   GC = GenerateSchaeffer(m_gen,2,1);
 	   break;
       case 518:
-	   GC = GenerateSchaeffer(n1_gen,2,2);
+	   GC = GenerateSchaeffer(m_gen,2,2);
 	   break;
       case 519:
-	   GC = GenerateSchaeffer(n1_gen,2,3);
+	   GC = GenerateSchaeffer(m_gen,2,3);
 	   break;
       default:
 	  return 0;
