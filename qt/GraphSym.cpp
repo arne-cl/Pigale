@@ -9,10 +9,10 @@
 **
 *****************************************************************************/
 
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphSym.h"
 #include <QT/SymWindow.h>
-#include <QT/MyQcolors.h>
+#include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
 
 #include <qtabwidget.h>
@@ -678,14 +678,14 @@ class GraphSymPrivate
   bool OtherCoords;
   bool SymLabel;
   QCheckBox *bt_sym,*bt_opt,*bt_fact;
-  MyWindow *mywindow;
+  pigaleWindow *mywindow;
   GeometricGraph *pGG;
   GraphContainer *pGC; 
   SymWindow  *editor;
 };
 //*****************************************************
 
-GraphSym::GraphSym(QWidget *parent,const char *name,MyWindow *mywindow)
+GraphSym::GraphSym(QWidget *parent,const char *name,pigaleWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphSymPrivate;
   d->pGC = new GraphContainer;

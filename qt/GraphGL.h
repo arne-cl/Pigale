@@ -24,13 +24,13 @@
 #include <qradiobutton.h>
 
 class GraphGLPrivate;
-class MyWindow; 
+class pigaleWindow; 
 
 class GraphGL : public QWidget
 {
   Q_OBJECT
 public:
-  GraphGL( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
+  GraphGL( QWidget *parent=0, const char *name=0,pigaleWindow* mw=0);
   ~GraphGL();
   int init();
 public slots:

@@ -21,7 +21,7 @@ static int mouse_action_1 = 3;
 int GetMouseAction_1()
   {return mouse_action_1;}
 // sizes cannot be known at this point by calling methods
-// but the width is defined by MyEditorMinXsize = MyEditorMaxXsize = 250
+// but the width is defined by pigaleEditorMinXsize = pigaleEditorMaxXsize = 250
 // an we define here the height: 140
 // left and right width:  100
 

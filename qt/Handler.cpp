@@ -11,10 +11,10 @@
 
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
-#include "MyWindow.h" 
+#include "pigaleWindow.h" 
 #include <QT/Misc.h>
 
-// in MyCanvas.cpp
+// in pigaleCanvas.cpp
 bool & ShowOrientation();
 
 // Those handlers return:

@@ -18,8 +18,8 @@
 #include "LineEditNum.h"
 #include <QT/Misc.h>
 #include <QT/Handler.h>
-#include <QT/MyPaint.h>
-#include <QT/MyCanvas.h> 
+#include <QT/pigalePaint.h>
+#include <QT/pigaleCanvas.h> 
 
 #include <qmenubar.h>
 #include <qfile.h>
@@ -29,9 +29,9 @@
 
 void InitPigaleColors();
 void InitPigaleFont();
-int InitPigaleServer(MyWindow *w);
+int InitPigaleServer(pigaleWindow *w);
 
-int InitPigaleServer(MyWindow *w)
+int InitPigaleServer(pigaleWindow *w)
   {PigaleServer  *server = new PigaleServer(w,qApp);
   if(!server->ok())
       {Tprintf("Server: Init failed");
@@ -43,7 +43,7 @@ int InitPigaleServer(MyWindow *w)
   }
 
 //PigaleServer:public QServerSocket 
-PigaleServer::PigaleServer(MyWindow *w,QObject* parent):
+PigaleServer::PigaleServer(pigaleWindow *w,QObject* parent):
     QServerSocket(4242,1,parent),mw(w),nconnections(0)
     { }
 void PigaleServer::newConnection(int socket)
@@ -81,7 +81,7 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   
   InitPigaleFont(); 
   InitPigaleColors();
-  mw = new MyWindow();
+  mw = new pigaleWindow();
   mw->ServerExecuting = true;
   mw->blockInput(true);
   mw->ServerClientId = prId;
@@ -90,7 +90,7 @@ ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,co
   cli << "!" << endl;
   connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
   }
-ClientSocket::ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent,const char *name) :
+ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
     QSocket(parent,name),sdebug(0),mw(p)
 // Constructor for pigale server
   {connect(this,SIGNAL(readyRead()),SLOT(readClient()));

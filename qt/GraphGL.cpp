@@ -11,23 +11,30 @@
 /*! \file GraphGL.cpp
 \brief 3D embedding class methods
 \ingroup qt */
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphGL.h"
 #include "glcontrolwidget.h"
 #include "mouse_actions.h"
 #include <QT/GLWindow.h>
 #include <QT/Misc.h>
-#include <QT/MyQcolors.h>
+#include <QT/pigaleQcolors.h>
 #include <TAXI/netcut.h>
-#include <GL/glut.h>
+
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qapplication.h>
+
 #ifndef _WINDOWS
 #include <unistd.h>
 #endif
+
+#include <config.h>
+#ifdef HAVE_LIBGLU
+#include <GL/glut.h>
+#endif
+
 class GraphGLPrivate
 {public:
   GraphGLPrivate()
@@ -54,7 +61,7 @@ class GraphGLPrivate
   QCheckBox* bt_color;
   QSlider *Slider;
   QHButtonGroup* bt_group;
-  MyWindow *mywindow;
+  pigaleWindow *mywindow;
   RnEmbedding *pSG;
   GraphContainer *pGC;
   GraphGL  *GL;
@@ -64,7 +71,7 @@ class GraphGLPrivate
 };
 
 //*****************************************************
-GraphGL::GraphGL(QWidget *parent,const char *name,MyWindow *mywindow)
+GraphGL::GraphGL(QWidget *parent,const char *name,pigaleWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphGLPrivate;
   d->mywindow = mywindow;
@@ -258,7 +265,9 @@ void GLWindow::initializeGL()
   glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
   GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
   glFogfv(GL_FOG_COLOR,fog_color);
+#ifdef HAVE_LIBGLU
   CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
+#endif
   }
 void GLWindow::initialize(bool init) 
   {if(!is_init){is_init=true;initializeGL();return;}
@@ -508,6 +517,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y+size,z-size);
   glEnd();
   }
+#ifdef HAVE_LIBGLU
 void GLWindow::drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {QString t;
   t.sprintf("%2.2d",vlabel);
@@ -592,3 +602,7 @@ void GLWindow::drawText(void * font,const char *txt)
   {for(int i = 0; txt[i];i++)
       glutStrokeCharacter(font,txt[i]);
   }
+#else
+void GLWindow::drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
+  {}
+#endif

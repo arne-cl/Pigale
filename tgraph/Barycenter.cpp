@@ -11,10 +11,9 @@
 
 
 #include <TAXI/Tbase.h>
-#include <TAXI/smatrix.h>
-#include <TAXI/graph.h>
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
+#include <TAXI/smatrix.h>
 
 int ComputeBary(GeometricGraph &G,SMatrix &M,svector<double> &x0, svector<double> &y0)
   {if(!G.CheckConnected())return 1;

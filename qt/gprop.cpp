@@ -10,7 +10,7 @@
 *****************************************************************************/
 
 #include "gprop.h"
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
 

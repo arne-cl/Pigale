@@ -1,0 +1,20 @@
+
+					Pigale Installation
+
+Pigale uses GNU autocconfig for compilation and installation.
+
+1/ Run the configure script
+./configure [options]
+
+By default, the prefix for installation is /usr/local/pigale.
+If you do'nt have a write permission, you must provide  another directory where you have a write permission
+./configure --prefix=/home/adirectory.
+Usually the location of the installation of Qt is defined by the environement variable QTDIR.
+For more options run "./configure --help" . These otions, in particular, let you enable a debug mode, let you precise the locations of the Qt libraries, etc.
+
+2/ Next run the following commands
+make
+make install
+
+The programs are installed in xx/bin, the libraries in xx/lib and some documentation in xx/Doc.
+

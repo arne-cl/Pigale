@@ -12,8 +12,6 @@
 #include <TAXI/graphs.h>
 #include <TAXI/color.h>
 #include <TAXI/Tmessage.h>
-void DrawGraph(Graph &G);
-void DrawGraph();
 
 // unused anymore
 int OldBipPlanarize(TopologicalGraph &G, svector<tvertex> &orig)

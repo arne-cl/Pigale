@@ -10,8 +10,9 @@
 *****************************************************************************/
 
 #include <qapplication.h>
-#include "MyWindow.h" 
+#include "pigaleWindow.h" 
 #include "GraphWidget.h" 
+#include <TAXI/Tmessage.h>
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -31,47 +32,17 @@
 #include <qstring.h>
 #include <qmessagebox.h>
 
-
-void DrawGraph(Graph &G) {}
-
-
 static GraphContainer* gC;
-static MyWindow* mw;
-MyWindow* GetMyWindow()
+static pigaleWindow* mw;
+pigaleWindow* GetpigaleWindow()
   {return mw;}
-void DefineMyWindow(MyWindow *father) 
+void DefinepigaleWindow(pigaleWindow *father) 
   {mw = father;}
 void DefineGraphContainer(GraphContainer *GC0)
   {gC = GC0;}
 GraphContainer& GetMainGraph()
   {return *gC;}
-void DrawGraph()
-  {if(!mw)return;
-  mw->gw->update();
-  }
-int Twait(const char *s)
-  {if(!mw)return 0;
-  int rep = QMessageBox::information (mw,"Wait",s,"","CANCEL","EXIT",0,0);
-  if(rep == 2)mw->close();
-  return (rep == 1) ? 0:1;
-  }
-void Tmessage(const char *string)
-  {if(!mw)return;
-  mw->Message(string);
-  }
-void Tclear()
-  {if(!mw)return;
-  mw->MessageClear();
-  }
-void Tprintf(const char *fmt,...)
-  {if(!mw)return;
-  va_list arg_ptr;
-  char texte_print[200];
-  va_start(arg_ptr,fmt);
-  vsprintf(texte_print,fmt,arg_ptr);
-  va_end(arg_ptr);
-  mw->Message((const char *)texte_print);
-  }
+
 QString  getErrorString()
   {QString m;
   if(getErrorMsg() &&  strlen(getErrorMsg()))
@@ -218,3 +189,35 @@ void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)
       }
   cir[0] = 0;
   }
+
+// Debug functions
+
+class QtGraphDebug : public GraphDebug {
+ public:
+  QtGraphDebug() {GraphDebug::gd=this;}
+  void DrawGraph(Graph &G) {}
+  void DrawGraph()
+    {if(!mw)return;
+    mw->gw->update();
+    }
+  int wait(const char *s)
+    {if(!mw)return 0;
+    int rep = QMessageBox::information (mw,"Wait",s,"","CANCEL","EXIT",0,0);
+    if(rep == 2)mw->close();
+    return (rep == 1) ? 0:1;
+    }
+  void clear()
+    {if(!mw)return;
+    mw->MessageClear();
+    }
+  void printf(const char *fmt,...)
+    {if(!mw)return;
+    va_list arg_ptr;
+    char texte_print[200];
+    va_start(arg_ptr,fmt);
+    vsprintf(texte_print,fmt,arg_ptr);
+    va_end(arg_ptr);
+    mw->Message((const char *)texte_print);
+    }
+};
+static QtGraphDebug QtDefaultGraphDebug;

@@ -106,7 +106,7 @@
     </message>
 </context>
 <context>
-    <name>MyPaint</name>
+    <name>pigalePaint</name>
     <message>
         <source>Visibility</source>
         <translation>Visibilité</translation>
@@ -141,7 +141,7 @@
     </message>
 </context>
 <context>
-    <name>MyWindow</name>
+    <name>pigaleWindow</name>
     <message>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>

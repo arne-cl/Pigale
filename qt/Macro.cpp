@@ -9,7 +9,7 @@
 **
 *****************************************************************************/
 
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h" 
 #include "LineEditNum.h"
@@ -62,18 +62,18 @@ int & pauseDelay()
   {static int delay;
   return delay;
   }
-void MyWindow::keyPressEvent(QKeyEvent *k)
+void pigaleWindow::keyPressEvent(QKeyEvent *k)
   {key = k->key();
   //qDebug("win:%d",k->key());
   //QWidget::keyPressEvent(k);
   }
-int MyWindow::getKey()
+int pigaleWindow::getKey()
   {int key0 = key;
   if(key0 == Qt::Key_Escape && MacroLooping)MacroLooping = false;
   key = 0;
   return key0;
   }
-void MyWindow::blockInput(bool t)
+void pigaleWindow::blockInput(bool t)
   {static bool _inputBlocked = false;
   if(!t && (ServerExecuting || MacroLooping))return;
   if(_inputBlocked == t)return;
@@ -97,7 +97,7 @@ void MyWindow::blockInput(bool t)
       qApp->restoreOverrideCursor();
       }
   }
-void MyWindow::timer()
+void pigaleWindow::timer()
   {MacroWait = false;
   }
 void AllowAllMenus(QMenuBar *menubar)
@@ -114,7 +114,7 @@ void macroDefColors(int record)
   G.ewidth.definit(MacroEwidth[record]);
   }
 */
-int MyWindow::macroLoad(QString FileName)
+int pigaleWindow::macroLoad(QString FileName)
   {if(FileName.isEmpty())return -1;
   if(QFileInfo(FileName).isReadable() == FALSE)return -1; 
   QFile file( FileName);
@@ -140,7 +140,7 @@ int MyWindow::macroLoad(QString FileName)
   return 0;
   }
 
-void MyWindow::macroRecord(int action)
+void pigaleWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = getActionString(action);
@@ -151,7 +151,7 @@ void MyWindow::macroRecord(int action)
 //   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
 
-void MyWindow::macroHandler(int event)
+void pigaleWindow::macroHandler(int event)
   {int repeat = macroLine->getVal();
   int i;
   unsigned j;
@@ -269,7 +269,7 @@ void MyWindow::macroHandler(int event)
   pauseDelay() = macroSpin->value();
   }
 
-void MyWindow::macroPlay()
+void pigaleWindow::macroPlay()
 //  MacroExecuting = true => handler does not update of the editor
   {if(MacroNumActions == 0)return;
   blockInput(true);

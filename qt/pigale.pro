@@ -1,7 +1,7 @@
-HEADERS         = MyWindow.h
-SOURCES         = MyWindow.cpp\
+HEADERS         = pigaleWindow.h
+SOURCES         = pigaleWindow.cpp\
                   gprop.cpp\
                   mouse_actions.cpp\
-                  MyPaint.cpp   
+                  pigalePaint.cpp   
 TRANSLATIONS    = pigale_fr.ts 
 TARGET		= pigale

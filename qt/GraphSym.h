@@ -14,14 +14,14 @@
 #include <qwidget.h>
 
 class GraphSymPrivate;
-class MyWindow; 
+class pigaleWindow; 
 class QPrinter;
 
 class GraphSym : public QWidget
 {
   Q_OBJECT
 public:
-  GraphSym( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
+  GraphSym( QWidget *parent=0, const char *name=0,pigaleWindow* mw=0);
   ~GraphSym();
   void print(QPrinter *printer);
   void png();

@@ -1,9 +1,9 @@
-#include "MyWindow.h" 
+#include "pigaleWindow.h" 
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
 #include <qapplication.h>
 #include "GraphWidget.h"
-#include <QT/MyCanvas.h>
+#include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 
 #ifndef _WINDOWS

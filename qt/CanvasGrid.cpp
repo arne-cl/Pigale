@@ -1,4 +1,4 @@
-/****************************************************************************
+/**************************************************************************** 
 **
 ** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
 ** All rights reserved.
@@ -9,11 +9,11 @@
 **
 *****************************************************************************/
 
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphWidget.h"
-#include <QT/MyQcolors.h> 
+#include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/MyCanvas.h>
+#include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include "mouse_actions.h"
 #include "gprop.h"

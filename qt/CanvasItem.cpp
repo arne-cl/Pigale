@@ -9,12 +9,12 @@
 **
 *****************************************************************************/
 
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
-#include <QT/MyQcolors.h> 
+#include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/MyCanvas.h>
+#include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include <QT/grid.h>
 #include <qtabwidget.h>
@@ -24,7 +24,7 @@ static QPen *tp = 0;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphWidget
-GraphWidget::GraphWidget(QWidget *parent,const char *name,MyWindow *mywindow)
+GraphWidget::GraphWidget(QWidget *parent,const char *name,pigaleWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphWidgetPrivate;
   d->mywindow = mywindow;

@@ -12,6 +12,7 @@
 #ifndef CLIENTSOCKET_H 
 #define CLIENTSOCKET_H
 
+#include <config.h>
 #include <qsocket.h>
 #include <qserversocket.h>
 #include <qapplication.h>
@@ -26,7 +27,7 @@
 #include <qthread.h>
 
 #include <Pigale.h>
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
  
@@ -39,7 +40,7 @@ class ClientSocket : public QSocket, QThread
 {Q_OBJECT
 public:
  ClientSocket(int sock,int nid,bool show,QObject *parent=0,const char *name=0);
- ClientSocket(int sock,MyWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
+ ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
   ~ClientSocket() { }
   
 
@@ -69,17 +70,17 @@ private:
   int indexRemoteGraph;
   QTextStream cli;
   QDataStream clo;
-  MyWindow *mw; 
+  pigaleWindow *mw; 
 };
 
 class PigaleServer : public QServerSocket
 // create a ClientSocket each time a client connects
 {Q_OBJECT
 public:
-  PigaleServer(MyWindow *mw,QObject* parent=0);
+  PigaleServer(pigaleWindow *mw,QObject* parent=0);
     ~PigaleServer() { }
   void newConnection(int socket);
-  MyWindow *mw;
+  pigaleWindow *mw;
   ClientSocket *clientsocket;
   int nconnections;
 

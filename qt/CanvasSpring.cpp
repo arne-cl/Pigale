@@ -9,14 +9,14 @@
 **
 *****************************************************************************/
 
-#include "MyWindow.h"
+#include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
 #include "gprop.h"
 #include <TAXI/Tbase.h> 
-#include <QT/MyQcolors.h> 
+#include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/MyCanvas.h>
+#include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
 #include <qprogressbar.h>
@@ -177,7 +177,7 @@ t current tanslation of v0
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
-  MyWindow *mw = GetMyWindow();
+  pigaleWindow *mw = GetpigaleWindow();
   mw->progressBar->setTotalSteps(G.nv());
   mw->progressBar->setProgress(0);
   mw->progressBar->show();

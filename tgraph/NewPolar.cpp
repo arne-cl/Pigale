@@ -272,7 +272,7 @@ void ComputeAngles(TopologicalGraph &G, svector<int> &level, int
 
 
 
-double MyComputeAngles(TopologicalGraph &G, svector<int> &level, int
+double pigaleComputeAngles(TopologicalGraph &G, svector<int> &level, int
                        levelmax,svector<double> &h,
                        svector<double> &base, svector<double> &angle)
   {int n = G.nv(); int m=G.ne();
@@ -597,7 +597,7 @@ int Polar0(TopologicalGraph &G)
 
   Dos.MoveStart();
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));
-  nbeta=MyComputeAngles(G, level, lmax,h, mybase, myangle);
+  nbeta=pigaleComputeAngles(G, level, lmax,h, mybase, myangle);
   
   // recompute heights.
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));

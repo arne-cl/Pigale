@@ -14,14 +14,14 @@
 #include <qwidget.h>
 
 class GraphWidgetPrivate;
-class MyWindow; 
+class pigaleWindow; 
 class QPrinter;
 
 class GraphWidget : public QWidget
 {
   Q_OBJECT
 public:
-  GraphWidget( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
+  GraphWidget( QWidget *parent=0, const char *name=0,pigaleWindow* mw=0);
   ~GraphWidget();
   int init();
   void print(QPrinter *printer);

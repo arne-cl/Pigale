@@ -9,14 +9,10 @@
 **
 *****************************************************************************/
 
- 
-
 
 #include <TAXI/Tbase.h>
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tmessage.h>
-
-
 
 static char LogName[] = "log.txt";
 static int Indent = 0;
@@ -97,3 +93,5 @@ void LogPrintf(const char *fmt,...)
   }
 void myabort() {abort();}
 
+GraphDebug *GraphDebug::gd=(GraphDebug *)0;
+static GraphDebug DefaultGraphDebug;
