@@ -1,4 +1,4 @@
-all: libtgraph  libqt server
+all: libtgraph  libqt
 
 libtgraph : tgraph/*.cpp
 	cd tgraph ;make -e
