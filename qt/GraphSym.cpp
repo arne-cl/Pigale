@@ -757,6 +757,7 @@ void GraphSym::print(QPrinter *printer)
 void GraphSym::png()
   {if(index < 0)return;
   QString FileName = QFileDialog::getSaveFileName(d->mywindow->DirFilePng,"Images(*.png)",this);
+  if(FileName.isNull())return; 
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
   d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
