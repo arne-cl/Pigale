@@ -725,7 +725,7 @@ void MyWindow::reload()
 void MyWindow::next()
   {load(1);}
 void MyWindow::information()
-  {if(!getError())MessageClear();
+  {if(!getError() && !MacroExecuting)MessageClear();
   graph_properties->update();
   }
 void MyWindow::MessageClear()
@@ -741,7 +741,7 @@ void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
   QTime t;
-  //if(debug())DebugPrintf("handler:%d",action);
+  //qDebug("handler:%d",action);
   if(MacroRecording)macroRecord(action);
   if(action < A_AUGMENT_END)
       {UndoSave();t.start();
@@ -796,23 +796,29 @@ void MyWindow::handler(int action)
       }
   else
       return;
-  if(MacroExecuting )return;
+
   //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
   // 3:(Drawing) 4:(3d) 5:symetrie
   if(ret < 0)return;
   double Time = t.elapsed()/1000.;
   if(ret == 1)
+      {if(MacroExecuting )return;
       gw->update();
+      }
   else if(ret == 2)
-      {if(!MacroRecording)information();
+      {if(MacroExecuting )return;
+      if(!MacroRecording)information();
       gw->update();
       }
   else if(ret == 20)
-      {if(!MacroRecording)information();
+      {if(MacroExecuting )return;
+      if(!MacroRecording)information();
       gw->update(false);
       }
   else if(ret == 3)
+      {
        mypaint->update(drawing); 
+      }
   else if(ret == 4) //3d
       graphgl->update(); 
   else if(ret == 5) //symetrie

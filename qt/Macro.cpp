@@ -126,21 +126,23 @@ void macroDefColors(int record)
   G.ewidth.definit(MacroEwidth[record]);
   }
 void MyWindow::macroPlay()
-  {if(debug())LogPrintf("\nPlay macro:%d actions\n",MacroNumActions);
+  {if(!MacroLooping)
+      {MessageClear();
+      DebugPrintf("Play macro:%d actions",MacroNumActions);
+      }
+  bool Executing = MacroExecuting = true;
   MacroRecording = false;
   if(MacroNumActions == 0){load(1);return;}
-  MacroExecuting = true;
   int record = 1;
   if(MacroActions[record] < A_GENERATE || MacroActions[record] >  A_GENERATE_END)
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
-      if(MacroExecuting && record == MacroNumActions && !MacroLooping)
-	  {MacroExecuting = false;
-	  // Call editor if last action is an embedding not in graph editor
-	  //if(MacroActions[record] > A_EMBED_TUTTE && MacroActions[record] < A_EMBED_END)
-	      gw->update();
+      if(Executing && record == MacroNumActions && !MacroLooping)
+	  {gw->update();
+	  Executing = false;
 	  }
+      //qDebug("macro action:%d/%d -> %d",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
       }
   
@@ -152,4 +154,5 @@ void MyWindow::macroPlay()
       {DebugPrintf("MACRO error=%d",(int)getError());
       MacroLooping = false;
       }
+  MacroExecuting = Executing;
   }
