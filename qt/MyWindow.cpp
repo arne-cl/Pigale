@@ -571,7 +571,7 @@ MyWindow::~MyWindow()
   }
 void MyWindow::load()
   {QString FileName = QFileDialog::
-  getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt)",this);
+  getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
 
   if(FileName.isEmpty())
       newgraph();
@@ -643,8 +643,10 @@ void MyWindow::save_ascii()
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok)return;
-  QString OutputAsciiFile = QFileDialog::
-  getSaveFileName(DirFile,"Txt Files(*.txt)",this);
+  QString FileName = QFileDialog::getSaveFileName(DirFile,"Txt Files(*.txt)",this);
+  if(QFileInfo(FileName).extension(false) != (const char *)"txt")
+      FileName += (const char *)".txt";
+  QString OutputAsciiFile = FileName;
   if(OutputAsciiFile.isEmpty())return;
   QFileInfo fi = QFileInfo(OutputAsciiFile);
   if(fi.exists())
@@ -660,6 +662,8 @@ void MyWindow::save_ascii()
 void MyWindow::outputfile()
   {QString FileName = QFileDialog::getSaveFileName(DirFile,"Tgf Files(*.tgf)",this);
   if(FileName.isEmpty())return;
+  if(QFileInfo(FileName).extension(false) != (const char *)"tgf")
+      FileName += (const char *)".tgf";
   OutputFileName = FileName;
   save();
   }
