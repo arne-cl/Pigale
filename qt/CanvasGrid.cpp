@@ -101,7 +101,7 @@ void GraphWidget::update(bool compute)
       d->ForceGrid = d->OldFitToGrid =false;
       d->RedrawGrid =true;
       d->editor->zoom = 1.;
-      d->editor->initialize();
+      d->editor->initialize();// will call d->editor->load(true);
       }
   else
       d->editor->load(false);
@@ -182,18 +182,18 @@ void GraphWidget::sizegridChanged(int sg)
 //Methods of GraphEditor
 void GraphWidget::zoom()
   {if(d->mywindow->MacroLooping)return;
-  d->editor->zoom *= 1.1;
-  d->editor->load(true);
+  //d->editor->zoom *= 1.1;  d->editor->load(true);
+  d->editor->Zoom(1);
   }
 void GraphWidget::ozoom()
   {if(d->mywindow->MacroLooping)return;
-  d->editor->zoom = 1;
-  d->editor->load(true);
+  //d->editor->zoom = 1;  d->editor->load(true);
+  d->editor->Zoom(0);
   }
 void GraphWidget::uzoom()
   {if(d->mywindow->MacroLooping)return;
-  d->editor->zoom /= 1.1;
-  d->editor->load(true);
+  //d->editor->zoom /= 1.1;  d->editor->load(true);
+  d->editor->Zoom(-1);
   }
 void GraphEditor::showGrid(bool showgrid)
   {if(!canvas())return;
@@ -462,15 +462,21 @@ bool GraphEditor::InitGrid(Tgrid &g)
   gwp->mywindow->mouse_actions->Slider->setValue(nstep);
   gwp->SizeGrid = nstep;
   if(IsGrid)gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
-  if(NeedNormalise)Normalise();
+  if(NeedNormalise)
+      {//qDebug("NeedNormalise");
+      Normalise();
+      if(IsGrid)
+	  {xstep = (max_used_x - min_used_x)/nxstep;
+	   ystep = (max_used_y - min_used_y)/nystep;
+	  }
+      }
   g=Tgrid(xstep,ystep,min_used_x,min_used_y);
   old_grid = g;
   return true;
   }
 
 Tgrid GraphEditor::ParamGrid(int nstep)
-  {
-  nxstep=nystep=nstep;
+  {nxstep=nystep=nstep;
   if(max_used_x ==  min_used_x) nxstep = 30;
   else if ((xstep =( max_used_x - min_used_x)/nxstep) < gwp->canvas->width()/100)
       {nxstep=(int)((max_used_x - min_used_x)*100/gwp->canvas->width()+.5);
@@ -486,8 +492,7 @@ Tgrid GraphEditor::ParamGrid(int nstep)
 
 void GraphEditor::ToGrid(QPoint &p)
   // called to compute cooresponding coord of the mouse on the grid
-  {//qDebug("QPoint  IsGrid:%d FitToGrid:%d",(int)IsGrid,(int)gwp->FitToGrid);
-  if(!gwp->FitToGrid)return;
+  {if(!gwp->FitToGrid)return;
     double pos;
     int npos;
     pos = p.x() - min_used_x;  
@@ -499,35 +504,39 @@ void GraphEditor::ToGrid(QPoint &p)
   }
 void GraphEditor::ToGrid(tvertex &v)
   //Only called when moving or creating vertices
-  {//qDebug("tvertex  IsGrid:%d FitToGrid:%d",(int)IsGrid,(int)gwp->FitToGrid);
-  if(!gwp->FitToGrid){IsGrid = false;return;}
+  {if(!gwp->FitToGrid){IsGrid = false;return;}
   GeometricGraph & G = *(gwp->pGG);
   double pos;
   int npos;
   pos = G.vcoord[v].x() - min_used_x;  
   npos = pos>0 ? (int) (.5 + pos/xstep) :(int) (-.5 + pos/xstep) ;
   G.vcoord[v].x() =  min_used_x + npos*xstep;
-//   if(IsGrid)
-//       {if(pos < 0)min_used_x = G.vcoord[v].x();
-//       else max_used_x = Max( max_used_x,G.vcoord[v].x());
-//       }
   pos = G.vcoord[v].y() - min_used_y;        
   npos = pos>0 ? (int) (.5 + pos/ystep) :(int) (-.5 + pos/ystep) ;
   G.vcoord[v].y() =  min_used_y + npos*ystep;
-//   if(IsGrid)
-//       {if(pos < 0)min_used_y = G.vcoord[v].y();
-//       else max_used_y = Max( max_used_y,G.vcoord[v].y());
-//       }
-    }
+  }
+void GraphEditor::Zoom(int dir)
+  {double zoom_old = zoom;
+  if(dir == -1)zoom /= 1.1;
+  else if(dir == 0)zoom = 1.;
+  else zoom *= 1.1;
+  if(IsGrid)
+      {load(true);return;}
+  DoNormalise = true;  Normalise();
+  double zz = zoom/zoom_old;
+  xstep *= zz;  ystep *= zz;
+  current_grid = Tgrid(xstep,ystep,min_used_x,min_used_y);
+  load(false);
+  }
 void GraphEditor::Normalise()
   {//qDebug("normalise:%d",DoNormalise);
   if(!DoNormalise)return;
   GeometricGraph & G = *(gwp->pGG);
-  if(!G.nv())return;
   x_min = BORDER;
   x_max = zoom*gwp->canvas->width() -BORDER -space -sizerect;
   y_min = BORDER;
   y_max = zoom*gwp->canvas->height() - BORDER;
+  if(!G.nv())return;
 
   max_used_x = min_used_x = G.vcoord[1].x(); 
   max_used_y = min_used_y = G.vcoord[1].y();

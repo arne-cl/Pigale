@@ -46,6 +46,7 @@ FILES_W_MOC  := $(FILES_WO_MOC)
 FILES_W_MOC  += $(MOC_CPP)
 OBJECTS       =  $(patsubst %.cpp,%.o, $(FILES_W_MOC))
 OBJ           =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES_W_MOC))
+ALLOBJ        = $(wildcard $(VPATH)/*.o)
 
 all :   $(P)$(OPT) 
 
@@ -66,7 +67,10 @@ clean:
 	@rm -f $(VPATH)/*.o
 
 test:
-	@echo objects=$(OBJECTS)
+	@echo objects=$(ALLOBJ)
+
+static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
+	g++  $(CFLAGS) -o s$(P)$(OPT) $(ALLOBJ)  $(UNIXLIB) 
 
 moc_cpp:    $(MOC_CPP)
 
