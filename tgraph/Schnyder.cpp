@@ -245,7 +245,8 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
 
-  if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return -2;
+  //if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return -2;
+  if(!MaxPlanar && ZigZagTriangulate())return -2;
 
   if(SchnyderColor())
       {Prop<short> ecolor(Set(tedge()),PROP_COLOR);
