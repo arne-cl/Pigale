@@ -35,10 +35,20 @@ struct _Error {
    _T_Error error;
    const char *file;
    int line;
-   };
+  _Error & operator=(const _T_Error &err)
+  { error = err;
+  if (err.code!=0)
+    {LogPrintf("Error %d ",err.code);
+    if (err.msg != NULL)
+      LogPrintf(" (%s) ",err.msg);
+    LogPrintf("in file %s line %d\n",file,line);
+    }
+  return *this;
+  }
+};
 
 
-_T_Error &ErrorPositioner(const char *f, int l);
+_Error &ErrorPositioner(const char *f, int l);
 int  getError();
 const char * getErrorMsg();
 const char * getErrorFile();
