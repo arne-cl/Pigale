@@ -24,6 +24,7 @@ public:
   GraphSym( QWidget *parent=0, const char *name=0,MyWindow* mw=0);
   ~GraphSym();
   void print(QPrinter *printer);
+  void png();
 
 public slots:
   int update();

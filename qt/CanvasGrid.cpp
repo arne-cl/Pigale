@@ -113,6 +113,10 @@ void GraphWidget::print(QPrinter *printer)
   {if(!d->is_init)return;
   d->editor->print(printer);
   }
+void GraphWidget::png()
+  {if(!d->is_init)return;
+  d->editor->png();
+  }
 // void GraphWidget::EraseColorVertices()
 //   {if(d->mywindow->MacroLooping)return;
 //   d->mywindow->UndoSave();

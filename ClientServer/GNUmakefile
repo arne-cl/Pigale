@@ -35,7 +35,7 @@ FILES_W_MOC  += $(MOC_CPP)
 CFLAGS  = $(CFLAGS$(OPT))
 
 
-all :server client
+all :Server Client
 
 moc_cpp:    $(MOC_CPP)
 
@@ -48,10 +48,10 @@ moc_%.cpp:%.h
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f define.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
-server: server.o  moc_server.o 
+Server: server.o  moc_server.o 
 	g++   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
 
-client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
+Client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
 	g++   -o Client client.o moc_client.o $(UNIXLIB)
 
 clean:

@@ -20,6 +20,9 @@
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qprinter.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -750,6 +753,14 @@ int GraphSym::update()
 void GraphSym::print(QPrinter *printer)
   {if(!d->is_init)return;
   d->editor->print(printer);
+  }
+void GraphSym::png()
+  {if(index < 0)return;
+  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      FileName += (const char *)".png";
+  QPixmap pixmap = QPixmap::grabWidget (this,10,10,this->width()-20,this->height()-50); 
+  pixmap.save(FileName,"PNG");
   }
 void GraphSym::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize(); 

@@ -15,6 +15,10 @@
 #include <QT/MyQcolors.h>
 #include <iostream.h>
 #include <qprinter.h>
+#include <qpixmap.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
 
 //in QtMisc.cpp
 int & ShowVertex();
@@ -352,6 +356,14 @@ void MyPaint::print(QPrinter* printer)
       {QPainter pp(printer);
       drawIt(&pp);
       }
+  }
+void MyPaint::png()
+  {if(index < 0)return;
+  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      FileName += (const char *)".png";
+  QPixmap pixmap = QPixmap::grabWidget (this); 
+  pixmap.save(FileName,"PNG");
   }
 void MyPaint::drawIt(QPainter *p)
   {if(index < 0)return;

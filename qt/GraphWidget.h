@@ -25,6 +25,7 @@ public:
   ~GraphWidget();
   int init();
   void print(QPrinter *printer);
+  void png();
 public slots:
   void update(bool compute=true);
   void zoom();

@@ -32,6 +32,7 @@ public:
   int init();
 public slots:
   int update();
+  void png();
   void delayChanged(int i);
 private slots:
   void Reload();

@@ -76,6 +76,7 @@
 #include "icones/srightarrow.xpm"
 #include "icones/sfilesave.xpm"
 #include "icones/macroplay.xpm"
+#include "icones/film.xpm"
 
 void Test(GraphContainer &GC,int action);
 void macroRecord(int action);
@@ -186,7 +187,7 @@ MyWindow::MyWindow()
   QLabel *lab0 = new QLabel(mainWidget);
   lab0->setText("<br><center><b>Messages</b></center>");
   lab0->setTextFormat(Qt::RichText);
-  lab0->setMinimumSize(MyEditorMinXsize,20);
+  lab0->setMinimumSize(MyEditorMinXsize,20);  
   lab0->setMaximumSize(MyEditorMinXsize,25);
   rightLayout->addMultiCellWidget(lab0,1,1,1,2);
   rightLayout->addMultiCellWidget(e,2,2,1,2);
@@ -200,16 +201,17 @@ MyWindow::MyWindow()
   QPixmap infoIcon = QPixmap(info), helpIcon = QPixmap(help),printIcon = QPixmap(fileprint);
   QPixmap xmanIcon = QPixmap(xman), undoLIcon = QPixmap(sleftarrow);
   QPixmap undoSIcon = QPixmap(sfilesave),undoRIcon = QPixmap(srightarrow);
-  QPixmap macroplayIcon = QPixmap(macroplay);
+  QPixmap macroplayIcon = QPixmap(macroplay),filmIcon = QPixmap(film);
  
   //ToolBar
   tb = new QToolBar(this,"toolbar" );
-  QToolButton *fileopen,*filenew,*filesave,*fileprint,*info,*macroplay;
+  QToolButton *fileopen,*filenew,*filesave,*fileprint,*savepng,*info,*macroplay;
   filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(newgraph()),tb,"New");
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
   QWhatsThis::add(fileopen,fileopen_txt);
   filesave = new QToolButton(saveIcon,"Save File",QString::null,this,SLOT(save()),tb,"Save graph" );
   fileprint = new QToolButton(printIcon,"Print window",QString::null,this,SLOT(print()),tb,"Print" );
+  savepng = new QToolButton(filmIcon,"Capture window",QString::null,this,SLOT(png()),tb,"Save png" );
   info = new QToolButton(infoIcon,"Information",QString::null,this,SLOT(information()),tb,"info" );
   tb->addSeparator();
   left = new QToolButton(leftIcon,"Previous Graph",QString::null,this,SLOT(previous()),tb,"Previous");
@@ -854,7 +856,24 @@ void MyWindow::print()
 	  break;
       }
   }
-
+void MyWindow::png()
+  {switch(tabWidget->currentPageIndex())
+      {case 0:
+	   gw->png();
+	   break;
+      case 1:
+	  mypaint->png();
+	  break;
+      case 2:
+	  graphgl->png();
+	  break;
+      case 3:
+	  graphsym->png();
+	  break;
+      default:
+	  break;
+      }
+  }
 /*
 The copies are cleared when a new graph is loaded or generated, but the last graph is saved
 A copy is created when edges/vertices are added/deleted outside the editor

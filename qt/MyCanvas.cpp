@@ -22,7 +22,10 @@
 #include <qcursor.h>
 #include <qprinter.h>
 #include <qtoolbutton.h>
-
+#include <qpixmap.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
 
 GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name, WFlags f)
     :QCanvasView(g->canvas,parent,name,f)
@@ -597,6 +600,15 @@ void GraphEditor::print(QPrinter *printer)
       gwp->canvas->drawArea(QRect(0,0,gwp->canvas->width()-space-sizerect-20
 				  ,gwp->canvas->height()),&pp,FALSE);
       }
+  }
+void GraphEditor::png()
+  {if(index < 0)return;
+  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      FileName += (const char *)".png";
+  QPixmap pixmap = QPixmap::grabWidget(this,2,2,gwp->canvas->width()-space-sizerect-1
+				       ,gwp->canvas->height()); 
+  pixmap.save(FileName,"PNG");
   }
 int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
   {int rtt;

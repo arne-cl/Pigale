@@ -17,6 +17,11 @@
 #include <QT/MyQcolors.h>
 #include <TAXI/netcut.h>
 #include <GL/glut.h>
+#include <qpixmap.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
+#include <qapplication.h>
 
 //in QtMisc.cpp
 int & ShowVertex();
@@ -64,6 +69,10 @@ GraphGL::GraphGL(QWidget *parent,const char *name,MyWindow *mywindow)
   }
 GraphGL::~GraphGL()
   {delete d->pGG; delete d;}
+void GraphGL::png()
+  {if(!d->is_init)return;
+  d->editor->png();
+  }
 int GraphGL::update()
   {if(!d->is_init)
       {QVBoxLayout* vb = new QVBoxLayout(this,2,0);
@@ -211,6 +220,13 @@ GLWindow::GLWindow(GraphGLPrivate *g,QWidget * parent,const char * name)
 GLWindow::~GLWindow()
   {makeCurrent();
   glDeleteLists(object,1);
+  }
+void GLWindow::png()
+  {QPixmap pixmap = QPixmap::grabWindow(this->winId());
+  QString FileName = QFileDialog::getSaveFileName(".","Images(*.png)",this);
+  if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      FileName += (const char *)".png";
+  pixmap.save(FileName,"PNG");
   }
 void GLWindow::initializeGL()
   {setAutoBufferSwap(true); 

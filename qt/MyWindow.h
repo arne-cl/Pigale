@@ -79,6 +79,7 @@ public slots:
   void UndoSave();
   void information();
   void print();
+  void png();
 public:
   void Message(QString s);
   void MessageClear();
