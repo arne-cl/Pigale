@@ -94,6 +94,8 @@ void GraphWidget::update(bool compute)
       {d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       d->SizeGrid = d->FitSizeGrid = d->OldFitSizeGrid = 100;
+      d->mywindow->mouse_actions->LCDNumberX->display(100);
+      d->mywindow->mouse_actions->LCDNumberY->display(100);
       d->editor->nxstep = d->editor->nystep  = d->SizeGrid;
       d->editor->GridDrawn = false;
       d->ForceGrid = d->OldFitToGrid =false;
@@ -218,7 +220,6 @@ void GraphEditor::clearGrid()
 void GraphEditor::UndoGrid()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
-//   G.vcoord = scoord; load()
   // move back the vertices
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   double dx,dy;
@@ -240,6 +241,8 @@ void GraphEditor::UndoGrid()
   nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
   nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
   //Update the display
+  gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
+  gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
   int nstep = Max(nxstep,nystep);
   gwp->SizeGrid = nstep;
   gwp->RedrawGrid = false; //as the slider will send a message
@@ -288,7 +291,8 @@ void GraphEditor::PrintSizeGrid()
       }
   int nx = (int)(.5 + (maxused_x - minused_x)/xstep);
   int ny = (int)(.5 + (maxused_y - minused_y)/ystep);
-  Tprintf("Graph on Grid=%dx%d",nx,ny);
+  gwp->mywindow->mouse_actions->LCDNumberX->display(nx);
+  gwp->mywindow->mouse_actions->LCDNumberY->display(ny);
   }
 bool GraphEditor::InitGrid(Tgrid &g)
   {GeometricGraph & G = *(gwp->pGG);
@@ -417,10 +421,13 @@ bool GraphEditor::InitGrid(Tgrid &g)
       current_grid = old_grid;
       nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
       nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
-      if(IsGrid)Tprintf("Graph on Grid=%dx%d",nxstep,nystep);
       int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
       gwp->SizeGrid = nstep;
       //Update the menu
+      if(IsGrid)
+	  {gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
+	  gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
+	  }
       gwp->RedrawGrid = false;
       gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
       gwp->mywindow->mouse_actions->Slider->setValue(nstep);
@@ -443,9 +450,12 @@ bool GraphEditor::InitGrid(Tgrid &g)
   nxstep = (int) (.5 + (max_used_x - min_used_x)/xstep); 
   nystep = (int) (.5 + (max_used_y - min_used_y)/ystep); 
   undo_grid = old_grid;
-  if(IsGrid && !overlap)Tprintf("Graph on Grid=%dx%d",nxstep,nystep);
 
   //Update the menu
+  if(IsGrid && !overlap)
+      {gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
+      gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
+      }
   gwp->RedrawGrid = false;
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);

@@ -13,6 +13,8 @@
 #include "GraphWidget.h"
 #include "GraphGL.h"
 
+#include <qpalette.h>
+#include <qcolordialog.h> 
 
 static int mouse_action_1 = 3;
 
@@ -81,6 +83,26 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
     LCDNumber->setNumDigits(3);
     LCDNumber->setSegmentStyle(QLCDNumber::Flat);
     LCDNumber->setProperty("intValue",sizegrid);
+
+    LCDNumberX = new QLCDNumber(this,"LCDNumber");
+    QColor col;         col.setRgb(0,100,0);
+    // 0:background gprop 1:background msg 3:background help 2:background mouse
+    QPalette pal = QPalette(QColorDialog::customColor(1));
+    pal.setColor(QColorGroup::Foreground,col);
+    LCDNumberX->setPalette(pal);
+    LCDNumberX->setGeometry(QRect(ox_grid+18+35,oy_grid,30,30)); 
+    LCDNumberX->setFont(LCDNumber_font); 
+    LCDNumberX->setNumDigits(3);
+    LCDNumberX->setSegmentStyle(QLCDNumber::Flat);
+    LCDNumberX->setProperty("intValue",sizegrid);
+
+    LCDNumberY = new QLCDNumber(this,"LCDNumber");
+    LCDNumberY->setPalette(pal);
+    LCDNumberY->setGeometry(QRect(ox_grid+18+35+30+2,oy_grid,30,30)); 
+    LCDNumberY->setFont(LCDNumber_font); 
+    LCDNumberY->setNumDigits(3);
+    LCDNumberY->setSegmentStyle(QLCDNumber::Flat);
+    LCDNumberY->setProperty("intValue",sizegrid);
 
     Slider = new QSlider(this,"Slider");
     Slider->setGeometry(QRect(ox_grid,oy_grid,15,115)); 

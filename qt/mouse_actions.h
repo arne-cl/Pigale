@@ -56,6 +56,8 @@ public:
   QPushButton* ButtonOZoom;
   QPushButton* ButtonUZoom;
   QLCDNumber* LCDNumber;
+  QLCDNumber* LCDNumberX;
+  QLCDNumber* LCDNumberY;
   QSlider* Slider;
 
 
