@@ -62,4 +62,5 @@ public:
 private slots:
   void valueChanged(int i);
 };
+int GetMouseAction_1();
 #endif 
