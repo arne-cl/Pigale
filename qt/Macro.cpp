@@ -82,8 +82,10 @@ void MyWindow::macroHandler(int event)
 	  break; 
       case 4:// play repeat times
 	  MacroRecording = false;
-	  Tprintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
+	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
 	  t0.start();
+	  DebugPrintf("Macro start at:%s",(const char *)t0.toString(Qt::TextDate)); 
+	  t0.restart();
 	  MacroLooping = true;
 	  blockInput(true);
 	  repeat0 = (repeat == 0) ? 10000 : repeat;
@@ -99,20 +101,19 @@ void MyWindow::macroHandler(int event)
 	      qApp->processEvents(5);
 	      }
 	  escape = 0;
-	  MacroLooping = false;
+	  MacroLooping = MacroExecuting = false;
 	  blockInput(false);
 	  Time = t0.elapsed()/1000.;
-	  DebugPrintf("Ellapsed time:%.3f mean%f",Time,Time/j);
-	  //DebugPrintf(t0.toString(Qt::TextDate )); 
+	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
+	  t0.restart();
+	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
 	  if(!Error())
-	      Tprintf("END PLAY OK times:%d MacroNumActions:%d",j,MacroNumActions);
+	      DebugPrintf("END PLAY OK times:%d MacroNumActions:%d",j,MacroNumActions);
 	  else
 	      {gw->update();
-	      Tprintf("END PLAY ERROR times=%d MacroNumActions:%d",j,MacroNumActions);
+	      DebugPrintf("END PLAY ERROR times=%d MacroNumActions:%d",j,MacroNumActions);
 	      Error()=0;
 	      }
-
-	  
 	  break;
       default:
 	  break;
