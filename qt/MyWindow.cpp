@@ -457,6 +457,10 @@ MyWindow::MyWindow()
   macroMenu->insertItem("Stop  recording",2);
   macroMenu->insertItem("Continue recording",3);
   macroMenu->insertSeparator();
+  macroMenu->insertItem("Display Macro",6);
+  macroMenu->insertItem("Save Macro",7);
+  macroMenu->insertItem("Read Macro",8);
+  macroMenu->insertSeparator();
   macroMenu->insertItem(macroSpin);
   macroMenu->insertItem("Insert a Pause",5);
   macroMenu->insertSeparator();
@@ -634,10 +638,15 @@ MyWindow::~MyWindow()
 void MyWindow::mapActionsInit()
   {int na = (int)(sizeof(actions)/sizeof(_Action));
   for(int i = 0;i < na;i++)
-      mapActions[actions[i].num] = actions[i].name;
+      {mapActionsString[actions[i].num] = actions[i].name;
+      mapActionsInt[actions[i].name] = actions[i].num;
+      }
   }
 QString MyWindow::getActionString(int action)
-  {return mapActions[action];
+  {return mapActionsString[action];
+  }
+int MyWindow::getActionInt(QString action_str)
+  {return mapActionsInt[action_str];
   }
 void MyWindow::load()
   {QString FileName = QFileDialog::
@@ -780,18 +789,18 @@ void MyWindow::Message(QString s)
   } 
 
 
-void MyWindow::handler(int action)
+int MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
   QTime t;
-  //qDebug("handler:%d",action);
+  //qDebug("handler:%s",(const char *)getActionString(action));
   if(MacroRecording)macroRecord(action);
   if(action == A_PAUSE)
       {pauseDelay() = macroSpin->value();
       qApp->processEvents();
       MacroWait = true;
       QTimer::singleShot(1000*pauseDelay(),this,SLOT(timer()));
-      return;
+      return 0;
       }
   else if(action < A_AUGMENT_END)
       {UndoSave();t.start();
@@ -825,23 +834,21 @@ void MyWindow::handler(int action)
       }
   else if(action < A_TEST_END)
       {t.start();
-      int err = Test(GC,action - A_TEST);
-      if(err < 0)ret = -1;
-      else ret = err;
+      ret  = Test(GC,action - A_TEST);
       }
   else if(action > 10000)
       {if(action == 10010)
 	  {SetPigaleColors();
-	  return;
+	  return 0;
 	  }
       else if(action == 10011) 
 	  {pauseDelay() = macroSpin->value();
 	  SaveSettings();
-	  return;
+	  return 0;
 	  }
       else if(action == 10008)
 	  {randomSetSeed() = atol((const char *)seedEdit->text());
-	  return;
+	  return 0;
 	  }
       
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
@@ -855,27 +862,27 @@ void MyWindow::handler(int action)
       pauseDelay() = macroSpin->value();
       if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
       if(action == 10020)gw->update();
-      return;
+      return 0;
       }
   else
-      return;
+      return 0;
   //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
-  if(ret < 0)return;
+  if(ret < 0)return 0;
   double Time = t.elapsed()/1000.;
   if(ret == 1)
-      {if(MacroExecuting )return;
-      gw->update();
+      {if(!MacroExecuting )
+	  gw->update();
       }
   else if(ret == 2)
       {if(!MacroRecording)information();
-      if(MacroExecuting )return;
-      gw->update();
+      if(!MacroExecuting )
+	  gw->update();
       }
   else if(ret == 20) // Remove handler
       {if(!MacroRecording)information();
-      if(MacroExecuting )return;
-      gw->update(false);
+      if(!MacroExecuting )
+	  gw->update(false);
       }
   else if(ret == 3)
       mypaint->update(drawing); 
@@ -894,14 +901,14 @@ void MyWindow::handler(int action)
       {gw->update();gw->SpringJacquard();}
 
   double TimeG = t.elapsed()/1000.;
-  if(!MacroExecuting && !MacroRecording)
+  if(!MacroLooping && !MacroRecording)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
-	  {Tprintf("Handler Last Error:%s",(const char *)getErrorString());
+	  {Tprintf("Handler Error:%s",(const char *)getErrorString());
 	  if(debug())Twait((const char *)getErrorString()); 
 	  }
       }
-      
+  return ret;   
   }
 void MyWindow::banner()
   {QString m;  

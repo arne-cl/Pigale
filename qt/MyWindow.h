@@ -64,7 +64,7 @@ private slots:
   void outputfile();
   void deleterecord();
   void switchInputOutput();
-  void handler(int action);
+  int  handler(int action);
   void macroHandler(int action);
   void macroPlay();
   void macroRecord(int action);
@@ -87,6 +87,7 @@ public slots:
   void png();
 private:
   void mapActionsInit();
+
 public:
   void Message(QString s);
   void MessageClear();
@@ -94,6 +95,7 @@ public:
   void blockInput(bool t);
   int MyWindow::getKey();
   QString getActionString(int action);
+  int getActionInt(QString action_str);
 
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
@@ -118,14 +120,17 @@ private:
   QPrinter *printer;
   QString InputFileName;
   QString OutputFileName;
-  QString DirFile;
+  QString DirFile,DirFileMacro;
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroExecuting;
   bool MacroWait;
   typedef QMap<int,QString> IntStringMap;
-  IntStringMap mapActions;
+  IntStringMap mapActionsString;
+  typedef QMap<QString,int> StringIntMap;
+  StringIntMap mapActionsInt;   
+
 };
 
 

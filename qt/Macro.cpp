@@ -21,11 +21,17 @@
 #include <qprogressbar.h>
 #include <qmenubar.h> 
 #include <qtoolbar.h> 
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
+#include <qinputdialog.h> 
+
 #include <TAXI/Tgf.h> 
 
 static TSArray<int> MacroActions(4),MacroEwidth(4);
-static TSArray<short> MacroVcolor(4),MacroEcolor(4);
+//static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
+bool EditNeedUpdate;
 static int  key = 0;
 
 int & pauseDelay()
@@ -57,16 +63,26 @@ void AllowAllMenus(QMenuBar *menubar)
       menubar->setItemEnabled(menu,true);
       }
   }
+/*
+void macroDefColors(int record)
+  {GeometricGraph G(GetMainGraph());
+  G.ecolor.definit(MacroEcolor[record]); 
+  G.vcolor.definit(MacroVcolor[record]); 
+  G.ewidth.definit(MacroEwidth[record]);
+  }
+*/
+
 void MyWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = getActionString(action);
   Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action);
-  GeometricGraph G(GetMainGraph());
-  short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
-  short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
-  int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
+//   GeometricGraph G(GetMainGraph());
+//   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
+//   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
+//   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
+
 void MyWindow::macroHandler(int event)
   {int repeat = macroLine->getVal();
   int i;
@@ -81,6 +97,7 @@ void MyWindow::macroHandler(int event)
 	   MessageClear();
 	   Tprintf("No info while recording");
 	   MacroRecording = true;
+	   MacroWait = false;
 	   MacroNumActions = 0;
 	   break;
       case 2://stop recording
@@ -101,6 +118,7 @@ void MyWindow::macroHandler(int event)
 	  blockInput(true);
 	  repeat0 = (repeat == 0) ? 1000 : repeat;
 	  progressBar->setTotalSteps(repeat0);
+	  progressBar->setProgress(0);
 	  progressBar->show();
 	  j = 0;
 	  for(i = 1;i <= repeat0;i++)
@@ -108,9 +126,7 @@ void MyWindow::macroHandler(int event)
 	      ++j;
 	      macroPlay();
 	      progressBar->setProgress(i);
-	      do
-		  {qApp->processEvents();
-		  }while(MacroWait);
+	      qApp->processEvents();
 	      if(!MacroLooping)break; // if an error had occurred
 	      if(getKey() == Qt::Key_Escape){gw->update();break;}
 	      }
@@ -121,7 +137,7 @@ void MyWindow::macroHandler(int event)
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
 	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
-	  gw->update();
+	  if(EditNeedUpdate)gw->update();
 	  if(!getError())
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
@@ -130,51 +146,104 @@ void MyWindow::macroHandler(int event)
       case 5:// insert a pause
 	  if(MacroRecording)macroRecord(A_PAUSE);
 	  break;
+      case 6:// display
+	  MessageClear();
+	  for(int record = 1;record <= MacroNumActions;record++)
+	      {Tprintf("Action (%d/%d):%s",record,MacroNumActions
+		       ,(const char *)getActionString(MacroActions[record]));
+	      }
+	  break;
+      case 7://save
+	  {QString FileName = QFileDialog::getSaveFileName(DirFileMacro,"Macros (*.mc)",this);
+	  if(FileName.isEmpty())break;
+	  if(QFileInfo(FileName).extension(false) != (const char *)"mc")
+	      FileName += (const char *)".mc";
+	  DirFileMacro = QFileInfo(FileName).dirPath(true);
+	  bool ok = TRUE;
+	  QString titre("name");
+	  titre = QInputDialog::getText("Pigale","Enter the macro name",
+						QLineEdit::Normal,titre, &ok, this );
+	  if(!ok)break;
+	  FILE *out = fopen((const char *)FileName,"wt");
+	  fprintf(out,"Macro Version:1\n");
+	  fprintf(out,"%s\n",(const char *)titre);
+	  for(int record = 1;record <= MacroNumActions;record++)
+	      fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
+	  fclose(out);
+	  }
+	  break;
+      case 8:// read
+	  {QString FileName = QFileDialog::getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
+	  if(FileName.isEmpty())break;
+	  if(QFileInfo(FileName).isReadable() == FALSE)return; 
+	  QFile file( FileName);
+	  file.open(IO_ReadOnly);
+	  QTextStream stream(&file);
+	  QString str = stream.readLine();
+	  if(str != "Macro Version:1")
+	      {Tprintf("Wrong Macro File -%s-",(const char *)str);break;}
+	  MessageClear();
+	  if(stream.atEnd())break;
+	  Tprintf("%s",(const char *)stream.readLine());
+	  MacroNumActions = 0;
+	  int action;
+	  while(!stream.atEnd())
+	      {str = stream.readLine();
+	      action = getActionInt(str);
+	      if(action < 99 || action > A_TEST_END)
+		  {Tprintf("Unknown action:%s",(const char *)str);continue;}
+	      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str);
+	      MacroActions(++MacroNumActions) = action;
+	      }
+	  }
+	  MacroWait = false;
+	  break;
       default:
 	  break;
       }
   pauseDelay() = macroSpin->value();
   }
-void macroDefColors(int record)
-  {GeometricGraph G(GetMainGraph());
-  G.ecolor.definit(MacroEcolor[record]); 
-  G.vcolor.definit(MacroVcolor[record]); 
-  G.ewidth.definit(MacroEwidth[record]);
-  }
+
 void MyWindow::macroPlay()
-  {if(!MacroLooping)
-      {MessageClear();
-      DebugPrintf("Play macro:%d actions",MacroNumActions);
-      }
-  MacroExecuting = true;
-  MacroRecording = false;
-  if(MacroNumActions == 0){load(1);return;}
-  int record = 1;
-  if(MacroActions[record] < A_GENERATE || MacroActions[record] >  A_GENERATE_END)
+//  MacroExecuting = true => handler does not update of the editor
+  {if(MacroNumActions == 0)return;
+  if(!MacroLooping){MessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
+  int ret_handler = 0,action;
+  EditNeedUpdate = MacroExecuting = true;
+  MacroRecording = MacroWait = false;
+  
+  // Load next graph 
+  if(MacroActions[1] < A_GENERATE || MacroActions[1] >  A_GENERATE_END)
       load(1); 
-  while(record <= MacroNumActions)
-      {macroDefColors(record);
-      if(record == MacroNumActions && !MacroLooping)
-	  {gw->update();
-	  MacroExecuting = false; // so if the action needs a redraw, it will be done
-	  }
-      if((MacroActions[record] != A_PAUSE && !menuBar()->isItemEnabled(MacroActions[record]))
-	 || (MacroActions[record] == A_PAUSE && !MacroLooping))
-	  {if(debug())LogPrintf("%s:initial conditons not satisfied\n"
-		  ,(const char *)getActionString(MacroActions[record]));
+
+  for(int record = 1;record <= MacroNumActions;++record)
+      {action = MacroActions[record];
+      //macroDefColors(record);
+      if(action != A_PAUSE && !menuBar()->isItemEnabled(action))
+	  {if(debug())
+	      LogPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
 	  ++record;continue;
 	  }
-      if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
-      handler(MacroActions[record++]);
-      if(getError()){MacroWait = false;break;}
-      else if(debug())LogPrintf("macro action:OK\n");
-      }
-  if(getError())
-      {DebugPrintf("MACRO %s",(const char *)getErrorString());
-      setError();
-      MacroLooping = false;
-      gw->update();
+      if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
+      if(!MacroLooping &&  EditNeedUpdate)
+	  {MacroExecuting = false; gw->update(); MacroExecuting = true;EditNeedUpdate = false;}
+      // Execute the macro
+      ret_handler = handler(action);
+      if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
+      // update the editor if a pause 
+      if(record != MacroNumActions && action == A_PAUSE && EditNeedUpdate)
+	  {MacroExecuting = false; gw->update(); MacroExecuting = true;EditNeedUpdate = false;}
+      if(getError())
+	  {DebugPrintf("MACRO %s",(const char *)getErrorString());
+	  setError();
+	  MacroWait = MacroLooping = false;
+	  break;
+	  }
+      do
+	  {qApp->processEvents();
+	  }while(MacroWait);
       }
 
-  if(!MacroLooping)information();
+  MacroWait = MacroExecuting = false;
+  if(!MacroLooping  && EditNeedUpdate)gw->update();
   }
