@@ -4,12 +4,28 @@
 *                     Gilles.Schaeffer@loria.fr                   * 
 *                                                                 *
 *******************************************************************/
+#include <TAXI/Tbase.h> 
+#include <TAXI/Tmessage.h> 
+#include <TAXI/color.h> 
+#include <TAXI/graphs.h> 
 
-
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
-#include<unistd.h>
+bool & EraseMultipleEdges();
+long & setSeed()
+  {static long _seed = 1;
+  return _seed;
+  }
+bool & randomSeed()
+  {static bool  _random = false;
+  return _random;
+  }
+void randomInit()
+  {if(randomSeed())
+      {time_t time_seed;
+      time(&time_seed);
+      setSeed() = (long)time_seed; 
+      }
+  srand48(setSeed());
+  }
 
 //PMdef.c
 #define PMTRUE -1
@@ -2011,7 +2027,7 @@ int pmParseArgs(int argc, char *argv[],
   Size->t = -1; Size->dgArr = NULL;
   /* Meth preinit */
   Meth->core = 0; Meth->pic = 0;
-  Meth->seed = getpid();
+  Meth->seed = setSeed();
   Meth->verbose = 0;
 
   /* main loop to parse args */
@@ -2558,11 +2574,7 @@ int pmFreeMap(pmMap *Map)
 
 
 //**************************************************************************
-#include <Pigale.h>
-#include <time.h>
-bool & EraseMultipleEdges();
-
-GraphContainer *GenerateSchaeffer0(int n_ask,int type,int e_connectivity)
+GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 //n_ask must be even
   {pmSize Sizes;
   pmMethod Meth;
@@ -2577,15 +2589,13 @@ GraphContainer *GenerateSchaeffer0(int n_ask,int type,int e_connectivity)
   Sizes.r = 0; Sizes.g = 0; Sizes.d = 0;
   Sizes.t = -1; Sizes.dgArr = NULL;
   /* Meth preinit */
-  //init random seed
+  //init seed
   static bool init = false;
   if(!init)
-      {time_t time_seed;
-      time(&time_seed);
-      srand(time_seed);
+      {randomInit();
       init = true;
       }
-  Meth.seed = rand();
+  Meth.seed = lrand48();
   Meth.core = 0; Meth.pic = 0;
   Meth.verbose = 0;
   //Allowed approximation on n,m
