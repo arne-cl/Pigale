@@ -566,7 +566,7 @@ void pigalePaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col)
   {QPen pn = p->pen();
   QPoint ps = QPoint(to_x(a.x()),to_y(a.y()));
   QPoint pt = QPoint(to_x(b.x()),to_y(b.y()));
-  pn.setColor(color[col]); pn.setWidth(1);
+  pn.setColor(color[bound(col,1,16)]); pn.setWidth(1);
   p->setPen(pn);
   p->drawLine(ps,pt);
   }
@@ -574,7 +574,7 @@ void pigalePaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
 // draw a rectangle centered at a
   {QPen pn = p->pen();pn.setWidth(2);pn.setColor(color[Black]);p->setPen(pn);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  pb.setColor(color[col]);p->setBrush(pb);
+  pb.setColor(color[bound(col,1,16)]);p->setBrush(pb);
   //  nx *= xscale; ny *= yscale;
   //  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
   p->drawRect(QRect((int)(to_x(a.x()) - nx*Min(xscale,yscale)/2), (int)(to_y(a.y())- ny*Min(xscale,yscale)/2), (int)(nx*Min(xscale,yscale)), (int)(ny*Min(xscale,yscale))));
@@ -593,7 +593,7 @@ void pigalePaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
   else
       rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny+1.),(int)(nx+.5),(int)(ny+.5));
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  pb.setColor(color[col]);p->setBrush(pb);
+  pb.setColor(color[bound(col,0,16)]);p->setBrush(pb);
   pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   if(ny >= 6){ pn.setWidth(1);p->setPen(pn);p->drawText(rect,Qt::AlignCenter,t);}
@@ -604,7 +604,7 @@ void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QSt
   nx *= xscale;  ny *= yscale;
   QRect rect = QRect(to_x(x),to_y(y),(int)(nx+.5),(int)(ny+.5));
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  pb.setColor(color[col]);p->setBrush(pb);
+  pb.setColor(color[bound(col,1,16)]);p->setBrush(pb);
   pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   pn.setWidth(1);p->setPen(pn);

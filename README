@@ -12,8 +12,7 @@ If you do'nt have a write permission, you must provide  another directory where 
 Usually the location of the installation of Qt is defined by the environement variable QTDIR.
 For more options run "./configure --help" . These options, in particular, let you enable a debug mode, let you precise the locations of the Qt libraries, etc.
 
-2/ Next run the following commands
-make
+2/ Next run the following command
 make install
 
 The programs are installed in xx/bin, the libraries in xx/lib and some documentation in xx/Doc.
