@@ -37,6 +37,7 @@ static TSArray<int> MacroActions(0,4);
 //static TSArray<short> MacroVcolor(0,4),MacroEcolor(0,4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
+bool InfoNeedUpdate;
 static int key = 0;
 
 class eventEater : public QObject
@@ -150,6 +151,7 @@ void MyWindow::macroHandler(int event)
   unsigned j;
   double Time;
   QTime t0;
+  QString msg0,msg1;
   int repeat0;
   switch(event)
       {case 1://start recording
@@ -170,13 +172,13 @@ void MyWindow::macroHandler(int event)
       case 4:// play repeat times
 	  MacroRecording = false;
 	  MacroWait = false;
+	  MacroLooping = true;
 	  MessageClear();
 	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
 	  t0.start();
-	  DebugPrintf("Macro started at:%s",(const char *)t0.toString(Qt::TextDate)); 
+	  msg0 = QString("Macro started at %1").arg(t0.toString(Qt::TextDate));
+	  DebugPrintf("%s",(const char *)msg0); 
 	  t0.restart();
-	  MacroLooping = true;
-	  //blockInput(true);
 	  repeat0 = (repeat == 0) ? 1000 : repeat;
 	  progressBar->setTotalSteps(repeat0);
 	  progressBar->setProgress(0);
@@ -194,10 +196,13 @@ void MyWindow::macroHandler(int event)
 	  progressBar->hide();
 	  MacroLooping = MacroExecuting = MacroWait = false;
 	  Time = t0.elapsed()/1000.;
-	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
-	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
+	  msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
 	  if(EditNeedUpdate)gw->update(-1);
+	  if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
+	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
+	  Tprintf("%s",(const char *)msg0); 
+	  DebugPrintf("%s",(const char *)msg1); 
 	  if(!getError())
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
@@ -256,7 +261,8 @@ void MyWindow::macroPlay()
   blockInput(true);
   if(!MacroLooping){MessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
   int ret_handler = 0,action;
-  EditNeedUpdate = MacroExecuting = true;
+  EditNeedUpdate =  InfoNeedUpdate = true;
+  MacroExecuting = true;
   MacroRecording = MacroWait = false;
   
   // Load next graph 
@@ -275,15 +281,30 @@ void MyWindow::macroPlay()
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
       ret_handler = handler(action);
-      if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
-      else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
-      // update the editor if a pause 
-      if(record != MacroNumActions && action == A_PAUSE && EditNeedUpdate)
-	  {gw->update();EditNeedUpdate = false;}
+      if(ret_handler == 1)
+	  InfoNeedUpdate = true;
+      else if(ret_handler == 2)
+	  InfoNeedUpdate = EditNeedUpdate = true;
+      else if(ret_handler == 7 || ret_handler == 8)
+	  EditNeedUpdate = false;
+
+      //if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
+      //else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
+      // update the editor and information if a pause 
+      if(record != MacroNumActions && action == A_PAUSE)
+	  {if(EditNeedUpdate)
+	      {gw->update();EditNeedUpdate = false;}
+	  if(InfoNeedUpdate)
+	      {MacroExecuting = false; //Otherwise no information displayed
+	      information();InfoNeedUpdate = false;
+	      MacroExecuting = true;
+	      }
+	  }
       if(getError())
 	  {DebugPrintf("MACRO %s",(const char *)getErrorString());
 	  setError();
 	  MacroWait = MacroLooping = false;
+	  InfoNeedUpdate = false; // do not hide the error message
 	  break;
 	  }
       do
@@ -293,7 +314,10 @@ void MyWindow::macroPlay()
 
   MacroWait = MacroExecuting = false;
   if(!MacroLooping)
-      {if(EditNeedUpdate){gw->update(-1);EditNeedUpdate = false;}
+      {if(EditNeedUpdate)
+	  {gw->update(-1);EditNeedUpdate = false;}
+      if(InfoNeedUpdate)
+	  {information();InfoNeedUpdate = false;}
       blockInput(false);
       }
   }
