@@ -5,7 +5,7 @@ L=qt
 P=pigale_
 OPT=opt
 NVERSION=BETA
-
+AWK=awk
 MQTDIR=$(QTDIR)
 #MQTDIR=/usr/local/qt-2.3.2
 MMOC=$(MQTDIR)/bin/moc
@@ -50,6 +50,9 @@ ALLOBJ        = $(wildcard $(VPATH)/*.o)
 
 all :   $(P)$(OPT) 
 
+$(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
+	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
+ 
 moc_%.cpp:%.h
 	$(MMOC) $< -o $@
 
@@ -244,13 +247,14 @@ MyWindow.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/Tgf.h
 MyWindow.o: GraphWidget.h GraphGL.h GraphSym.h mouse_actions.h gprop.h
 MyWindow.o: LineEditNum.h ../../pigale/incl/QT/MyWindow_doc.h
 MyWindow.o: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
-MyWindow.o: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/QT/MyPaint.h
-MyWindow.o: ../../pigale/incl/QT/MyCanvas.h ../../pigale/incl/QT/grid.h
-MyWindow.o: icones/fileopen.xpm icones/filenew.xpm icones/fileprint.xpm
-MyWindow.o: icones/filesave.xpm icones/info.xpm icones/sleft.xpm
-MyWindow.o: icones/sright.xpm icones/sreload.xpm icones/help.xpm
-MyWindow.o: icones/xman.xpm icones/sleftarrow.xpm icones/srightarrow.xpm
-MyWindow.o: icones/sfilesave.xpm icones/macroplay.xpm icones/film.xpm
+MyWindow.o: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/QT/Action.h
+MyWindow.o: ../../pigale/incl/QT/MyPaint.h ../../pigale/incl/QT/MyCanvas.h
+MyWindow.o: ../../pigale/incl/QT/grid.h icones/fileopen.xpm
+MyWindow.o: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
+MyWindow.o: icones/info.xpm icones/sleft.xpm icones/sright.xpm
+MyWindow.o: icones/sreload.xpm icones/help.xpm icones/xman.xpm
+MyWindow.o: icones/sleftarrow.xpm icones/srightarrow.xpm icones/sfilesave.xpm
+MyWindow.o: icones/macroplay.xpm icones/film.xpm
 SchaefferGen.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
 SchaefferGen.o: ../../pigale/incl/TAXI/color.h
 SchaefferGen.o: ../../pigale/incl/TAXI/graphs.h
