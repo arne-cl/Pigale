@@ -78,31 +78,7 @@ void PigaleServer::OneClientClosed()
    mw->blockInput(false);
   }
 
-//ClientSocket: public QSocket
-ClientSocket::ClientSocket(int sock,const int id,bool display,QObject *parent,const char *name) :
-    QSocket(parent,name),line(0),prId(id),sdebug(0)
-// Constructor for XServer
-  {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
-  connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
-  connect(this,SIGNAL(threadDataAction(const QString&)),SLOT(xhandler(const QString&)));
-  connect(this,SIGNAL(logText(const QString&)),SLOT(writeServer(const QString&)));
-  setSocket(sock);
-  cli.setDevice(this);
-  clo.setDevice(this);
-  getRemoteGraph = false;
-  start();
-  
-  InitPigaleFont(); 
-  InitPigaleColors();
-  mw = new pigaleWindow();
-  mw->ServerExecuting = true;
-  mw->blockInput(true);
-  mw->ServerClientId = prId;
-  mw->show();
-  if(!display)mw->showMinimized(); 
-  cli << "!" << endl;
-  connect(this, SIGNAL(connectionClosed()),SLOT(ClientClosed()));
-  }
+
 ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
     QSocket(parent,name),sdebug(0),mw(p)
 // Constructor for pigale server

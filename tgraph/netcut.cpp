@@ -18,7 +18,25 @@
 #include <TAXI/netcut.h>
 #include <TAXI/color.h>
 #include <TAXI/Tmessage.h>
-
+static char *ColorNames[] = 
+    {"White",
+    "Black",
+    "Red",
+    "Green",
+    "Blue",
+    "Yellow",
+    "Violet",
+    "Orange",
+    "Cyan",
+    "Brown",
+    "Pink",
+    "Green2",
+    "Blue2",
+    "Grey1",
+    "Grey2",
+    "Grey3",
+    "Ivory"
+    };
 //! local structure 
 static Locals *l;
 
@@ -101,15 +119,13 @@ int split(Graph &G0,int &NumberOfClasses)
       {if(debug())LogPrintf("\nERROR NETCUT");
       return -2;
       }
-  if(debug())LogPrintf("\nFin de NETCUT");
-  for(i = 1;i <= G.NumberOfClasses;i++)
-      Tprintf("Class (%d):%d",i,G.NumberElementsInClass[i]);
+
   // Coloring vertices and edges
   tvertex v;
   short col = 0;
   ForAllVertices(v,G)
-      {col = (short)G.ClassNumber[v()] -1;
-      G.vcolor[v] = (col + Yellow) % 16;
+    {col = (short)G.ClassNumber[v()];// -1;
+    G.vcolor[v] = (col + Yellow-2) %16 + 1;
       }
   tedge e;
   ForAllEdges(e,G)
@@ -117,6 +133,11 @@ int split(Graph &G0,int &NumberOfClasses)
           {G.ewidth[e] = 2; G.ecolor[e] = Red;}
       else
           {G.ewidth[e] = 1; G.ecolor[e] = Black;}
+      }
+  if(debug())LogPrintf("\nFin de NETCUT");
+  for(i = 1;i <= G.NumberOfClasses;i++)
+      {col =  (i + Yellow-2) %16 + 1;
+      Tprintf("Class (%d):%d (%s)",i,G.NumberElementsInClass[i] ,ColorNames[col]);
       }
   return 0;
   }

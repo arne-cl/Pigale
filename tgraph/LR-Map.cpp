@@ -27,8 +27,13 @@ int Embed::LowerSideUpperSide()
   // special programm for trees
 
   if(m == n - 1)
-      {Side.dwn.fill(1,m,DROITE);
-      Side.up.fill(1,m,AUTRE|DROITE);
+      {if(debug())DebugPrintf("LowerSideUpperSide: graph is a tree");
+//       Side.dwn.fill(1,m,DROITE);
+//       Side.up.fill(1,m,AUTRE|DROITE);
+      for(i = 1;i <= m; i++)
+          {Side.dwn[i] =  DROITE;
+          Side.up[i] =  AUTRE|DROITE;
+          }
       return 0;
       }
 

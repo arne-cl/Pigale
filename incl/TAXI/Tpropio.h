@@ -48,7 +48,7 @@ struct TypeHandler
         }
 };
 
-
+template <>
 struct TypeHandler<tstring>
 {
     static void Import(tstring& obj, const _svector *v)

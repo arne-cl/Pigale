@@ -443,8 +443,8 @@ netcut.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 netcut.opt: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 netcut.opt: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 netcut.opt: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-netcut.opt: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/embedrn.h
-netcut.opt: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tmessage.h
+netcut.opt: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tmessage.h
+netcut.opt: ../../pigale/incl/TAXI/embedrn.h ../../pigale/incl/TAXI/color.h
 NewPolar.opt: ../../pigale/incl/TAXI/Dos.h ../../pigale/incl/TAXI/graphs.h
 NewPolar.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
 NewPolar.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h

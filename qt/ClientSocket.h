@@ -39,8 +39,7 @@ class ClientSocket : public QSocket, QThread
 // created each time a client connects
 {Q_OBJECT
 public:
- ClientSocket(int sock,int nid,bool show,QObject *parent=0,const char *name=0);
- ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
+  ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent=0,const char *name=0);
   ~ClientSocket() { }
   
 

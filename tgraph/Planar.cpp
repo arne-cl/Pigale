@@ -159,7 +159,7 @@ int Graph::Planarity()//BUG in PrepDFS if not connected
 */
 int TopologicalGraph::Planarity()
   {if(!ne())return 1;
-  if(debug())DebugPrintf("Executing Planarity");
+  if(debug())DebugPrintf("Executing TopologicalGraph::Planarity");
 #ifdef TDEBUG
   if(!DebugCir())
       {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
@@ -168,6 +168,9 @@ int TopologicalGraph::Planarity()
   MakeConnected();
   int m = ne();
   int n = nv();
+#ifdef TDEBUG
+  if(debug())DebugPrintf("n=%d m=%d",n,m);
+#endif
   svector<tvertex> nvin(-m,m);
   svector<tvertex> &low = *new svector<tvertex>(0,n);
   svector<tbrin> xcir;
@@ -177,6 +180,7 @@ int TopologicalGraph::Planarity()
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;
+      DebugPrintf("GDFSRenum ERROR");
       setError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
       }
   nvin.Tswap(vin);
@@ -189,7 +193,7 @@ int TopologicalGraph::Planarity()
 
   _Hist Hist(n,m);
   ret = lralgo(n,m,vin,Bicon,LrSort,Hist);
-  if(debug())DebugPrintf("Executing Embed lralgo = %d (0 NP)",ret);
+  if(debug())DebugPrintf("Executing Embed lralgo = %d (1-Planar 0-NonPlanar)",ret);
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
   nvin.Tswap(vin);

@@ -202,6 +202,10 @@ int AlgoHandler(int action,int nn)
 	  i = G.ColorExteriorface();
 	  ret = (i > 0) ? 0:1;
 	  break;
+      case A_ALGO_COLOR_CONNECTED://color connected components
+	  G.ColorConnectedComponents();
+	  ret = 0;
+	  break;
       case A_ALGO_COLOR_NON_CRITIC://show non critical edges
 	  {tedge e;
           ForAllEdges(e,G)

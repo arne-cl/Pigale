@@ -247,10 +247,10 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   menu->setItemEnabled(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual
-  menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 
-  menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P);
-  menu->setItemEnabled(A_GRAPH_ANGLE,(G.nv() > 1) && P);
-  menu->setItemEnabled(A_GRAPH_ANGLE_G,(G.nv() > 1) && P);
+  menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P && C1); 
+  menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P && C1);
+  menu->setItemEnabled(A_GRAPH_ANGLE,(G.nv() > 1) && C1 && P);
+  menu->setItemEnabled(A_GRAPH_ANGLE_G,(G.nv() > 1) && C1 && P);
   //Algo
   menu->setItemEnabled(A_ALGO_KURATOWSKI,!P);
   menu->setItemEnabled(A_ALGO_COTREE_CRITICAL,!P);

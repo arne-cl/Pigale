@@ -36,6 +36,7 @@ Nevertheless, a multigraph is not reconstructible from this distance as replacin
 */
 #include <TAXI/graphs.h>
 #include <TAXI/Tbase.h>
+#include <TAXI/Tmessage.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/embedrn.h>
 

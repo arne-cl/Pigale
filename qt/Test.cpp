@@ -21,7 +21,7 @@ static int Test3(GraphContainer &GC);
 void initMenuTest()
   {pigaleWindow *mw =  GetpigaleWindow();
   mw->setUserMenu(1,"TestPlanar x1000");
-  mw->setUserMenu(2,"3-Con Triangulate");
+  mw->setUserMenu(2,"Color connected components");
   mw->setUserMenu(3,"Properties");
   }
 int Test(GraphContainer &GC,int action)
@@ -31,13 +31,13 @@ int Test(GraphContainer &GC,int action)
   }
 int Test2(GraphContainer &GC)
   {TopologicalGraph G(GC);
-  //int m0 =  G.ne();
-  int err = G.TriconTriangulate();
-  int diff = G.ne() - 3*G.nv() +6;
-  //qDebug("err:%d diff:%d     %d -> %d",err,diff,m0,G.ne());
-  if(diff)err = -2;
-  if(err){setError(-1,"TriconTriangulate Error");return -1;}
-  return 0;
+  G.ColorConnectedComponents();
+//   int err = G.TriconTriangulate();
+//   int diff = G.ne() - 3*G.nv() +6;
+//   if(diff)err = -2;
+//   if(err){setError(-1,"TriconTriangulate Error");return -1;}
+
+  return 1;
   }
 int Test1(GraphContainer &GC)
   {GeometricGraph GG(GC);

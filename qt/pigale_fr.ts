@@ -45,6 +45,14 @@
         <source>&lt;b&gt;Graph Properties&lt;/b&gt;</source>
         <translation>&lt;b&gt;Propriétés du Graphe&lt;/b&gt;</translation>
     </message>
+    <message>
+        <source>Max. OuterPlanar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OuterPlanar</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Mouse_Actions</name>
@@ -788,6 +796,10 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Debug Mode</source>
         <translation>Mode debug</translation>
+    </message>
+    <message>
+        <source>Color c&amp;onnected components</source>
+        <translation>Colorier les c&amp;omposantes connexes</translation>
     </message>
 </context>
 </TS>

@@ -96,7 +96,7 @@ static:md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so
 moc_cpp:    $(MOC_CPP)
 
 depend:
-	@makedepend -o.$(OPT)  -fgnumakefile -I$(PIGALEPATH)/incl  -Y   $(FILES_WO_MOC)  2> /dev/null
+	@makedepend -o.$(OPT)  -fgnumakefile -I$(PIGALEPATH)/incl -I$(PIGALEPATH) -Y   $(FILES_WO_MOC)  2> /dev/null
 
 nodepend:
 	@makedepend -o.$(OPT)  -fgnumakefile -Y    2> /dev/null

@@ -384,6 +384,7 @@ pigaleWindow::pigaleWindow()
   algo->insertItem(tr("&Color everything"),               A_ALGO_RESET_COLORS);
   algo->insertItem(tr("Color &bipartite"),                A_ALGO_COLOR_BIPARTI);
   algo->insertItem(tr("Color current e&xterior face"),    A_ALGO_COLOR_EXT);
+  algo->insertItem(tr("Color c&onnected components"),     A_ALGO_COLOR_CONNECTED);
   algo->insertSeparator();
   algo->insertItem(tr("&Symmetry"),                       A_ALGO_SYM);
   algo->insertSeparator();
@@ -1020,11 +1021,12 @@ void pigaleWindow::banner()
   statusBar()->message(m);
   }
 void pigaleWindow::about()
-  {QMessageBox::about(this,"Pigale Editor 1.2.5", 
-		      "<b>Copyright (C) 2001</b>"
-		      "<br>Hubert de Fraysseix"
-		      "<br>Patrice Ossona de Mendez "
-		      "<br> See <em>pigale/license.html</em>");
+  {QMessageBox::about(this,tr("Pigale Editor"), 
+                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+PACKAGE_VERSION+")"
+                      "<br><b>Copyright (C) 2001</b>"
+                      +"<br>Hubert de Fraysseix"
+	    +"<br>Patrice Ossona de Mendez "
+	    +"<br> See <em>license.html</em>");
   }
 void pigaleWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");

@@ -181,8 +181,8 @@ int EmbedContactBip(GeometricGraph &G)
   {if(!G.CheckBipartite())return 4;
   if(G.FindPlanarMap())return  3;
   tbrin FirstBrin;
-  Prop1<int> n_origin(G.Set(),PROP_TMP);
-  n_origin() = G.nv();
+  int  n_origin = G.nv();
+  int m_origin = G.ne();
   svector<bool> save_oriented(0,G.ne());
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,0);
   save_oriented.Tswap(oriented);
@@ -193,8 +193,10 @@ int EmbedContactBip(GeometricGraph &G)
   CalcTotalOrder(G,FirstBrin);
   int n_quadrangulate = G.nv();
   tvertex v;
-  for(v = G.nv();v > n_origin();v--)
+  for(v = G.nv();v > n_origin;v--)
   	G.DeleteVertex(v);
+ for(tedge e  =  G.ne();e > m_origin;e--)
+  	G.DeleteEdge(e);
   // computes extremities of vertices
   Prop<int> h1(G.Set(tvertex()),PROP_DRAW_INT_2); 
   Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3); 

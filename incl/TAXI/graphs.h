@@ -198,6 +198,7 @@ public :
     bool CheckRegular(int &d);
     bool MinMaxDegree(int& dmin,int& dmax);  
     bool CheckConnected();
+    int ColorConnectedComponents();
     bool CheckBiconnected();
     bool CheckTriconnected();
     bool CheckFourconnected();
@@ -364,7 +365,6 @@ public :
   double MinMaxCoords(double &xmin,double &xmax, double &ymin,double &ymax);
   int Tutte();
   int ColorExteriorface();
- 
   int Jacquard(int maxgen, double k_angle, double k_mindist, double k_electro, double k_spring, bool k_frontier);
 
 };

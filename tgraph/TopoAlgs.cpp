@@ -277,6 +277,50 @@ int TopologicalGraph::MakeConnected(bool mark_cc)
      {Prop<tvertex> rep(Set(tvertex()),PROP_REPRESENTATIVEV);
      comp.Tswap(rep);
      }
+  if(debug())DebugPrintf("End  MakeConnected m=%d",ne());
+  return ncc - 1;
+  }
+int TopologicalGraph::ColorConnectedComponents()
+//returns the initial number of connected components
+  {if(debug())DebugPrintf("   CheckConnected");
+  if(Set().exist(PROP_CONNECTED))return true;
+  if(!nv()) return 0;
+  if(debug())DebugPrintf("Executing ColorConnectedComponents");
+  tvertex v,w;
+  tbrin b,b0;
+  int ncc = 0;
+  svector<tvertex> stack(1,nv()); stack.SetName("stack");
+  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("Comp");
+  Prop<short> vcolor(Set(tvertex()),PROP_COLOR);
+  int rank =0;
+  int max_rank = 0;
+  tvertex v0 = 1;
+  tvertex previous_root = 1;
+  short col;
+  while (max_rank < nv())
+      {while (comp[v0]!=0) v0++;
+      comp[v0] = v0;
+      ++ncc;
+      col = (ncc + Yellow-2) %16 + 1;
+      previous_root = v0;
+      ++max_rank;
+      stack[rank + 1] = v0;
+      vcolor[v0] = col;
+
+      while(rank < max_rank)
+          {v = stack[++rank];
+          b = b0 = pbrin[v];
+          if (b0!=0)
+              do {w = vin[-b];
+              if(!comp[w])
+                  {comp[w] = previous_root;
+                  stack[++max_rank] = w;
+                  vcolor[w] = col;
+                  }
+              }while((b = cir[b])!= b0);
+          }
+      }
+ if(debug())DebugPrintf("END ColorConnectedComponents");
   return ncc - 1;
   }
 bool TopologicalGraph::CheckBipartite(bool Color)
@@ -394,7 +438,10 @@ bool TopologicalGraph::CheckHypergraph(tvertex v0, bool v0ise)
 
 
 bool TopologicalGraph::CheckConnected()
-  {if(debug())DebugPrintf("   CheckConnected");
+  {if(debug())
+      {DebugPrintf("   CheckConnected");
+      if(Set().exist(PROP_CONNECTED))DebugPrintf("END PROP_CONNECTED EXIST");
+      }
   if(Set().exist(PROP_CONNECTED))return true;
   if(nv() < 2 || ne() < nv() - 1) return false;
   if(debug())DebugPrintf("Executing CheckConnected");

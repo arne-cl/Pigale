@@ -111,6 +111,7 @@
 #define  A_ALGO_COLOR_BIPARTI      (A_ALGO+10)          // COLOR_BIPARTI
 #define  A_ALGO_COLOR_EXT          (A_ALGO+11)          // COLOR_EXT_FACE
 #define  A_ALGO_COLOR_NON_CRITIC   (A_ALGO+12)          // COLOR_NON_CRITIC
+#define  A_ALGO_COLOR_CONNECTED   (A_ALGO+13)          // COLOR_CONNECTED
 #define  A_ALGO_END                (A_ALGO+99)
 
 //Orient

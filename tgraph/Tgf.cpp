@@ -203,7 +203,7 @@ int Tgf::SeekWrite(short t,long NumberBytes)
           offset_new_data += ii;
           }
       Ifd.field[field].word.l = (long)offset_new_data;
-      offset_new_data = stream.tellp() + NumberBytes;
+      offset_new_data = (long)stream.tellp() + NumberBytes;
       seek = 1;
       }
   //LE TAG EXISTE DEJA ou est 0
@@ -226,7 +226,7 @@ int Tgf::SeekWrite(short t,long NumberBytes)
               offset_new_data += ii;
               }
           Ifd.field[field].word.l = (long)offset_new_data;
-          offset_new_data = stream.tellp() + NumberBytes;
+          offset_new_data = (long)stream.tellp() + NumberBytes;
           seek = 1;
           }
       }
