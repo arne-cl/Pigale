@@ -12,6 +12,7 @@
 #include "MyWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
+#include "LineEditNum.h"
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
 #include <qapplication.h> 
@@ -42,6 +43,12 @@ int MyWindow::getKey()
 void MyWindow::blockInput(bool t)
   {menuBar()->setEnabled(!t); tb->setEnabled(!t);
   }
+void AllowAllMenus(QMenuBar *menubar)
+  {for(int menu = A_AUGMENT;menu <= A_TEST_END;menu++)
+      {if(menubar->text(menu) == QString::null ||menubar->isItemEnabled(menu))continue;
+      menubar->setItemEnabled(menu,true);
+      }
+  }
 void macroRecord(int action)
   {if(action > 10000)return;
   MacroActions(++MacroNumActions) = action;
@@ -51,10 +58,19 @@ void macroRecord(int action)
   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
 void MyWindow::macroHandler(int event)
-  { int repeat = spinMacro->value();
+//{int repeat = spinMacro->value();
+  {int repeat = macroLine->getVal();
+  int i;
+  unsigned j;
+  double Time;
+  QTime t0;
+  int repeat0;
   switch(event)
       {case 1://start recording
 	   if(debug())LogPrintf("\nRecord macro\n");
+	   AllowAllMenus(menuBar());
+	   MessageClear();
+	   Tprintf("No info while recording");
 	   MacroRecording = true;
 	   MacroNumActions = 0;
 	   break;
@@ -65,19 +81,38 @@ void MyWindow::macroHandler(int event)
 	  MacroRecording = true;
 	  break; 
       case 4:// play repeat times
+	  MacroRecording = false;
+	  Tprintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
+	  t0.start();
 	  MacroLooping = true;
 	  blockInput(true);
-	  for(int i = 1;i <= repeat;i++)
-	      {if(i == repeat || escape)MacroLooping = false;
+	  repeat0 = (repeat == 0) ? 10000 : repeat;
+	  j = 0;
+	  for(i = 1;i <= repeat0;i++)
+	      {if(i == repeat0 && repeat == 0)i = 1;
+	      if(i == repeat0 || escape)MacroLooping = false;
+	      ++j;
 	      macroPlay();
-	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
-	      mouse_actions->Slider->setValue((int)(i*100./repeat));
-	      if(escape || Error())break;
+	      mouse_actions->LCDNumber->display((int)(i*100./repeat0));
+	      mouse_actions->Slider->setValue((int)(i*100./repeat0));
+	      if(escape || !MacroLooping)break;
 	      qApp->processEvents(5);
 	      }
 	  escape = 0;
 	  MacroLooping = false;
 	  blockInput(false);
+	  Time = t0.elapsed()/1000.;
+	  DebugPrintf("Ellapsed time:%.3f mean%f",Time,Time/j);
+	  //DebugPrintf(t0.toString(Qt::TextDate )); 
+	  if(!Error())
+	      Tprintf("END PLAY OK times:%d MacroNumActions:%d",j,MacroNumActions);
+	  else
+	      {gw->update();
+	      Tprintf("END PLAY ERROR times=%d MacroNumActions:%d",j,MacroNumActions);
+	      Error()=0;
+	      }
+
+	  
 	  break;
       default:
 	  break;
@@ -90,7 +125,7 @@ void macroDefColors(int record)
   G.ewidth.definit(MacroEwidth[record]);
   }
 void MyWindow::macroPlay()
-  {if(debug())LogPrintf("\nPlay macro:%d records",MacroNumActions);
+  {if(debug())LogPrintf("\nPlay macro:%d actions\n",MacroNumActions);
   MacroRecording = false;
   if(MacroNumActions == 0){load(1);return;}
   MacroExecuting = true;
@@ -102,11 +137,18 @@ void MyWindow::macroPlay()
       if(MacroExecuting && record == MacroNumActions && !MacroLooping)
 	  {MacroExecuting = false;
 	  // Call editor if last action is an embedding not in graph editor
-	  if(MacroActions[record] > A_EMBED_TUTTE && MacroActions[record] < A_EMBED_END)
+	  //if(MacroActions[record] > A_EMBED_TUTTE && MacroActions[record] < A_EMBED_END)
 	      gw->update();
 	  }
       handler(MacroActions[record++]);
-      if(Error())break;
       }
-  if(!MacroLooping)information();
+  
+  if(!MacroLooping)
+      {information();
+      Tprintf("MacroNumActions:%d",MacroNumActions);
+      }
+  if(Error())
+      {DebugPrintf("MACRO error=%d",Error());
+      MacroLooping = false;
+      }
   }
