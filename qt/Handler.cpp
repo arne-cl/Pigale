@@ -19,7 +19,7 @@
 #include <TAXI/color.h>
 #include <QT/Handler.h>
 
-
+int EmbedFPP(TopologicalGraph &G);
 int EmbedTutteCircle(TopologicalGraph &G);
 int FindNPSet(TopologicalGraph &);
 int split(Graph &G0,int &NumberOfClasses);
@@ -269,6 +269,10 @@ int EmbedHandler(int action,int &drawing)
       case 204:ret = 1;
           EmbedTutteCircle(G);
 	  Tprintf("Tutte circle");
+	  break;
+      case 205:ret = 1;
+	  err = EmbedFPP(G);
+	  if(err)Tprintf("ret=%d",err);
 	  break;
       case 250:ret = 3;
 	  err = EmbedVision(G);

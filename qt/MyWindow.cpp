@@ -230,6 +230,7 @@ MyWindow::MyWindow()
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
+  embed->insertItem("&Fraysseix-Pach-Pollack",205);
   embed->insertItem("&Schnyder",             201);
   embed->insertItem("Schnyder &V ",          202);
   embed->insertSeparator();

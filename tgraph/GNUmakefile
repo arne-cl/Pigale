@@ -33,7 +33,9 @@ DLIB   = $(PIGALEPATH)/lib/lib$L$(OPT).so
 LIBS    = -L$(PIGALEPATH)/lib -lleda$(OPT) -ltgraph$(OPT)
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH = $(PIGALEPATH)/tmp.$(OPT)
-include  Make.lst
+FILES :=  $(wildcard *.cpp)
+OBJECTS =  $(patsubst %.cpp,%.o, $(FILES))
+#include  Make.lst
 OBJ =  $(patsubst %.o,$(VPATH)/%.o, $(OBJECTS))
 
 all :  $(DLIB)
@@ -59,13 +61,8 @@ nodepend:
 
 list:
 	../makelist *.cpp >Make.lst
-			
 
 
-
-
-
-	
 # DO NOT DELETE
 
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/KantShel.h
@@ -218,6 +215,13 @@ Embed2Pages.o: ../../pigale/incl/TAXI/Tpoint.h
 Embed2Pages.o: ../../pigale/incl/TAXI/IntList.h
 Embed2Pages.o: ../../pigale/incl/TAXI/Tmessage.h
 Embed2Pages.o: ../../pigale/incl/TAXI/color.h
+EmbedFPP.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+EmbedFPP.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Tpropio.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tmessage.h
+EmbedFPP.o: ../../pigale/incl/TAXI/color.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graphs.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graph.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/elmt.h

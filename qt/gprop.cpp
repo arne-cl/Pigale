@@ -227,6 +227,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(202,P && NotBigD);
   menu->setItemEnabled(203,P && NotBigD);
   menu->setItemEnabled(204,P && S && NotBigD);
+  menu->setItemEnabled(205,P && NotBigD);
   menu->setItemEnabled(250,P && NotBigD);
   menu->setItemEnabled(251,B && P && NotBigD);
   //dual
@@ -241,6 +242,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(604,!P);
   menu->setItemEnabled(610,B);
   menu->setItemEnabled(611,P);
+  menu->setItemEnabled(612,!P);
   //Orient
   menu->setItemEnabled(703,P && C3);
   menu->setItemEnabled(704,P && B);
