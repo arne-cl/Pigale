@@ -13,6 +13,7 @@
 #include "MyWindow.h"
 #include <Pigale.h>
 #include <QT/Misc.h>
+#include <QT/Action_def.h>
 
 #include <qvariant.h>   // first for gcc 2.7.2
 #include <qlabel.h>
@@ -224,48 +225,48 @@ void Graph_Properties::update()
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
   bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;
-  menu->setItemEnabled(298,!SMALL && NotBigD);                     //Rn embedding
-  menu->setItemEnabled(609,!SMALL && NotBigS);                     //sym
-  menu->setItemEnabled(606,!SMALL && NotBigS);                     //partition
-  menu->setItemEnabled(603,!P && NotBigS && S);                    //maxplanar
-  menu->setItemEnabled(604,!P && NotBigS && S);                    //maxplanar
-  menu->setItemEnabled(252,C1 && NotBigD);                         //polair
+  menu->setItemEnabled(A_EMBED_3d,!SMALL && NotBigD);                       //Rn embedding
+  menu->setItemEnabled(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
+  menu->setItemEnabled(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
+  menu->setItemEnabled(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar
+  menu->setItemEnabled(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
+  menu->setItemEnabled(A_EMBED_POLAR,C1 && NotBigD);                        //polair
 
   //Augment
-  menu->setItemEnabled(101,(G.nv() > 1) && !C1);                   //make connected 
-  menu->setItemEnabled(102,!SMALL && P && !C2);                    //make 2 connected
-  menu->setItemEnabled(103,!SMALL && P && !C2);                    //make 2 connected opt
-  menu->setItemEnabled(104,!SMALL && !C2);                         //make 2 connected NP  
-  menu->setItemEnabled(105,!SMALL && P && S && !T);                //vertex triangulate
-  menu->setItemEnabled(106,!SMALL && P && S && !T);                //ZigZag 
-  menu->setItemEnabled(107,!SMALL && P && C3 && !T);               //Tricon triangulate opt
-  menu->setItemEnabled(108,(G.nv() > 1) && P && B && S && !MB);    //Quadrangulate
+  menu->setItemEnabled(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
+  menu->setItemEnabled(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
+  menu->setItemEnabled(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
+  menu->setItemEnabled(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
+  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
+  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
+  menu->setItemEnabled(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
+  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && P && B && S && !MB); //Quadrangulate
   //Embed
-  menu->setItemEnabled(201,!SMALL && S && P && NotBigD);           //Schnyder
-  menu->setItemEnabled(202,!SMALL && S && P && NotBigD);           //Schnyder V 
-  menu->setItemEnabled(203,!SMALL && S && P && NotBigD);           //FPP Fary
-  menu->setItemEnabled(204,!SMALL && P && S && NotBigD);           //Tutte Circle 
-  menu->setItemEnabled(205,!SMALL && P && NotBigD);                //Tutte
-  menu->setItemEnabled(250,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
-  menu->setItemEnabled(251,(G.nv() > 1) && B && P && NotBigD);     //Biparti
-  menu->setItemEnabled(253,!SMALL && S && P && NotBigD);           //FPP vision
-  menu->setItemEnabled(255,!SMALL && S && P && NotBigD);           //T-contact
+  menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
+  menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
+  menu->setItemEnabled(A_EMBED_FPP,!SMALL && S && P && NotBigD);              //FPP Fary
+  menu->setItemEnabled(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
+  menu->setItemEnabled(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
+  menu->setItemEnabled(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
+  menu->setItemEnabled(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
+  menu->setItemEnabled(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
+  menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   //dual
-  menu->setItemEnabled(301,(G.nv() > 1) && P); 
-  menu->setItemEnabled(302,(G.nv() > 1) && P);
-  menu->setItemEnabled(303,(G.nv() > 1) && P);
-  menu->setItemEnabled(304,(G.nv() > 1) && P);
+  menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 
+  menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P);
+  menu->setItemEnabled(A_GRAPH_ANGLE,(G.nv() > 1) && P);
+  menu->setItemEnabled(A_GRAPH_ANGLE_G,(G.nv() > 1) && P);
   //Algo
-  menu->setItemEnabled(601,!P);
-  menu->setItemEnabled(602,!P);
-  menu->setItemEnabled(610,B);
-  menu->setItemEnabled(611,P);
-  menu->setItemEnabled(612,!P);
+  menu->setItemEnabled(A_ALGO_KURATOWSKI,!P);
+  menu->setItemEnabled(A_ALGO_COTREE_CRITICAL,!P);
+  menu->setItemEnabled(A_ALGO_COLOR_BIPARTI,B);
+  menu->setItemEnabled(A_ALGO_COLOR_EXT,P);
+  menu->setItemEnabled(A_ALGO_COLOR_NON_CRITIC,!P);
   //Orient
-  menu->setItemEnabled(703,!SMALL && P && C3);                        //planar 3-con 
-  menu->setItemEnabled(704,(G.nv() > 1) && P && B);                   //biparti 
-  menu->setItemEnabled(705,!SMALL && P && S);                         //planar schnyder
-  menu->setItemEnabled(706,(G.nv() > 1) && P && C2);                  //bipolar 
+  menu->setItemEnabled(A_ORIENT_TRICON,!SMALL && P && C3);       //planar 3-con 
+  menu->setItemEnabled(A_ORIENT_BIPAR,(G.nv() > 1) && P && B);   //biparti 
+  menu->setItemEnabled(A_ORIENT_SCHNYDER,!SMALL && P && S);      //planar schnyder
+  menu->setItemEnabled(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
 
   //Print informations
   Prop1<tstring> title(G.Set(),PROP_TITRE);

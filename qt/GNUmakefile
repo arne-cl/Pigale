@@ -154,6 +154,7 @@ Handler.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
 Handler.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Handler.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 Handler.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/QT/Handler.h
+Handler.o: ../../pigale/incl/QT/Action_def.h
 Macro.o: MyWindow.h ../../pigale/incl/Pigale.h
 Macro.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
 Macro.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h

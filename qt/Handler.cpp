@@ -15,6 +15,7 @@
 
 #include <Pigale.h> 
 #include <QT/Handler.h>
+#include <QT/Action_def.h>
 
 
 // in Misc.cpp
@@ -50,38 +51,38 @@ int OrientHandler(int action)
   tedge e;
   tbrin first;
   switch(action)
-      {case 701:
+      {case  A_ORIENT_E:
 	   {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,true);
 	   eoriented.definit(true);
 	   for(e=1;e <= G.ne();e++)eoriented[e] = true;
 	   }
 	   ShowOrientation() = true;
 	   break;
-      case 702:
+      case A_ORIENT_INF:
 	  i = G.InfOrient();
           G.FixOrientation();
 	  ShowOrientation() = true;
 	  Tprintf("G is %d inf-oriented",i-1);
           break;
-      case 703:
+      case A_ORIENT_TRICON:
           ret = G.Tricon3orient();
           G.FixOrientation();
 	  ShowOrientation() = true;
           if(ret != 0)Tprintf("ret=%d",ret);
           break;
-      case 704:
+      case A_ORIENT_BIPAR:
 	  ret = DecompMaxBip(G);
           if(ret != 0){Tprintf("ret=%d",ret);return -1;}
           G.FixOrientation();
 	  ShowOrientation() = true;
           break;
-      case 705:
+      case A_ORIENT_SCHNYDER:
 	  ret = G.SchnyderOrient(0);
           G.FixOrientation();
 	  ShowOrientation() = true;
           if(ret != 0)Tprintf("ret=%d",ret);
           break;
-      case 706:
+      case A_ORIENT_BIPOLAR:
 	  first = 1;
 	  ret = G.BipolarPlan(first);
 	  if(ret != 0){Tprintf("ret=%d",ret);return -1;}
@@ -105,11 +106,11 @@ int AlgoHandler(int action,int nn)
   int i;
   tedge e; tvertex v;
   switch(action)
-      {case 601:
+      {case A_ALGO_KURATOWSKI:
 	   ret = G.Kuratowski();
 	   Tprintf("Kuratowski");
 	   break;
-      case 602:
+      case A_ALGO_COTREE_CRITICAL:
 	  G.CotreeCritical(i);
 	  Tprintf("Cotre Critical case:%d",i);
 	  //if(ret){Tprintf("Error Cotre Critical");return -1;}
@@ -135,7 +136,7 @@ int AlgoHandler(int action,int nn)
           }
 	  return 1;
 	  break;
-      case 603:
+      case A_ALGO_NPSET:
 	  //G.Simplify();
 	  i = FindNPSet(G);
 	  if(i == 0)return 0;
@@ -143,7 +144,7 @@ int AlgoHandler(int action,int nn)
 	  Tprintf("Need to erase %d edges",i);
 	  return 1;
 	  break;
-      case 604:
+      case A_ALGO_MAX_PLANAR:
 	  //G.Simplify();
 	  i = G.MaxPlanar();
 	  if(i == 0)return 0;
@@ -152,7 +153,7 @@ int AlgoHandler(int action,int nn)
 	  Tprintf("Need to erase %d edges",i);
 	  return 1;
 	  break;
-      case 605:
+      case A_ALGO_RESET_COLORS:
 	  {short ecol; G.ecolor.getinit(ecol);
 	  short vcol;  G.vcolor.getinit(vcol);
 	  int width; G.ewidth.getinit(width);
@@ -160,11 +161,11 @@ int AlgoHandler(int action,int nn)
           ForAllVertices(v,G) G.vcolor[v] = vcol;
 	  }
           break;
-      case 606: // Netcut
+      case A_ALGO_NETCUT: // Netcut
 	  G.Simplify();
 	  ret = split(G,nn);
           break;
-      case 607:
+      case A_ALGO_GEOMETRIC_CIR:
 	  if(G.ComputeGeometricCir() == 0)
               {G.extbrin() = G.FindExteriorFace();
 	      Prop1<int> map(G.Set(),PROP_PLANARMAP);
@@ -172,7 +173,7 @@ int AlgoHandler(int action,int nn)
               maptype() = PROP_MAPTYPE_GEOMETRIC;
               }
 	  break;
-      case 608:
+      case A_ALGO_LRALGO_CIR :
           if(G.Planarity() == 1)
               {Prop1<int> map(G.Set(),PROP_PLANARMAP);
               Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
@@ -180,18 +181,18 @@ int AlgoHandler(int action,int nn)
               }
 	  return 0;
 	  break;
-      case 609://symetrie
+      case A_ALGO_SYM://symetrie
 	  ret = Embed3d(G);
 	  if(ret >=0)return 5;
 	  break;
-      case 610://color bipartite
+      case A_ALGO_COLOR_BIPARTI://color bipartite
 	  G.CheckBipartite(true);
 	  break;
-      case 611://color exterior face
+      case A_ALGO_COLOR_EXT://color exterior face
 	  i = G.ColorExteriorface();
 	  ret = (i > 0) ? 0:1;
 	  break;
-      case 612://show non critical edges
+      case A_ALGO_COLOR_NON_CRITIC://show non critical edges
 	  {tedge e;
           ForAllEdges(e,G)
               {G.ecolor[e] = Black; G.ewidth[e] = 1;}
@@ -222,55 +223,55 @@ int EmbedHandler(int action,int &drawing)
   int err = 0;
   drawing = 0;
   switch(action)
-      {case 201:ret = 1;
+      {case A_EMBED_SCHNYDER_E:ret = 1;
 	   err = G.Schnyder(0);
 	   Tprintf("Schnyder");
 	   if(err)Tprintf("ret=%d",err);
 	  break;
-      case 202:ret = 1;
+      case A_EMBED_SCHNYDER_V:ret = 1;
           err = G.SchnyderV(0);
 	  Tprintf("Schnyder V");
           if(err)Tprintf("ret=%d",err);
 	  break;
-      case 203:ret = 1;
+      case A_EMBED_FPP:ret = 1;
 	  err = EmbedFPP(G);
 	  if(err)Tprintf("ret=%d",err);
 	  break;
-      case 204:ret = 1;
+      case A_EMBED_TUTTE_CIRCLE:ret = 1;
           EmbedTutteCircle(G);
 	  Tprintf("Tutte circle");
 	  break;
-      case 205:ret = 1;
+      case A_EMBED_TUTTE:ret = 1;
           G0.Tutte();
 	  Tprintf("Tutte");
 	  break;
-      case 250:ret = 3;
+      case A_EMBED_VISION:ret = 3;
 	  err = EmbedVision(G);
 	  drawing = 0;
 	  break;
-      case 251:ret = 3;
+      case A_EMBED_CONTACT_BIP:ret = 3;
 	  err = EmbedContactBip(G0);
 	  drawing = 3;
 	  break;
-      case 252:ret = 3;
+      case A_EMBED_POLAR:ret = 3;
 	  err = Polar(G);
 	  drawing = 4;
 	  break;
-      case 253:ret = 3;
+      case A_EMBED_FPP_RECTI:ret = 3;
 	  err = EmbedFPPRecti(G);
 	  drawing = 1;
 	  break;
-      case 254:ret = 3;
+      case A_EMBED_FPP_GVISION:ret = 3;
 	  err = Vision(G);
 	  if(err)Tprintf("Vision err=%d",err);
 	  drawing = 2;
 	  break;
-      case 255:ret = 3;
+      case A_EMBED_T_CONTACT:ret = 3;
 	  err = EmbedTContact(G);
 	  if(err)Tprintf("TContact err=%d",err);
 	  drawing = 5;
 	  break;
-      case 298:ret = 4; //Embed3d
+      case A_EMBED_3d:ret = 4; //Embed3d
 	  break;
       default:
 	    return 0;
@@ -284,50 +285,50 @@ int AugmentHandler(int action)
   int ret = 0;
   int i;
   switch(action)
-      {case 101: 
+      {case A_AUGMENT_CONNECT: 
 	   i = G.MakeConnected();
 	   Tprintf("Added %d Edges",i);
 	   title() = "K-" + title();
 	   break;
-      case 102:
+      case A_AUGMENT_BICONNECT:
           G.Set().erase(PROP_BICONNECTED);
           ret = G.Biconnect();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "2K-" + title();
 	  break;
-      case 103:
+      case A_AUGMENT_BICONNECT_6:
           G.Set().erase(PROP_BICONNECTED);
           ret = G.Opt6Biconnect();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "2Kopt-" + title();
 	  break;
-      case 104:
+      case A_AUGMENT_BICONNECT_NP:
           G.Set().erase(PROP_BICONNECTED);
           ret = G.NpBiconnect();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "2KNP-" + title();
 	  break;
-      case 105:
+      case A_AUGMENT_TRIANGULATE_V:
 	  ret = G.VertexTriangulate();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "VT-" + title();
 	  break;
-      case 106:
+      case A_AUGMENT_TRIANGULATE_ZZ:
 	  ret = G.ZigZagTriangulate();
           if(ret < 0){Tprintf("ret=%d",ret);break;}
           title() = "ZZ-" + title();
 	  break;
-      case 107:
+      case A_AUGMENT_TRIANGULATE_3C:
 	  ret = G.TriconTriangulate();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "3CT-" + title();
 	  break;
-      case 108:
+      case A_AUGMENT_QUADRANGULATE_V:
 	  ret =   G.VertexQuadrangulate();
           if(ret != 0){Tprintf("ret=%d",ret);break;}
           title() = "VQ-" + title();
 	  break;
-      case 109:
+      case A_AUGMENT_BISSECT_ALL_E:
 	  {int m = G.ne();
 	  for(tedge e = 1;e <= m;e++)G.BissectEdge(e);
 	  }
@@ -342,25 +343,25 @@ int DualHandler(int action)
   {GeometricGraph G(GetMainGraph());
   GraphContainer *pGC;
   switch(action)
-      {case 301:
+      {case A_GRAPH_DUAL:
 	   pGC = G.DualGraph();
 	   if (pGC) G.swap(*pGC);
 	   delete pGC;
 	   Tprintf("Dual");
 	   break;
-      case 302:
+      case  A_GRAPH_DUAL_G:
 	   pGC = G.GeometricDualGraph();
 	   if (pGC) G.swap(*pGC);
 	   delete pGC;
 	   Tprintf("Dual geometric");
 	   break;
-      case 303:
+      case A_GRAPH_ANGLE:
 	   pGC = G.AngleGraph();
 	   if (pGC) G.swap(*pGC);
 	   delete pGC;
 	   Tprintf("Angle");
 	   break;
-      case 304:
+      case A_GRAPH_ANGLE_G:
 	   pGC = G.GeometricAngleGraph();
 	   if (pGC) G.swap(*pGC);
 	   delete pGC;
@@ -377,30 +378,29 @@ int RemoveHandler(int action)
   GeometricGraph GG(GetMainGraph());
   int n;
   switch(action)
-      {case 401:
+      {case A_REMOVE_ISOLATED_V:
 	   n = G.RemoveIsolatedVertices();
 	   break;
-      case 402:
+      case A_REMOVE_LOOPS:
 	  G.RemoveLoops();
 	  break;
-      case 403:
+      case A_REMOVE_MULTIPLE_E:
 	  G.Simplify();
 	  break;
-      case 404:
+      case  A_REMOVE_BRIDGES:
 	  G.RemoveIsthmus();
 	  break;
-      case 405://Erase Color Vertices
+      case A_REMOVE_COLOR_V://Erase Color Vertices
 	  short vcol; GG.vcolor.getinit(vcol);
 	  for(tvertex v= GG.nv() ;v > 0;v--)
 	      if(GG.vcolor[v] == vcol)GG.DeleteVertex(v);
 	  break;
-	  break;
-      case 406://Erase Color Edges
+      case A_REMOVE_COLOR_E://Erase Color Edges
 	  short ecol; GG.ecolor.getinit(ecol);
 	  for(tedge e = GG.ne() ;e > 0;e--)
 	      if(GG.ecolor[e] == ecol)GG.DeleteEdge(e);
 	  break;
-      case 407://Erase Thick Edges
+      case A_REMOVE_THICK_E://Erase Thick Edges
 	  int ewidth; GG.ewidth.getinit(ewidth);
 	  for(tedge e = GG.ne() ;e > 0;e--)
 	      if(GG.ewidth[e] == ewidth)GG.DeleteEdge(e);
@@ -413,56 +413,56 @@ int RemoveHandler(int action)
 int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
   {GraphContainer *GC=(GraphContainer *)0;
   switch(action)
-      {case 501:
+      {case  A_GENERATE_GRID:
 	   GC = GenerateGrid(n1_gen,n2_gen);
 	   break;
-      case 502:
+      case A_GENERATE_COMPLETE:
 	   GC = GenerateCompleteGraph(n1_gen);
 	   break;
-      case 503:
+      case A_GENERATE_COMPLETE_BIP:
 	   GC = GenerateCompleteBiGraph(n1_gen,n2_gen);
 	   break;
-      case 504:
+      case  A_GENERATE_RANDOM:
 	  GC = GenerateRandomGraph(n1_gen,m_gen);
 	   break;
 	   // Schaeffer generator
-      case 505:
+      case A_GENERATE_P:
 	   GC = GenerateSchaeffer(m_gen,1,1);
 	   break;
-      case 506:
+      case A_GENERATE_P_2C:
 	   GC = GenerateSchaeffer(m_gen,1,2);
 	   break;
-      case 507:
+      case A_GENERATE_P_3C:
 	   GC = GenerateSchaeffer(m_gen,1,3);
 	   break;
-      case 510:
+      case A_GENERATE_P_3R_2C:
 	   GC = GenerateSchaeffer(m_gen,3,2);
 	   break;
-      case 511:
+      case A_GENERATE_P_3R_3C:
 	   GC = GenerateSchaeffer(m_gen,3,3);
 	   break;
-      case 512:
+      case A_GENERATE_P_3R_D4C:
 	   GC = GenerateSchaeffer(m_gen,3,4);
 	   break;
-      case 513:
+      case A_GENERATE_P_4R_C:
 	   GC = GenerateSchaeffer(m_gen,4,2);
 	   break;
-      case 514:
+      case A_GENERATE_P_4R_2C:
 	   GC = GenerateSchaeffer(m_gen,4,4);
 	   break;
-      case 515:
+      case A_GENERATE_P_4R_3C:
 	   GC = GenerateSchaeffer(m_gen,4,6);
 	   break;
-      case 516:
+      case A_GENERATE_P_4R_BIP:
 	   GC = GenerateSchaeffer(m_gen,4,0);
 	   break;
-      case 517:
+      case A_GENERATE_P_BIP:
 	   GC = GenerateSchaeffer(m_gen,2,1);
 	   break;
-      case 518:
+      case A_GENERATE_P_BIP_2C:
 	   GC = GenerateSchaeffer(m_gen,2,2);
 	   break;
-      case 519:
+      case A_GENERATE_P_BIP_3C:
 	   GC = GenerateSchaeffer(m_gen,2,3);
 	   break;
       default:

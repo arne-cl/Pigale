@@ -22,6 +22,7 @@
 #include <QT/MyWindow_doc.h> 
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
+#include <QT/Action_def.h>
 #include <QT/MyPaint.h>
 #include <QT/MyCanvas.h>
 
@@ -249,102 +250,102 @@ MyWindow::MyWindow()
   QPopupMenu * augment = new QPopupMenu(this);
   menuBar()->insertItem("&Augment",augment);
   connect(augment,SIGNAL(activated(int)),SLOT(handler(int)));
-  augment->insertItem(xmanIcon,"Make &Connected",        101);
+  augment->insertItem(xmanIcon,"Make &Connected",        A_AUGMENT_CONNECT);
   augment->setWhatsThis(101,"Make a graph 2-connected");
-  augment->insertItem(xmanIcon,"Make &2-Connected",      102);
+  augment->insertItem(xmanIcon,"Make &2-Connected",      A_AUGMENT_BICONNECT);
   augment->setWhatsThis(102,"Make a PLANAR graph 2-connected");
-  augment->insertItem(xmanIcon,"Make 2-Connected &Opt",  103);
+  augment->insertItem(xmanIcon,"Make 2-Connected &Opt",  A_AUGMENT_BICONNECT_6);
   augment->setWhatsThis(103,"Make a PLANAR graph 2-connected\n with a minimal degree increase");
-  augment->insertItem(xmanIcon,"Make 2-Connected &NP",   104);
+  augment->insertItem(xmanIcon,"Make 2-Connected &NP",   A_AUGMENT_BICONNECT_NP);
   augment->setWhatsThis(104,"Make a graph 2-connected");
-  augment->insertItem(xmanIcon,"&Vertex Triangulate",    105);
+  augment->insertItem(xmanIcon,"&Vertex Triangulate",    A_AUGMENT_TRIANGULATE_V);
   augment->setWhatsThis(105,"Triangulate a PLANAR graph by adding vertices");
-  augment->insertItem(xmanIcon,"&ZigZag Triangulate",    106);
+  augment->insertItem(xmanIcon,"&ZigZag Triangulate",    A_AUGMENT_TRIANGULATE_ZZ);
   augment->setWhatsThis(106,"Triangulate a PLANAR graph by adding edges");
-  augment->insertItem(xmanIcon,"T&ricon. Triangulate",   107);
+  augment->insertItem(xmanIcon,"T&ricon. Triangulate",   A_AUGMENT_TRIANGULATE_3C);
   augment->setWhatsThis(107,"Optimally triangulate a PLANAR graph by adding edges");
-  augment->insertItem(xmanIcon,"Vertex &Quadrangulate",  108);
+  augment->insertItem(xmanIcon,"Vertex &Quadrangulate",  A_AUGMENT_QUADRANGULATE_V);
   augment->setWhatsThis(108,"Quadrangulate a planar bipartite graph");
   augment->insertSeparator();
-  augment->insertItem("&Bisect all edges",     109);
+  augment->insertItem("&Bisect all edges",     A_AUGMENT_BISSECT_ALL_E);
 
   QPopupMenu *remove = new QPopupMenu( this );
   menuBar()->insertItem("&Remove",remove);
   connect(remove,SIGNAL(activated(int)),SLOT(handler(int)));
-  remove->insertItem("&Isolated vertices",   401);
-  remove->insertItem("&Multiple edges",      403); 
-  remove->insertItem("Ist&hmus",             404);
+  remove->insertItem("&Isolated vertices",   A_REMOVE_ISOLATED_V);
+  remove->insertItem("&Multiple edges",      A_REMOVE_MULTIPLE_E); 
+  remove->insertItem("Ist&hmus",             A_REMOVE_BRIDGES);
   remove->insertSeparator();
-  remove->insertItem("Colored &vertices",    405);
-  remove->insertItem("Colored &edges",       406);
-  remove->insertItem("&Thick edges",         407);
+  remove->insertItem("Colored &vertices",    A_REMOVE_COLOR_V);
+  remove->insertItem("Colored &edges",       A_REMOVE_COLOR_E);
+  remove->insertItem("&Thick edges",         A_REMOVE_THICK_E);
 
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
-  embed->insertItem("&FPP Fary",             203);
-  embed->insertItem("&Schnyder",             201);
-  embed->insertItem("Schnyder &V ",          202);
+  embed->insertItem("&FPP Fary",             A_EMBED_FPP);
+  embed->insertItem("&Schnyder",             A_EMBED_SCHNYDER_E);
+  embed->insertItem("Schnyder &V ",          A_EMBED_SCHNYDER_V);
   embed->insertSeparator();
-  embed->insertItem("&Tutte"      ,          205);
-  embed->insertItem("Tutte &Circle",         204);
+  embed->insertItem("&Tutte"      ,          A_EMBED_TUTTE);
+  embed->insertItem("Tutte &Circle",         A_EMBED_TUTTE_CIRCLE);
   embed->insertSeparator();
-  embed->insertItem("&Visibility",           250);
-  embed->insertItem("FPP Visi&bility",       253);
+  embed->insertItem("&Visibility",           A_EMBED_VISION );
+  embed->insertItem("FPP Visi&bility",       A_EMBED_FPP_RECTI);
 #ifdef VERSION_ALPHA 
-  embed->insertItem("&General Visibility",   254);
+  embed->insertItem("&General Visibility",   A_EMBED_FPP_GVISION);
 #endif
-  embed->insertItem("&T Contact",            255);
-  embed->insertItem("&Contact Biparti",      251);
+  embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
+  embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
-  embed->insertItem("&Polar",                252);
+  embed->insertItem("&Polar",                A_EMBED_POLAR);
   embed->insertSeparator(); 
-  embed->insertItem(xmanIcon,"&Embedding in Rn",298);
+  embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
   embed->setWhatsThis(298,embed3d_txt);
 
   QPopupMenu *dual = new QPopupMenu( this );
   menuBar()->insertItem("&Dual/Angle",dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));
-  dual->insertItem("&Dual",                 301);
-  dual->insertItem("&Geometric Dual",       302);
+  dual->insertItem("&Dual",                 A_GRAPH_DUAL);
+  dual->insertItem("&Geometric Dual",       A_GRAPH_DUAL_G);
   dual->insertSeparator();
-  dual->insertItem("&Angle",                303);
-  dual->insertItem("G&eometric Angle",      304);
+  dual->insertItem("&Angle",                A_GRAPH_ANGLE);
+  dual->insertItem("G&eometric Angle",      A_GRAPH_ANGLE_G);
 
   QPopupMenu *algo = new QPopupMenu( this );
   menuBar()->insertItem("&Algo",algo);
   connect(algo,SIGNAL(activated(int)),SLOT(handler(int)));
-  algo->insertItem("Find &Kuratowski",              601);
-  algo->insertItem("Find &Cotree Critical",         602);
-  algo->insertItem("Color red  non critical edges ",612);
-  algo->insertItem("Max.Planar (simple graph) Fast",603);
-  algo->insertItem("&Max.Planar (simple graph) Slow ",604);
+  algo->insertItem("Find &Kuratowski",                A_ALGO_KURATOWSKI);
+  algo->insertItem("Find &Cotree Critical",           A_ALGO_COTREE_CRITICAL);
+  algo->insertItem("Color red  non critical edges ",  A_ALGO_COLOR_NON_CRITIC);
+  algo->insertItem("Max.Planar (simple graph) Fast",  A_ALGO_NPSET);
+  algo->insertItem("&Max.Planar (simple graph) Slow ",A_ALGO_MAX_PLANAR);
   algo->insertSeparator();
-  algo->insertItem("Use &Geometric Map",            607);
-  algo->insertItem("Use &LRALGO Map",               608);
+  algo->insertItem("Use &Geometric Map",              A_ALGO_GEOMETRIC_CIR);
+  algo->insertItem("Use &LRALGO Map",                 A_ALGO_LRALGO_CIR);
   algo->insertSeparator();
-  algo->insertItem("&Color everything",             605);
-  algo->insertItem("Color &bipartite",              610);
-  algo->insertItem("Color current e&xterior face",  611);
+  algo->insertItem("&Color everything",               A_ALGO_RESET_COLORS);
+  algo->insertItem("Color &bipartite",                A_ALGO_COLOR_BIPARTI);
+  algo->insertItem("Color current e&xterior face",    A_ALGO_COLOR_EXT);
   algo->insertSeparator();
-  algo->insertItem("&Symmetry",                     609);
+  algo->insertItem("&Symmetry",                       A_ALGO_SYM);
   algo->insertSeparator();
   spin_N = new QSpinBox(2,50,1,algo,"spinN");
   spin_N->setValue(2);     spin_N->setPrefix("Number of classes: ");
   algo->insertItem(spin_N);
-  algo->insertItem("&Partition",                    606);
+  algo->insertItem("&Partition",                       A_ALGO_NETCUT );
 
   QPopupMenu *orient = new QPopupMenu( this );
   menuBar()->insertItem("&Orient",orient);
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
   orient->insertItem("&Show orientation",   10020);
   orient->setItemChecked(10020,ShowOrientation());
-  orient->insertItem("&Orient all edges",     701);
-  orient->insertItem("&Inf Orientation",      702);
-  orient->insertItem("Planar &3-Con.",        703);
-  orient->insertItem("Planar &Biparti",       704);
-  orient->insertItem("Planar &Schnyder",      705);
-  orient->insertItem("B&ipolarOrient Planar", 706);
+  orient->insertItem("&Orient all edges",     A_ORIENT_E);
+  orient->insertItem("&Inf Orientation",      A_ORIENT_INF);
+  orient->insertItem("Planar &3-Con.",        A_ORIENT_TRICON);
+  orient->insertItem("Planar &Biparti",       A_ORIENT_BIPAR);
+  orient->insertItem("Planar &Schnyder",      A_ORIENT_SCHNYDER);
+  orient->insertItem("B&ipolarOrient Planar", A_ORIENT_BIPOLAR );
 
   QPopupMenu *generate      = new QPopupMenu( this );
   QPopupMenu *popupCubic    = new QPopupMenu(this);
@@ -358,27 +359,27 @@ MyWindow::MyWindow()
   connect(popupBipar,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
   generate->insertItem("&Planar",popupPlan);
-  popupPlan->insertItem("connnected (M)",           505);
-  popupPlan->insertItem("2-connnected (M)",         506);
-  popupPlan->insertItem("3-connnected (M)",         507);
+  popupPlan->insertItem("connnected (M)",                  A_GENERATE_P);
+  popupPlan->insertItem("2-connnected (M)",                A_GENERATE_P_2C);
+  popupPlan->insertItem("3-connnected (M)",                A_GENERATE_P_3C);
   generate->insertItem("Planar &cubic",popupCubic);
-  popupCubic->insertItem("2-connnected (M)",        510);
-  popupCubic->insertItem("3-connnected (M)",        511);
-  popupCubic->insertItem("dual:4-connnected (M)",   512);
+  popupCubic->insertItem("2-connnected (M)",               A_GENERATE_P_3R_2C);
+  popupCubic->insertItem("3-connnected (M)",               A_GENERATE_P_3R_3C);
+  popupCubic->insertItem("dual:4-connnected (M)",          A_GENERATE_P_3R_D4C);
   generate->insertItem("Planar &4-regular",popupQuadric);
-  //popupQuadric->insertItem("connnected (M)",513);
-  popupQuadric->insertItem("4-regular 2-connnected (M)",514);
-  popupQuadric->insertItem("4-regular 3-connnected (M)",515);
-  popupQuadric->insertItem("4-regular bipartite (N1)",516);
+  //popupQuadric->insertItem("connnected (M)",             A_GENERATE_P_4R_C);
+  popupQuadric->insertItem("4-regular 2-connnected (M)",   A_GENERATE_P_4R_2C);
+  popupQuadric->insertItem("4-regular 3-connnected (M)",   A_GENERATE_P_4R_3C);
+  popupQuadric->insertItem("4-regular bipartite (N1)",     A_GENERATE_P_4R_BIP);
   generate->insertItem("Planar &bipartite",popupBipar);
-  popupBipar->insertItem("Bipartite (M)"           ,517);
-  popupBipar->insertItem("Bipartite cubic 2-connected (M)",518);
-  popupBipar->insertItem("Bipartite cubic 3-connected (M)",519);
-  generate->insertItem("&Grid (N1,N2)",             501);
+  popupBipar->insertItem("Bipartite (M)",                  A_GENERATE_P_BIP);
+  popupBipar->insertItem("Bipartite cubic 2-connected (M)",A_GENERATE_P_BIP_2C );
+  popupBipar->insertItem("Bipartite cubic 3-connected (M)",A_GENERATE_P_BIP_3C);
+  generate->insertItem("&Grid (N1,N2)",                    A_GENERATE_GRID);
   generate->insertSeparator();
-  generate->insertItem("&Complete (N1)",            502);
-  generate->insertItem("&Bipartite complete (N1,N2)",503);
-  generate->insertItem("&Random (N1,M)",            504);
+  generate->insertItem("&Complete (N1)",                   A_GENERATE_COMPLETE);
+  generate->insertItem("&Bipartite complete (N1,N2)",      A_GENERATE_COMPLETE_BIP);
+  generate->insertItem("&Random (N1,M)",                   A_GENERATE_RANDOM );
   generate->insertSeparator();
   // Erase multiple edges
   generate->insertItem("Erase multiple edges",10006);
@@ -712,32 +713,32 @@ void MyWindow::handler(int action)
   int drawing;
   //if(debug())DebugPrintf("handler:%d",action);
   if(MacroRecording)macroRecord(action);
-  if(action < 200)
+  if(action < A_AUGMENT_END)
       {UndoSave();timer.restart();
       ret = AugmentHandler(action);
       }
-  else if(action < 300)
+  else if(action < A_EMBED_END)
       {timer.restart();
       ret = EmbedHandler(action,drawing);
       }
-  else if(action < 400)
+  else if(action < A_GRAPH_END)
       {UndoClear();UndoSave();timer.restart();
       ret = DualHandler(action); UndoSave();
       }
-  else if(action < 500)
+  else if(action < A_REMOVE_END)
       {UndoSave();timer.restart();
       ret = RemoveHandler(action);UndoTouch(false);
       }
-  else if(action < 600)
+  else if(action < A_GENERATE_END)
       {UndoClear();UndoSave();timer.restart();
       ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       UndoSave();
       }
-  else if(action < 700)
+  else if(action < A_ALGO_END)
       {timer.restart();
       ret = AlgoHandler(action,spin_N->value());
       }
-  else if(action < 800)
+  else if(action < A_ORIENT_END)
       {timer.restart();
       ret = OrientHandler(action);
       menuBar()->setItemChecked(10020,ShowOrientation());
