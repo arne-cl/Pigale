@@ -113,16 +113,15 @@ int Client::sendToServerGraph(QString &data)
       emit WriteToClient(QString("SENDING:%1").arg(GraphFileName));
   else 
       {emit WriteToClient("empty file");return -1;}
-  
   cls << data << endl;
   QFile file(GraphFileName);
   file.open(IO_ReadOnly);
   QDataStream stream(&file);
   char *buff = new char[size];
   stream.readRawBytes(buff,size); 
-//   clo << size;   clo.writeRawBytes(buff,size);
   clo.writeBytes(buff,size);
   emit WriteToClient(QString("SENT:%1 bytes").arg(size));
+  usleep(10);
   delete [] buff;
   return 0;
   }
@@ -165,6 +164,7 @@ void Client::socketReadyRead()
 	  file.close();
 	  delete [] buff;
 	  emit WriteToClient("END GETTING PNG");
+	  usleep(10);
 	  ActionTreated = true;
 	  }
       else if(str.at(0) == '!')//server has finished
@@ -177,7 +177,6 @@ void Client::socketReadyRead()
 void Client::run() 
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
-  usleep(500000);// sleep.5s
   QString str;
   if(socket->state() != QSocket::Connected)return;
   int i = 0;
