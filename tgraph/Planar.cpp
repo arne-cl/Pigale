@@ -170,12 +170,12 @@ int TopologicalGraph::Planarity()
   svector<tvertex> &low = *new svector<tvertex>(0,n);
   svector<tbrin> xcir;
   xcir = cir;
-  tbrin b0 = extbrin();
+  //tbrin b0 = extbrin();
+  tbrin b0 = 1;
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;
-      DebugPrintf("GDFSRenum ERROR");
-      setError(A_ERRORS_GDFSRENUM);return A_ERRORS_GDFSRENUM;
+      setError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
       }
   nvin.Tswap(vin);
   _Bicon Bicon(n);
@@ -282,7 +282,7 @@ int TopologicalGraph::TestPlanar2()
   int m_origin = m;
   if(m < 9 || n < 4) return 1;
   DFSGraph DG(DFSContainer,*this);
-    
+
   if (!Set().exist(PROP_CONNECTED))
       {MakeConnected();
       m = ne();
@@ -298,6 +298,7 @@ int TopologicalGraph::TestPlanar2()
       return  0;
   int ret = DG.TestPlanar();
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
+  if(debug())DebugPrintf("END:TestPlanar2 -> %d (1-planar)",ret);
   return ret;
   }
 int TopologicalGraph::RemoveIsthmus()

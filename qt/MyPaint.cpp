@@ -13,7 +13,6 @@
 #include <QT/MyPaint.h>
 #include <qtabwidget.h>
 #include <QT/MyQcolors.h>
-#include <iostream.h>
 #include <qprinter.h>
 #include <qpixmap.h>
 #include <qfile.h>

@@ -11,7 +11,6 @@
 
 #include "gprop.h"
 #include "MyWindow.h"
-#include <Pigale.h>
 #include <QT/Misc.h>
 #include <QT/Action_def.h>
 

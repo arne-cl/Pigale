@@ -9,15 +9,12 @@
 **
 *****************************************************************************/
 
-
-#include <TAXI/Tpoint.h>
 #include <TAXI/Tbase.h>
+#include <TAXI/Tpoint.h>
 #include <TAXI/graphs.h>
 #include <TAXI/bicon.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
-#include <stdlib.h>
-#include <math.h>
 
 //GRAPH
 bool  Graph::CheckBiconnected()

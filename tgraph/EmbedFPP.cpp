@@ -10,10 +10,10 @@
 *****************************************************************************/
 
 
+#include <TAXI/Tbase.h>
 #include <TAXI/graphs.h>
 #include <TAXI/SchPack.h>
 #include <TAXI/MaxPath.h>
-#include<stdio.h> 
 
 #define CONE 0
 #define HOR_LEFT 1

@@ -1,8 +1,8 @@
+#include <TAXI/Tbase.h>
 #include "glcontrolwidget.h"
 #include <qcursor.h>
 #include <qevent.h>
 #include <qtimer.h>
-#include <math.h>
 
 GLControlWidget::GLControlWidget( QWidget *parent, const char *name, QGLWidget *share, WFlags f )
 : QGLWidget( parent, name, share, f ),

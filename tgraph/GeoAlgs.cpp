@@ -11,14 +11,10 @@
 
 
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-
+#include <TAXI/Tbase.h>
 #include <TAXI/smatrix.h>
 #include <TAXI/Tstring.h>
 #include <TAXI/Tdebug.h>
-#include <TAXI/Tbase.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/graphs.h>
 #include <TAXI/color.h>

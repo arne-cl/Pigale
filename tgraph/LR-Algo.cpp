@@ -10,7 +10,7 @@
 *****************************************************************************/
 
 
-#include <stdio.h>
+#include <TAXI/Tbase.h>
 #include <TAXI/graph.h>
 #include <TAXI/graphs.h>
 #include <TAXI/bicon.h>
@@ -29,7 +29,7 @@ void LralgoSort(int n, int m, svector<tvertex> &vin, const _Bicon &Bicon ,const 
 
   TEdgeStackPartition Stack(LrSort.linkt);
   // filling piles thin and thick (sort by Bicon.low)
-  for(je = 1;je < tedge(n);je++) // tree edges 
+  for(je = 1;je < n;je++) // tree edges 
       {iv = low[je+1];
       if(Bicon.status[je] == PROP_TSTATUS_THICK)
           Stack.Push(thick[iv],je);
@@ -79,6 +79,7 @@ int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSor
   svector<tedge> ctel(LrSort.tel); ctel.SetName("ctel Lr-Algo.cpp");
   tvertex vi, vii;
   tedge ej;
+
   // Going up in the tree along LrSort.tref edges
   vi = 1;
   while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 

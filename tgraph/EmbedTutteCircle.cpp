@@ -9,7 +9,7 @@
 **
 *****************************************************************************/
 
-#include <stdlib.h>
+#include <TAXI/Tbase.h>
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>

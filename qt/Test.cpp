@@ -1,29 +1,33 @@
-#include <qapplication.h>
-#include <Pigale.h> 
 #include "MyWindow.h" 
 #include <QT/Misc.h> 
+#include <qapplication.h>
 
+using namespace std;
 
 int Test(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
   GeometricGraph GG(GC);
   int err = 0;
+  
   if(action == 1)
-      {tbrin first = 1;
-      if(!G.CheckConnected())G.MakeConnected();
-      if(!G.CheckBiconnected())G.NpBiconnect();
-      NPBipolar(G,first); 
+      {GG.ComputeGeometricCir();
+      NPBipolar(G,1); 
+      G.FixOrientation();
       int ns,nt;
-      G.CheckAcyclic(ns,nt);
-      if(ns !=1 || nt !=1)setError(-12345,"error bipolar");
+      bool acyclic = G.CheckAcyclic(ns,nt);
+      ColorPoles(GG);
+      if(ns !=1 || nt !=1 || !acyclic)
+	  {static QString t;
+	  t.sprintf("Error bipolar:s=%d t=%d a=%d",ns,nt,(int)acyclic);
+	  setError(-12345,(const char *)t);
+	  }
       return 0;
       }
   if(action == 2)
-      {for(int i=1; i<1000;i++)
-	  err = G.TestPlanar();
-      if(err != 1)
-	  {DebugPrintf("Test TestPlanar():%s",(const char *)getErrorString());
-	  setError(-12345); 
+      {if(G.TestPlanar() != G.TestPlanar2())err = 1;
+      if(err == 1)
+	  {if(getError())DebugPrintf("Planar2!=Planarity:%s",(const char *)getErrorString());
+	  setError(-12345,"is planar"); 
 	  }
       return 0;
       }

@@ -28,7 +28,7 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   svector<tbrin> tb(0,n); tb.clear(); tb.SetName("GDFSRenu:tb");
   svector<int> dfsnum(0,n);  dfsnum.SetName("GDFSRenu:dfsnum");
   assert(m>=1); // pour les cas particuliers
-  nvin.clear();
+  //nvin.clear();
   nvin[0]=0;
   tbrin b=b0;
   tedge y=1;

@@ -10,12 +10,6 @@
 *****************************************************************************/
 
 
-
-//#include <stdlib.h>
-#include <stdarg.h>
-#include <math.h>
-#include <stdio.h>    //provisoire pour debug
-
 #include <TAXI/Tbase.h>
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tmessage.h>

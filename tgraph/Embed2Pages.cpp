@@ -9,7 +9,6 @@
 **
 *****************************************************************************/
 
-#include <stdio.h>
 #include <TAXI/Tbase.h>
 #include <TAXI/graphs.h>
 #include <TAXI/IntList.h>

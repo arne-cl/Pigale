@@ -10,9 +10,7 @@
 *****************************************************************************/
 
 
-#include <stdio.h>
-//#define NO_LEDA_PREFIX
-
+#include <TAXI/Tbase.h>
 #include <TAXI/smatrix.h>
 #include <TAXI/graph.h>
 #include <TAXI/graphs.h>

@@ -11,6 +11,8 @@
 
 #ifndef __MYDEBUG_H__
 #define __MYDEBUG_H__
+
+#include <TAXI/Tbase.h>
 #include <TAXI/Errors.h>
 
 bool & debug();
@@ -45,7 +47,6 @@ int getErrorLine();
 #define _PRINTFL(arg)   DebugPrintf("%s line:%d -> %d",__FILE__, __LINE__,arg)
 
 #ifdef TDEBUG
-  #include  <stdlib.h>
 
   #define DOPEN()   { DebugIndent(1); }
   #define DCLOSE()  { DebugIndent(-1); }

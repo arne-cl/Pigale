@@ -10,7 +10,6 @@
 *****************************************************************************/
 
 #include <qapplication.h>
-//#include <TAXI/Tbase.h>
 #include "MyWindow.h" 
 #include "GraphWidget.h" 
 
@@ -31,9 +30,7 @@
 #include <qfileinfo.h>
 #include <qstring.h>
 #include <qmessagebox.h>
-#include <stdarg.h>
-#include <stdio.h> //pour vsprintf !!!!
-#include <iostream.h>
+
 
 void DrawGraph(Graph &G) {}
 

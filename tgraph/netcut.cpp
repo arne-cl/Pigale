@@ -12,7 +12,6 @@
 #include <TAXI/netcut.h>
 #include <TAXI/color.h>
 #include <TAXI/Tmessage.h>
-//#include <qapplication.h>
 
 
 static Locals *l;

@@ -10,10 +10,7 @@
 *****************************************************************************/
 
 
-#include <stdio.h>
-#include <math.h>
-
-
+#include <TAXI/Tbase.h>
 #include <TAXI/SchPack.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>

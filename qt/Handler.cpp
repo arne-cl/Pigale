@@ -9,7 +9,6 @@
 **
 *****************************************************************************/
 
-#include <Pigale.h> 
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
 #include "MyWindow.h" 

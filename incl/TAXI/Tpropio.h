@@ -29,10 +29,11 @@
  * Import recoit un _svector * et l'utilise pour initialiser un objet.
  * Seul le buffer du _svector est signifiant.
  */
+
 //#ifndef _MSC_VER
 //    inline void* operator new(size_t, void* p) {return p;}
 //#else
-#include <new.h>
+//#include <new.h>
 //#endif
 
 template <class T>
