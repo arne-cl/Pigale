@@ -15,10 +15,8 @@ LineEditNum::LineEditNum(QWidget * parent, const char * name)
     :QLineEdit(parent,name),num(1),mul(1)
   {}
 void LineEditNum::display()
-  {QString m;
-  int i = (mul == 0) ? 1 : mul*MULT;
-  m.sprintf("(x%d) %s %d",i,(const char *)prefix,prod);
-  QLineEdit::setText(m);
+  { int i = (mul == 0) ? 1 : mul*MULT;
+  QLineEdit::setText(QString("(x%1) %2 %3").arg(i).arg(prefix).arg(prod));
   }
 void LineEditNum::setNum(int  i)
   {num = i;
