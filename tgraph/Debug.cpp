@@ -18,21 +18,28 @@
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tmessage.h>
 
+struct _Error {
+   _T_Error error;
+   char *file;
+   int line;
+   };
 
 static char LogName[] = "log.txt";
 static int Indent = 0;
 static bool first = true;
+static _Error MainError;
+
+_T_Error &ErrorPositioner(char *f, int l)
+     {MainError.file=f; MainError.line=l; return MainError.error;}
+int getError() {return (int) MainError.error;}
+//const _T_Error &getError() {return MainError.error;}
 
 bool& debug()
   {static bool i = 0;
   return i;
   }
-int& Error()
-  {static int err = 0;
-  return err;
-  }
 void DebugIndent(int i)
-  {Indent += i;}
+  {Indent += i;} 
 
 void DebugPuts(const char *str)
   {FILE *LogFile;
@@ -40,7 +47,7 @@ void DebugPuts(const char *str)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){Error() = -1;return;}
+  if(LogFile == NULL){setError(-1);return;}
   fprintf(LogFile, "%*s%s\n", Indent*2, "", str);
   fclose(LogFile);
   }
@@ -57,11 +64,29 @@ void DebugPrintf(const char *fmt,...)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){Error() = -1;return;}
+  if(LogFile == NULL){setError(-1);return;}
   fprintf(LogFile, "%*s%s\n", Indent*2, "", buff);
   Tprintf("%*s%s", Indent*2, "", buff);
   fclose(LogFile);
   }
+void DebugPrintf(char *fmt,...)
+  {FILE *LogFile;
+  va_list arg_ptr;
+  char buff[256];
+  va_start(arg_ptr,fmt);
+  vsprintf(buff,fmt,arg_ptr);
+  va_end(arg_ptr);
+
+  if(first)
+      {LogFile = fopen(LogName, "w");first = false;}
+  else
+      LogFile = fopen(LogName, "aw");
+  if(LogFile == NULL){setError(-1);return;}
+  fprintf(LogFile, "%*s%s\n", Indent*2, "", buff);
+  Tprintf("%*s%s", Indent*2, "", buff);
+  fclose(LogFile);
+  }
+
 void LogPrintf(const char *fmt,...)
   {FILE *LogFile;
   va_list arg_ptr;
@@ -74,7 +99,7 @@ void LogPrintf(const char *fmt,...)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){Error() = -1;return;}
+  if(LogFile == NULL){setError(-1);return;}
   fprintf(LogFile,"%s",buff);
   fclose(LogFile);
   }
