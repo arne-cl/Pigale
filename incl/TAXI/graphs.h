@@ -158,6 +158,7 @@ public :
     int InDegree(const tvertex &v);
     int OutDegree(const tvertex &v);
     int RemoveLoops();
+    bool CheckNoLoops();
     int RemoveIsolatedVertices();
     int ComputeGenus();
     int NumFaces();

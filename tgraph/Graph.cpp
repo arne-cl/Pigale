@@ -418,6 +418,13 @@ int TopologicalGraph::FaceWalkLength(const tbrin &b0)
   while((b = cir[-b]) != b0);
   return len;
   }
+bool TopologicalGraph::CheckNoLoops()
+  {if(Set().exist(PROP_NLOOPS))return true;
+  for(tedge e = ne();e >= 1;e--)
+      if(vin[e] == vin[-e])return false;
+  Prop1<int> NoLoops(Set(),PROP_NLOOPS);
+  return true;
+  }
 int TopologicalGraph::RemoveLoops()
   {if(Set().exist(PROP_NLOOPS))return 0;
   int n = 0;
