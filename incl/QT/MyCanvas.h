@@ -15,6 +15,7 @@
 #include <TAXI/graphs.h> 
 #include <TAXI/color.h> 
 #include <TAXI/Tpoint.h> 
+#include <QT/grid.h> 
 
 #include <qcanvas.h>
 #include <qpainter.h>
@@ -148,23 +149,28 @@ class GraphEditor : public QCanvasView
   void initialize();
   void clear();
   void load(bool initgrid = true);
-  void refresh();
   void print(QPrinter* printer);
   void Normalise();
-  int InitGrid();
+  bool InitGrid(Tgrid &g);
   void UndoGrid();
-  void DrawGrid(bool init=false);
+  Tgrid ParamGrid(int nx);
+  void DrawGrid(const Tgrid &g);
   void showGrid(bool show);
+  void PrintSizeGrid();
   void clearGrid();
   void ToGrid(tvertex &v);
+  void ToGrid(QPoint &p);
   int FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge);
   int FindItem(QPoint &p,EdgeItem* &edge);
   int FindItem(QPoint &p,ColorItem* &coloritem);
   int FindItem(QPoint &p,ThickItem* &thickitem);
-  void EraseColorVertices();
-  void EraseColorEdges();
-  void EraseThickEdges();
-  
+//   void EraseColorVertices();
+//   void EraseColorEdges();
+//   void EraseThickEdges();
+  int nxstep,nystep;
+  bool GridDrawn;
+  Tgrid current_grid, graph_grid,old_grid,undo_grid;
+
 private:
   void contentsMousePressEvent(QMouseEvent*);
   void contentsMouseReleaseEvent(QMouseEvent*);
@@ -188,9 +194,8 @@ private:
   double xminstep,yminstep;
   double x_min,x_max,y_min,y_max;
   double xstep,ystep;
-  int nxstep,nystep;
+  double undoxstep,undoystep;
   bool IsGrid;
-  bool GridDrawn;
 };
 
 

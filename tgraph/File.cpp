@@ -32,7 +32,7 @@
 #define  TAG_COORDLAB     516
 #define  TAG_VCOLOR       517
 #define  TAG_LEDA         518
-#define  TAG_POM	      519
+#define  TAG_VERSION	  519
 
 #define  TAG_VCOORD	      520
 #define  TAG_VLABEL	      521
@@ -116,8 +116,9 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   file.SetRecord(GraphIndex);
 
   G.clear();
-  short PomGraph = file.FieldRead(TAG_POM,PomGraph) ? 1 : 0;
-  if(PomGraph)
+  short version;
+  if(!file.FieldRead(TAG_VERSION,version))version = 0;
+  if(version >= 1)
       {
       ReadTGF(G.Set(),file,0);
       Prop1<int> n(G.Set(),PROP_N);
@@ -126,7 +127,8 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
       ReadTGF(G.Set(tvertex()),file,0);
       ReadTGF(G.Set(tedge()),file,1);
       ReadTGF(G.Set(tbrin()),file,2);
-      //return GraphIndex;
+      if(version == 1)// as PROP_NLOOPS has changed
+	  G.Set().erase(PROP_NLOOPS);
       return 0;
       }
   //return 3;
@@ -236,9 +238,9 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
       }
 
   file.CreateRecord();
-
-  if(tag == 1)
-      {file.FieldWrite(TAG_POM,(short)1);
+  // tag should be 2
+  if(tag >= 1)
+      {file.FieldWrite(TAG_VERSION,(short)tag);
       Prop1<int> n(G.Set(),PROP_N);n()= G.nv();
       Prop1<int> m(G.Set(),PROP_M);m()= G.ne();
       WriteTGF(G.Set(),file,0);

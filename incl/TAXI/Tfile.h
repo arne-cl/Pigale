@@ -15,7 +15,8 @@
 #include  <TAXI/Tstring.h>
 #include  <TAXI/graphs.h>
 
-int SaveGraphTgf(GraphAccess& G,tstring filename,int tag=519);
+int IsFileTgf(char const *name);
+int SaveGraphTgf(GraphAccess& G,tstring filename,int tag=2);
 int SaveGraphAscii(GraphAccess& G,tstring filename);
 int ReadGraphAscii(GraphContainer& G,tstring filename);
 int DeleteTgfRecord(tstring filename,int index);

@@ -15,6 +15,7 @@
 #include <QT/Misc.h> 
 #include <QT/MyCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
+#include <QT/grid.h>
 
 static QBrush *tb = 0;
 static QPen *tp = 0;
@@ -26,29 +27,26 @@ void CreatePenBrush()
   if(!tp) tp = new QPen( Qt::black );
   }
 
-void GraphEditor::DrawGrid(bool init)
-  {//moving the slider
-  if(init)nxstep = nystep = gwp->SizeGrid;  
+void GraphEditor::DrawGrid(const Tgrid &grid)
+// input: min_used_x, max_used_x, nxstep (id for y)
+// compute xstep and the grid
+  {if(GridDrawn)clearGrid();
   QCanvasLine *line;
   tp->setColor(color[Grey2]);tp->setWidth(1);
-  if(max_used_x ==  min_used_x)nxstep = 30;  
-  else xstep = (max_used_x - min_used_x)/nxstep;
-  if(max_used_y ==  min_used_y)nystep = 30; 
-  else ystep = (max_used_y - min_used_y)/nystep;
-  double x0 = min_used_x - (int)(min_used_x/xstep)*xstep;
-  double dy = gwp->canvas->height()- min_used_y;
-  double y0 = dy - (int)(dy/ystep)*ystep;
+  double x0 = grid.orig.x() - (int)(grid.orig.x()/grid.delta.x())*grid.delta.x();
+  double dy = gwp->canvas->height()- grid.orig.y();
+  double y0 = dy - (int)(dy/grid.delta.y())*grid.delta.y();
   double x1 = gwp->canvas->width() -space -sizerect;
-  x1 = (int)((x1-x0)/xstep)*xstep + x0 +1.5;
+  x1 = (int)((x1-x0)/grid.delta.x())*grid.delta.x() + x0 +1.5;
   double y1 = gwp->canvas->height();
-  y1 =  (int)((y1-y0)/ystep)*ystep + y0 +1.5;
+  y1 =  (int)((y1-y0)/grid.delta.y())*grid.delta.y() + y0 +1.5;
   double x,y;
   double i = .0;
   // we move the grid by one pisel
   //x0 -= .5; y0 -= .5;
   x0 += .5; y0 += .5;
   for(;;) //horizontales
-      {y = i++ * ystep + y0;
+      {y = i++ * grid.delta.y() + y0;
       if(y > y1 )break;
       line = new QCanvasLine(gwp->canvas);
       line->setPoints((int)x0,(int)y,(int)x1,(int)y);
@@ -58,7 +56,7 @@ void GraphEditor::DrawGrid(bool init)
       }
   i = .0;
   for(;;) //verticales
-      {x =i++*xstep + x0;
+      {x =i++*grid.delta.x() + x0;
       if(x > x1)break;
       line = new QCanvasLine(gwp->canvas);
       line->setPoints((int)x,(int)y0,(int)x,(int)y1);
@@ -67,7 +65,6 @@ void GraphEditor::DrawGrid(bool init)
       else line->hide();
       }
     GridDrawn = true;
-    if(init)canvas()->update();
   }
 
 //*****************************************************

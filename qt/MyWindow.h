@@ -16,8 +16,8 @@
 #include <qmainwindow.h>
 #include <qdatetime.h>
 #include <qstring.h>
-#include <TAXI/graphs.h> 
-#include <TAXI/Tgf.h> 
+#include <Pigale.h> 
+
 #if QT_VERSION < 300
 #define QTextEdit QTextView
 #endif

@@ -2558,9 +2558,7 @@ int pmFreeMap(pmMap *Map)
 
 
 //**************************************************************************
-#include <TAXI/Tpoint.h>
-#include <TAXI/Tdebug.h>
-#include <TAXI/graphs.h>
+#include <Pigale.h>
 #include <time.h>
 bool & EraseMultipleEdges();
 
@@ -2772,7 +2770,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   pmFreeMap(&Map);
   TopologicalGraph TG(GC);
   int erased  = 0;
-  if(!loops)Prop1<int> NoLoops(TG.Set(),PROP_NLOOPS);
+  if(!loops){Prop1<int> numloops(TG.Set(),PROP_NLOOPS);numloops() = 0;}
   if(EraseMultipleEdges() && multiple)
       erased = TG.Simplify();
   else if(loops)

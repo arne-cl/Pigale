@@ -227,7 +227,7 @@ public:
   //! Returns length of vector in number of elements.
   int n() const {return finish-start;}
   //! Returns size of a single element in bytes.
-  int SizeElmt() {return size_elmt;}
+  int SizeElmt() const {return size_elmt;}
   //! Returns first index of vector.
   int starti() const {return start;}
   //! Returns 1 past-end index of vector.
@@ -356,6 +356,13 @@ public:
   {
     ::qsort(begin(), n(), SizeElmt(), compare);
   }
+  bool operator==(const _svector &v) const
+  {
+    if (&v==this) return true;
+    if ((v.n()!=n()) || (v.SizeElmt()!=SizeElmt()) || (v.starti()!=starti())) return false;
+    return (memcmp(begin(),v.begin(),getsize())==0);
+  }
+  bool operator!=(const _svector &v) const {return ! (v==*this);}
 };
 
 
@@ -488,6 +495,12 @@ public:
   void DeletePack(int i)  {svector<T>::cast(v).DeletePack(i);}
   void SwapIndex(int a, int b) {svector<T>::cast(v).SwapIndex(a,b);}
   svector<T>& vector() {return svector<T>::cast(v);}
+  bool operator==(const _svector &v) const {return v==*this;}
+  bool operator==(const rsvector &v) const {return v.v==*this;}
+  bool operator==(const svector<T> &v) const {return v==*this;}
+  bool operator!=(const _svector &v) const {return v==*this;}
+  bool operator!=(const rsvector &v) const {return v.v==*this;}
+  bool operator!=(const svector<T> &v) const {return v==*this;}
 };
 
 //! Computes the maximum element of a vector

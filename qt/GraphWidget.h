@@ -26,14 +26,13 @@ public:
   int init();
   void print(QPrinter *printer);
 public slots:
-  void update();
-  void refresh();
+  void update(bool compute=true);
   void zoom();
   void ozoom();
   void uzoom();
-  void EraseColorVertices();
-  void EraseColorEdges();
-  void EraseThickEdges();
+//   void EraseColorVertices();
+//   void EraseColorEdges();
+//   void EraseThickEdges();
   void showgridChanged(bool i);
   void fitgridChanged(bool i);
   void sizegridChanged(int i);

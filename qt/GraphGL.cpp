@@ -16,8 +16,6 @@
 #include <QT/GLWindow.h>
 #include <QT/MyQcolors.h>
 #include <TAXI/netcut.h>
-#include <TAXI/graphs.h>
-#include <TAXI/Tmessage.h>
 #include <GL/glut.h>
 
 //in QtMisc.cpp

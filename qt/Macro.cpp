@@ -12,15 +12,13 @@
 #include "MyWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
-#include <TAXI/graphs.h> 
-#include <TAXI/Tgf.h> 
-#include <TAXI/Tmessage.h> 
 #include <QT/Misc.h> 
 #include <qapplication.h> 
 #include <qspinbox.h> 
 #include <qslider.h> 
 #include <qmenubar.h> 
 #include <qtoolbar.h> 
+#include <TAXI/Tgf.h> 
 
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);

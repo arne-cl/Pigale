@@ -77,11 +77,11 @@ int GeometricGraph::ComputeGeometricCir()
   tbrin b0,b,opp;
   Tpoint p;
   int degree;
-
+  
   for(v = 1;v <= nv();v++)
       {degree = Degree(v);
       svector<OrderedBrin> ob(degree);
-
+      
       if((b0 = pbrin[v]) == 0)continue;
       // Put adjacent brins in the array.
       int i = 0; b = b0;
@@ -104,8 +104,12 @@ int GeometricGraph::ComputeGeometricCir()
       cir[ob[0].brin] = ob[degree - 1].brin;
       acir[ob[degree - 1].brin] = ob[0].brin;
       }
-
-  return ComputeGenus();
+  int genus = ComputeGenus();
+  Prop1<int> maptype(Set(),PROP_MAPTYPE);
+  maptype() = PROP_MAPTYPE_GEOMETRIC;
+  if(genus == 0)extbrin() = FindExteriorFace();
+  else Set().erase(PROP_PLANARMAP);
+  return genus;
   }
 tbrin GeometricGraph::FindExteriorFace()
   {//find leftmost vertex with edges

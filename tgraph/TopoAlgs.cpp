@@ -31,13 +31,7 @@ int TopologicalGraph::FindPlanarMap()
   if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
       {GeometricGraph GG(*this);
       if(debug())DebugPrintf("Executing geometirc cir");
-      if (GG.ComputeGeometricCir() == 0) // return genus
-          {extbrin() = GG.FindExteriorFace();
-          Prop1<int> map(Set(),PROP_PLANARMAP);
-          Prop1<int> maptype(Set(),PROP_MAPTYPE);
-          maptype() = PROP_MAPTYPE_GEOMETRIC;
-          return 0;
-          }
+      if(GG.ComputeGeometricCir() == 0)return 0;
       }
   if(debug())DebugPrintf("Calling LRALGO");
   if(Planarity() == 1)
@@ -162,7 +156,7 @@ bool TopologicalGraph::CheckSimple()
   {if(debug())DebugPrintf("   CheckSimple");
   if(Set().exist(PROP_SIMPLE))return true;
   if(debug())DebugPrintf("Executing CheckSimple");
-  if(!Set().exist(PROP_NLOOPS))return false;
+  if(!CheckNoLoops())return false;
   if(ne() <= 1){Prop1<int> simple(Set(),PROP_SIMPLE);return true;}
   svector<tedge>link(1,ne()); link.clear();
   svector<tedge>top1(1,nv()); top1.clear();
@@ -818,8 +812,9 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
   {if(ne() <= 1)return true;
   if(debug())DebugPrintf("Executing CheckAcyclic");
   ns=nt=0;
-  svector<int> din(1,nv());
-  svector<tvertex> stack(1,nv());
+  svector<int> din(1,nv());             din.SetName("Acyclic:din");
+  svector<tvertex> stack(1,nv());       stack.SetName("Acyclic:stack");
+  vin.SetName("Acyclic:vin");
   int num=0;
   tbrin b,b0;
   tvertex v;

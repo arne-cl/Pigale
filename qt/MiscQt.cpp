@@ -10,8 +10,7 @@
 *****************************************************************************/
 
 #include <qapplication.h>
-#include <TAXI/graphs.h> 
-#include <TAXI/Tbase.h>
+//#include <TAXI/Tbase.h>
 #include "MyWindow.h" 
 //#include "mouse_actions.h" 
 

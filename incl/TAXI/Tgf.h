@@ -9,12 +9,13 @@
 **
 *****************************************************************************/
 
-
-/*
+/*! \brief tgf file: files used to save graphs 
+ */
+/*! \file 
 Ce type de fichier permet d'ecrire un certain nombre (RecordNum) d'objets (record),
 chacun etant defini par un nombre variable (FieldNum) de tags (TOUS DIFFERENTS).
 Chaque record a un numero compris entre 1 et RecordNum
---------------------------------------------------------------------------------------------------
+
 Utilisation Ecriture:
 - Eventuellement definir le SubHeader
 - Open()
@@ -24,49 +25,26 @@ Utilisation Ecriture:
 - FieldWrite()
 - ............
 - CreateRecord()
-- ............
+
 Remarque: Pendant la definition d'un nouveau record, on n'a pas le droit
 d'utiliser d'autres fonctions.
 Utilisation en Lecture:
 - Open           retourne le nombre de records
 - SetRecord()
 - FieldRead()    ou SeekRead()
-- ...
 - SetRecord()
 - FieldRead()    ou SeekRead()
-- ...
+- ...........
+
 Remarque: On peut lire un tag dans un ordre different de l'ecriture
-A faire :
-         - effacer un enregistrement
-         - modifier un enregistrement
---------------------------------------------------------------------------------------------------
-Un fichier TGF contient: header,subheader,des IFD,des record
 
-    - Header          -> ID,Version,#champs,#record,Offset du 1 IFD:
-                        char ID[4];             //4 bytes          pour reconnaitre le fichier
-                            "TGF"
-                        short Version;          //2 bytes          (1)
-                        short unused;           //2 bytes
-                        short RecordNum;        //2 bytes
-                        short LenSubHeader;     //2 bytes          (16 par defaut)
-                        streampos FstIfdOffs;   //4 bytes
 
-    - SbuHeader       -> Identificateur du type de Fichier
-                                                //16 bytes
-    - IFDheader       -> Descripteur d'un record
-                        short tag;              //2 bytes          debut IFD   ou IFD detruit
-                        short FieldNumTotal;    //2 bytes
-                        short FieldNum;         //2 bytes          #tags de l'objet
-                        short unused;           //2 bytes
-                        streampos NextIfd;      //4 bytes
-                        streampos NextRecord;   //4 bytes
-
-    - Field          -> donne d'un record
-                        short tag;              //2 bytes
-                        short attrib;           //2 bytes
-                        long len;               //4 bytes
-                        UnionLongWord word;     //8 bytes            valeur ou offset
-*************************************************************************************************/
+Un fichier TGF contient: header,subheader,des IFD,des records
+- Header          -> ID,Version,#champs,#record,Offset du 1 IFD:
+- SubHeader       -> Identificateur du type de Fichier
+- IFDheader       -> Descripteur d'un record
+- Field           -> donne d'un record
+*/
 
 #ifndef _TGF_H_INCLUDED_
 #define _TGF_H_INCLUDED_
@@ -144,17 +122,17 @@ union UnionLongWord
     UnionLongWord() : d(.0) {}
     };
 
-//HEADER
+// HEADER
 struct StructHeader
-    {char ID[4];            //4 bytes
-    short Version;          //2 bytes
-    short IfdNum;           //2 bytes
-    short RecordNum;        //2 bytes
-    short LenSubHeader;     //2 bytes
-    long FstIfdOffs;   //4 bytes
+    {char ID[4];            //!< "TGF" to recognize the file
+    short Version;          //!< version number 
+    short IfdNum;           //!< number of Ifd
+    short RecordNum;        //!< number of records
+    short LenSubHeader;     //!< size of SubHeader (16 by default)
+    long FstIfdOffs;        //!< offset of the first Ifd 
     };
 
-//FIELD
+// FIELD
 struct StructField
     {short tag;             //2 bytes
     short attrib;           //2 bytes
@@ -163,14 +141,14 @@ struct StructField
     StructField() : tag(0),attrib(0),len(0),word(){}
     };
 
-//IFD HEADER
+// IFD HEADER
 struct  StructIfdHeader
     {short tag;             //2 bytes
     short FieldNumTotal;    //2 bytes
     short FieldNum;         //2 bytes      # de champs de l'Ifd
     short unused;           //2 bytes      unused
     long NextIfd;           //4 bytes
-    long NextRecord;   //4 bytes
+    long NextRecord;        //4 bytes
     StructIfdHeader() : tag(0),FieldNumTotal(0),FieldNum(0),unused(0),NextIfd(0),NextRecord(0) {}
     };
 
@@ -186,7 +164,7 @@ struct StructTagList
     TSArray<long>  len;
     StructTagList() : number(0),tag(0),len(0) {}
     };
-//Fonctions non specifiques
+
 int IsFileTgf(char const *name);
 inline int NumPadding(int n){return(3 - (n+3)%4);}
 

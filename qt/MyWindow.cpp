@@ -9,19 +9,16 @@
 **
 *****************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <stdlib.h> 
+#include <stdio.h> 
 
 #include "MyWindow.h"
+#include <TAXI/Tgf.h>
 #include "GraphWidget.h"
 #include "GraphGL.h"
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
-#include <TAXI/Tfile.h> 
-#include <TAXI/Tgf.h> 
-#include <TAXI/Tmessage.h> 
-#include <TAXI/Tdebug.h>
 #include <QT/MyWindow_doc.h> 
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
@@ -275,7 +272,7 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Remove",remove);
   connect(remove,SIGNAL(activated(int)),SLOT(handler(int)));
   remove->insertItem("&Isolated vertices",   401);
-  remove->insertItem("&Multiple edges",      403);
+  remove->insertItem("&Multiple edges",      403); 
   remove->insertItem("Ist&hmus",             404);
   remove->insertSeparator();
   remove->insertItem("Colored &vertices",    405);
@@ -294,7 +291,7 @@ MyWindow::MyWindow()
   embed->insertSeparator();
   embed->insertItem("&Visibility",           250);
   embed->insertItem("FPP Visi&bility",       253);
-#ifdef ALPHA 
+#ifdef VERSION_ALPHA 
   embed->insertItem("&General Visibility",   254);
 #endif
   embed->insertItem("&T Contact",            255);
@@ -496,7 +493,7 @@ MyWindow::MyWindow()
   comboDistance->insertItem("Adjacence");
   comboDistance->insertItem("Adjacence M");
   comboDistance->insertItem("Oriented");
-#ifdef ALPHA 
+#ifdef VERSION_ALPHA  
   comboDistance->insertItem("R2");
 #endif
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
@@ -511,10 +508,12 @@ MyWindow::MyWindow()
   help->insertItem(infoIcon,"&Graph properties",this,SLOT(information())
 		   ,SHIFT+Key_F2);
   help->insertSeparator();
-  help->insertItem("&About", this, SLOT(about()),Key_F1);
-  help->insertItem("About &Qt", this, SLOT(aboutQt()));
-  help->insertSeparator();
   help->insertItem(helpIcon,"What is ?",this,SLOT(whatsThis()),SHIFT+Key_F1);
+  help->insertSeparator();
+  help->insertItem("About &Qt", this, SLOT(aboutQt()));
+  help->insertItem("&About", this, SLOT(about()),Key_F1);
+  
+  
   //Resize
   setCaption("Pigale");
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
@@ -612,7 +611,6 @@ void MyWindow::load(int pos)
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
-  G.RemoveLoops();
   UndoSave();
   banner();
   if(MacroExecuting)return;
@@ -627,7 +625,7 @@ void MyWindow::save()
                     QLineEdit::Normal,titre, &ok, this );
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok) return;
-  if(SaveGraphTgf(G,(const char *)OutputFileName,1) == 1)
+  if(SaveGraphTgf(G,(const char *)OutputFileName) == 1)
       {QString t;
       t.sprintf("Cannot open file:%s",(const char *)OutputFileName);
       Twait((const char *)t);
@@ -768,7 +766,11 @@ void MyWindow::handler(int action)
       {information();
       gw->update();
       }
-   else if(ret == 3)
+  else if(ret == 20)
+      {information();
+      gw->update(false);
+      }
+  else if(ret == 3)
        mypaint->update(drawing); 
   else if(ret == 4) //3d
       graphgl->update(); 
@@ -791,7 +793,7 @@ void MyWindow::banner()
   statusBar()->message(m);
   }
 void MyWindow::about()
-  {QMessageBox::about(this,"Pigale Editor",
+  {QMessageBox::about(this,"Pigale Editor 1-2.2", 
 		      "<b>Copyright (C) 2001</b>"
 		      "<br>Hubert de Fraysseix"
 		      "<br>Patrice Ossona de Mendez "
@@ -888,7 +890,7 @@ void MyWindow::UndoSave()
 	  {file.DeleteRecord(nb);
 	  nb--;}
       }
-  if(SaveGraphTgf(G,undofile,1) == 1)
+  if(SaveGraphTgf(G,undofile) == 1)
       {handler(10005);return;}
   UndoIndex=UndoMax=++nb;
   this->undoL->setEnabled(true);

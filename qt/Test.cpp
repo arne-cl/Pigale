@@ -1,7 +1,5 @@
 #include <qapplication.h>
-#include <TAXI/graphs.h> 
-#include <TAXI/propdef.h>
-#include <TAXI/color.h>
+#include <Pigale.h> 
 
 
 void Test(GraphContainer &GC,int action)

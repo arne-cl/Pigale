@@ -419,19 +419,30 @@ int TopologicalGraph::FaceWalkLength(const tbrin &b0)
   return len;
   }
 bool TopologicalGraph::CheckNoLoops()
-  {if(Set().exist(PROP_NLOOPS))return true;
+  {if(Set().exist(PROP_NLOOPS))
+      {Prop1<int> nloops(Set(),PROP_NLOOPS);
+      return (nloops() == 0) ? true : false;
+      }
+  if(debug())DebugPrintf("  Executing CheckNoLoops");
+  Prop1<int> nloops(Set(),PROP_NLOOPS);
+  int n = 0;
   for(tedge e = ne();e >= 1;e--)
-      if(vin[e] == vin[-e])return false;
-  Prop1<int> NoLoops(Set(),PROP_NLOOPS);
+      if(vin[e] == vin[-e])++n;  
+  nloops() = n;
   return true;
   }
 int TopologicalGraph::RemoveLoops()
-  {if(Set().exist(PROP_NLOOPS))return 0;
+  {if(Set().exist(PROP_NLOOPS))
+       {Prop1<int> numloops(Set(),PROP_NLOOPS);
+       return numloops();
+       }
+  if(debug())DebugPrintf("  Executing RemoveLoops");
   int n = 0;
   Prop<int> nloops(Set(tvertex()),PROP_NLOOPS); nloops.clear();
   for(tedge e = ne();e >= 1;e--)
       if(vin[e] == vin[-e]){++n; ++nloops[vin[e]]; DeleteEdge(e);}
-  Prop1<int> NoLoops(Set(),PROP_NLOOPS);
+  Prop1<int> numloops(Set(),PROP_NLOOPS);
+  numloops() = 0;
   return n;
   }
 int TopologicalGraph::RemoveIsolatedVertices()

@@ -79,7 +79,7 @@
 //@}
 /** @name Property numbers for V,B,E.
   */
-//@{
+//@{ 
 #define PROP_LABEL            (0)    //!< \c long  Label
 #define PROP_COLOR            (1)    //!< \c short Color
 #define PROP_MARK             (2)    //!< \c bool  Various marks

@@ -14,7 +14,6 @@
 #include "mouse_actions.h"
 #include "gprop.h"
 #include <TAXI/Tbase.h> 
-#include <TAXI/Tmessage.h> 
 #define COLORNAMES
 #include <QT/MyQcolors.h> 
 #include <QT/Misc.h> 
@@ -123,22 +122,22 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   bool Control  = (e->state() ==  QMouseEvent::ControlButton);
   bool SControl = (e->state() ==  (QMouseEvent::ShiftButton | QMouseEvent::ControlButton));
 
-  if(e->button() == QMouseEvent::MidButton)//move
+  if(e->button() == QMouseEvent::MidButton) //move
       MouseAction = (Shift) ? -3 : 3;
-  else if(Shift && MouseAction == 1)//add
-      MouseAction = -1;
-  else if(Control && MouseAction == 1)//duplicate
-      MouseAction = 10;
-  else if(SControl && MouseAction == 1)//duplicate +
-      MouseAction = 11;
-  else if(Shift && MouseAction == 2)//Orient or reorient if oriented
-      MouseAction = -2; //disorient
-  else if(Shift && MouseAction == 3)//move
-      MouseAction = -3;
-  else if(Shift && MouseAction == 4)//bissect
-      MouseAction = 5;
-  else if(Shift && MouseAction == 5)//contract
-      MouseAction = 4;
+  else if(Shift && MouseAction == 1)        //add
+      MouseAction = -1;                     //-> delete
+  else if(Control && MouseAction == 1)
+      MouseAction = 10;                     //duplicate
+  else if(SControl && MouseAction == 1)
+      MouseAction = 11;                     //duplicate +
+  else if(Shift && MouseAction == 2)        //Orient or reorient if oriented
+      MouseAction = -2;                     //disorient
+  else if(Shift && MouseAction == 3)        //move
+      MouseAction = -3;                     //move colored edges 
+  else if(Shift && MouseAction == 4)        //bissect
+      MouseAction = 5;                      //contract
+  else if(Shift && MouseAction == 5)        //contract
+      MouseAction = 4;                      //bissect 
 
   if(MouseAction == 0) // color
       {NodeItem* node;
@@ -163,16 +162,16 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       canvas()->update();
       return;
       }
-  else if(MouseAction == 1) // Create an edge
+  else if(MouseAction == 1) // Start create an edge
       {gwp->mywindow->UndoTouch(false);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       NodeItem* node;
       EdgeItem *edge;
       tvertex v;
+      int h = gwp->canvas->height();
       int rtt = FindItem(p,node,edge);
       if(rtt != node_rtti)// add a vertex
-	  {int h = gwp->canvas->height();
-	  Tpoint pp((double)p.x(),(double)(h - p.y()));
+	  {Tpoint pp((double)p.x(),(double)(h - p.y()));
 	  v = G.NewVertex(pp);
 	  ToGrid(v);
 	  nodeitem[v] = node  = CreateNodeItem(v,gwp);
@@ -180,7 +179,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  }
       else
 	  v = node->v;
-      start_position = e->pos();
+      //start_position = e->pos(); // should be the vertex position if had moved by ToGrid
+      start_position = QPoint((int)G.vcoord[v].x(),h-(int)G.vcoord[v].y());
       node->SetColor(Qt::red);
       gwp->curs_item = new CursItem(v,start_position,gwp);
       canvas()->update();
@@ -204,9 +204,10 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  }
       load(false);
       gwp->mywindow->information();// Informations
+      PrintSizeGrid();
       return;
       }
-  else if(MouseAction == 3) // Move a vertex
+  else if(MouseAction == 3) // Start moving a vertex
       {NodeItem* node;
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
@@ -216,7 +217,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       start_position = e->pos();
       return;
       }
-  else if(MouseAction == -3) // Move a subgraph
+  else if(MouseAction == -3) // Start moving a subgraph
       {gwp->mywindow->UndoTouch(false);
       gwp->moving_subgraph = true;
       //if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
@@ -234,7 +235,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       if(rtt != edge_rtti)return;
       G.BissectEdge(edge->e);
       DoNormalise = false;
-      load();
+      load(true);
       DoNormalise = true;
       gwp->mywindow->information();// Informations
       return;
@@ -290,7 +291,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(G.vcolor[v1] == vcol && G.vcolor[v2] == vcol)
 	      G.NewEdge(newvertex[v1],newvertex[v2]);
 	  }
-      load();
+      load(true);
       gwp->mywindow->information();// Informations
       }
   else if(MouseAction == 11)
@@ -324,7 +325,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  {if(G.vcolor[v] != vcol)continue;
 	  G.NewEdge(v,newvertex[v]);
 	  }
-      load();
+      load(true);
       gwp->mywindow->information();// Informations
       }
   }
@@ -349,7 +350,7 @@ void GraphEditor::contentsMouseMoveEvent(QMouseEvent* e)
       start_position = e->pos();
       canvas()->update();  
       }
-  else if(gwp->curs_item)
+  else if(gwp->curs_item) // moving the elastic cursor
       {gwp->curs_item->setToPoint(e->pos().x(),e->pos().y());
       canvas()->update();	  
       }
@@ -366,7 +367,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       return;
       }
   if(gwp->moving_item) //end moving a vertex
-      {if(!IsGrid)
+      {if(!gwp->FitToGrid)
 	  {gwp->moving_item = 0;return;}
       GeometricGraph & G = *(gwp->pGG);
       NodeItem *node = gwp->moving_item;
@@ -380,11 +381,13 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       gwp->moving_item = 0;
       canvas()->update();
       UpdateSizeGrid();
+      PrintSizeGrid();
       return;
       }
   if(gwp->moving_subgraph == true)
       {gwp->moving_subgraph = false;
-      if(!IsGrid)return;
+      //if(!IsGrid)return;
+      if(!gwp->FitToGrid)return;
       GeometricGraph & G = *(gwp->pGG);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       short vcol;  G.vcolor.getinit(vcol);
@@ -409,6 +412,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
 	  }
       canvas()->update();
       UpdateSizeGrid();
+      PrintSizeGrid();
       return;
       }
   if(gwp->curs_item)// end creating an edge
@@ -421,7 +425,8 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       // Reset the color of starting vertex
       v1 = gwp->curs_item->v;
       node = (NodeItem *)(nodeitem[v1]); node->SetColor(color[G.vcolor[v1]]);
-      QPoint p(event->pos());
+      QPoint p(event->pos()); 
+      ToGrid(p);
       int rtt = FindItem(p,node,edge);
       v2 = (rtt != node_rtti) ? 0 : node->v;
       if(rtt != node_rtti) //create a vertex
@@ -438,40 +443,41 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
 	  {tedge e = G.NewEdge(v1,v2);
 	  edgeitem[e] = CreateEdgeItem(e,gwp);
 	  }
-      delete gwp->curs_item;
-      gwp->curs_item = 0;
+      delete gwp->curs_item;      gwp->curs_item = 0;
       canvas()->update();
       gwp->mywindow->information();// Informations
+      if(v1 == v2) // We have created a vertex
+	  PrintSizeGrid();
       return;
       }
   }
-void GraphEditor::EraseColorVertices()
-  {GeometricGraph & G = *(gwp->pGG);
-  for(tvertex v= G.nv() ;v > 0;v--)
-    if(G.vcolor[v] == color_node)G.DeleteVertex(v);
-  DoNormalise = false;
-  load();
-  DoNormalise = true;
-  gwp->mywindow->information();// Informations
-  }
-void GraphEditor::EraseColorEdges()
-  {GeometricGraph & G = *(gwp->pGG);
-  for(tedge e= G.ne();e > 0;e--)
-    if(G.ecolor[e] == color_edge)G.DeleteEdge(e);
-  DoNormalise = false;
-  load();
-  DoNormalise = true;
-  gwp->mywindow->information();// Informations
-  }
-void GraphEditor::EraseThickEdges()
-  {GeometricGraph & G = *(gwp->pGG);
-  for(tedge e= G.ne();e > 0;e--)
-    if(G.ewidth[e] == width_edge)G.DeleteEdge(e);
-  DoNormalise = false;
-  load();
-  DoNormalise = true;
-  gwp->mywindow->information();// Informations
-  }
+// void GraphEditor::EraseColorVertices()
+//   {GeometricGraph & G = *(gwp->pGG);
+//   for(tvertex v= G.nv() ;v > 0;v--)
+//     if(G.vcolor[v] == color_node)G.DeleteVertex(v);
+//   //DoNormalise = false;
+//   load(false);
+//   //DoNormalise = true;
+//   gwp->mywindow->information();// Informations
+//   }
+// void GraphEditor::EraseColorEdges()
+//   {GeometricGraph & G = *(gwp->pGG);
+//   for(tedge e= G.ne();e > 0;e--)
+//     if(G.ecolor[e] == color_edge)G.DeleteEdge(e);
+//   //DoNormalise = false;
+//   load(false);
+//   //DoNormalise = true;
+//   gwp->mywindow->information();// Informations
+//   }
+// void GraphEditor::EraseThickEdges()
+//   {GeometricGraph & G = *(gwp->pGG);
+//   for(tedge e= G.ne();e > 0;e--)
+//     if(G.ewidth[e] == width_edge)G.DeleteEdge(e);
+//   //DoNormalise = false;
+//   load(false);
+//   //DoNormalise = true;
+//   gwp->mywindow->information();// Informations
+//   }
 void GraphEditor::showEvent(QShowEvent* e)
   {if(gwp->mywindow->MacroLooping)return;
   if(gwp->CanvasHidden)// to assure mouse_action is initialise
@@ -527,34 +533,34 @@ void GraphEditor::initialize()
   int fs = (int)((double)QMIN(gwp->canvas->width(),gwp->canvas->height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   gwp->fontsize = fs; 
-  load();
+  load(true);
   }
-void GraphEditor::refresh()
-  {if(gwp->CanvasHidden)return;
-  //should update coordinates if necessary
-  Normalise();
-  InitGrid();
-  canvas()->update(); 
-  }
+
 void GraphEditor::load(bool initgrid) 
-  {//if(gwp->CanvasHidden)return;
-  clear();// delete all items
+// by default initgrid = true
+// when editng (erasing edges, vertices) initgrig = false
+  {clear();// delete all items
   canvas()->update();
+  //if(debug())DebugPrintf("Graph_Editor:load:%d",(int)initgrid);
   int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
   if(gwp->pGG->nv() > nmaxdisplay)
       {Tprintf("Too big graph nv= %d (>%d)",gwp->pGG->nv(),nmaxdisplay);return;}
   GeometricGraph & G = *(gwp->pGG);
   if(initgrid)
       {Normalise();
-      InitGrid();
+      if(InitGrid(current_grid))
+	  DrawGrid(current_grid);
+      else
+	  DrawGrid(current_grid);
       }
   else
-      {DrawGrid(false);
+      {DrawGrid(current_grid);
       if(gwp->ShowGrid)showGrid(true);
       }
 
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM,(NodeItem *)NULL);
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
+  nodeitem.SetName("nodeitem");edgeitem.SetName("edgeitem");
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
 
    for(tvertex v = 1;v <= G.nv();v++)

@@ -13,24 +13,9 @@
 #undef QT
 #endif
 
-#include <TAXI/Tfile.h> 
-#include <TAXI/Tmessage.h> 
-#include <TAXI/graphs.h>
-#include <TAXI/color.h>
+#include <Pigale.h> 
 #include <QT/Handler.h>
 
-int EmbedTContact(TopologicalGraph &G);
-int EmbedFPPRecti(TopologicalGraph &G);
-int EmbedFPP(TopologicalGraph &G);
-int EmbedTutteCircle(TopologicalGraph &G);
-int FindNPSet(TopologicalGraph &);
-int split(Graph &G0,int &NumberOfClasses);
-int EmbedVision(TopologicalGraph &G);
-int Vision(TopologicalGraph &G);
-int EmbedContactBip(GeometricGraph &G);
-int DecompMaxBip(TopologicalGraph &G);
-int Polar(TopologicalGraph &G);
-int Embed3d(TopologicalGraph &G0);
 
 // in Misc.cpp
 GraphContainer& GetMainGraph();
@@ -80,6 +65,7 @@ int ColorExteriorface(GeometricGraph &G)
 // O nothing
 // 1 need redraw
 // 2 need info redraw
+// 20 need info redraw without any recomputing
 // 3 draw (paint)
 // 4 3d drawing
 // 5 symetrie
@@ -449,7 +435,7 @@ int RemoveHandler(int action)
       default:
 	  return 0;
       }
-  return 2;
+  return 20;
   }
 int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
   {GraphContainer *GC=(GraphContainer *)0;

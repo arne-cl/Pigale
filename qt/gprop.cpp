@@ -11,8 +11,7 @@
 
 #include "gprop.h"
 #include "MyWindow.h"
-#include <TAXI/graphs.h>
-#include <TAXI/Tmessage.h>
+#include <Pigale.h>
 #include <QT/Misc.h>
 
 #include <qvariant.h>   // first for gcc 2.7.2
@@ -157,8 +156,12 @@ void Graph_Properties::update()
       Twait("memory error");
       }
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  if(!G.CheckNoLoops())
-      {G.RemoveLoops();Twait("Graph had loops");}
+  int nloops = G.RemoveLoops();
+  if(nloops)
+      {QString t;
+      t.sprintf("Graph had %d loops",nloops);
+      Twait((const char *)t);
+      }
   int ns,nt;
   bool S = G.CheckSimple();
   bool P = G.CheckPlanar();
