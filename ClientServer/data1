@@ -1,0 +1,25 @@
+#if a line starts by '#' or ':' only the 2 first characters are interpreted
+#lines starting with '#' are comments
+#lines starting with ':' mofify the client-server behaviour
+:D //echo comments
+# 2999 debug server // echo received commands
+#2999
+#Read graph 1 of tgf file ex.tgf (on server side)
+2101;ex.tgf;1
+2001:2002:2014:2015
+#Read the graph of ascci file graph0.txt (on server side)
+2101;graph0.txt
+#N
+2001
+#M
+2002
+#ask vertex labels
+2017
+#ask for a FPP embedding
+203
+#ask coords
+2016
+#end 
+:!
+
+

@@ -1,0 +1,5 @@
+#!/bin/sh
+Server &
+sleep 1
+Client 
+
