@@ -1,0 +1,8 @@
+#! /bin/sh
+echo -n 'OBJECTS = '
+while test $# -gt 0; do
+echo '\'
+echo -n `basename $1 .cpp`'.o '
+shift
+done
+echo
