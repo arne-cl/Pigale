@@ -40,7 +40,7 @@ FILES_W_MOC  += $(MOC_CPP)
 CFLAGS  = $(CFLAGS$(OPT))
 
 
-all :Server Client XServer
+all :Client XServer
 
 moc_cpp:    $(MOC_CPP)
 
