@@ -89,11 +89,10 @@ static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )
-      ,MacroExecuting(false)
       ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
       ,UndoIndex(0),UndoMax(0)
       ,IsUndoEnable(true)
-      ,MacroRecording(false),MacroLooping(false)
+      ,MacroRecording(false),MacroLooping(false),MacroExecuting(false)
   {int id;
   // Initialze Error
   setError();

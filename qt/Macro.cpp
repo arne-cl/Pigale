@@ -25,6 +25,8 @@
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qinputdialog.h> 
+#include <qtabwidget.h> 
+#include <qtabbar.h> 
 
 #include <TAXI/Tgf.h> 
 
@@ -33,6 +35,7 @@ static TSArray<int> MacroActions(4),MacroEwidth(4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
 static int  key = 0;
+static bool _inputBlocked = false;
 
 int & pauseDelay()
   {static int delay;
@@ -52,7 +55,12 @@ int MyWindow::getKey()
   return key0;
   }
 void MyWindow::blockInput(bool t)
-  {menuBar()->setEnabled(!t); tb->setEnabled(!t);
+  {if(_inputBlocked == t)return;
+  _inputBlocked = t;
+  menuBar()->setDisabled(t); 
+  tb->setDisabled(t);
+  mouse_actions->setDisabled(t);
+  tabWidget->setDisabled(t); 
   }
 void MyWindow::timer()
   {MacroWait = false;
@@ -115,7 +123,7 @@ void MyWindow::macroHandler(int event)
 	  DebugPrintf("Macro started at:%s",(const char *)t0.toString(Qt::TextDate)); 
 	  t0.restart();
 	  MacroLooping = true;
-	  blockInput(true);
+	  //blockInput(true);
 	  repeat0 = (repeat == 0) ? 1000 : repeat;
 	  progressBar->setTotalSteps(repeat0);
 	  progressBar->setProgress(0);
@@ -127,12 +135,11 @@ void MyWindow::macroHandler(int event)
 	      macroPlay();
 	      progressBar->setProgress(i);
 	      qApp->processEvents();
-	      if(!MacroLooping)break; // if an error had occurred
-	      if(getKey() == Qt::Key_Escape){gw->update();break;}
+	      // !MacroLooping if an error had occurred
+	      if(!MacroLooping || getKey() == Qt::Key_Escape)break;
 	      }
 	  progressBar->hide();
 	  MacroLooping = MacroExecuting = MacroWait = false;
-	  blockInput(false);
 	  Time = t0.elapsed()/1000.;
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
@@ -142,6 +149,7 @@ void MyWindow::macroHandler(int event)
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
 	      DebugPrintf("END PLAY ERROR iter=%d",j);
+	  blockInput(false);
 	  break;
       case 5:// insert a pause
 	  if(MacroRecording)macroRecord(A_PAUSE);
@@ -207,6 +215,7 @@ void MyWindow::macroHandler(int event)
 void MyWindow::macroPlay()
 //  MacroExecuting = true => handler does not update of the editor
   {if(MacroNumActions == 0)return;
+  blockInput(true);
   if(!MacroLooping){MessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
   int ret_handler = 0,action;
   EditNeedUpdate = MacroExecuting = true;
@@ -221,12 +230,14 @@ void MyWindow::macroPlay()
       //macroDefColors(record);
       if(action != A_PAUSE && !menuBar()->isItemEnabled(action))
 	  {if(debug())
-	      LogPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
+	      LogPrintf("%s:initial conditons not satisfied\n"
+			,(const char *)getActionString(action));
 	  ++record;continue;
 	  }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
       ret_handler = handler(action);
+      blockInput(true); // as springs release the input
       if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
       else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
       // update the editor if a pause 
@@ -244,5 +255,8 @@ void MyWindow::macroPlay()
       }
 
   MacroWait = MacroExecuting = false;
-  if(!MacroLooping  && EditNeedUpdate)gw->update(-1);
+  if(!MacroLooping)
+      {if(EditNeedUpdate){gw->update(-1);EditNeedUpdate = false;}
+      blockInput(false);
+      }
   }

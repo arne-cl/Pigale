@@ -90,22 +90,18 @@ void GraphWidget::SpringJacquard()
   d->editor->SpringJacquard();
   }
 void GraphWidget::resizeEvent(QResizeEvent* e)
-  {if(d->mywindow->MacroExecuting)return;
-  if(d->editor)d->editor->initialize();
+  {if(d->editor)d->editor->initialize();
   QWidget::resizeEvent(e);
   }
 void GraphWidget::showgridChanged(bool show)
-  {if(d->mywindow->MacroExecuting)return;
-  d->ShowGrid = show;
+  {d->ShowGrid = show;
   d->editor->showGrid(d->ShowGrid);
   }
 void GraphWidget::fitgridChanged(bool fit)
-  {if(d->mywindow->MacroExecuting)return;
-  d->FitToGrid = fit;
+  {d->FitToGrid = fit;
   }
 void GraphWidget::ForceGrid()
-  {if(d->mywindow->MacroExecuting)return;
-  d->ForceGrid = true;
+  {d->ForceGrid = true;
   d->ForceGridOk = true;
   d->OldFitToGrid = (d->mywindow->mouse_actions->ButtonUndoGrid->isEnabled()) ? true : false;
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(false);
@@ -118,15 +114,13 @@ void GraphWidget::ForceGrid()
   d->ForceGrid = false;
   }
 void GraphWidget::UndoGrid()
-  {if(d->mywindow->MacroExecuting)return;
-  d->SizeGrid = d->OldFitSizeGrid;
+  {d->SizeGrid = d->OldFitSizeGrid;
   d->editor->UndoGrid();
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   d->mywindow->mouse_actions->ButtonFitGrid->setChecked(d->OldFitToGrid);
   }
 void GraphWidget::sizegridChanged(int sg)
-  {if(d->mywindow->MacroExecuting)return;
-  if(!d->is_init || d->CanvasHidden)return;
+  {if(!d->is_init || d->CanvasHidden)return;
   if(!d->RedrawGrid){d->RedrawGrid = true;return;}
   // RedrawGrid == false iff we sent the message
   d->editor->nxstep = d->editor->nystep =d->SizeGrid = sg;
@@ -137,18 +131,15 @@ void GraphWidget::sizegridChanged(int sg)
   d->editor->canvas()->update();
   }
 void GraphWidget::zoom()
-  {if(d->mywindow->MacroExecuting)return;
-  //d->editor->zoom *= 1.1;  d->editor->load(true);
+  {//d->editor->zoom *= 1.1;  d->editor->load(true);
   d->editor->Zoom(1);
   }
 void GraphWidget::ozoom()
-  {if(d->mywindow->MacroExecuting)return;
-  //d->editor->zoom = 1;  d->editor->load(true);
+  {//d->editor->zoom = 1;  d->editor->load(true);
   d->editor->Zoom(0);
   }
 void GraphWidget::uzoom()
-  {if(d->mywindow->MacroExecuting)return;
-  //d->editor->zoom /= 1.1;  d->editor->load(true);
+  {//d->editor->zoom /= 1.1;  d->editor->load(true);
   d->editor->Zoom(-1);
   }
 
