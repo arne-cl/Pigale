@@ -17,7 +17,11 @@
 #include <TAXI/Tdebug.h>
 
 class KantShelling {
+ protected:
     TopologicalGraph G;
+
+ private:
+
     int nf;                          // #faces.
     tbrin FirstBrin;                 // = (v_1,v_2).
     tvertex v_1,v_2,v_n;
@@ -94,6 +98,29 @@ class KantShelling {
     int FindNext(tbrin &left, tbrin &right);
 
     int Error() const { return error; }
+
+};
+
+
+class LMCShelling : public KantShelling {
+    svector<tbrin> LeftBrin;       
+    svector<tbrin> RightBrin;      
+    svector<int> NbBrin;          
+
+    svector<tbrin> NewLeftBrin;   
+    svector<tbrin> NewRightBrin;  
+    svector<int> NewNbBrin;       
+
+    int current;
+    public:
+
+    // b is the brin defined by the vertex v_1 and the edge {v_1,v_2}.
+    LMCShelling(Graph &G0, tbrin bref);
+
+    // return : 1 if a vertex is shelled, 
+    //          k if a chain of length k is shelled,
+    //          0 if no face nor vertex to pack.
+    int FindNext(tbrin &left, tbrin &right);
 
 };
 
