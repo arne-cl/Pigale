@@ -14,12 +14,12 @@ UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt
 
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith  -pipe
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
 CFLAGSopt += -DQT_THREAD_SUPPORT 
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall  $(PIC) 
-CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -pipe
+CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg += -DQT_THREAD_SUPPORT 
 

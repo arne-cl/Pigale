@@ -22,7 +22,7 @@ AWK=awk
 
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3   $(PIC)
-CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated -pipe
 #CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
 
 #DEBUGGING OPTIONS (-pg -a for sampling)

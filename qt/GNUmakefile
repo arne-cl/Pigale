@@ -22,7 +22,7 @@ CC=g++
 .SUFFIXES:.cpp .o
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
 #CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION)
 
