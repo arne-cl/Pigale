@@ -422,7 +422,7 @@ static DrawThing DrawFunctions[] =
     {DrawTContact,QT_TRANSLATE_NOOP("pigalePaint","T Contact")}, 
     {DrawPolyline,QT_TRANSLATE_NOOP("pigalePaint", "Polyline")},
     {DrawCurves,QT_TRANSLATE_NOOP("pigalePaint", "Curves")},
-    {0,QT_TRANSLATE_NOOP("pigalePaint"," ")}  
+    {0,QT_TRANSLATE_NOOP("pigalePaint","default ")}  
     };
 const int border = 20;
 
