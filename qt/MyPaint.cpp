@@ -78,6 +78,18 @@ void DrawPolar(QPainter *p,MyPaint *paint)
   }
 #undef Pink
 
+void DrawTContact(QPainter *p,MyPaint *paint)
+  {GeometricGraph G(paint->GCP);
+  Prop<Tpoint> hp1(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> hp2(G.Set(tvertex()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
+  Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
+  //Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
+  for(tvertex v = 1;v <= G.nv();v++)
+      {if(hp1[v].x() > .0)paint->DrawSeg(p,hp1[v],hp2[v],Black);
+      if(vp1[v].x() > .0)paint->DrawSeg(p,vp1[v],vp2[v],Black);
+      }
+  }
 void DrawBipContact(QPainter *p,MyPaint *paint)
   {GeometricGraph G(paint->GCP);
   Prop<int> h(G.Set(tvertex()),PROP_DRAW_INT_1);
@@ -339,6 +351,7 @@ DrawThing DrawFunctions[] =
     {DrawGeneralVisibility,"&General Visibility"},
     {DrawBipContact,"&Contact"},
     {DrawPolar,"&Polar"},
+    {DrawTContact,"&T Contact"},
     {0,0} 
     };
 

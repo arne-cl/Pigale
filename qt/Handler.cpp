@@ -19,6 +19,7 @@
 #include <TAXI/color.h>
 #include <QT/Handler.h>
 
+int EmbedTContact(TopologicalGraph &G);
 int EmbedFPPRecti(TopologicalGraph &G);
 int EmbedFPP(TopologicalGraph &G);
 int EmbedTutteCircle(TopologicalGraph &G);
@@ -305,6 +306,11 @@ int EmbedHandler(int action,int &drawing)
 	  if(err)Tprintf("Vision err=%d",err);
 	  drawing = 2;
 	  break;
+      case 255:ret = 3;
+	  err = EmbedTContact(G);
+	  if(err)Tprintf("TContact err=%d",err);
+	  drawing = 5;
+	  break;
       case 298:ret = 4; //Embed3d
 	  break;
       default:
@@ -404,6 +410,7 @@ int DualHandler(int action)
       default:
 	    break;
       }
+  G.RemoveLoops();
   return 2;
   }
 int RemoveHandler(int action)

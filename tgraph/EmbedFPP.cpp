@@ -12,7 +12,8 @@
 
 #include <TAXI/graphs.h>
 #include <TAXI/SchPack.h>
-//#include<stdio.h> 
+#include <TAXI/MaxPath.h>
+#include<stdio.h> 
 
 #define CONE 0
 #define HOR_LEFT 1
@@ -561,5 +562,147 @@ int EmbedFPPRecti(TopologicalGraph &G)
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   pmin() = Tpoint(.0,-1.);
   pmax() = Tpoint((double)xmax+1.,(double)recti.y[iv3]+ 1.);
+  return 0;
+  }
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Representation by contact of T 
+
+typedef struct  {tvertex lvertex;
+                tvertex rvertex;
+                tvertex hvertex;
+                }Tcontact;
+
+int EmbedTContact(TopologicalGraph &G)
+  {if(debug())DebugPrintf("EmbedTContact");
+  if(G.nv() < 3){if(debug())DebugPrintf(" n < 3");return -1;}
+  if(!G.CheckSimple()){if(debug())DebugPrintf("not simple");return -1;}
+  int morg = G.ne();
+  G.MakeConnected();
+  //int OldNumVertex = G.nv(); // cannot vertextriangulate if not 2-connected
+  if(!G.CheckPlanar()){if(debug())DebugPrintf("not planar");return -1;}
+  bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
+  int len;
+  tbrin e0;
+  if(SchnyderLongestFace() && !MaxPlanar)
+      G.LongestFace(e0,len);
+  else
+      e0 = G.extbrin();
+  if(!MaxPlanar && G.ZigZagTriangulate() < 0)
+      {if(debug())DebugPrintf("ERROR ZigZag");return -2;}
+
+  // Initializations
+  int n = G.nv();  int m = G.ne(); 
+  tvertex iv1,iv2,iv3,iv;
+  iv1 = G.vin[e0];iv2 = G.vin[-e0];iv3 = G.vin[-G.acir[e0]];
+  //init with the leftmost brin incident to tha last vertxex to be packed
+  SchnyderPacking SP(G,-G.acir[e0]);
+  // Skip first two vertices
+  SP.FindVertex();  SP.FindVertex();
+  svector<Tcontact> T_vertex(1,n);    T_vertex.SetName("T_vertex");
+  svector<int> Hor(1,n); Hor.clear(); Hor.SetName("Tcontact:Hor");
+  svector<int> Ver(1,n); Ver.clear(); Ver.SetName("Tcontact:Ver");
+  Hor[iv1] = Hor[iv2] = 1;  Ver[iv1] = 1;
+  MaxPath horizontal(n,m-1), vertical(n,2*n-4);
+
+  // use the Schnyder packing to add constraints
+  tbrin left,right,b;
+  for(tvertex ivn = 3;ivn <= G.nv();ivn++)
+      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      // left and right are incident to iv
+      T_vertex[iv].lvertex =  T_vertex[iv].rvertex = 0;
+      if(left.GetEdge() <= morg){T_vertex[iv].lvertex = T_vertex[iv].rvertex = G.vin[-left];}     
+      b = left;
+      horizontal.insert(G.vin[-b](),iv(),1);
+      while((b = G.cir[b]) != right) // for packed b incident to iv 
+            {T_vertex[G.vin[-b]].hvertex = iv();
+	    if(b.GetEdge() <= morg)
+		{T_vertex[iv].rvertex = G.vin[-b];
+		if(T_vertex[iv].lvertex == 0)T_vertex[iv].lvertex = G.vin[-b];
+		}
+            horizontal.insert(G.vin[-b](),iv(),1);
+            }
+      // b == right
+      if(b.GetEdge() <= morg)
+	  {T_vertex[iv].rvertex = G.vin[-b];
+	  if(T_vertex[iv].lvertex == 0)T_vertex[iv].lvertex = G.vin[-b];
+	  }
+      horizontal.insert(G.vin[-right](),iv(),1);
+      vertical.insert(G.vin[-left](),iv(),1);
+      vertical.insert(iv(),G.vin[-right](),1);
+      }
+
+  // Solve constraints
+  horizontal.solve(Hor);  vertical.solve(Ver);
+
+  // Modifications for drawing
+  T_vertex[iv1].lvertex = iv1;  T_vertex[iv1].rvertex = iv2;  T_vertex[iv1].hvertex = iv3;
+  T_vertex[iv2].lvertex = iv2;  T_vertex[iv2].rvertex = iv2;  T_vertex[iv2].hvertex = iv3;
+  T_vertex[iv3].hvertex = iv3;
+  // define the boundaries
+  int xmax = Ver[1];
+  for(int i = 2; i <= n;i++)xmax = Max(xmax,Ver[i]);
+  int ymax = Hor[1];
+  for(int i = 2; i <= n;i++)ymax = Max(ymax,Hor[i]);
+
+  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+  Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+  pmin() = Tpoint(.0,.0);pmax() = Tpoint(xmax+1.,ymax+1.);
+  //pmin() = Tpoint(1.0,1.0);pmax() = Tpoint(xmax,ymax);
+  // compute horizontals and verticals
+  Prop<Tpoint> hp1(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> hp2(G.Set(tvertex()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
+  Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
+  Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
+
+  double xx1,xx2;
+  int x1,x2,xv,y1,y2;
+  double epsilon = .2;
+  tvertex lv,rv;
+  for(int v = 1;v <= n;v++)
+      {if(v == iv2()){hp1[v].x() = -1.;continue;} // no horizontal
+      y1 = Hor[v]; xv = Ver[v];
+      if(T_vertex[v].lvertex == 0)
+	  {hp1[v].x() = (double)xv - epsilon;  hp1[v].y() = (double)y1;
+	   hp2[v].x() = (double)xv + epsilon;  hp2[v].y() = (double)y1;
+	   continue;
+	  }
+      x1 = Ver[T_vertex[v].lvertex]; x2 = Ver[T_vertex[v].rvertex];
+      if(v == iv3())
+	  {hp1[v].x() = (double)x1 - epsilon;  hp1[v].y() = (double)y1;
+	  hp2[v].x() = (double)x2 + epsilon;  hp2[v].y() = (double)y1;
+	  continue;
+	  }
+      // general case
+      x1 = Min(x1,xv); x2 = Max(x2,xv);
+      lv = T_vertex[v].lvertex;
+      if(x1 == xv)
+	  xx1 = x1 - epsilon;
+      else
+	  xx1 = (y1 < Hor[T_vertex[lv].hvertex]) ? x1 + epsilon : x1 - epsilon;
+
+      rv = T_vertex[v].rvertex; 
+      if(x2 == xv)
+	  xx2 = x2 + epsilon;
+      else
+	  xx2 = (y1 < Hor[T_vertex[rv].hvertex]) ? x2 - epsilon : x2 + epsilon;
+      //xx1 = (x1 < xv ) ? x1 + epsilon : x1 - epsilon;
+      //xx2 = (x2 > xv ) ? x2 - epsilon : x2 + epsilon;
+      hp1[v].x() = (double)xx1; hp1[v].y() = (double)y1;
+      hp2[v].x() = (double)xx2; hp2[v].y() = (double)y1;
+      }
+
+  // Compute verticals and text
+  for(int v = 1;v <= n;v++)
+      {y1 = Hor[v]; y2 = Hor[T_vertex[v].hvertex]; xv = Ver[v];
+      if(y1 != y2)
+	  {vp1[v].x() = (double)xv;   vp1[v].y() = (double)y1;
+	   vp2[v].x() = (double)xv;   vp2[v].y() = (double)y2 - epsilon;
+	  }
+      else // draw nothing
+	  vp1[v].x() = -1.;
+      // Text
+      txt[v].x() = (double)xv;   txt[v].y() = (double)y1;
+      }
   return 0;
   }
