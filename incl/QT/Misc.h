@@ -31,6 +31,7 @@ int & useDistance();
 bool & ShowOrientation();
 int & ShowVertex();
 QColor OppCol(QColor & col);
+QColor Desaturate(QColor & col);
 bool & ShowIndex();
 bool CheckCoordNotOverlap(GeometricGraph & G);
 #endif

@@ -95,7 +95,15 @@ QColor OppCol(QColor & col)
   */
   return col;
   }
-
+QColor Desaturate(QColor & col)
+  {int hue,sat,val;
+  col.hsv(&hue,&sat,&val);
+  int val0 = 192;
+  val = val0 +(int)(val*((double)(255.-val0)/255.));
+  col.setHsv(hue,sat/4,val); 
+  //col.setHsv((hue+180)%360,sat/4,val); 
+  return col;
+  }
 //*************************************
 void HeapSort(int (*f)(int a,int b),int first,int nelements,int *heap);
 
