@@ -57,7 +57,7 @@ void macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = GetMyWindow()->getActionString(action);
-  Tprintf("Recording action (%d): %d %s",MacroNumActions,action,(const char *)str_action);
+  Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action);
   GeometricGraph G(GetMainGraph());
   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
@@ -87,9 +87,10 @@ void MyWindow::macroHandler(int event)
 	  break; 
       case 4:// play repeat times
 	  MacroRecording = false;
+	  MessageClear();
 	  DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
 	  t0.start();
-	  DebugPrintf("Macro start at:%s",(const char *)t0.toString(Qt::TextDate)); 
+	  DebugPrintf("Macro started at:%s",(const char *)t0.toString(Qt::TextDate)); 
 	  t0.restart();
 	  MacroLooping = true;
 	  blockInput(true);
@@ -97,13 +98,13 @@ void MyWindow::macroHandler(int event)
 	  j = 0;
 	  for(i = 1;i <= repeat0;i++)
 	      {if(i == repeat0 && repeat == 0)i = 1;
-	      if(i == repeat0)MacroLooping = false;
 	      ++j;
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat0));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat0));
 	      qApp->processEvents(1);
-	      if(getKey() == Qt::Key_Escape || !MacroLooping)break;
+	      if(!MacroLooping)break; // if an error had occurred
+	      if(getKey() == Qt::Key_Escape){gw->update();break;}
 	      }
 	  MacroLooping = MacroExecuting = false;
 	  blockInput(false);
@@ -112,11 +113,10 @@ void MyWindow::macroHandler(int event)
 	  t0.restart();
 	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
 	  if(!getError())
-	      DebugPrintf("END PLAY OK iter:%d MacroNumActions:%d",j,MacroNumActions);
+	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
 	      {gw->update();
-	      DebugPrintf("END PLAY ERROR iter=%d MacroNumActions:%d",j,MacroNumActions);
-	      setError();
+	      DebugPrintf("END PLAY ERROR iter=%d",j);
 	      }
 	  break;
       case 5:// insert a pause
@@ -150,19 +150,21 @@ void MyWindow::macroPlay()
 	  {gw->update();
 	  Executing = false;
 	  }
+      if((MacroActions[record] != A_PAUSE && !menuBar()->isItemEnabled(MacroActions[record]))
+	 || (MacroActions[record] == A_PAUSE && !MacroLooping))
+	  {++record;continue;}
       if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
       if(getError()){Executing = false;break;}
-      if(debug())LogPrintf("macro action:OK\n");
+      else if(debug())LogPrintf("macro action:OK\n");
       }
   if(getError())
-      {DebugPrintf("MACRO error=%d",getError());
+      {DebugPrintf("MACRO %s",(const char *)getErrorString());
+      setError();
       MacroLooping = false;
-      }
-  if(!MacroLooping)
-      {information();
-      Tprintf("MacroNumActions:%d",MacroNumActions);
+      gw->update();
       }
 
+  if(!MacroLooping)information();
   MacroExecuting = Executing;
   }
