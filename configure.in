@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(pigale,1.2.8,[hf@sourceforge.net],Public Implementation of a Graph Library and Editor)
+AC_INIT(pigale,1.2.9,[hf@sourceforge.net],Public Implementation of a Graph Library and Editor)
 dnl CURRENT:REVISION:AGE
-LIB_VERSION=1:26:0
+LIB_VERSION=1:27:0
 AC_SUBST(LIB_VERSION)
 AC_PREFIX_DEFAULT(/usr/local/pigale-$PACKAGE_VERSION) 
 if test "$prefix" != NONE; then
@@ -15,10 +15,10 @@ dnl Checks target processor
 AC_CANONICAL_SYSTEM
 CPU=
 case "$target_cpu" in
-      i686) CPU="-mcpu=i686";;
-      i586) CPU="-mcpu=i586";;
-      i486) CPU="-mcpu=i486";;
-      i386) CPU="-mcpu=i386";;
+      i686) CPU="-march=i686";;
+      i586) CPU="-march=i586";;
+      i486) CPU="-march=i486";;
+      i386) CPU="-march=i386";;
 esac
 
 
@@ -100,7 +100,7 @@ if test "x$enable_debug" = xyes; then
     		CXXFLAGS="$CXXFLAGS -O0 "
   	fi
 elif test  "$GXX" = "yes";then
-	CXXFLAGS="-O3 $CPU -pipe -Wall -Wstrict-prototypes -Wpointer-arith -Werror -fomit-frame-pointer"
+	CXXFLAGS="-O3 $CPU -pipe -Wall -Wpointer-arith -Werror -fomit-frame-pointer"
 fi
 
 dnl Checks for X11, OpenGL, Qt,moc

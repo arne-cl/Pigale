@@ -19,5 +19,5 @@ make install
 The programs are installed in xx/bin, the libraries in xx/lib and some documentation in xx/Doc.
 
 If automakefile complains, you may try to execute:
-aclocal && automake && autoconf
+aclocal && automake -ac && autoconf
 before running ./configure
