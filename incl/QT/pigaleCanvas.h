@@ -26,6 +26,7 @@ int  & ShowVertex();
 class NodeItem;
 
 const int line_rtti    = 7;
+const int arrow_rtti = 7;
 const int ntxt_rtti    = 1004;
 const int node_rtti    = 1005;
 const int col_rtti     = 1006;
@@ -40,6 +41,7 @@ const int node_z     = 127; // NodeItem
 const int col_z      = 130; // ColorItem
 const int thick_z    = 130; // ThickItem
 const int edge_z     = 126; // EdgeItem
+const int arrow_z     = 127; // ArrowItem
 const int curs_z     = 129; // CursItem
 const int inforect_z = 131; // rect containing the info
 const int info_z     = 132; // InfoItem
@@ -49,6 +51,22 @@ const int sizerect   = 12;  //size and space are used to draw the color palets
 const int sizerecth  = 8;   //size and space are used to draw the thick palets
 const int space      = 1;   //spece + sizerect <= 13 for screens 800x600
 const int BORDER     = 30;  // free space around the graph drawing 
+class EdgeItem;
+
+class ArrowItem: public QCanvasPolygonalItem 
+{public:
+  ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g);
+  ~ArrowItem();
+  void ComputeCoord();
+  void SetColor();
+  int rtti() const;
+ private:
+  QPointArray ArrowItem::areaPoints () const;
+  void drawShape ( QPainter & p );
+  GraphWidgetPrivate* gwp;
+  EdgeItem *edgeItem;
+  QPointArray pts,refresh;
+};
 
 class EdgeItem: public QCanvasLine
 {public:
@@ -63,6 +81,7 @@ class EdgeItem: public QCanvasLine
 
   tedge e;
   EdgeItem *opp;
+  ArrowItem *arrow;
   bool lower;
 private:
   GraphWidgetPrivate* gwp;

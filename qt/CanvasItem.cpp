@@ -281,6 +281,61 @@ InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
   return infoitem;
   }
 //**********************************************************************************
+ArrowItem::ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g)
+    : QCanvasPolygonalItem (g->canvas)
+  {gwp = g;
+  pts.resize(3);
+  refresh.resize(3);
+  edgeItem = edgeitem;
+  ComputeCoord(); 
+  SetColor();
+  setPen(*tp);
+  setZ(arrow_z);
+  show();
+  }
+ArrowItem::~ArrowItem()
+  {hide(); 
+  }
+void ArrowItem::ComputeCoord()
+  {invalidate();
+  QPoint u =  edgeItem->endPoint() - edgeItem->startPoint();
+  int ml = (int)(sqrt(double(u.x()*u.x() + u.y()*u.y()))+1.5);
+  int diviseur = 10;
+  // for short edges or long edges
+  if(ml < 40) {diviseur = (diviseur*ml)/40;}
+  else if(ml > 100) {diviseur = (diviseur*ml)/100;}
+  diviseur = Max(diviseur,1);
+  QPoint v = QPoint(-u.y()/diviseur,u.x()/diviseur);
+  int diviseur2 = (diviseur*8)/10; diviseur2 = Max(diviseur2,1);
+  QPoint p1 =  edgeItem->endPoint() - v -u/diviseur2;
+  QPoint p2 =  edgeItem->endPoint() + v - u/diviseur2;
+   pts[0] = edgeItem->endPoint();  pts[1] = p1;  pts[2] = p2;
+   // compute the boundary
+   int diviseur3 = (diviseur2*8)/10; diviseur3 = Max(diviseur3,1);
+   QPoint vb = QPoint(-u.y()/diviseur2,u.x()/diviseur2);
+   QPoint p1b =  edgeItem->endPoint() - vb -u/diviseur3;
+  QPoint p2b =  edgeItem->endPoint() + vb - u/diviseur3;
+  refresh[0] = edgeItem->endPoint() + u/diviseur;  refresh[1] = p1b;  refresh[2] = p2b;
+   update();
+  }
+QPointArray ArrowItem::areaPoints () const
+  {return refresh;
+  }
+void ArrowItem::drawShape ( QPainter & p )
+  {p.drawLine(pts[1],pts[0]);
+  p.drawLine(pts[2],pts[0]);
+  //p.drawLine(refresh[1],refresh[0]); 
+  }
+void ArrowItem::SetColor()
+  {GeometricGraph & G = *(gwp->pGG);
+  tp->setColor(color[G.ecolor[ edgeItem->e]]); // needed not to get the desaturated color
+  setPen(*tp);
+  update();
+  }
+int ArrowItem::rtti() const
+  {return arrow_rtti;
+  }
+//**********************************************************************************
 EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   {GeometricGraph & G = *(g->pGG);
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
@@ -295,25 +350,32 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   tp->setColor(col);tp->setWidth(G.ewidth[e]);
   EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
   if(ShowOrientation() && eoriented[e])
-    tp->setColor(Desaturate(col));
+      {tp->setColor(Desaturate(col));
+      edge0->arrow->show();
+      }
   else
-    tp->setColor(col2);
+      {tp->setColor(col2);
+      edge0->arrow->hide();
+      }
   EdgeItem *edge1 = new EdgeItem(e,x,h-y,x1,h-y1,false,g);
   edge0->opp = edge1;  edge1->opp = edge0;
   return edge0;
   }
 EdgeItem::EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
-		   ,GraphWidgetPrivate* g)
+		   ,GraphWidgetPrivate* g) // used when CreateEdgeItem is called (load)
     : QCanvasLine(g->canvas)
   {gwp = g;
   lower = l;
   e = ee;
-  setPen(*tp);
   setPoints(x_from,y_from,x_to,y_to);
+  if(lower)
+      {arrow = new  ArrowItem(this,g);
+      }
+  setPen(*tp);
   setZ(edge_z);
   show();
   }
-EdgeItem::EdgeItem(tedge &ee,GraphWidgetPrivate* g)
+EdgeItem::EdgeItem(tedge &ee,GraphWidgetPrivate* g) // used when creating an edge in the editor
     : QCanvasLine(g->canvas)
   {gwp = g;
   e = ee;
@@ -337,9 +399,10 @@ void EdgeItem::SetColor(QColor c)
   setPen(*tp);
   if(lower)
       {if(eoriented[this->e] && ShowOrientation())
-	  opp->SetColor(Desaturate(c));
+          opp->SetColor(Desaturate(c));
       else
-	  opp->SetColor(c);
+          opp->SetColor(c);
+      arrow->SetColor();
       }
   }
 
@@ -356,9 +419,11 @@ void EdgeItem::SetColors(QColor c1, QColor c2)
 
 void EdgeItem::setFromPoint(int x,int y)
   {setPoints(x,y,endPoint().x(),endPoint().y());
+  //if(lower)arrow->ComputeCoord();
   }
 void EdgeItem::setToPoint( int x, int y )
   {setPoints(startPoint().x(),startPoint().y(),x,y);
+  //if(lower)arrow->ComputeCoord();
   }
 //**************************************************************************
 int NodeItem::rtti() const
@@ -433,7 +498,7 @@ void NodeItem::moveTo(Tpoint &p,double eps)
 	  {x0 = opp->endPoint().x(); y0 = opp->endPoint().y();
 	  x  = (int)(nx * xorient + x0*(1.-xorient));
 	  y  = (int)(ny * xorient + y0*(1.-xorient));
-	  ei->setPoints((int)nx,(int)ny,(int)x,(int)y);
+	  ei->setPoints((int)nx,(int)ny,(int)x,(int)y); ei->arrow->ComputeCoord();
 	  opp->setFromPoint((int)x,(int)y);
 	  }
       else  
@@ -441,7 +506,7 @@ void NodeItem::moveTo(Tpoint &p,double eps)
 	  x  = (int)(x0 * xorient + nx*(1.-xorient));
 	  y  = (int)(y0 * xorient + ny*(1.-xorient));
 	  opp->setPoints((int)x,(int)y,(int)nx,(int)ny);
-	  ei->setToPoint((int)x,(int)y);   
+	  ei->setToPoint((int)x,(int)y);   ei->arrow->ComputeCoord();
 	  }
       }
   }
@@ -468,15 +533,15 @@ void NodeItem::moveBy(double dx, double dy)
           {x0 = opp->endPoint().x(); y0 = opp->endPoint().y();
           x  = (int)(nx * xorient + x0*(1.-xorient));
           y  = (int)(ny * xorient + y0*(1.-xorient));
-          ei->setPoints((int)nx,(int)ny,(int)x,(int)y);
+          ei->setPoints((int)nx,(int)ny,(int)x,(int)y);   ei->arrow->ComputeCoord();
           opp->setFromPoint((int)x,(int)y);
           }
       else  
           {x0 = ei->startPoint().x(); y0 = ei->startPoint().y();
           x  = (int)(x0 * xorient + nx*(1.-xorient));
           y  = (int)(y0 * xorient + ny*(1.-xorient));
-          opp->setPoints((int)x,(int)y,(int)nx,(int)ny);
-          ei->setToPoint((int)x,(int)y);   
+          opp->setPoints((int)x,(int)y,(int)nx,(int)ny); 
+          ei->setToPoint((int)x,(int)y);    ei->arrow->ComputeCoord();
           }
       }
   canvas()->update();

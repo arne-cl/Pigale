@@ -90,12 +90,8 @@ bool CheckBipolarlyOriented(TopologicalGraph &G,tvertex &s,tvertex &t,bool &stCo
 
   // Add an edge between s and t
   if(addEdge)
-      {
-      Tprintf("adding %d %d  (%d %d)",G.vin[bs](),G.vin[bt](),s(),t());
-      Tprintf("bs %d  (%d %d=",bs(),G.vin[bs](),G.vin[-bs]());
-      Tprintf("bt %d  (%d %d)",bt(),G.vin[bt](),G.vin[-bt]());
-      G.NewEdge(bs,bt);
-      if(G.ComputeGenus() != 0)Twait("error adding edge");
+      {G.NewEdge(bs,bt);
+      if(G.ComputeGenus() != 0)setError(-1);
       bs = (tbrin)G.ne(); 
       }
   return true;
