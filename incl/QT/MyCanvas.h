@@ -150,6 +150,7 @@ class GraphEditor : public QCanvasView
   void clear();
   void load(bool initgrid = true);
   void print(QPrinter* printer);
+  void png();
   void Normalise();
   bool InitGrid(Tgrid &g);
   void UndoGrid();

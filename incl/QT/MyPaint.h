@@ -35,6 +35,7 @@ public:
   //public slots:
   void update(int index);
   void print(QPrinter *printer);
+  void png();
 
 private:
   void drawIt(QPainter *);

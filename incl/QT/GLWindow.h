@@ -26,6 +26,7 @@ public:
   void animate();
   void setAnimationDelay(int ms);
   GLuint load(bool init);
+  void png();
 
 private:
   void loadFaces();
