@@ -144,26 +144,24 @@ void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
 Graph_Properties::~Graph_Properties()
   { }
 void Graph_Properties::MaxNSlowChanged(int i)
-  {MaxNSlow = i;if(GetMainGraph().nv())update();
+  {MaxNSlow = i;//if(GetMainGraph().nv())update();
   }
 void Graph_Properties::MaxNDisplayChanged(int i)
-  {MaxNDisplay = i;if(GetMainGraph().nv())update();
+  {MaxNDisplay = i;//if(GetMainGraph().nv())update();
   }
 void Graph_Properties::update()
   {GeometricGraph G(GetMainGraph());
   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
-      Twait("memory error");
+      setError(-1,"vin[0] or cir[0] or acir[0] != 0");
       }
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  if(getError())
-      {if(debug())DebugPrintf("GP Error:%d",(int)getError());
-      else Tprintf("GP Error:%d",(int)getError());
-      }
+  if(getError())DebugPrintf("GP Error:%d",getError());
   int nloops = G.RemoveLoops();
   if(nloops)
       {QString t;
       t.sprintf("Graph had %d loops",nloops);
+      setError(-1,(const char *)t);
       Twait((const char *)t);
       }
   int ns,nt;
