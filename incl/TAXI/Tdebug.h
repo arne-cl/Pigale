@@ -17,6 +17,7 @@
 
 bool & debug();
 void myabort();
+int CheckLogFile();
 void DebugPuts(const char *str);
 void DebugPrintf(const char *fmt,...);
 void LogPrintf(const char *fmt,...);

@@ -42,14 +42,20 @@ bool& debug()
   }
 void DebugIndent(int i)
   {Indent += i;} 
-
+int CheckLogFile()
+  {FILE *LogFile;
+  LogFile = fopen(LogName, "aw");
+  if(LogFile == NULL)return -1;
+  fclose(LogFile);
+  return 0;
+  }
 void DebugPuts(const char *str)
   {FILE *LogFile;
   if(first)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){setError(-1);return;}
+  if(LogFile == NULL)return;
   fprintf(LogFile, "%*s%s\n", Indent*2, "", str);
   fclose(LogFile);
   }
@@ -66,7 +72,7 @@ void DebugPrintf(const char *fmt,...)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){setError(-1);return;}
+  if(LogFile == NULL)return;
   fprintf(LogFile, "%*s%s\n", Indent*2, "", buff);
   Tprintf("%*s%s", Indent*2, "", buff);
   fclose(LogFile);
@@ -85,7 +91,7 @@ void LogPrintf(const char *fmt,...)
       {LogFile = fopen(LogName, "w");first = false;}
   else
       LogFile = fopen(LogName, "aw");
-  if(LogFile == NULL){setError(-1);return;}
+  if(LogFile == NULL)return;
   fprintf(LogFile,"%s",buff);
   fclose(LogFile);
   }
