@@ -52,6 +52,24 @@ int Embed3d(TopologicalGraph &G0)
       EigenValues[i] = G.EigenValues[i];
   return 0;
   }
+int Embed3dbis(TopologicalGraph &G0)
+  {if(G0.nv() < 3 || G0.ne() < 2)return -1;
+  EmbedRnGraph G(G0);
+
+  if(!G.ok){Tprintf("DIAG ERROR (Complete Graph?)"); return -1; }
+  RnEmbedding &em=*new RnEmbedding(G0.nv(),G0.nv()-1,G0.TestPlanar());
+  Prop1<RnEmbeddingPtr> embedp(G.Set(),PROP_RNEMBED);
+  if (embedp().ptr!=0) delete embedp().ptr;
+  embedp().ptr=&em;
+  for (int i=1; i<=em.dmax;i++)
+    memcpy(em.vector(i).begin(),G.Coords[i],em.vector(i).getsize());  
+  Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
+  Coord3.vector()=em.Coord3;
+  Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);
+  for(int i = 1;i <= G.nv();i++)
+      EigenValues[i] = G.EigenValues[i];
+  return 0;
+  }
 
 int split(Graph &G0,int &NumberOfClasses)
 // Pas de boucles ou aretes multiples

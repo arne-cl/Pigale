@@ -37,6 +37,8 @@ int EmbedContactBip(GeometricGraph &G);
 int DecompMaxBip(TopologicalGraph &G);
 int Polar(TopologicalGraph &G);
 int Embed3d(TopologicalGraph &G0);
+int Embed3dbis(TopologicalGraph &G0);
+int Embed3dSchnyder(TopologicalGraph &G0);
 
 // Generators
 //in Generate.cpp
@@ -47,5 +49,9 @@ GraphContainer *GenerateRandomGraph(int a,int b);
 
 //in SchaefferGen.cpp
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
+
+// Outerplanar maps
+GraphContainer *GenerateRandomOuterplanarGraph(int n);
+GraphContainer *GenerateRandomOuterplanarGraph(int n,int m);
 
 #endif

@@ -237,6 +237,7 @@ public :
     // in Schnyder.cpp
     int SchnyderOrient(tbrin FirstBrin);
     int Schnyder(tbrin FirstBrin);
+    int SchnyderXYZ(tbrin FirstBrin,svector<int>&x,svector<int>&y,svector<int>&z);
     int SchnyderV(tbrin FirstBrin);
     // in k-InfOrient.cpp
     int InfOrient();

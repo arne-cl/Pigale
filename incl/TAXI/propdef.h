@@ -76,6 +76,7 @@
 #define PROP_MM               (32)   //!< \c int #meta edges
 #define PROP_POINT_MIN       (PROP_DRAWING+1)    //!< \c Tpoint
 #define PROP_POINT_MAX       (PROP_DRAWING+2)    //!< \c Tpoint
+#define PROP_RNEMBED         (PROP_DRAWING+3)    //!< \c RnEmbeddingPtr
 //@}
 /** @name Property numbers for V,B,E.
   */

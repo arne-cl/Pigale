@@ -14,6 +14,7 @@
 #include <TAXI/graphs.h>
 #include <TAXI/Tbase.h>
 #include <TAXI/Tpoint.h>
+#include <TAXI/embedrn.h>
 
 #define MAX_ITERATION 10
 #define SEUIL 0.00001
