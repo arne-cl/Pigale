@@ -15,7 +15,7 @@
 #include <TAXI/graphs.h>
 #include <TAXI/Tfile.h> 
 
-
+int TestOuterPlanar(TopologicalGraph &G);
 //Drawings
 bool & SchnyderRect();
 bool & SchnyderLongestFace();

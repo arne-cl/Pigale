@@ -23,7 +23,6 @@
 #include <qlayout.h>
 #include <qmenubar.h>
 
-int TestOuterPlanar(TopologicalGraph &G);
 
 Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 				   ,const char* name,WFlags fl)
