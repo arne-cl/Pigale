@@ -60,7 +60,7 @@ tbrin FindBrin(TopologicalGraph &G, tvertex s, tvertex t)
 int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
 		       svector<int> &x, 
 		       svector<int> &x1,svector<int> &x2,
-		       svector<int> &x1m, svector<int> &x2m)
+		       svector<int> &x1m, svector<int> &x2m, int morg)
 {
   tvertex v;
   tedge e;
@@ -69,14 +69,13 @@ int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
 
   int maxxval=0;
   for (e=1; e<=m;e++)
-      if (x[e]>maxxval)
-          maxxval=x[e];
+    if (x[e]>maxxval) maxxval=x[e];
   
   x2.clear();x2m.clear();
   for (v=1; v<=n;v++)
-      x1[v]=x1m[v]=maxxval;
+      x1[v]=x1m[v]=maxxval+1;
   
-  for (e=1;e<=m;e++)
+  for (e=1;e<=morg;e++)
       {int xe=x[e];
       if (G.vin[e.firsttbrin()]==orig[e.firsttbrin()])
           {
@@ -103,6 +102,12 @@ int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
           if (x2m[v]<xe) x2m[v]=xe;
           }
       }
+  // For isolated vertices
+  for (v=1; v <= n;v++)
+      if(x1[v] == maxxval + 1)
+          {int xe = x[G.FirstBrin(v).GetEdge()];
+          x1[v] = x2[v] = x1m[v] = x2m[v] = xe;
+          }
   for(v=1;v<=n;v++)
       {if (x1m[v]>x1[v]) x1m[v]=x1[v];
       if (x2m[v]<x2[v]) x2m[v]=x2[v];
@@ -196,7 +201,7 @@ void SortParallelEdges(TopologicalGraph &G, svector<tvertex> &orig,
     }
 }
 
-int Vision(TopologicalGraph &xG)
+int Vision(TopologicalGraph &xG,int morg)
   {
   GraphContainer GC(xG.Container());
   TopologicalGraph G(GC);
@@ -326,7 +331,7 @@ int Vision(TopologicalGraph &xG)
       e=(G.acir[b0]).GetEdge();
       b=b0;
       while (b.out())
-          {if (!stadded || b!=bst) 
+	{if (!stadded || b!=bst)
               MP->insert(b.GetEdge()(),e(),1);
           b=G.cir[-b];
           }
@@ -339,8 +344,11 @@ int Vision(TopologicalGraph &xG)
   delete &Fpbrin;
   delete MP;
   
-  if (stadded)
-      {G.DeleteEdge(m); --m;}
+//   for (tedge e=G.ne(); e>morg; e--)
+//     {
+//     G.DeleteEdge(G.ne()); --m;
+//     }
+
 
   // computes extremities of vertices
   
@@ -349,7 +357,7 @@ int Vision(TopologicalGraph &xG)
   Prop<int> x1m(xG.Set(tvertex()),PROP_DRAW_INT_3);
   Prop<int> x2m(xG.Set(tvertex()),PROP_DRAW_INT_4);
   
-  int maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m);
+  int maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
 
   // Performs channel routing
   ChannelRouter CR(n,0,maxxval);
@@ -373,7 +381,7 @@ int Vision(TopologicalGraph &xG)
 
   // recompute true x1,x2, etc
 
-  maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m);
+  maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
   maxyval=y[t];
 
   Prop1<int> maxx(xG.Set(),PROP_DRAW_INT_1);
@@ -387,7 +395,7 @@ int Vision(TopologicalGraph &xG)
 
   Prop<Tpoint> P1(xG.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> P2(xG.Set(tedge()),PROP_DRAW_POINT_2);
-  for (e=1; e<=m; e++)
+  for (e=1; e<=morg; e++)
     {
       if (orig[e.firsttbrin()]==G.vin[e.firsttbrin()])
 	{P1[e]=Tpoint(x[e],y[orig[e.firsttbrin()]]);
@@ -403,3 +411,15 @@ int Vision(TopologicalGraph &xG)
       }
   return 0;
   }
+
+int NPBipolar(TopologicalGraph &G, tbrin bst);
+
+int EmbedGVision(TopologicalGraph &G)
+{ int morg = G.ne();
+  if(!G.CheckConnected())G.MakeConnected();
+  if(!G.CheckBiconnected())G.NpBiconnect();
+  NPBipolar(G,tbrin(1));
+  int ret=Vision(G,morg);
+  while (G.ne()>morg) G.DeleteEdge(G.ne());
+  return ret;
+}

@@ -23,7 +23,8 @@ int DFSGraph::DoDFS(tbrin b0)
   cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
   svector<tbrin> tb(0,nv()); tb.clear(); tb.SetName("tb:DoDFS");
   svector<int> dfsnum(0,nv());dfsnum.SetName("dfsnum:DoDFS");
-
+  svector<tedge> tout(0,nv()); tout.SetName("tout:DoDFS");
+  svector<tedge> ue(0,ne()); ue.SetName("ue:DoDFS");
   nvin[0]=0;
   _ib[0]=0;
   //iv[0]=0;
@@ -48,14 +49,19 @@ int DFSGraph::DoDFS(tbrin b0)
               {nvin[z.firsttbrin()]=dfsnum[v];
               nvin[z.secondtbrin()]=dfsnum[w];
               _ib[z]=b;
+              uptree[z]=ue[b.GetEdge()];
               z--;
               }
+          else // coarbre haut ?
+	    { ue[b.GetEdge()]=tout[w];
+	    }
           }
       else                    // arbre bas ?
           {if (w==0) break;
           _ib[y]=b;
           b.cross();
           tb[w]=b;
+          tout[v]=y();
           // tout[v] = y;
           nvin[y.firsttbrin()]=dfsnum[v];
           y=nvin[y.secondtbrin()]()=dfsnum[w]=y()+1;
