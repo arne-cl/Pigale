@@ -425,11 +425,9 @@ MyWindow::MyWindow()
   connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupOuter,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupSeed,SIGNAL(activated(int)),SLOT(handler(int)));
-#if VERSION_ALPHA
   generate->insertItem("&Outer Planar",popupOuter);
   popupOuter->insertItem("&Outer Planar (N1)",             A_GENERATE_P_OUTER_N);
   popupOuter->insertItem("O&uter Planar (N1,M)",           A_GENERATE_P_OUTER_NM);
-#endif
   generate->insertItem("&Planar",popupPlan);
   popupPlan->insertItem("connnected (M)",                  A_GENERATE_P);
   popupPlan->insertItem("2-connnected (M)",                A_GENERATE_P_2C);
