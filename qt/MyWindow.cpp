@@ -11,6 +11,7 @@
 
 #include <stdlib.h> 
 #include <stdio.h> 
+#include <unistd.h>
 
 #include "MyWindow.h"
 #include <TAXI/Tgf.h>
@@ -423,21 +424,22 @@ MyWindow::MyWindow()
   QPopupMenu *macroMenu = new QPopupMenu( this );
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
-  //spinMacro = new QSpinBox(1,10000,100,macroMenu,"spinMacro");
+  macroSpin = new QSpinBox(0,60,1,macroMenu,"macroSpin");
 #if QT_VERSION >= 300
-  //int macroRepeat = setting.readNumEntry("/pigale/generate/gen Repeat",100);
   int macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
   int macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
 #else
   int macroRepeat = 100;
   int macroMul = 0;
 #endif
-  //spinMacro->setValue(macroRepeat);spinMacro->setPrefix("Repeat: ");
+  macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
+  macroMenu->insertItem(macroSpin);
+  macroMenu->insertItem("Insert a Pause",2);
   macroMenu->insertItem("Continue recording",3);
   macroMenu->insertSeparator();
-  //macroMenu->insertItem(spinMacro);
+ 
   
   macroLine = new LineEditNum(macroMenu,"macroLineEditNum");
   macroLine->setPrefix("Repeat:"); macroLine->setNum(macroRepeat); macroLine->setMul(macroMul);
@@ -446,9 +448,9 @@ MyWindow::MyWindow()
   QSlider *macroSliderM = new QSlider(0,100,0,macroMul,QSlider::Horizontal,macroMenu,"macroSliderM");
   macroMenu->insertItem(macroSlider);
   macroMenu->insertItem(macroSliderM);
-  //connect(macroSlider,SIGNAL(valueChanged(int)),spinMacro,SLOT(setValue(int)));
   connect(macroSlider,SIGNAL(valueChanged(int)),macroLine,SLOT(setNum(int)));
   connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
+
   macroMenu->insertItem("Repeat macro",4);
  
   QPopupMenu *userMenu = new QPopupMenu( this );
@@ -749,13 +751,19 @@ void MyWindow::Message(QString s)
   e->scrollToBottom ();
 #endif
   } 
+
 void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
   QTime t;
   //qDebug("handler:%d",action);
   if(MacroRecording)macroRecord(action);
-  if(action < A_AUGMENT_END)
+  if(action == A_PAUSE)
+      {pauseDelay() = macroSpin->value();
+      sleep(pauseDelay());
+      return;
+      }
+  else if(action < A_AUGMENT_END)
       {UndoSave();t.start();
       ret = AugmentHandler(action);
       }
@@ -793,7 +801,11 @@ void MyWindow::handler(int action)
       }
   else if(action > 10000)
       {if(action == 10010){SetPigaleColors();return;}
-      else if(action == 10011){SaveSettings();return;}
+      else if(action == 10011) 
+	  {pauseDelay() = macroSpin->value();
+	  SaveSettings();
+	  return;
+	  }
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
       debug()               =  menuBar()->isItemChecked(10001);
       SchnyderRect()        =  menuBar()->isItemChecked(10002);
@@ -801,7 +813,7 @@ void MyWindow::handler(int action)
       SchnyderColor()       =  menuBar()->isItemChecked(10004);
       ShowOrientation()     =  menuBar()->isItemChecked(10020);
       EraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
-
+      pauseDelay() = macroSpin->value();
       if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
       if(action == 10020)gw->update();
       return;

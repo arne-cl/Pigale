@@ -14,6 +14,8 @@
 
 //DO NOT ADD WHITES
 
+#define A_PAUSE                    (99)                 // PAUSE
+
 //Augment
 #define  A_AUGMENT                  (100)
 #define  A_AUGMENT_CONNECT          (A_AUGMENT+1)       // CONNECT

@@ -26,7 +26,7 @@ int GraphInformation();
 void Normalise();
 void Normalise(GeometricGraph &G); 
 void Normalise(TopologicalGraph &G);
-
+int & pauseDelay();
 int & useDistance();
 bool & ShowOrientation();
 int & ShowVertex();

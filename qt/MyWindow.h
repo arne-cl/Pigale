@@ -108,7 +108,7 @@ public:
  
 private:
   QToolBar *tb;
-  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*spinMacro;
+  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
   LineEditNum *macroLine;
   QPrinter *printer;
   QString InputFileName;

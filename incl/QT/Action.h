@@ -1,5 +1,6 @@
 struct _Action  {const char* name;int num;};
 static _Action actions[]={
+{"PAUSE",(99)},
 {"CONNECT",(A_AUGMENT+1)},
 {"BICONNECT",(A_AUGMENT+2)},
 {"BICONNECT_6",(A_AUGMENT+3)},

@@ -25,18 +25,22 @@
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
-static int  escape = 0;
 static int  key = 0;
 
+int & pauseDelay()
+  {static int delay;
+  return delay;
+  }
+
 void MyWindow::keyPressEvent(QKeyEvent *k)
-  {if(k->key() == Qt::Key_Escape)
-      escape = 1;
-  key = k->key();
+  {key = k->key();
   //qDebug("k:%d",k->key());
   QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;
+  //if(key)qDebug("get k=%d",key0);
+  if(key0 == Qt::Key_Escape && MacroLooping)MacroLooping = false;
   key = 0;
   return key0;
   }
@@ -50,7 +54,7 @@ void AllowAllMenus(QMenuBar *menubar)
       }
   }
 void macroRecord(int action)
-  {if(action > 10000)return;
+  {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = GetMyWindow()->getActionString(action);
   Tprintf("Recording action (%d): %d %s",MacroNumActions,action,(const char *)str_action);
@@ -60,7 +64,6 @@ void macroRecord(int action)
   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
 void MyWindow::macroHandler(int event)
-//{int repeat = spinMacro->value();
   {int repeat = macroLine->getVal();
   int i;
   unsigned j;
@@ -94,15 +97,14 @@ void MyWindow::macroHandler(int event)
 	  j = 0;
 	  for(i = 1;i <= repeat0;i++)
 	      {if(i == repeat0 && repeat == 0)i = 1;
-	      if(i == repeat0 || escape)MacroLooping = false;
+	      if(i == repeat0)MacroLooping = false;
 	      ++j;
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat0));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat0));
-	      if(escape || !MacroLooping)break;
-	      qApp->processEvents(5);
+	      qApp->processEvents(1);
+	      if(getKey() == Qt::Key_Escape || !MacroLooping)break;
 	      }
-	  escape = 0;
 	  MacroLooping = MacroExecuting = false;
 	  blockInput(false);
 	  Time = t0.elapsed()/1000.;
@@ -117,9 +119,13 @@ void MyWindow::macroHandler(int event)
 	      setError();
 	      }
 	  break;
+      case 5:// insert a pause
+	  if(MacroRecording)macroRecord(A_PAUSE);
+	  break;
       default:
 	  break;
       }
+  pauseDelay() = macroSpin->value();
   }
 void macroDefColors(int record)
   {GeometricGraph G(GetMainGraph());

@@ -87,6 +87,7 @@ void MyWindow:: SaveSettings()
 //setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
   setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getNum());
   setting.writeEntry("/pigale/macro/macroRepeat macroMul",macroLine->getMul());
+  setting.writeEntry("/pigale/macro/macroDelay macroDelay", pauseDelay());
   // Printer
   setting.writeEntry("/pigale/printer colormode",printer->colorMode());
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
@@ -129,6 +130,7 @@ void MyWindow::LoadSettings()
   SchnyderLongestFace() = setting.readBoolEntry("/pigale/embed/schnyder longestface",true);
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
+  pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
   EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   }
