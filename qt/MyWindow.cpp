@@ -86,7 +86,7 @@ void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
-
+static QLineEdit *seedEdit;
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )
@@ -117,6 +117,8 @@ MyWindow::MyWindow()
   LoadSettings();
   
 #endif
+  // Init random generator
+  randomInitSeed();
   // Define some colors
   QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
@@ -382,12 +384,14 @@ MyWindow::MyWindow()
   QPopupMenu *popupQuadric  = new QPopupMenu(this);
   QPopupMenu *popupBipar    = new QPopupMenu(this);
   QPopupMenu *popupPlan     = new QPopupMenu(this);
+  QPopupMenu *popupSeed     = new QPopupMenu(this);
   menuBar()->insertItem("&Generate",generate);
   connect(generate,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupCubic,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupQuadric,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupBipar,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(popupSeed,SIGNAL(activated(int)),SLOT(handler(int)));
   generate->insertItem("&Planar",popupPlan);
   popupPlan->insertItem("connnected (M)",                  A_GENERATE_P);
   popupPlan->insertItem("2-connnected (M)",                A_GENERATE_P_2C);
@@ -413,7 +417,7 @@ MyWindow::MyWindow()
   generate->insertSeparator();
   // Erase multiple edges
   generate->insertItem("Erase multiple edges",10006);
-  generate->setItemChecked(10006,EraseMultipleEdges());
+  generate->setItemChecked(10006,randomEraseMultipleEdges());
 #if QT_VERSION >= 300
   int Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
   int Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
@@ -432,6 +436,11 @@ MyWindow::MyWindow()
   generate->insertItem(spin_N1);
   generate->insertItem(spin_N2);
   generate->insertItem(spin_M);
+  seedEdit =  new QLineEdit(popupSeed,"seedEdit");
+  seedEdit->setText(QString("%1").arg(randomSetSeed()));
+  generate->insertItem("Seed",popupSeed);
+  popupSeed->insertItem("Change Seed",10008);
+  popupSeed->insertItem(seedEdit);
 
   QPopupMenu *macroMenu = new QPopupMenu( this );
   menuBar()->insertItem("&Macro",macroMenu);
@@ -575,8 +584,8 @@ MyWindow::MyWindow()
   mainWidget->setFocus();
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   if(getError() == -1){Twait("Impossible to write in log.txt");setError();}
-  randomInit();
-  DebugPrintf("seed:%ld",setSeed());
+  //randomInitSeed();
+  DebugPrintf("Init seed:%ld",randomSetSeed());
   
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
@@ -822,19 +831,27 @@ void MyWindow::handler(int action)
       ret = 2;
       }
   else if(action > 10000)
-      {if(action == 10010){SetPigaleColors();return;}
+      {if(action == 10010)
+	  {SetPigaleColors();
+	  return;
+	  }
       else if(action == 10011) 
 	  {pauseDelay() = macroSpin->value();
 	  SaveSettings();
 	  return;
 	  }
+      else if(action == 10008)
+	  {randomSetSeed() = atol((const char *)seedEdit->text());
+	  return;
+	  }
+      
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
       debug()               =  menuBar()->isItemChecked(10001);
       SchnyderRect()        =  menuBar()->isItemChecked(10002);
       SchnyderLongestFace() =  menuBar()->isItemChecked(10003);
       SchnyderColor()       =  menuBar()->isItemChecked(10004);
       ShowOrientation()     =  menuBar()->isItemChecked(10020);
-      EraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
+      randomEraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
       randomSeed()          =  menuBar()->isItemChecked(10007);
       pauseDelay() = macroSpin->value();
       if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
