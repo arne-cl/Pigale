@@ -22,9 +22,9 @@ void DebugIndent(int i);
 
 struct _T_Error 
    {int code;
-   char *msg;
+   const char *msg;
 
-   _T_Error(int c=0, char *m=(char *)0) : code(c), msg(m) {}
+   _T_Error(int c=0, const char *m=(const char *)0) : code(c), msg(m) {}
    operator int () const { return code;}
    };
 
