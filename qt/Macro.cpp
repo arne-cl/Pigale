@@ -16,6 +16,8 @@
 #include <TAXI/Tmessage.h> 
 #include <QT/Misc.h> 
 #include <qapplication.h> 
+#include <qspinbox.h> 
+#include <qstatusbar.h> 
 
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
@@ -30,9 +32,11 @@ void MacroRecord(int action)
   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;
   }
 void MyWindow::macroHandler(int event)
-  {switch(event)
+  {int repeat = spinMacro->value();
+  QString m;
+  switch(event)
       {case 1://start recording
-	   LogPrintf("\nRecord macro\n");
+	   if(debug())LogPrintf("\nRecord macro\n");
 	   MacroRecording = true;
 	   MacroNumActions = 0;
 	   break;
@@ -42,6 +46,14 @@ void MyWindow::macroHandler(int event)
       case 3://continue recording
 	  MacroRecording = true;
 	  break; 
+      case 4:// play repeat times
+	  for(int i = 1;i <= repeat;i++)
+	      {m.sprintf("Executing: %d/%d",i,repeat);
+	      //statusBar()->message(m);
+	      statusBar()->clear();
+	      macroPlay();
+	      }
+	  break;
       default:
 	  break;
       }
@@ -53,7 +65,7 @@ void macroDefColors(int record)
   G.ewidth.definit(MacroEwidth[record]);
   }
 void MyWindow::macroPlay()
-  {LogPrintf("\nPlay macro:%d records",MacroNumActions);
+  {if(debug())LogPrintf("\nPlay macro:%d records",MacroNumActions);
   MacroRecording = false;
   
   if(MacroNumActions == 0){load(1);return;}
@@ -63,15 +75,10 @@ void MyWindow::macroPlay()
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
-//       {GeometricGraph G(GC);
-//       G.ecolor.definit(MacroEcolor[record]); 
-//       G.vcolor.definit(MacroVcolor[record]); 
-//       G.ewidth.definit(MacroEwidth[record]);
-//       }
       if(MacroExecuting && record == MacroNumActions)
 	  {MacroExecuting = false;
 	  // Call editor if last action is an embedding
-	  if(MacroActions[record] > 200 && MacroActions[record] < 300 )
+	  if(MacroActions[record] > 205 && MacroActions[record] < 300 )
 	      gw->update();
 	  }
       handler(MacroActions[record++]);

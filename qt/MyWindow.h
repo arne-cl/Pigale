@@ -95,7 +95,7 @@ public:
   GraphContainer GC;
  
 private:
-  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND;
+  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*spinMacro;
   QTime timer;
   QPrinter *printer;
   QString InputFileName;
