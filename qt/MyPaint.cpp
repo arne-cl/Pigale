@@ -84,10 +84,45 @@ void DrawTContact(QPainter *p,MyPaint *paint)
   Prop<Tpoint> hp2(G.Set(tvertex()),PROP_DRAW_POINT_2);
   Prop<Tpoint> vp1(G.Set(tvertex()),PROP_DRAW_POINT_3);
   Prop<Tpoint> vp2(G.Set(tvertex()),PROP_DRAW_POINT_4);
-  //Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
+  Prop<Tpoint> txt(G.Set(tvertex()),PROP_DRAW_POINT_5);
+  Prop1<double> sizetext(G.Set(),PROP_DRAW_DBLE_1);
+  
+  // Draw horizontals and verticals
   for(tvertex v = 1;v <= G.nv();v++)
       {if(hp1[v].x() > .0)paint->DrawSeg(p,hp1[v],hp2[v],Black);
       if(vp1[v].x() > .0)paint->DrawSeg(p,vp1[v],vp2[v],Black);
+      }
+
+  // Draw text
+  int sizefont = (int)(sizetext() * Min(paint->xscale,paint->yscale) + .5);
+  sizefont = Min(sizefont,12);
+  if(sizefont < 6)return;
+  QFont font = QFont("lucida",sizefont);
+  p->setFont(font);
+  //Checking if vertices have labels
+  svector<long> *vlabel = NULL;
+  if(G.Set(tvertex()).exist(PROP_LABEL))
+      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+      vlabel = &label.vector();
+      }
+ 
+  QPen pn = p->pen();
+  pn.setColor(color[Black]); pn.setWidth(1); p->setPen(pn);
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  QRect rect;
+  QSize size;
+  QString t;
+  int dx,dy;
+  for(tvertex v=1; v <= G.nv();v++)
+      {if(ShowVertex() == -1 || !G.Set(tvertex()).exist(PROP_LABEL))
+	  t.sprintf("%2.2d",v());
+      else
+	  t.sprintf("%2.2ld",G.vlabel[v()]);
+      size = QFontMetrics(font).size(Qt::AlignCenter,t);
+      dx =size.width() + 4;   dy = size.height() ;
+      rect = QRect(paint->to_x(txt[v].x()) -dx/2,paint->to_y(txt[v].y())-dy,dx,dy);
+      pb.setColor(color[G.vcolor[v]]);      p->setBrush(pb);
+      p->drawRect(rect);      p->drawText(rect,Qt::AlignCenter,t);
       }
   }
 void DrawBipContact(QPainter *p,MyPaint *paint)

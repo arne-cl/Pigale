@@ -281,9 +281,6 @@ MyWindow::MyWindow()
   remove->insertItem("Colored &vertices",    405);
   remove->insertItem("Colored &edges",       406);
   remove->insertItem("&Thick edges",         407);
-//   remove->insertItem("Colored &vertices", gw,SLOT(EraseColorVertices()));
-//   remove->insertItem("Colored &edges",    gw,SLOT(EraseColorEdges()));
-//   remove->insertItem("&Thick edges",      gw,SLOT(EraseThickEdges()));
 
   QPopupMenu *embed = new QPopupMenu(this);
   menuBar()->insertItem("E&mbed",embed);
@@ -299,8 +296,8 @@ MyWindow::MyWindow()
   embed->insertItem("FPP Visi&bility",       253);
 #ifdef ALPHA 
   embed->insertItem("&General Visibility",   254);
-  embed->insertItem("&T Contact",            255);
 #endif
+  embed->insertItem("&T Contact",            255);
   embed->insertItem("&Contact Biparti",      251);
   embed->insertSeparator();
   embed->insertItem("&Polar",                252);

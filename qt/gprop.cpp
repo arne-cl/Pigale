@@ -246,6 +246,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(250,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
   menu->setItemEnabled(251,(G.nv() > 1) && B && P && NotBigD);     //Biparti
   menu->setItemEnabled(253,!SMALL && S && P && NotBigD);           //FPP vision
+  menu->setItemEnabled(255,!SMALL && S && P && NotBigD);           //T-contact
   //dual
   menu->setItemEnabled(301,(G.nv() > 1) && P); 
   menu->setItemEnabled(302,(G.nv() > 1) && P);
