@@ -169,6 +169,29 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   return &GC;
 }
 
+///////////////////// TESTS
+/*
+static long puiss_2 (int k) {
+    return 1 <<k;
+}
+void set_name(int *Dyck, int *add_edges, int n, int i, char *file_name) {
+    //    int *ns;
+    int ns1=0, ns2=0;
+    for (int j=1; j<=2*n-2; j++) {
+	if (Dyck[j]>Dyck[j-1])
+	    ns1+= puiss_2(j-1);
+    }
+    for (int j=0; j<=n-i-2; j++) {
+	if (add_edges[j] != 0)
+	    ns2+= puiss_2(j);
+    }
+    //sprinfoptf(file_name, "Out%.2d_%.4d_%.4d", n, ns1, ns2);
+    sprintf(file_name, "OutD%.2d_%.4d_%.4d", n, ns1, ns2);
+    //sprintf(file_name, "Outi%.2d_%.4d", n, i);
+}*/
+
+///////////////////////////////////////
+
 
 
 
@@ -184,7 +207,8 @@ int gen_i(int n) {
     bool again = (randomGet((2*((2*n-2)-i)*(i+1)))<= (2*n-2-2*i)*(i+2));
     while(again) {
 	i++;
-	if (randomGet(2) == 1) {
+	//	if (randomGet(10000) % 2) {
+	if (randomGet(10000)/1000 % 2 == 0) {
 	    i = 1;
 	}
 	again = (randomGet((2*((2*n-2)-i)*(i+1))) <= (2*n-2-2*i)*(i+2));
@@ -200,12 +224,16 @@ int gen_i(int n) {
 // return : the length of the last branch
 int gen_i_m(int n, int m) {
     int i = 1;
-    bool again = (randomGet(2*((2*n-2)-i)*(i+1))<= (2*n-2)-2*i)*(i+2);
+    if (n == 3 && m == 3)
+      return 1;
+    bool again = (randomGet(2*((2*n-2)-i)*(i+1))<= ((2*n-2)-2*i)*(i+2));
     while(again) {
 	i++;
-	if (randomGet(n-i-1) <= (m-n+1)){
-	  i = 1;
-	}
+	if (n != (i+1))
+	  if (randomGet(n-i-1) <= (m-n+1)) {
+	    i = 1;
+	  }
+
 	again = (randomGet(2*((2*n-2)-i)*(i+1)) <= ((2*n-2)-2*i)*(i+2));
     }
     return i;
@@ -237,7 +265,7 @@ void gen_Dyck_i(int *word, int i, int length) {
 // int length : length of the array "word".
 void gen_random(int *word, int length) {
   for(int i=0; i< length;i++)
-    word[i] = randomGet(2) % 2;
+    word[i] = (randomGet(10000)/1000 % 2);
 }
 
 // Generate a random binary string with k "1" and "length-k "0"
@@ -349,47 +377,64 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
 }
 
 // Compute a random outerplanar map with n vertices
-GraphContainer *GenerateRandomOuterplanarGraph(int n)
-  {int i;
-  int add_edges[n-1];
-  int Dyck[2*n-1];
-  for(int k=0;k<=n-1;k++)
+GraphContainer *GenerateRandomOuterplanarGraph(int n) {      
+    int i;
+    int add_edges[n-1];
+    int Dyck[2*n-1];
+    for(int k=0;k<=n-2;k++)
       add_edges[k]=0;
-  for(int k=0;k<=2*n-2;k++)
+    for(int k=0;k<=2*n-2;k++)
       Dyck[k]=0;
-  long seed = randomSetSeed();
-  randomStart();
-  i = gen_i(n);
-  gen_Dyck_i(Dyck, i, 2*n-2);
-  gen_random(add_edges, n-i-1);
-  randomEnd();
-  return create_outerplanar(Dyck, add_edges, i, n, seed);
-  }
+    long seed = randomSetSeed();
+    randomStart();
+    i = gen_i(n);
+    gen_Dyck_i(Dyck, i, 2*n-2);
+    gen_random(add_edges, n-i-1);
+    randomEnd();
+    // TEST
+    //char file_name[100];
+    //set_name(Dyck, add_edges, n, i, file_name);
+    //fstream file_out;
+    //file_out.open(file_name, fstream::app);
+    //file_out << "1";
+    //file_out.close();
+    // END TEST
+    return create_outerplanar(Dyck, add_edges, i, n, seed);
+}
 
 
 // Compute a random outerplanar map with n vertices and m edges.
 GraphContainer *GenerateRandomOuterplanarGraph(int n,int m)
-  {int i;
-  int add_edges[n-1];
-  int Dyck[2*n-1];
-  for(int k=0;k<=n-1;k++)
+{
+
+    int i;
+    int add_edges[n-1];
+    int Dyck[2*n-1];
+    for(int k=0;k<=n-2;k++)
       add_edges[k]=0;
-  for(int k=0;k<=2*n-2;k++)
+    for(int k=0;k<=2*n-2;k++)
       Dyck[k]=0;
-  long seed = randomSetSeed();
-  randomStart();
-  if (m<n-1)
-      m = n-1;
-  if (m > 2*n-3)
-      m=2*n-3;
-  i = gen_i_m(n,m);
-  //cout << "i =" <<i <<endl;
-  assert(i<=2*n-2-m); 
-  gen_Dyck_i(Dyck, i, 2*n-2);
-  gen_random(add_edges, n-i-1, m-(n-1));
-  randomEnd();
-  return create_outerplanar(Dyck, add_edges, i, n, seed);
-  }
+    long seed = randomSetSeed();
+    randomStart();
+      if (m<n-1)
+	  m = n-1;
+      if (m > 2*n-3)
+	  m=2*n-3;
+      i = gen_i_m(n,m);
+      assert(i<=2*n-2-m); 
+      gen_Dyck_i(Dyck, i, 2*n-2);
+      gen_random(add_edges, n-i-1, m-(n-1));
+    randomEnd();
+    // TEST
+    //char file_name[100];
+    //set_name(Dyck, add_edges, n, i, file_name);
+    //fstream file_out;
+    //file_out.open(file_name, fstream::app);
+    //file_out << "1";
+    //file_out.close();
+    // END TEST
+    return create_outerplanar(Dyck, add_edges, i, n, seed);
+}
 
 
 
