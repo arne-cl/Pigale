@@ -10,7 +10,7 @@
 *****************************************************************************/
 
 
-#include <setjmp.h>
+#include <TAXI/Tbase.h>
 #include <TAXI/DFSLow.h>
 #include <TAXI/Tdebug.h>
 
@@ -80,7 +80,7 @@ int DFSGraph::bicon()
   {if(debug())DebugPrintf("Executing DFSGraph:bicon");
   Prop<tvertex> low(Set(tvertex()),PROP_LOW);
   Prop<tedge> elow(Set(tvertex()),PROP_ELOW);
-  Prop<char> status(Set(tvertex()),PROP_TSTATUS);
+  Prop<int> status(Set(tvertex()),PROP_TSTATUS);
   status.clear();
   low.clear();
   int nbre_fine = 0;
@@ -362,7 +362,6 @@ int DFSLow::Lralgo( _LrSort &LrSort, _FastHist &Hist)
   tedge ej;
   // Subcalls do not need destructor call. Hence, we may use setjmp/longjmp facility.
   int ncotree;
-    
   int ret_val;
   if ((ret_val = setjmp(Twit.env))!=0)
       { return Twit.planar();
@@ -373,8 +372,7 @@ int DFSLow::Lralgo( _LrSort &LrSort, _FastHist &Hist)
   while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 
   for(;;)
       {if(ctel[vi] == 0)                                    // No Edge
-          {if(vi == tvertex(1))
-              return Twit.planar();
+          {if(vi == tvertex(1))return Twit.planar();        // No bactracking from 1
           if(!Twit.planar())return Twit.planar();
           vii =vi;
           vi = nvin[treein(vi)];                            // Bactracking to the father of vi
