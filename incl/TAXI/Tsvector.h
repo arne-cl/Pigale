@@ -74,7 +74,7 @@ class _svector
     void reserve(int a, int b)
         {if (InBuffRange(a) && InBuffRange(b)) return;
         if (a-2 < _start) _start = a-2;
-        if (_finish < b+1) _finish = b-1;
+        if (_finish < b+1) _finish = b+1;
         realloc_buffer();
         }
     void vreserve(int s, int f, size_t nsize_elmt)
@@ -241,8 +241,7 @@ class svector : public _svector
     public :
     svector() : _svector(0,-1,sizeof(T)) {}
     svector(int a, int b) : _svector(a,b,sizeof(T)) {}
-    svector(int a, int b, const T& value) : _svector(a,b,sizeof(T),(const void *)&value)
-        { for (T * p=begin(); p!=end(); p++) *p=value;}
+    svector(int a, int b, const T& value) : _svector(a,b,sizeof(T),(const void *)&value) {}
     svector(int n) : _svector(0,n-1,sizeof(T)) {}
     svector(const svector<T> &v) : _svector(v) {}
     ~svector() {}
