@@ -118,7 +118,7 @@ MyWindow::MyWindow()
   // Init random generator
   randomInitSeed();
   // Define some colors
-  QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
+  LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
   // Create a printer
   printer = new QPrinter;
@@ -164,7 +164,7 @@ MyWindow::MyWindow()
   tabWidget->setPalette(LightPalette);
   mypaint =  new MyPaint(tabWidget,"paint",this);
   gw = new  GraphWidget(tabWidget,"graphwidget",this);
-  graphgl  = new GraphGL(tabWidget,"graphgl",this);
+  graphgl  = new GraphGL(tabWidget,"graphgl",this);graphgl->setPalette(LightPalette);
   graphsym = new GraphSym(tabWidget,"graphsym",this);
 #if QT_VERSION >= 300
   QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
@@ -197,7 +197,7 @@ MyWindow::MyWindow()
   graph_properties->setMinimumSize(MyEditorMinXsize,170);
   graph_properties->setMaximumSize(MyEditorMinXsize,190);
   QLabel *lab0 = new QLabel(mainWidget);
-  lab0->setText("<br><center><b>Messages</b></center>");
+  lab0->setText("<center><b>Messages</b></center><br>");
   lab0->setTextFormat(Qt::RichText);
   lab0->setMinimumSize(MyEditorMinXsize,20);  
   lab0->setMaximumSize(MyEditorMinXsize,25);
@@ -893,11 +893,20 @@ int MyWindow::handler(int action)
       }
   // cases 6-7-8 we need a canvas with the current graph loaded
   else if(ret == 6)
-      {gw->update();gw->Spring();}
+      {blockInput(true);
+      gw->update();gw->Spring();
+      if(!MacroExecuting)blockInput(false);
+      }
   else if(ret == 7)
-      {gw->update();gw->SpringPreservingMap();}
+      {blockInput(true);
+      gw->update();gw->SpringPreservingMap();
+      if(!MacroExecuting)blockInput(false);
+      }
   else if(ret == 8)
-      {gw->update();gw->SpringJacquard();}
+      {blockInput(true);
+      gw->update();gw->SpringJacquard();
+      if(!MacroExecuting)blockInput(false);
+      }
 
   double TimeG = t.elapsed()/1000.;
   if(!MacroLooping && !MacroRecording)

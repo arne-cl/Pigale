@@ -40,6 +40,7 @@ class QPrinter;
 class LineEditNum;
 class QProgressBar;
 class QLineEdit;
+class QPalette;
 
 class MyWindow: public QMainWindow 
 {Q_OBJECT
@@ -110,6 +111,7 @@ public:
   Mouse_Actions *mouse_actions;
   GraphContainer GC;
   QString DirFilePng;
+  QPalette LightPalette;
  
 private:
   QToolBar *tb;

@@ -49,6 +49,8 @@ class GraphGLPrivate
   QCheckBox* bt_facet;
   QCheckBox* bt_label;
   QCheckBox* bt_color;
+  QSlider *Slider;
+  QHButtonGroup* bt_group;
   MyWindow *mywindow;
   GeometricGraph* pGG;
   GraphContainer *pGC;
@@ -79,12 +81,12 @@ int GraphGL::update()
       d->editor = new GLWindow(d,this);
       vb->addWidget(d->editor);
       QHBoxLayout* hb = new QHBoxLayout(vb);
-
       QHBoxLayout* hb2 = new QHBoxLayout(vb);
-      QSlider *Slider = new QSlider(Qt::Horizontal,this,"Slider");
-      Slider->setMinValue(2);Slider->setMaxValue(100);Slider->setValue(2);
-      connect(Slider,SIGNAL(valueChanged(int)),SLOT(delayChanged(int)));
-      hb2->addWidget(Slider);
+      d->Slider = new QSlider(Qt::Horizontal,this,"Slider");
+      d->Slider->setMinValue(2);d->Slider->setMaxValue(100);d->Slider->setValue(2);
+      d->Slider->setMaximumHeight(10);
+      connect(d->Slider,SIGNAL(valueChanged(int)),SLOT(delayChanged(int)));
+      hb2->addWidget(d->Slider);
 
       d->bt_facet = new QCheckBox("Facet",this); d->bt_facet->setChecked(false);
       d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(false);
@@ -97,13 +99,14 @@ int GraphGL::update()
       spin_Vertex->setValue((int)d->vertex_width*5); spin_Vertex->setPrefix("Vw: ");
       hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
 
-      QHButtonGroup* bt_group = new QHButtonGroup(this);
-      bt_group->setFrameShape(QFrame::NoFrame); 
-      bt_group->setMaximumHeight(45);
-      hb->addWidget(bt_group);
-      QRadioButton* rb_x = new QRadioButton("X",bt_group,"x");
-      QRadioButton* rb_y = new QRadioButton("Y",bt_group,"y");
-      QRadioButton* rb_z = new QRadioButton("Z",bt_group,"z");
+      d->bt_group = new QHButtonGroup(this);
+      d->bt_group->setFrameShape(QFrame::NoFrame); 
+      d->bt_group->setPalette(d->mywindow->LightPalette);
+      d->bt_group->setMaximumHeight(30); d->bt_group->setInsideMargin(5); 
+      hb->addWidget(d->bt_group);
+      QRadioButton* rb_x = new QRadioButton("X",d->bt_group,"x");
+      QRadioButton* rb_y = new QRadioButton("Y",d->bt_group,"y");
+      QRadioButton* rb_z = new QRadioButton("Z",d->bt_group,"z");
       rb_x->setChecked(FALSE);
       rb_y->setChecked(FALSE);
       rb_z->setChecked(TRUE);
@@ -123,11 +126,15 @@ int GraphGL::update()
       connect(d->bt_facet,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_color,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_label,SIGNAL(clicked()),SLOT(Reload()));
-      connect(bt_group,SIGNAL(clicked(int)),SLOT(axisChanged(int)));
+      connect(d->bt_group,SIGNAL(clicked(int)),SLOT(axisChanged(int)));
       }
   else
       {delete d->pSG; delete d->pGG;}
-  
+
+  this->setPalette(d->mywindow->LightPalette);
+  d->Slider->setPalette(d->mywindow->LightPalette);
+  d->bt_group->setPalette(d->mywindow->LightPalette);
+
   //Copy the graph
   *(d->pGC) = d->mywindow->GC;
   d->pGG = new GeometricGraph(*(d->pGC));

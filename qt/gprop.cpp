@@ -43,7 +43,8 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   QHBoxLayout *TxtLayout = new QHBoxLayout(0,5,0,"TxtLayout"); 
   MainLayout->addLayout(TxtLayout);
   TextLabel3 = new QLabel(this,"TextLabel3");
-  TextLabel3->setText("Graph Properties");
+  TextLabel3->setText("<b>Graph Properties</b>");
+  TextLabel3->setTextFormat(Qt::RichText);
   TextLabel3->setAlignment(int(QLabel::AlignCenter));
   TxtLayout->addWidget(TextLabel3);
 

@@ -693,15 +693,16 @@ GraphSym::~GraphSym()
 
 int GraphSym::update()
   {if(!d->is_init)
-      {QVBoxLayout* vb = new QVBoxLayout(this,11,6);
+      {QVBoxLayout* vb = new QVBoxLayout(this,2,2);
       d->editor = new SymWindow(d,this,"SymWindow");
       vb->addWidget(d->editor);
-      QHBoxLayout* hb = new QHBoxLayout(vb);
+      QHBoxLayout* hb = new QHBoxLayout(vb,60);
       QPushButton* bt_next = new QPushButton( "Next",this);
 
-      d->bt_fact = new QCheckBox( "Fact",this);
+      d->bt_fact = new QCheckBox( "Fact",this);           
       d->bt_opt = new QCheckBox( "Opt",this);
       d->bt_sym = new QCheckBox( "Sym Lab",this);
+
       hb->addWidget(bt_next); 
       hb->addWidget(d->bt_fact);
       hb->addWidget(d->bt_opt);
@@ -716,6 +717,10 @@ int GraphSym::update()
       {delete d->pGG;
       delete [] xcoord;delete [] ycoord;delete [] zcoord;
       }
+  d->bt_fact->setPalette(d->mywindow->LightPalette);
+  d->bt_opt->setPalette(d->mywindow->LightPalette);
+  d->bt_sym->setPalette(d->mywindow->LightPalette);
+
   d->Factorial = false; d->SymLabel = true;
   d->Optimal = false;  d->OtherCoords = false;
   d->bt_fact->setChecked(d->Factorial);

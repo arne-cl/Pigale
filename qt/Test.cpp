@@ -26,7 +26,7 @@ int Test(GraphContainer &GC,int action)
       return 2;
       }
   if(action == 2)
-      {for(int i = 0;i < 100;i++)
+      {for(int i = 0;i < 1000;i++)
 	  G.TestPlanar();  
       return 0;
       }

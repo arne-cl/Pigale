@@ -11,16 +11,15 @@
 
 #include "MyWindow.h"
 #include <QT/MyPaint.h>
-#include <qtabwidget.h>
 #include <QT/MyQcolors.h>
+#include <QT/Misc.h>
+
 #include <qprinter.h>
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
-
-//in QtMisc.cpp
-int & ShowVertex();
+#include <qtabwidget.h>
 
 void DrawPolar(QPainter *p,MyPaint *paint)
   {TopologicalGraph G(paint->GCP);

@@ -173,7 +173,7 @@ void MyWindow::SetPigaleColors()
   Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
   Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
   QApplication::setPalette(Palette,TRUE);
-  QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
+  LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
   this->mouse_actions->setPalette(LightPalette,TRUE);
   this->tabWidget->setPalette(LightPalette,TRUE);

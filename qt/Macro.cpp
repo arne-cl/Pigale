@@ -35,7 +35,7 @@ static TSArray<int> MacroActions(4),MacroEwidth(4);
 static int MacroNumActions = 0;
 bool EditNeedUpdate;
 static int  key = 0;
-static bool _inputBlocked = false;
+
 
 int & pauseDelay()
   {static int delay;
@@ -55,7 +55,8 @@ int MyWindow::getKey()
   return key0;
   }
 void MyWindow::blockInput(bool t)
-  {if(_inputBlocked == t)return;
+  {static bool _inputBlocked = false;
+  if(_inputBlocked == t)return;
   _inputBlocked = t;
   menuBar()->setDisabled(t); 
   tb->setDisabled(t);
@@ -237,7 +238,6 @@ void MyWindow::macroPlay()
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
       ret_handler = handler(action);
-      blockInput(true); // as springs release the input
       if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
       else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
       // update the editor if a pause 

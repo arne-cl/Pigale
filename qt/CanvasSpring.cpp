@@ -54,7 +54,6 @@ void GraphEditor::Spring()
   double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p,translation;
-  gwp->mywindow->blockInput(true);
   double force = 1.;
   int stop = 0;
   // Compute bounds
@@ -153,7 +152,6 @@ void GraphEditor::Spring()
       sizex0 = sizex;      sizey0 = sizey;
       }
 
-  gwp->mywindow->blockInput(false);
   Normalise();
   // same as load(false) but much faster
   for(tvertex v = 1;v <= n;v++)
@@ -190,7 +188,6 @@ t current tanslation of v0
   double dist2,strength,dx,dy,dep = .0;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p,t,tt,center((w - space - sizerect)/2.,h/2.);
-  gwp->mywindow->blockInput(true);
   double force = 1.;
   int stop = 0;
   // Compute bounds
@@ -361,7 +358,6 @@ t current tanslation of v0
       sizex0 = sizex;      sizey0 = sizey;
       }
 
-  gwp->mywindow->blockInput(false);
   Normalise();
   // same as load(false) but much faster
   for(tvertex v = 1;v <= n;v++)
@@ -982,7 +978,6 @@ int GraphEditor::SpringJacquard()
   Normalise();
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
   // Boucle de calcul
-  gwp->mywindow->blockInput(true);
   for(;nonblocked && (generations<maxgen);generations++)
       {scoord = G.vcoord;
       for(v = 1;v <= G.nv();v++)// calcul d'une generation
@@ -1025,7 +1020,6 @@ int GraphEditor::SpringJacquard()
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       canvas()->update(); 
       }
-  gwp->mywindow->blockInput(false);
   Tprintf("Spring iter=%d",generations);
   DoNormalise = true;
   Normalise();load(false);
