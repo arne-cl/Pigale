@@ -25,19 +25,22 @@ void GraphEditor::Spring()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<Tpoint> translate(1,G.nv()); translate.clear();
-  double w = gwp->canvas->width();
-  double mhw = Min(gwp->canvas->width(),gwp->canvas->height()) - 2*BORDER;
-  Tpoint center((w - space - sizerect)/2.,gwp->canvas->height()/2.); 
-  int n = G.nv(),m =G.ne();
-  double len = mhw/sqrt(n);
+  DoNormalise = true;
+  int h = gwp->canvas->height();
+  int w = gwp->canvas->width();
+  double mhw = Min(w,h) - 2*BORDER;
+  Tpoint center((w - space - sizerect)/2.,h/2.); 
+  int n_red,n = G.nv(),m =G.ne();
+  double len,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
-  double hw = .5*(mhw*mhw)/(n*m); 
+  double hw = .5*(mhw*mhw)/(n*m); //.5
+  //double hw = .5*(mhw*mhw)/(n*n);
   int iter,niter = 2000;
-  int n_red;
-  double dist2,strength;
+  double dist2,strength,dx,dy;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
   double force = 1.;
+  int stop = 0;
   for(iter = 1;iter <= niter;iter++)
       {translate.clear();
       if(iter > 50)force *= .99;
@@ -53,6 +56,7 @@ void GraphEditor::Spring()
 	      translate[v0]  += (p0 - p)*strength; 
 	      }
 	  // edges repulse non adjacent vertices (1/d²)
+	  // if too small cir changes
 	  for(tedge e = 1; e <= m;e++)
 	      {tvertex v = G.vin[e], w = G.vin[-e];
 	      if(v0 == v || v0 == w)continue;
@@ -61,8 +65,10 @@ void GraphEditor::Spring()
 		  {strength = (hw/dist2); 
 		  translate[v0] += (p0 - p)*strength;
 		  }
-	      else // if p0 on edge not hor !!
-		  translate[v0].x() += 10.;
+	      else if(G.vcoord[v].y() != G.vcoord[v].y())
+		  translate[v0].x() += 5.;
+	      else
+		  translate[v0].y() += 5.;
 	      }
 	  }
 
@@ -71,23 +77,29 @@ void GraphEditor::Spring()
       for(tedge e = 1; e <= m;e++)
 	  {p0 = G.vcoord[G.vin[e]]; p = G.vcoord[G.vin[-e]];
 	  dist2 = Max(Distance2(p0,p),1.);
-	  strength = Min(sqrt(hw/dist2),.1)*1.5;
-	  translate[G.vin[e]]  += (p-p0)*strength;
-	  translate[G.vin[-e]] += (p0-p)*strength;
+	  // if > 1.5 cir changes -> unstability (< 1 is worse).
+	  strength = Min(sqrt(hw/dist2),.1);
+	  if(dist2 > len02/4) 
+	      {translate[G.vin[e]]  += (p-p0)*strength;
+	      translate[G.vin[-e]] += (p0-p)*strength;
+	      }
+	  else if(dist2 < 4*len02) 
+	      {translate[G.vin[e]]  -= (p-p0)*strength;
+	      translate[G.vin[-e]] -= (p0-p)*strength;
+	      }
 	  len += sqrt(dist2)/m;
 	  }
-      //qDebug("len=%f (est=%f)",len,mhw/sqrt(m));
+      len02 = len*len;
       // vertices are attracted by the center (1/d)
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  dist2 = Max(Distance2(p0,center),1.);
-	  //strength = Min(sqrt(hw/dist2),.25);
 	  strength = Min(sqrt(hw/dist2),.5);
 	  translate[v0] -= (p0 - center)*strength;
 	  }
 
       // update the drawing
-      double dx,dy,dep = .0;
+      double dep = .0;
       n_red = 0;
       for(tvertex v = 1;v <= n;v++)
 	  {translate[v] *= force;
@@ -95,21 +107,37 @@ void GraphEditor::Spring()
 	  dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
-	      {nodeitem[v]->moveBy(translate[v].x(),-translate[v].y());
-	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+	      nodeitem[v]->moveBy(translate[v].x(),-translate[v].y());
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
 	  }
-      if(dep < .5 || n_red == G.nv())break;
+      stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
+      if(stop)force /= 2;
+      if(dep < .25 || stop == 4)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
-      canvas()->update(); 
+      if(stop == 1)
+	  {Normalise();
+	   for(tvertex v = 1;v <= n;v++)
+	       nodeitem[v]->moveTo(G.vcoord[v]);
+	  }
       }
+
   gwp->mywindow->blockInput(false);
-  Tprintf("Spring iter=%d force=%f",iter,force);
-  DoNormalise = true;
-  Normalise();load(false);
+  Normalise();
+  // same as load(false) but much faster
+  for(tvertex v = 1;v <= n;v++)
+      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
+      nodeitem[v]->moveTo(G.vcoord[v]);
+      }
+
+  len = .0; // mean length
+  for(tedge e = 1; e <= m;e++)
+      len += Distance(G.vcoord[G.vin[e]],G.vcoord[G.vin[-e]]);
+  len /= m;
+  Tprintf("Spring-Iter=%d len=%d",iter,(int)len);
   }
 
 //******************** JACQUARD SPRING EMBEDDER 

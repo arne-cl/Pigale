@@ -109,10 +109,12 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,node,edge);
       if(rtt == 0)rtt = FindItem(p,edge);//augment the collision zone
       if(rtt == node_rtti)
-	  t.sprintf("vertex: %d Label: %ld",(node->v)()
+	  t.sprintf("vertex:%d Label:%ld",(node->v)()
 		    ,G.vlabel[node->v]);
-      else if(rtt == edge_rtti) 
-	  t.sprintf("edge: %d Label: %ld",(edge->e)(),G.elabel[edge->e]);
+      else if(rtt == edge_rtti)
+	  {double d = Distance(G.vcoord[G.vin[edge->e]],G.vcoord[G.vin[-(edge->e)]])+.5;
+	  t.sprintf("edge:%d Label:%ld len:%d",(edge->e)(),G.elabel[edge->e],(int)d);
+	  }
       else
 	   {t.sprintf("(%d,%d)",e->pos().x(),e->pos().y());
 #if QT_VERSION >= 300

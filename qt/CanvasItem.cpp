@@ -390,6 +390,10 @@ void NodeItem::SetColor(QColor c)
   setBrush(*tb);
   this->nodetextitem->SetColor(OppCol(c));
   }
+void NodeItem::moveTo(Tpoint &p)
+  {QPoint qp = QRect(rect()).center();
+  moveBy(p.x() - qp.x(),gwp->canvas->height() - p.y() - qp.y());
+  }
 void NodeItem::moveBy(double dx, double dy)
 //Move the left upper part of the item and
 // set the coordinates to the center

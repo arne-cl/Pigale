@@ -128,6 +128,7 @@ class NodeItem: public QCanvasRectangle
   NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRect &rect);
   ~NodeItem() {}
   void moveBy(double dx, double dy);
+  void moveTo(Tpoint &p);
   void SetColor(QColor c);
   int rtti() const;
 
@@ -137,8 +138,8 @@ class NodeItem: public QCanvasRectangle
   NodeTextItem *nodetextitem;
 private:
   GraphWidgetPrivate* gwp;
-};
-
+}
+;
 
 class GraphEditor : public QCanvasView
 {public:
