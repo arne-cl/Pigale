@@ -160,7 +160,7 @@ template<class T> Point2_<T> operator *(const Point2_<T> &point1,const T a)
   {return Point2_<T>(point1.x() * a,point1.y() * a);}
 template<class T> Point2_<T> operator /(const Point2_<T> &point1,const T a)
   {return Point2_<T>(point1.x() / a,point1.y() / a);}
-template<class T> Point2_<T> operator *(const T a,Point2_<T> &point1)
+template<class T> Point2_<T> operator *(const T a,const Point2_<T> &point1)
   {return Point2_<T>(point1.x() * a,point1.y() * a);}
 
 template<class T> T Determinant(const Point2_<T>& point1,const Point2_<T>& point2)
@@ -241,9 +241,7 @@ double dist_seg(const Point2_<T> &p0,const Point2_<T> &p1,const Point2_<T> &p2,P
 	return(d_10 - 2.*scal + d_12);
 	}     
     else //entre p1 et p2
-        {double a = (scal/d_12);
-	pmin = (p2-p1);
-        pmin =  p1 + a * pmin;
+        {pmin =  p1 + (scal/d_12)*(p2 - p1);
 	return(d_10 - scal*scal/d_12);
 	}     
     }
