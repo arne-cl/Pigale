@@ -174,9 +174,11 @@ MyWindow::MyWindow()
   int MyWindowInitYsize = d->height();
   int MyWindowInitXsize = 817; 
 #endif
-  int MyEditorMinXsize  = 220, MyEditorMinYsize  = 180;
-  int MyEditorMaxXsize  = 300, MyEditorMaxYsize  = 500;
-
+  // sizes of the message window
+  int MyEditorMinXsize  = 250, MyEditorMaxXsize  = 250;
+  int MyEditorMinYsize  = 200, MyEditorMaxYsize  = 1800;
+  // When testing screens 600x800
+  //MyWindowInitXsize = 800;MyWindowInitYsize = 600;
 
   // Widgets
   QWidget *mainWidget = new QWidget(this,"mainWidget");
@@ -218,7 +220,6 @@ MyWindow::MyWindow()
 #if QT_VERSION >= 300
   e->setReadOnly(true);
 #endif
-  // editor menu
   mouse_actions = new Mouse_Actions(mainWidget,"mouseactions",0,gw);
   mouse_actions->setPalette(LightPalette);
   graph_properties = new Graph_Properties(mainWidget,menuBar(),"graph_properties");
@@ -346,11 +347,11 @@ MyWindow::MyWindow()
   embed->insertItem("&T Contact",            A_EMBED_T_CONTACT);
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
-#ifdef VERSION_ALPHA
+  //#if VERSION_ALPHA
   embed->insertItem("&Polar",                A_EMBED_POLAR);
   embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
-#endif
+  //#endif
   embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
   embed->insertItem(xmanIcon,"Spring Planar",A_EMBED_JACQUARD);
@@ -358,6 +359,10 @@ MyWindow::MyWindow()
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
+#if VERSION_ALPHA
+  embed->insertItem(xmanIcon,"&Schnyder in R3",A_EMBED_3dSchnyder);
+  embed->setWhatsThis(A_EMBED_3dSchnyder,embed3dSchnyder_txt);
+#endif
   QPopupMenu *dual = new QPopupMenu( this );
   menuBar()->insertItem("&Dual/Angle",dual);
   connect(dual,SIGNAL(activated(int)),SLOT(handler(int)));
@@ -411,6 +416,7 @@ MyWindow::MyWindow()
   QPopupMenu *popupQuadric  = new QPopupMenu(this);
   QPopupMenu *popupBipar    = new QPopupMenu(this);
   QPopupMenu *popupPlan     = new QPopupMenu(this);
+  QPopupMenu *popupOuter    = new QPopupMenu(this);
   QPopupMenu *popupSeed     = new QPopupMenu(this);
   menuBar()->insertItem("&Generate",generate);
   connect(generate,SIGNAL(activated(int)),SLOT(handler(int)));
@@ -418,7 +424,13 @@ MyWindow::MyWindow()
   connect(popupQuadric,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupBipar,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupPlan,SIGNAL(activated(int)),SLOT(handler(int)));
+  connect(popupOuter,SIGNAL(activated(int)),SLOT(handler(int)));
   connect(popupSeed,SIGNAL(activated(int)),SLOT(handler(int)));
+#if VERSION_ALPHA
+  generate->insertItem("&Outer Planar",popupOuter);
+  popupOuter->insertItem("&Outer Planar (N1)",             A_GENERATE_P_OUTER_N);
+  popupOuter->insertItem("O&uter Planar (N1,M)",           A_GENERATE_P_OUTER_NM);
+#endif
   generate->insertItem("&Planar",popupPlan);
   popupPlan->insertItem("connnected (M)",                  A_GENERATE_P);
   popupPlan->insertItem("2-connnected (M)",                A_GENERATE_P_2C);
@@ -440,6 +452,7 @@ MyWindow::MyWindow()
   generate->insertSeparator();
   generate->insertItem("&Complete (N1)",                   A_GENERATE_COMPLETE);
   generate->insertItem("&Bipartite complete (N1,N2)",      A_GENERATE_COMPLETE_BIP);
+  generate->insertSeparator();
   generate->insertItem("&Random (N1,M)",                   A_GENERATE_RANDOM );
   generate->insertSeparator();
   // Erase multiple edges
@@ -941,6 +954,8 @@ int MyWindow::handler(int action)
       if(!MacroExecuting )
 	  gw->update(0);
       }
+  else if(ret == 21)
+      if(!MacroRecording)information();
   else if(ret == 3)
       mypaint->update(drawing); 
   else if(ret == 4) //3d

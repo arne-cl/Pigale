@@ -27,103 +27,108 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 				   ,const char* name,WFlags fl)
     : QWidget( parent,name,fl)
   {if(!name)setName("Graph_Properties");
-  //resize(227,166); //166
   menu = menubar;
   //QFont font = QFont("helvetica",12);
   QFont fnt = this->font();
   fnt.setBold(true);
   setFont(fnt,true);
-  // 10 left margin,0 top margin,200 width (total width=220),165 hight 
-  //this->setGeometry(QRect(10,0,200,185)); 
-  this->setMinimumSize(QSize(220,180));
-  this->setMaximumSize(QSize(220,180));
-  //parent,0 marge,0 spacing,name
-  MainLayout = new QVBoxLayout(this,0,0,"MainLayout"); 
-
-  QHBoxLayout *TxtLayout = new QHBoxLayout(0,5,0,"TxtLayout"); 
+  //marge,spacing
+  QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
+  QHBoxLayout *TxtLayout = new QHBoxLayout(0,0,0,"TxtLayout"); 
+  QHBoxLayout *Layout_NM = new QHBoxLayout(0,0,0,"Layout_NM");
+  QHBoxLayout *LayoutDegrees = new QHBoxLayout(0,0,0,"LayoutDegrees");
+  QHBoxLayout *LayoutAllButtons = new QHBoxLayout(0,8,10,"LayoutAllButtons");
+  
   MainLayout->addLayout(TxtLayout);
-  TextLabel3 = new QLabel(this,"TextLabel3");
+  MainLayout->addLayout(Layout_NM);
+  MainLayout->addLayout(LayoutDegrees);
+  MainLayout->addLayout(LayoutAllButtons);
+  
+  QVBoxLayout *LayoutLeftButtons  = new QVBoxLayout(0,0,0,"LayoutLeftButtons"); 
+  QVBoxLayout *LayoutRightButtons = new QVBoxLayout(0,0,0,"LayoutP");
+  LayoutAllButtons->addLayout(LayoutLeftButtons);
+  LayoutAllButtons->addLayout(LayoutRightButtons);
+
+  QLabel*TextLabel3 = new QLabel(this,"TextLabel3");
   TextLabel3->setText("<b>Graph Properties</b>");
   TextLabel3->setTextFormat(Qt::RichText);
   TextLabel3->setAlignment(int(QLabel::AlignCenter));
   TxtLayout->addWidget(TextLabel3);
-
-  Layout_NM = new QHBoxLayout(0,0,0,"Layout_NM"); 
-
-  TextLabel1 = new QLabel(this,"TextLabel1");
-  TextLabel1->setText("N:");
+  
+  QLabel*TextLabel1 = new QLabel(this,"TextLabel1");
+  TextLabel1->setText("N:  ");
   Layout_NM->addWidget(TextLabel1);
-
   LE_N = new QLineEdit(this,"LE_N");
   LE_N->setMaximumSize(QSize(60,32767));
   LE_N->setText("0");
   Layout_NM->addWidget(LE_N);
-
-  TextLabel1_2 = new QLabel(this,"TextLabel1_2");
-  TextLabel1_2->setText("M:");
+  QLabel *TextLabel1_2 = new QLabel(this,"TextLabel1_2");
+  TextLabel1_2->setText("M:  ");
   Layout_NM->addWidget(TextLabel1_2);
-
   LE_M = new QLineEdit(this,"LE_M");
   LE_M->setMaximumSize(QSize(60,32767));
   LE_M->setText("0");
   Layout_NM->addWidget(LE_M);
-  MainLayout->addLayout(Layout_NM);
+  LE_M->setReadOnly(true);  LE_N->setReadOnly(true);
+  
+  QLabel* TextLabelMin = new QLabel(this,"TextLabelMin");
+  TextLabelMin->setText("Min:");
+  LayoutDegrees->addWidget(TextLabelMin);
+  LE_Min = new QLineEdit(this,"LE_Min");
+  LE_Min->setMaximumSize(QSize(60,32767));
+  LE_Min->setText("0");
+  LayoutDegrees->addWidget(LE_Min);
+  QLabel* TextLabelMax = new QLabel(this,"TextLabelMax");
+  TextLabelMax->setText("Max:");
+  LayoutDegrees->addWidget(TextLabelMax);
+  LE_Max = new QLineEdit(this,"LE_Max");
+  LE_Max->setMaximumSize(QSize(60,32767));
+  LE_Max->setText("0");
+  LayoutDegrees->addWidget(LE_Max);
+  LE_Min->setReadOnly(true);  LE_Max->setReadOnly(true);
 
-  Layout_CP = new QHBoxLayout(0,10,12,"Layout_CP"); //marge,space entre deux groupes
-  //Layout_C  = new QVBoxLayout(0,12,-6,"Layout_C"); 
-  Layout_C  = new QVBoxLayout(0,0,0,"Layout_C"); 
-
+  //***************************************************
   RBConnected = new RoRadioButton(this,"RBConnected");
   RBConnected->setText("Connected");
   RBConnected->setChecked(TRUE);
-  Layout_C->addWidget(RBConnected);
+  LayoutLeftButtons->addWidget(RBConnected);
 
   RB2Connected = new RoRadioButton(this,"RB2Connected");
   RB2Connected->setText("2-Connected");
-  Layout_C->addWidget(RB2Connected);
+  LayoutLeftButtons->addWidget(RB2Connected);
 
   RB3Connected = new RoRadioButton(this,"RB3Connected");
   RB3Connected->setText("3-Connected");
-  Layout_C->addWidget(RB3Connected);
+  LayoutLeftButtons->addWidget(RB3Connected);
 
   RBBipartite = new RoRadioButton(this,"RBBipartite");
   RBBipartite->setText("Bipartite");
-  Layout_C->addWidget(RBBipartite);
+  LayoutLeftButtons->addWidget(RBBipartite);
 
-  RBRegular = new RoRadioButton(this,"RBRegular");
-  RBRegular->setText("Regular");
-  Layout_C->addWidget(RBRegular);
+  RBAcyclic = new RoRadioButton(this,"RBAcyclic");
+  RBAcyclic->setText("Acyclic");
+  LayoutLeftButtons->addWidget(RBAcyclic);
 
-  Layout_CP->addLayout(Layout_C);
   //********************************************
-
-  LayoutP = new QVBoxLayout(0,0,0,"LayoutP"); 
-
   RBPlanar = new RoRadioButton(this,"RBPlanar");
   RBPlanar->setText("Planar");
-  LayoutP->addWidget(RBPlanar);
+  LayoutRightButtons->addWidget(RBPlanar);
 
   RBMxPlanar = new RoRadioButton(this,"RBMxPlanar");
   RBMxPlanar->setText("Triangulation");
-  LayoutP->addWidget(RBMxPlanar);
+  LayoutRightButtons->addWidget(RBMxPlanar);
 
   RBOuPlanar = new RoRadioButton(this,"RBOuPlanar");
   RBOuPlanar->setText("Out. planar");
-  LayoutP->addWidget(RBOuPlanar);
+  LayoutRightButtons->addWidget(RBOuPlanar);
 
   RBSerie = new RoRadioButton(this,"RBSerie");
-  RBSerie->setText("Series-// 2C");
-  LayoutP->addWidget(RBSerie);
+  RBSerie->setText("Series-//");
+  LayoutRightButtons->addWidget(RBSerie);
 
   RBSimple = new RoRadioButton(this,"Simple");
   RBSimple->setText("Simple");
-  LayoutP->addWidget(RBSimple);
-
-  Layout_CP->addLayout(LayoutP);
-  MainLayout->addLayout(Layout_CP);
-
-  LE_M->setReadOnly(true);
-  LE_N->setReadOnly(true);
+  LayoutRightButtons->addWidget(RBSimple);
   }
 
 RoRadioButton::RoRadioButton(QWidget * parent,const char * name)
@@ -173,12 +178,11 @@ void Graph_Properties::update(bool print)
   G.MinMaxDegree(dmin,dmax);
   R = (dmin == dmax) ? true :false;
   C1 = C2 = C3 = false;
-  Outer = false;
-  Serie = false;
+  Outer =  Serie = false;
  
-  bool H = G.Set().exist(PROP_HYPERGRAPH);
+  //bool H = G.Set().exist(PROP_HYPERGRAPH);
   bool E;
-  bool MB = P && B && S && (G.ne() == (2*G.nv() - 4)  && (G.nv() >= 4));
+  MaxBi = P && B && S && (G.ne() == (2*G.nv() - 4)  && (G.nv() >= 4));
  
   if(S && G.nv() == 2 && G.ne() == 1) //One edge graph
       C1 = true;
@@ -194,11 +198,13 @@ void Graph_Properties::update(bool print)
       else if(G.CheckConnected())
 	  C1 = true;
       }
-  if(P && C2 && !C3) Serie = G.CheckSerieParallel();
-  if(P  && !C3 && dmin == 2 && TestOuterPlanar(G)) Outer = true;
-  if(G.nv() == 2 && G.ne() == 1) Serie = Outer = true;
   if(C3)C2 = true;
   if(C2)C1 = true;
+
+  if(P && C2 && !C3) Serie = G.CheckSerieParallel();
+  if(P  && !C3 && dmin == 2 && TestOuterPlanar(G)) Outer = true;
+  if(G.nv() == 2 && G.ne() == 1 || C1 && dmax == 2) 
+      Serie = Outer = true;
 
   //Modify the enable menus
   //For slow programs or display
@@ -219,7 +225,7 @@ void Graph_Properties::update(bool print)
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
   menu->setItemEnabled(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
-  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && P && B && S && !MB); //Quadrangulate
+  menu->setItemEnabled(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && !MaxBi);    //Quadrangulate
   //Embed
   menu->setItemEnabled(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
   menu->setItemEnabled(A_EMBED_SCHNYDER_V ,!SMALL && S && P && NotBigD);      //Schnyder V 
@@ -248,29 +254,41 @@ void Graph_Properties::update(bool print)
   //Orient
   menu->setItemEnabled(A_ORIENT_TRICON,!SMALL && P && C3);       //planar 3-con 
   menu->setItemEnabled(A_ORIENT_BIPAR,(G.nv() > 1) && P && B);   //biparti 
-  menu->setItemEnabled(A_ORIENT_SCHNYDER,!SMALL && P && S);      //planar schnyder
+  menu->setItemEnabled(A_ORIENT_SCHNYDER,!SMALL && P && S &C1);  //planar schnyder
   menu->setItemEnabled(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
-  
+  menu->setItemEnabled(A_ORIENT_BIPOLAR_NP,(G.nv() > 1) && C2);  //bipolar 
+
+  if(!print)return;  
   // Modify the buttons
   RBSimple->setChecked(S);
   RBPlanar->setChecked(P);
   RBMxPlanar->setChecked(T);
-  RBBipartite->setChecked(B);
-  RBRegular->setChecked(R);
+  if(B)
+      {RBBipartite->setChecked(B);
+      if(MaxBi)RBBipartite->setText("Max. Bipartite");
+      else     RBBipartite->setText("Bipartite");
+      }
+  RBAcyclic->setChecked(A);
   RBConnected->setChecked(C1);
   RB2Connected->setChecked(C2);
   if(!P)RB3Connected->setEnabled(false);
   else  {RB3Connected->setEnabled(true);RB3Connected->setChecked(C3);}
   RBOuPlanar->setChecked(Outer);
-  RBSerie->setChecked(Serie);
-  QString m;
-  m.sprintf("%d",G.nv());
-  LE_N->setText(m);
-  m.sprintf("%d",G.ne());
-  LE_M->setText(m);
+  if(Outer)
+      {if(C2) RBOuPlanar->setText("Max. OuterPlanar");
+      else    RBOuPlanar->setText("OuterPlanar");
+      }
+  if(P && !C2)RBSerie->setEnabled(false);
+  if(Serie)
+      {RBSerie->setChecked(Serie);RBSerie->setEnabled(true);}
+
+  LE_N->setText(QString("%1").arg(G.nv()));
+  LE_M->setText(QString("%1").arg(G.ne()));
+  LE_Min->setText(QString("%1").arg(dmin));
+  LE_Max->setText(QString("%1").arg(dmax));
   
   //Print informations
-  if(!print)return;
+
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
@@ -288,21 +306,6 @@ void Graph_Properties::update(bool print)
       {if(getError()){setError();Tprintf("Error CheckSubdivTriconnected");}
       else Tprintf("Subdivision of a 3-Connected");
       }
-      
-  if(B && P && S && G.nv() > 3 && G.ne() == 2*G.nv()-4)
-      {MaxBi = true;Tprintf("Maximal planar bipartite");}
-  else if(H) 
-      {Prop1<int> hnv(G.Set(),PROP_NV);
-      Prop1<int> hne(G.Set(),PROP_NE);
-      Tprintf("Hypergraph: %d hypervertices %d hyperedges",hnv(),hne());
-      }
-
-  if(dmin != dmax)
-      {Tprintf("Minimum degree:%d",dmin);
-      Tprintf("Maximum degree:%d",dmax);
-      }
-  else
-      Tprintf("Regular degree:%d",dmin);
 
   if(G.Set().exist(PROP_MAPTYPE))
       {Prop1<int> maptype(G.Set(),PROP_MAPTYPE);

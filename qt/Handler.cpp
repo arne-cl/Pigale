@@ -30,8 +30,8 @@ bool & ShowOrientation();
 int OrientHandler(int action)
   {GeometricGraph G(GetMainGraph());
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
-  int ret = 0;
-  int i;
+  int ret = 2;
+  int i = 0;
   tedge e;
   tbrin first;
   switch(action)
@@ -41,9 +41,11 @@ int OrientHandler(int action)
 	   for(e=1;e <= G.ne();e++)eoriented[e] = true;
 	   }
 	   ShowOrientation() = true;
+	   ret = 1;
 	   break;
       case A_ORIENT_SHOW:
 	  ColorPoles(G);
+	  ret = 1;
 	  break;
       case A_REORIENT_COLOR:
 	  {short ecol; G.ecolor.getinit(ecol);
@@ -60,14 +62,14 @@ int OrientHandler(int action)
 	  Tprintf("G is %d inf-oriented",i-1);
           break;
       case A_ORIENT_TRICON:
-          ret = G.Tricon3orient();
+          i = G.Tricon3orient();
           G.FixOrientation();
 	  ShowOrientation() = true;
-          if(ret != 0)Tprintf("ret=%d",ret);
+          if(i != 0){Tprintf("err=%d",i);return -1;}
           break;
       case A_ORIENT_BIPAR:
-	  ret = DecompMaxBip(G);
-          if(ret != 0){Tprintf("ret=%d",ret);return -1;}
+	  i = DecompMaxBip(G);
+          if(i != 0){Tprintf("err=%d",i);return -1;}
           G.FixOrientation();
 	  ShowOrientation() = true;
           break;
@@ -75,12 +77,12 @@ int OrientHandler(int action)
 	  ret = G.SchnyderOrient(0);
           G.FixOrientation();
 	  ShowOrientation() = true;
-          if(ret != 0)Tprintf("ret=%d",ret);
+          if(ret != 0)Tprintf("ret=%d",i);
           break;
       case A_ORIENT_BIPOLAR:
 	  first = 1;
-	  ret = G.BipolarPlan(first);
-	  if(ret != 0){Tprintf("ret=%d",ret);return -1;}
+	  i = G.BipolarPlan(first);
+	  if(i != 0){Tprintf("err=%d",ret);return -1;}
 	  G.FixOrientation();
 	  ShowOrientation() = true;
 	  if(first.GetEdge() <= G.ne())
@@ -91,8 +93,8 @@ int OrientHandler(int action)
 	  break;
       case A_ORIENT_BIPOLAR_NP:
 	  first = 1;
-	  ret = NPBipolar(G,first);
-	  if(ret != 0){Tprintf("ret=%d",ret);return -1;}
+	  i = NPBipolar(G,first);
+	  if(i != 0){Tprintf("err=%d",i);return -1;}
 	  G.FixOrientation();
 	  ShowOrientation() = true;
 	  if(first.GetEdge() <= G.ne())
@@ -105,8 +107,7 @@ int OrientHandler(int action)
       default:
 	    return 0;
       }
-  if(ret)return -1;
-  return 1;
+  return ret;
   }
 int AlgoHandler(int action,int nn)
   {GeometricGraph G(GetMainGraph());
@@ -190,7 +191,7 @@ int AlgoHandler(int action,int nn)
 	  return 0;
 	  break;
       case A_ALGO_SYM://symetrie
-	  ret = Embed3d(G);
+	  ret = Embed3dbis(G);
 	  if(ret >=0)return 5;
 	  break;
       case A_ALGO_COLOR_BIPARTI://color bipartite
@@ -276,7 +277,11 @@ int EmbedHandler(int action,int &drawing)
 	  drawing = 5;
 	  break;
       case A_EMBED_3d:ret = 4; //Embed3d
-	  break;
+	err = Embed3dbis(G);
+	break;
+      case A_EMBED_3dSchnyder:ret = 4; //Embed3d
+	err = Embed3dSchnyder(G);
+	break;
       case  A_EMBED_SPRING :ret = 6;
 	  break;
       case  A_EMBED_SPRING_PM :ret = 7;
@@ -474,6 +479,12 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
 	   break;
       case A_GENERATE_P_BIP_3C:
 	   GC = GenerateSchaeffer(m_gen,2,3);
+	   break;
+      case  A_GENERATE_P_OUTER_N:
+	  GC = GenerateRandomOuterplanarGraph(n1_gen);
+	   break;
+      case  A_GENERATE_P_OUTER_NM:
+	  GC = GenerateRandomOuterplanarGraph(n1_gen, m_gen);
 	   break;
       default:
 	  return 0;

@@ -61,11 +61,7 @@ public:
   int NumSources(){return ns;}
   int NumSinks(){return nt;}
 
-  QLabel* TextLabel3;
-  QLabel* TextLabel1;
-  QLineEdit* LE_N;
-  QLabel* TextLabel1_2;
-  QLineEdit* LE_M;
+  QLineEdit* LE_N,*LE_M,*LE_Min,*LE_Max;
   RoRadioButton* RBConnected;
   RoRadioButton* RB2Connected;
   RoRadioButton* RB3Connected;
@@ -75,21 +71,15 @@ public:
   RoRadioButton* RBSerie;
   RoRadioButton* RBSimple;
   RoRadioButton* RBBipartite;
-  RoRadioButton* RBRegular;
+  RoRadioButton* RBAcyclic;
   int MaxNSlow;
   int MaxNDisplay;
-  // graph properties (used by the server)
-
 
 public slots:
   void MaxNSlowChanged(int i);
   void MaxNDisplayChanged(int i);
+
 private:
-  QVBoxLayout* MainLayout;
-  QHBoxLayout* Layout_NM;
-  QHBoxLayout* Layout_CP;
-  QVBoxLayout* Layout_C;
-  QVBoxLayout* LayoutP;
   QMenuBar *menu;
   int ns,nt,dmin,dmax;
   bool S,P,A,B,R,C1,C2,C3,T,Outer,Serie,MaxBi;
