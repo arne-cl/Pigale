@@ -397,10 +397,11 @@ void NodeItem::SetColor(QColor c)
   setBrush(*tb);
   this->nodetextitem->SetColor(OppCol(c));
   }
-void NodeItem::moveTo(Tpoint &p)
+void NodeItem::moveTo(Tpoint &p,double eps)
   {QPoint qp = QRect(rect()).center();
   double dx = p.x() - qp.x();
   double dy = gwp->canvas->height() - p.y() - qp.y();
+  if(Abs(dx) < eps && Abs(dy) < eps)return;
   GeometricGraph & G = *(gwp->pGG);
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
   double nx = x() + dx; //new x position

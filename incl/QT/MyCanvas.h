@@ -128,7 +128,7 @@ class NodeItem: public QCanvasRectangle
   NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRect &rect);
   ~NodeItem() {}
   void moveBy(double dx, double dy);
-  void moveTo(Tpoint &p);
+  void moveTo(Tpoint &p,double eps = .0);
   void SetColor(QColor c);
   int rtti() const;
 
