@@ -15,12 +15,12 @@
 // as now we do not link with /pigale/lib/libqt
 void DrawGraph(Graph &G) {}
 void DrawGraph(void) {}
-void Twait(char const *) {}
-void Tprintf(char *,...) {}
+void Twait(const char *) {}
+void Tprintf(const char *,...) {}
 
 //ClientSocket: public QSocket
 ClientSocket::ClientSocket(int sock,const int id,QObject *parent=0,const char *name=0 ) :
-    QSocket(parent,name),line(0),prId(id),debug(0),cli(this)
+    QSocket(parent,name),line(0),prId(id),sdebug(0),cli(this)
   {connect(this, SIGNAL(readyRead()),SLOT(readClient()));
   connect(this, SIGNAL(connectionClosed()),SLOT(deleteLater()));
   setSocket(sock);
@@ -51,7 +51,7 @@ int ClientSocket::handler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
-  if(debug)cli <<"# '"<<dataAction<<"'"<<endl;
+  if(sdebug)cli <<"# '"<<dataAction<<"'"<<endl;
   bool ok;
   int action = beg.toInt(&ok);
   int err = 0;
@@ -69,7 +69,7 @@ int ClientSocket::handler(const QString& dataAction)
   else if(action > A_EMBED && action < A_EMBED_END)
       err =  handlerEmbed(action);
   else if(action == SERVER_DEBUG)
-      debug = 1;
+      {sdebug = 1;debug() = 1;}
   else
       err = UNKNOWN_COMMAND;
   if(err)cli <<"# ERREUR '"<<dataAction <<"' -> "<<err << endl;

@@ -53,7 +53,7 @@ private:
   void ComputeGraphProperties();
   int line;
   int prId;
-  int debug;
+  int sdebug;
   QTextStream cli;
   GraphContainer GC;
   bool Simple,Planar,Outer,Serie,MaxPlanar,Bipar,MaxBi,Regul;
