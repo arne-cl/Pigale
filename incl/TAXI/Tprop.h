@@ -17,6 +17,7 @@
  * \brief Property Handling 
  */
 
+#include <TAXI/Tbase.h>
 
 /**********
  * Prop<T> : Propriete
@@ -119,7 +120,8 @@ class vProp
     {
     public:
       virtual int size_elmt() const = 0; //!< size of element
-      virtual void affiche(ostream& out,const _svector *v) const =0; 
+      virtual void affiche(std::ostream& out,const _svector *v) const =0; 
+      
       //!< prints the element (debugging purpose)
       /*!< \param out output stream
        *   \param v vector to print
@@ -253,9 +255,9 @@ class PSet
     //! exchange the content of two property sets.
     /*! \param P property set to exchange content with.
      */
-    void swap(PSet &P)
-        {tab.swap(P.tab); vtab.swap(P.vtab);
-        previndx.swap(P.previndx); nextindx.swap(P.nextindx);
+    void Tswap(PSet &P)
+        {tab.Tswap(P.tab); vtab.Tswap(P.vtab);
+        previndx.Tswap(P.previndx); nextindx.Tswap(P.nextindx);
         int tmp=_start; _start=P._start; P._start=tmp;
         tmp = _finish; _finish=P._finish; P._finish=tmp;
         }
@@ -274,11 +276,11 @@ class PSet
      */
     void swload(int num, _svector &v)
         {if (tab[num]!=(_svector *)0)
-            tab[num]->swap(v);
+            tab[num]->Tswap(v);
         else
             {
             tab[num] = new _svector;
-            tab[num]->swap(v);
+            tab[num]->Tswap(v);
             link(num);
             }
         }
@@ -313,7 +315,7 @@ class PSet
       *  \param b last index for properties
       */
     void resize(int a, int b);
-    //! swap two elements in all the existing properties
+    //! Tswap two elements in all the existing properties
     /*! \param a index of first element
       *  \param b index of second element
       */
@@ -375,20 +377,22 @@ class PSet
         return *this;
         }
     //! printing function (debugging purpose)
-    void affiche(ostream & out=cout) const
-        {out <<"PSet ("<<_start<<","<<_finish<<") "<<endl;
+  
+    void affiche(std::ostream & out=std::cout) const
+        {out <<"PSet ("<<_start<<","<<_finish<<") "<<std::endl;
         int i = -1;
         while ((i=nextindx[i])>=0)
             {out <<i<< " : ";
             if (vtab[i] != (vProp *)0) vtab[i]->affiche(out,tab[i]);
-            else out << "unregistred"<<endl;
+            else out << "unregistred"<<std::endl;
             }
-    }
+	}
 };
 /*! \relates PSet
  * stream printing of a property set
  */
-inline ostream & operator<<(ostream & out, const PSet &X)
+
+inline std::ostream & operator<<(std::ostream & out, const PSet &X)
     {X.affiche(out); return out;}
 
 //! Template class for virtual access point to vector properties
@@ -396,20 +400,22 @@ template <class T>
 class vP : public vProp
     {
     public :
-    int size_elmt() const { return sizeof(T);}
-    vProp * dup() const {return new vP<T>;}
-    void affiche(ostream &out, const _svector *p) const
+      int size_elmt() const { return sizeof(T);}
+      vProp * dup() const {return new vP<T>;}
+      
+    void affiche(std::ostream &out, const _svector *p) const
      	{if (p->origin()==(void *)0)
-            {out << " undefined"<<endl;
+            {out << " undefined"<<std::endl;
             return;
-			}
+	    }
        else
            {out<<"{ ";
            for (int i = p->starti(); i<p->stopi(); i++)
                out << (const T &)(*(svector<T> *)p)[i] << " ";
-           out <<"}"<<endl;
+           out <<"}"<<std::endl;
            }
         }
+
     };
 //! Vector property
 template<class T>
@@ -495,7 +501,9 @@ class vProp1
     public:
     virtual int size_elmt() const = 0;//!< size of element
     virtual void destroy(void *) const = 0;//!< destroy an element
-    virtual void affiche(ostream& out, const void *elmt) const = 0; 
+     
+    virtual void affiche(std::ostream& out, const void *elmt) const = 0; 
+     
     //!< prints the element (debugging purpose)
     /*!< \param out output stream
      *   \param elmt element to print
@@ -516,10 +524,12 @@ template <class T>
 class vP1 : public vProp1
     {
      public :
-	 int size_elmt() const { return sizeof(T);}
-     vProp1 * dup() const {return new vP1<T>;}
-	 void destroy(void *p) const {delete (T*)p;}
-	 void affiche(ostream&out, const void *p) const {out << *(T*)p << endl;}
+      int size_elmt() const { return sizeof(T);}
+      vProp1 * dup() const {return new vP1<T>;}
+      void destroy(void *p) const {delete (T*)p;}
+      
+      void affiche(std::ostream&out, const void *p) const {out << *(T*)p << std::endl;}
+      
      _svector * Export(const void *p) const
         { return TypeHandler<T>::Export(p);}
 
@@ -568,8 +578,8 @@ class PSet1
     //! exchange the content of two property sets.
     /*! \param P property set to exchange content with.
      */    
-    void swap(PSet1 &P)
-        { tab.swap(P.tab); vtab.swap(P.vtab); }
+    void Tswap(PSet1 &P)
+        { tab.Tswap(P.tab); vtab.Tswap(P.vtab); }
     //! register a property
     /*! \param num property number (see propdef.h)
      *  \param pAccess virtual access point
@@ -637,7 +647,7 @@ class PSet1
      */
     void swload(int num, _svector &v)
         { _svector *z = new _svector;
-        z->swap(v);
+        z->Tswap(v);
         tab[num] = z;
         }
     //! checks if a property \b exists
@@ -674,13 +684,14 @@ class PSet1
      */
     int PEnd() const {return tab.stopi();}
     //! printing function (debugging purpose)
-    void affiche(ostream &out=cout) const
+  
+    void affiche(std::ostream &out=std::cout) const
         { for (int i=tab.starti(); i<tab.stopi(); i++)
 	    if (tab[i]!=(void *)0)
 	        { out <<i<< " : ";
 	        if (vtab[i] != (vProp1 *)0)
 		    vtab[i]->affiche(out,tab[i]);
-		else out << "unregistred"<<endl;
+		else out << "unregistred"<<std::endl;
 		}
 	}
 };
@@ -771,5 +782,7 @@ class Prop1
 /*! \relates PSet1
  * stream printing of a property set
  */
-inline ostream & operator<<(ostream & out, const PSet1 &X) {X.affiche(out); return out;}
+
+inline std::ostream & operator<<(std::ostream & out, const PSet1 &X) {X.affiche(out); return out;}
+
 #endif

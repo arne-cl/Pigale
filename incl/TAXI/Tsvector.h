@@ -17,15 +17,12 @@
  * \brief Scalar vectors
  */
 
-#include <string.h>
-#include <stdlib.h>
 #include <TAXI/Tbase.h>
 #include <TAXI/elmt.h>
 #include <TAXI/Tdebug.h>
 
 // Vector resizes by an increment of half the current size but at least 32.
 #define TSVECTOR_INCREMENT (Max((finish-start)>>1,32))
-
 
 //! Simple dynamic scalar vector [start:finish-1].
 /*! A scalar vector handles data types without constructor or destructor,
@@ -56,7 +53,7 @@ class _svector
   void* buff;                   // container of elements + 2 extra
   int _start;                   // lowest allocated index
   int _finish;                  // 1 past-end of highest allocated index
-  size_t size_elmt;             // size in bytes of an element
+  std::size_t size_elmt;        // size in bytes of an element
   void* init;                   // initial value for the elements (&buff[0])
   char name[16];                // name identifying this vector
 
@@ -144,7 +141,7 @@ class _svector
    * will still be valid. It is hence copied, should a reallocation occur.
    * Otherwise, default value is unset.
    */
-  void vreserve(int s, int f, size_t nsize_elmt)
+  void vreserve(int s, int f, std::size_t nsize_elmt)
   {
     unsigned int osize = (unsigned int) (_finish-_start)*size_elmt;
     unsigned int nsize = (unsigned int) (f-s)*nsize_elmt;
@@ -286,7 +283,7 @@ public:
   //! Sets all vector elements to initial value (if defined).
   void reset() {reset(start, finish-1);}
   //! Swaps vectors.
-  void swap(_svector &s)
+  void Tswap(_svector &s)
   {
     int tmp=start; start=s.start; s.start=tmp;
     tmp = finish; finish=s.finish; s.finish=tmp;
@@ -433,6 +430,8 @@ public:
     check(i);
     ((T*) ptr0)[--finish]= ((T*) ptr0)[i];
   }
+  void Tswap(svector<T>& v)
+      {me().Tswap(v.me());}
   //! swaps two elements
   void SwapIndex(int a, int b) {
     T& ra = (*this)[a]; T& rb = (*this)[b]; T tmp=ra; ra=rb; rb=tmp;
@@ -476,7 +475,7 @@ public:
   const T* end() const {return (T*) v.end();}
   void clear() {v.clear();}
   void fill(int from, int to, char byte=0) {v.fill(from, to, byte);}
-  void swap(_svector &s) {v.swap(s);}
+  void Tswap(_svector &s) {v.Tswap(s);}
   rsvector &operator=(const _svector &s) {v=s; return *this;}
   rsvector &operator=(const rsvector &s) {v=s.v; return *this;}
   rsvector &operator=(const svector<T> &s) {v=s; return *this;}

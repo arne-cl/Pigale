@@ -1,22 +1,28 @@
 #include <qapplication.h>
 #include <Pigale.h> 
+#include "MyWindow.h" 
+#include <QT/Misc.h> 
 
 
 int Test(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
+  GeometricGraph GG(GC);
   int err = 0;
   if(action == 1)
-      {//for(int i=1; i<100;i++)
-	  err = G.TestPlanar();
-      if(err != 1)
-	  setError(-12345); 
+      {tbrin first = 1;
+      if(!G.CheckConnected())G.MakeConnected();
+      if(!G.CheckBiconnected())G.NpBiconnect();
+      NPBipolar(G,first); 
+      int ns,nt;
+      G.CheckAcyclic(ns,nt);
+      if(ns !=1 || nt !=1)setError(-12345,"error bipolar");
       return 0;
       }
   if(action == 2)
-      {//for(int i=1; i<100;i++)
-	  err = G.TestPlanar2();
+      {for(int i=1; i<1000;i++)
+	  err = G.TestPlanar();
       if(err != 1)
-	  {DebugPrintf("Test TestPlanar() err=%d  Error():%d",err,getError());
+	  {DebugPrintf("Test TestPlanar():%s",(const char *)getErrorString());
 	  setError(-12345); 
 	  }
       return 0;

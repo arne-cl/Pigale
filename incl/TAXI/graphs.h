@@ -12,6 +12,7 @@
 #ifndef GRAPHS_H
 #define GRAPHS_H
 
+#include <TAXI/Tbase.h>
 #include <TAXI/graph.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/Tdebug.h>

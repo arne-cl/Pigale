@@ -21,15 +21,15 @@ CC=g++
 #GENERAL OPTIONS
 .SUFFIXES:.cpp .o
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O3  -fsigned-char $(PIC)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror
-CFLAGSopt +=  -fomit-frame-pointer -pipe
+CFLAGSopt = -O3  $(PIC)
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+#CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION)
 
 
 #DEBUGGING OPTIONS
-CFLAGSdbg  =  -g -Wall -fsigned-char  $(PIC)
-CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror
+CFLAGSdbg  =  -g -Wall $(PIC)
+CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 
@@ -60,10 +60,10 @@ moc_%.cpp:%.h
 
 $(DLIB):$(OBJECTS) 
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
-	@g++ -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
+	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
 $(P)$(OPT) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	g++  $(CFLAGS) -o $(P)$(OPT) $(PIGALELIB)  $(UNIXLIB) 
+	$(CC)  $(CFLAGS) -o $(P)$(OPT) $(PIGALELIB)  $(UNIXLIB) 
 
 clean:
 	@rm -f $(VPATH)/*.o
@@ -89,11 +89,10 @@ nodepend:
 CanvasGrid.o: MyWindow.h ../../pigale/incl/Pigale.h
 CanvasGrid.o: ../../pigale/incl/TAXI/Tmessage.h
 CanvasGrid.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/graphs.h
-CanvasGrid.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tprop.h
+CanvasGrid.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+CanvasGrid.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 CanvasGrid.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
-CanvasGrid.o: ../../pigale/incl/TAXI/Errors.h
+CanvasGrid.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 CanvasGrid.o: ../../pigale/incl/TAXI/Tpropio.h
 CanvasGrid.o: ../../pigale/incl/TAXI/Tstring.h
 CanvasGrid.o: ../../pigale/incl/TAXI/propdef.h
@@ -106,11 +105,10 @@ CanvasGrid.o: gprop.h
 CanvasItem.o: MyWindow.h ../../pigale/incl/Pigale.h
 CanvasItem.o: ../../pigale/incl/TAXI/Tmessage.h
 CanvasItem.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/graphs.h
-CanvasItem.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tprop.h
+CanvasItem.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+CanvasItem.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 CanvasItem.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasItem.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
-CanvasItem.o: ../../pigale/incl/TAXI/Errors.h
+CanvasItem.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 CanvasItem.o: ../../pigale/incl/TAXI/Tpropio.h
 CanvasItem.o: ../../pigale/incl/TAXI/Tstring.h
 CanvasItem.o: ../../pigale/incl/TAXI/propdef.h
@@ -123,10 +121,9 @@ CanvasSpring.o: MyWindow.h ../../pigale/incl/Pigale.h
 CanvasSpring.o: ../../pigale/incl/TAXI/Tmessage.h
 CanvasSpring.o: ../../pigale/incl/TAXI/color.h
 CanvasSpring.o: ../../pigale/incl/TAXI/graphs.h
-CanvasSpring.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tprop.h
+CanvasSpring.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+CanvasSpring.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 CanvasSpring.o: ../../pigale/incl/TAXI/Tsvector.h
-CanvasSpring.o: ../../pigale/incl/TAXI/Tbase.h
 CanvasSpring.o: ../../pigale/incl/TAXI/Tdebug.h
 CanvasSpring.o: ../../pigale/incl/TAXI/Errors.h
 CanvasSpring.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -141,9 +138,9 @@ CanvasSpring.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
 glcontrolwidget.o: glcontrolwidget.h
 gprop.o: gprop.h MyWindow.h ../../pigale/incl/Pigale.h
 gprop.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-gprop.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-gprop.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-gprop.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+gprop.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+gprop.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+gprop.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 gprop.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 gprop.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 gprop.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -151,9 +148,9 @@ gprop.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/QT/Misc.h
 gprop.o: ../../pigale/incl/QT/Action_def.h
 GraphGL.o: MyWindow.h ../../pigale/incl/Pigale.h
 GraphGL.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-GraphGL.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-GraphGL.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-GraphGL.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+GraphGL.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+GraphGL.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+GraphGL.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 GraphGL.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 GraphGL.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 GraphGL.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -162,9 +159,9 @@ GraphGL.o: mouse_actions.h ../../pigale/incl/QT/GLWindow.h
 GraphGL.o: ../../pigale/incl/QT/MyQcolors.h ../../pigale/incl/TAXI/netcut.h
 GraphSym.o: MyWindow.h ../../pigale/incl/Pigale.h
 GraphSym.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-GraphSym.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-GraphSym.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-GraphSym.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+GraphSym.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+GraphSym.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+GraphSym.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 GraphSym.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 GraphSym.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 GraphSym.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -173,9 +170,9 @@ GraphSym.o: ../../pigale/incl/QT/SymWindow.h ../../pigale/incl/QT/MyQcolors.h
 GraphSym.o: ../../pigale/incl/QT/Misc.h
 Handler.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
 Handler.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/graphs.h
-Handler.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Handler.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Handler.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+Handler.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+Handler.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Handler.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 Handler.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 Handler.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 Handler.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tfile.h
@@ -183,9 +180,9 @@ Handler.o: ../../pigale/incl/QT/Handler.h ../../pigale/incl/QT/Action_def.h
 LineEditNum.o: LineEditNum.h
 Macro.o: MyWindow.h ../../pigale/incl/Pigale.h
 Macro.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-Macro.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Macro.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Macro.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+Macro.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+Macro.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+Macro.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 Macro.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 Macro.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Macro.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -194,28 +191,28 @@ Macro.o: LineEditNum.h ../../pigale/incl/QT/Misc.h
 Macro.o: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/TAXI/Tgf.h
 main.o: MyWindow.h ../../pigale/incl/Pigale.h
 main.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-main.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-main.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-main.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+main.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+main.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+main.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 main.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 main.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 main.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 main.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/QT/Misc.h
 MiscQt.o: MyWindow.h ../../pigale/incl/Pigale.h
 MiscQt.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-MiscQt.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-MiscQt.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-MiscQt.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+MiscQt.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+MiscQt.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+MiscQt.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 MiscQt.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 MiscQt.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 MiscQt.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
-MiscQt.o: ../../pigale/incl/TAXI/Tfile.h
+MiscQt.o: ../../pigale/incl/TAXI/Tfile.h GraphWidget.h
 mouse_actions.o: mouse_actions.h GraphWidget.h GraphGL.h
 MyCanvas.o: MyWindow.h ../../pigale/incl/Pigale.h
 MyCanvas.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-MyCanvas.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-MyCanvas.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-MyCanvas.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+MyCanvas.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+MyCanvas.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+MyCanvas.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 MyCanvas.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 MyCanvas.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 MyCanvas.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -226,9 +223,9 @@ MyCanvas.o: ../../pigale/incl/QT/grid.h
 MyCanvas.o: ../../pigale/incl/QT/GraphWidgetPrivate.h
 MyPaint.o: MyWindow.h ../../pigale/incl/Pigale.h
 MyPaint.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-MyPaint.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-MyPaint.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-MyPaint.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+MyPaint.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+MyPaint.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+MyPaint.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 MyPaint.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 MyPaint.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 MyPaint.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -236,9 +233,9 @@ MyPaint.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/QT/MyPaint.h
 MyPaint.o: ../../pigale/incl/QT/MyQcolors.h
 MyWindow.o: MyWindow.h ../../pigale/incl/Pigale.h
 MyWindow.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-MyWindow.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-MyWindow.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-MyWindow.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+MyWindow.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+MyWindow.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+MyWindow.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 MyWindow.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 MyWindow.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 MyWindow.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -257,10 +254,9 @@ MyWindow.o: icones/macroplay.xpm icones/film.xpm
 SchaefferGen.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
 SchaefferGen.o: ../../pigale/incl/TAXI/color.h
 SchaefferGen.o: ../../pigale/incl/TAXI/graphs.h
-SchaefferGen.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-SchaefferGen.o: ../../pigale/incl/TAXI/Tprop.h
+SchaefferGen.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+SchaefferGen.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tsvector.h
-SchaefferGen.o: ../../pigale/incl/TAXI/Tbase.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tdebug.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Errors.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -270,9 +266,9 @@ SchaefferGen.o: ../../pigale/incl/TAXI/Tpoint.h
 SchaefferGen.o: ../../pigale/incl/TAXI/Tfile.h
 Settings.o: MyWindow.h ../../pigale/incl/Pigale.h
 Settings.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-Settings.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Settings.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Settings.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+Settings.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+Settings.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+Settings.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 Settings.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 Settings.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Settings.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -281,9 +277,10 @@ Settings.o: gprop.h ../../pigale/incl/QT/Misc.h
 Settings.o: ../../pigale/incl/QT/Handler.h
 Test.o: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
 Test.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/graphs.h
-Test.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Test.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Test.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+Test.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+Test.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Test.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 Test.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 Test.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 Test.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tfile.h
+Test.o: MyWindow.h ../../pigale/incl/QT/Misc.h

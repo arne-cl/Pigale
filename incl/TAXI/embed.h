@@ -17,22 +17,22 @@
 
 // structure defining the Side of edges
 struct _Side {
-    svector<char> up;		// Side of the upper edge end
-    svector<char> dwn;		// Side of the lower edge end
+    svector<int> up;		// Side of the upper edge end
+    svector<int> dwn;		// Side of the lower edge end
 
     _Side(int m) : up(0,m), dwn(0,m)
 		{}
     ~_Side() {}
 };
 
-#define GAUCHE  (char)0
-#define DROITE  (char)1
-#define AUTRE   (char)2
+#define GAUCHE  0
+#define DROITE  1
+#define AUTRE   2
 
 class Embed {
     int n;
     int m;
-    const svector<char> &status;
+    const svector<int> &status;
     const _LrSort &LrSort;
 
     _Hist &Hist;

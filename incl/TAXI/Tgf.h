@@ -48,9 +48,7 @@ Un fichier TGF contient: header,subheader,des IFD,des records
 
 #ifndef _TGF_H_INCLUDED_
 #define _TGF_H_INCLUDED_
-#include <string.h>
-#include <iostream.h>
-#include <fstream.h>
+
 #include <TAXI/Tbase.h>
 
 //TGF uses a very primitive dynamic array:
@@ -193,7 +191,7 @@ class Tgf {
         enum open_mode {old=0,create};
         StructTagList TagList;            //tous les tags du record sur lequel on est
         char SubHeader[17];
-        fstream stream;
+        std::fstream stream;
 
         Tgf() : IfdOffset(0L)
             {IsGood = IsOpen = 0;
@@ -220,11 +218,11 @@ class Tgf {
                 IsOpen = 0;
                 }
             }
-        int LengthSubHeader()                   {return(Header.LenSubHeader);}
-        void WriteSubHeader()                   {stream.write((char *)SubHeader,Header.LenSubHeader);}
-        void ReadSubHeader()                    {stream.read((char *)&SubHeader[0],16);}
-        int good()                              {return(IsGood);}
-        int RecordsNumber()                     {return(Header.RecordNum);}
+        int LengthSubHeader()           {return(Header.LenSubHeader);}
+        void WriteSubHeader()           {stream.write((char *)SubHeader,Header.LenSubHeader);}
+        void ReadSubHeader()            {stream.read((char *)&SubHeader[0],16);}
+        int good()                      {return(IsGood);}
+        int RecordsNumber()             {return(Header.RecordNum);}
         int CreateRecord();
         int SetRecord(int num);
         int DeleteRecord(int num);

@@ -88,6 +88,7 @@ void SaveSettings();
 static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
 
+
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose )
     ,MacroLooping(false)
@@ -608,7 +609,7 @@ void MyWindow::mapActionsInit()
   for(int i = 0;i < na;i++)
       mapActions[actions[i].num] = actions[i].name;
   }
-QString& MyWindow::getActionString(int action)
+QString MyWindow::getActionString(int action)
   {return mapActions[action];
   }
 void MyWindow::load()
@@ -878,7 +879,7 @@ void MyWindow::banner()
   statusBar()->message(m);
   }
 void MyWindow::about()
-  {QMessageBox::about(this,"Pigale Editor 1-2.2", 
+  {QMessageBox::about(this,"Pigale Editor 1-2.3", 
 		      "<b>Copyright (C) 2001</b>"
 		      "<br>Hubert de Fraysseix"
 		      "<br>Patrice Ossona de Mendez "

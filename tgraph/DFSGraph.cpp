@@ -216,7 +216,7 @@ void DFSGraph::ShrinkSubdivision()
       NewEdge[v()-1]=f;
       }
   newvin[0] = 0;
-  newvin.swap(nvin);
+  newvin.Tswap(nvin);
   setsize(newv(),newe());
   }
 

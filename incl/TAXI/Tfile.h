@@ -12,7 +12,6 @@
 #ifndef TFILE_H
 #define TFILE_H
 
-#include  <TAXI/Tstring.h>
 #include  <TAXI/graphs.h>
 
 int IsFileTgf(char const *name);

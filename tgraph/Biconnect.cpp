@@ -85,13 +85,13 @@ int TopologicalGraph::Opt6Biconnect()
   if(!CheckPlanar())return -1;
   if(debug())DebugPrintf("Opt6Biconnect");
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
-  svector<bool> save_oriented(0,ne()); save_oriented.swap(oriented);
+  svector<bool> save_oriented(0,ne()); save_oriented.Tswap(oriented);
   svector<int> mark(-ne(),ne()); mark.SetName("mark");
   mark.clear();
   if(SchnyderMarkAngles(*this,mark))return -1;
   SchnyderBiconnectByMarks(*this,mark);
   save_oriented.resize(0,ne());
-  save_oriented.swap(oriented);RestoreOrientation();
+  save_oriented.Tswap(oriented);RestoreOrientation();
   //Prop1<int> isbicon(Set(),PROP_BICONNECTED);
   return 0;
   }

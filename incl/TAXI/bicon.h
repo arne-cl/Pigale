@@ -14,7 +14,7 @@
 #include <TAXI/graph.h>
 
 struct _Bicon {
-    svector<char> status;
+    svector<int> status;
     _Bicon(int n)  : status(0,n) { status.clear();status.SetName("Bicon.status");}
     ~_Bicon(){}
 };

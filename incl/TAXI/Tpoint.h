@@ -11,8 +11,10 @@
 
 #ifndef  _TPOINT_H_INCLUDED_
 #define  _TPOINT_H_INCLUDED_
-#include <math.h>
-#include <iostream.h>
+
+
+#include <TAXI/Tbase.h>
+
 #ifndef PI
 #define PI (3.1415926535)
 #endif
@@ -87,7 +89,8 @@ template<class T> void Scale(Point3_<T> &point1,const Point3_<T> &mult,const Poi
      point1.y() = point1.y()*mult.y() + add.y();
      point1.z() = point1.z()*mult.z() + add.z();
     }
-template<class T> ostream& operator <<(ostream& out,const Point3_<T> point)
+
+template<class T> std::ostream& operator <<(std::ostream& out,const Point3_<T> point)
     {out << point.x() << " " << point.y() << " " << point.z();return(out);}
 
 template<class T> class Point2_
@@ -177,7 +180,8 @@ template<class T> void Scale(Point2_<T> &point1,const Point2_<T> &mult,const Poi
     {point1.x() = point1.x()*mult.x() + add.x();
      point1.y() = point1.y()*mult.y() + add.y();
     }
-template<class T> ostream& operator <<(ostream& out,const Point2_<T> & point)
+
+template<class T> std::ostream& operator <<(std::ostream& out,const Point2_<T> & point)
     {out << point.x() << " " <<point.y();return (out);}
 
 template<class T>double Angle(Point2_<T> p)
@@ -249,23 +253,23 @@ double dist_seg(const Point2_<T> &p0,const Point2_<T> &p1,const Point2_<T> &p2,P
 typedef Point3_<double> Tpoint3;
 typedef Point2_<double> Tpoint;
 
-
-inline void read(istream &in,Tpoint &p)
+inline void read(std::istream &in,Tpoint &p)
     {double x,y;
     in >> x >> y;
     p = Tpoint(x,y);
     }
-inline void write(ostream &in,const Tpoint &p)
-   {in << p.x() <<" "<< p.y()<< endl;}
+inline void write(std::ostream &out,const Tpoint &p)
+   {out << p.x() <<" "<< p.y()<< std::endl;}
 
-inline void read(istream &in,Tpoint3 &p)
+
+inline void read(std::istream &in,Tpoint3 &p)
     {double x,y,z;
     in >> x >> y >> z;
     p = Tpoint3(x,y,z);
     }
-inline void write(ostream &in,const Tpoint3 &p)
-  {in << p.x() <<" "<< p.y()<<" " << p.z()<< endl;}
 
+inline void write(std::ostream &out,const Tpoint3 &p)
+  {out << p.x() <<" "<< p.y()<<" " << p.z()<< std::endl;}
 
 #endif
 

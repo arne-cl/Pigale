@@ -13,7 +13,6 @@
 #define      __IntList_H__
 
 
-#include <TAXI/Tstring.h>
 #include <TAXI/Tsvector.h>
 #include <TAXI/Tdebug.h>
 

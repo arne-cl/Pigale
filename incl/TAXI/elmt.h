@@ -11,7 +11,8 @@
 
 #ifndef ELMT_H
 #define ELMT_H
-#include <iostream.h>
+
+#include <TAXI/Tbase.h>
 class tedge;
 class tbrin
     {
@@ -155,7 +156,9 @@ class tedge
     tedge& operator -=(int i) {value -= i;return *this;}
     };
 inline tedge tbrin::GetEdge() const {return (tedge)((value <0) ? -value : value);}
-inline ostream & operator<<(ostream & out, const tbrin &b) {return out<<b();}
-inline ostream & operator<<(ostream & out, const tedge &e) {return out<<e();}
-inline ostream & operator<<(ostream & out, const tvertex &v) {return out<<v();}
+
+inline std::ostream & operator<<(std::ostream & out, const tbrin &b) {return out<<b();}
+inline std::ostream & operator<<(std::ostream & out, const tedge &e) {return out<<e();}
+inline std::ostream & operator<<(std::ostream & out, const tvertex &v) {return out<<v();}
+
 #endif

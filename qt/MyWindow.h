@@ -89,7 +89,7 @@ public:
   void UndoTouch(bool save=false);
   void blockInput(bool t);
   int MyWindow::getKey();
-  QString& getActionString(int action);
+  QString getActionString(int action);
 
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;

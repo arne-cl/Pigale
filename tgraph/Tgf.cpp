@@ -15,14 +15,11 @@
 #include <TAXI/Tgf.h>
 // ios::bin is deprecated
 // ios::nocreate does not exists anymore
-/*
-#define GCC_VERSION (__GNUC__ * 10000 \
-                              + __GNUC_MINOR__ * 100 \
-                              + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION < 30200
-*/
 
-#define BINMODE ios::binary  
+
+#define BINMODE ios::binary   
+
+using namespace std; 
 
 int IsFileTgf(char const *name)
   {char ID[4];

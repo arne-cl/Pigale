@@ -13,13 +13,13 @@ UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt
 .SUFFIXES:.cpp .o
 
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O3 -fsigned-char $(PIC)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith
-CFLAGSopt +=  -fomit-frame-pointer -pipe
+CFLAGSopt = -O3  $(PIC)
+CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith  -pipe
 CFLAGSopt += -DQT_THREAD_SUPPORT 
+
 #DEBUGGING OPTIONS
-CFLAGSdbg  =  -g -Wall -fsigned-char $(PIC)
-CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith
+CFLAGSdbg  =  -g -Wall  $(PIC) 
+CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg += -DQT_THREAD_SUPPORT 
 
@@ -48,11 +48,11 @@ $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f define.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
 Server: server.o  moc_server.o 
-	g++   -o Server server.o moc_server.o  $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB) 
-#	g++   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
+	$(CC)   -o Server server.o moc_server.o  $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB) 
+#	$(CC)   -o Server server.o moc_server.o  $(UNIXLIB) $(PIGALELIB)
 
 Client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
-	g++   -o Client client.o moc_client.o $(UNIXLIB)
+	$(CC)   -o Client client.o moc_client.o $(UNIXLIB)
 
 clean:
 	@rm -f *.o
@@ -78,9 +78,9 @@ client.o: client.h ../../pigale/incl/QT/Action_def.h
 client.o: ../../pigale/incl/QT/Action.h
 server.o: server.h ../../pigale/incl/Pigale.h
 server.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-server.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-server.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-server.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+server.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+server.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+server.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 server.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 server.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 server.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h

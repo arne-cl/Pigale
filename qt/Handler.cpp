@@ -368,25 +368,25 @@ int DualHandler(int action)
   switch(action)
       {case A_GRAPH_DUAL:
 	   pGC = G.DualGraph();
-	   if (pGC) G.swap(*pGC);
+	   if (pGC) G.Tswap(*pGC);
 	   delete pGC;
 	   Tprintf("Dual");
 	   break;
       case  A_GRAPH_DUAL_G:
 	   pGC = G.GeometricDualGraph();
-	   if (pGC) G.swap(*pGC);
+	   if (pGC) G.Tswap(*pGC);
 	   delete pGC;
 	   Tprintf("Dual geometric");
 	   break;
       case A_GRAPH_ANGLE:
 	   pGC = G.AngleGraph();
-	   if (pGC) G.swap(*pGC);
+	   if (pGC) G.Tswap(*pGC);
 	   delete pGC;
 	   Tprintf("Angle");
 	   break;
       case A_GRAPH_ANGLE_G:
 	   pGC = G.GeometricAngleGraph();
-	   if (pGC) G.swap(*pGC);
+	   if (pGC) G.Tswap(*pGC);
 	   delete pGC;
 	   Tprintf("Angle geometric");
 	   break;
@@ -492,7 +492,7 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
 	  return 0;
       }
   if(GC)
-      {GetMainGraph().swap(*GC);
+      {GetMainGraph().Tswap(*GC);
       GeometricGraph GG(GetMainGraph());
       }
   else {setError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}

@@ -184,11 +184,11 @@ int EmbedContactBip(GeometricGraph &G)
   tbrin FirstBrin;
   Prop1<int> n_origin(G.Set(),PROP_TMP);
   n_origin() = G.nv();
-  svector<int> save_oriented(0,G.ne());
+  svector<bool> save_oriented(0,G.ne());
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,0);
-  save_oriented.swap(oriented);
+  save_oriented.Tswap(oriented);
   if(DecompMaxBip(G,FirstBrin))
-      {save_oriented.swap(oriented);G.RestoreOrientation();return 1;}
+      {save_oriented.Tswap(oriented);G.RestoreOrientation();return 1;}
   Prop<int> h(G.Set(tvertex()),PROP_DRAW_INT_1);
   h.clear();
   CalcTotalOrder(G,FirstBrin);
@@ -212,7 +212,7 @@ int EmbedContactBip(GeometricGraph &G)
       {xymax = Max(xymax,h[v]);
       xymin = Min(xymin,h[v]);
       }
-  save_oriented.swap(oriented);G.RestoreOrientation();
+  save_oriented.Tswap(oriented);G.RestoreOrientation();
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   pmin() = Tpoint(xymin-1,xymin-1);

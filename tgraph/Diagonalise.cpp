@@ -11,7 +11,7 @@
 
 
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
 #include <stdio.h>    //provisoire pour debug

@@ -12,8 +12,7 @@
 #ifndef __TSTRING_H__
 #define __TSTRING_H__
 
-#include  <iostream.h>
-#include  <string.h>
+#include  <TAXI/Tbase.h>
 
 class tstring
   {
@@ -131,16 +130,16 @@ class tstring
       {return strcmp(x.p->s, y);}
   friend int operator != (char const *x, tstring const &y)
       {return strcmp(x, y.p->s);}
-
-  friend ostream& operator <<(ostream &os,const tstring &x)
-      {return os << x.p->s << endl;}
-  friend istream& operator >> (istream &is, tstring & x)
+   
+  friend std::ostream& operator <<(std::ostream &os,const tstring &x)
+      {return os << x.p->s << std::endl;}
+  friend std::istream& operator >> (std::istream &is, tstring & x)
       {char buff[256];
       is >> buff;
       x = buff;
       return is;
       }
-  
+   
   //substrings
   tstring operator () (int pos) const
     {tstring tmp;

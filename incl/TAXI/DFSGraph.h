@@ -11,10 +11,11 @@
 
 #ifndef _DFSGRAPH_H_
 #define _DFSGRAPH_H_
+
+#include <TAXI/Tbase.h>
 #include <TAXI/color.h>
 #include <TAXI/graphs.h>
 #include <TAXI/Tdebug.h>
-#include <assert.h>
 
 // _DFS structure to handle DFS of simple connected graphs
 

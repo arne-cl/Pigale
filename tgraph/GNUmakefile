@@ -21,13 +21,12 @@ CC=g++
 AWK=awk
 
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O3  -fsigned-char $(PIC)
-CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror
-# -Winline
-CFLAGSopt += -fomit-frame-pointer
+CFLAGSopt = -O3   $(PIC)
+CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+#CFLAGSopt +=  -fomit-frame-pointer (does not work with GCC 3)
 
 #DEBUGGING OPTIONS (-pg -a for sampling)
-CFLAGSdbg  =  -g -Wall -Wstrict-prototypes -Wpointer-arith -Werror -fsigned-char $(PIC)
+CFLAGSdbg  =  -g -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe $(PIC)
 CFLAGSdbg +=  -DTDEBUG
 
 DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
@@ -52,7 +51,7 @@ PropName.cpp : $(PIGALEPATH)/incl/TAXI/propdef.h
 
 $(DLIB):	$(OBJECTS)
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
-	@g++ -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
+	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
 clean:
 	rm -f *.$(OPT) $(DLIB) 
@@ -72,11 +71,11 @@ list:
 
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/KantShel.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/graphs.h
+3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/graph.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/elmt.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tprop.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tsvector.h
-3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tdebug.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Errors.h
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -89,11 +88,11 @@ list:
 3-ConOrientTriang.o: ../../pigale/incl/TAXI/Tarray.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/KantShel.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/graphs.h
+3-ConShelling1.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/graph.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/elmt.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/Tprop.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/Tsvector.h
-3-ConShelling1.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/Tdebug.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/Errors.h
 3-ConShelling1.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -103,11 +102,11 @@ list:
 3-ConShelling1.o: ../../pigale/incl/TAXI/IntList.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/KantShel.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/graphs.h
+3-ConShelling2.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/graph.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/elmt.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Tprop.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Tsvector.h
-3-ConShelling2.o: ../../pigale/incl/TAXI/Tbase.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Tdebug.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Errors.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -117,9 +116,8 @@ list:
 3-ConShelling2.o: ../../pigale/incl/TAXI/IntList.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/color.h
 3-ConShelling2.o: ../../pigale/incl/TAXI/Tmessage.h
-Barycenter.o: ../../pigale/incl/TAXI/smatrix.h
-Barycenter.o: ../../pigale/incl/TAXI/Tsvector.h
-Barycenter.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/elmt.h
+Barycenter.o: ../../pigale/incl/TAXI/smatrix.h ../../pigale/incl/TAXI/Tbase.h
+Barycenter.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
 Barycenter.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 Barycenter.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/Tprop.h
 Barycenter.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -127,9 +125,9 @@ Barycenter.o: ../../pigale/incl/TAXI/Tstring.h
 Barycenter.o: ../../pigale/incl/TAXI/propdef.h
 Barycenter.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tpoint.h
 Barycenter.o: ../../pigale/incl/TAXI/Tmessage.h
-BFS.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-BFS.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-BFS.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+BFS.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+BFS.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+BFS.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 BFS.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 BFS.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 BFS.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
@@ -143,18 +141,18 @@ Biconnect.o: ../../pigale/incl/TAXI/Tpropio.h
 Biconnect.o: ../../pigale/incl/TAXI/Tstring.h
 Biconnect.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 Biconnect.o: ../../pigale/incl/TAXI/IntList.h
-Bipolar.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-Bipolar.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Bipolar.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+Bipolar.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+Bipolar.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+Bipolar.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 Bipolar.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 Bipolar.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Bipolar.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 Bipolar.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
+Bipolar.o: ../../pigale/incl/TAXI/DFSGraph.h
 BipPlanarize.o: ../../pigale/incl/TAXI/graphs.h
-BipPlanarize.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-BipPlanarize.o: ../../pigale/incl/TAXI/Tprop.h
+BipPlanarize.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+BipPlanarize.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
 BipPlanarize.o: ../../pigale/incl/TAXI/Tsvector.h
-BipPlanarize.o: ../../pigale/incl/TAXI/Tbase.h
 BipPlanarize.o: ../../pigale/incl/TAXI/Tdebug.h
 BipPlanarize.o: ../../pigale/incl/TAXI/Errors.h
 BipPlanarize.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -181,29 +179,29 @@ CotreeCritical.o: ../../pigale/incl/TAXI/Tpoint.h
 CotreeCritical.o: ../../pigale/incl/TAXI/DFSLow.h
 CotreeCritical.o: ../../pigale/incl/TAXI/lralgo.h
 CotreeCritical.o: ../../pigale/incl/TAXI/bicon.h
-Debug.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
-Debug.o: ../../pigale/incl/TAXI/Tmessage.h
-DFS.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-DFS.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-DFS.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+Debug.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+Debug.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tmessage.h
+DFS.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graphs.h
+DFS.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+DFS.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 DFS.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 DFS.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 DFS.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 DFS.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/color.h
-DFSGraph.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/color.h
-DFSGraph.o: ../../pigale/incl/TAXI/DFSGraph.h ../../pigale/incl/TAXI/graphs.h
-DFSGraph.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-DFSGraph.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-DFSGraph.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+DFSGraph.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/Tbase.h
+DFSGraph.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/DFSGraph.h
+DFSGraph.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+DFSGraph.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+DFSGraph.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 DFSGraph.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 DFSGraph.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 DFSGraph.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/lralgo.h
 DFSGraph.o: ../../pigale/incl/TAXI/bicon.h
-DFSMap.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/color.h
-DFSMap.o: ../../pigale/incl/TAXI/DFSGraph.h ../../pigale/incl/TAXI/graphs.h
-DFSMap.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-DFSMap.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-DFSMap.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+DFSMap.o: ../../pigale/incl/TAXI/DFSLow.h ../../pigale/incl/TAXI/Tbase.h
+DFSMap.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/DFSGraph.h
+DFSMap.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+DFSMap.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+DFSMap.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 DFSMap.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 DFSMap.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 DFSMap.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/lralgo.h
@@ -232,20 +230,20 @@ Embed2Pages.o: ../../pigale/incl/TAXI/Tpoint.h
 Embed2Pages.o: ../../pigale/incl/TAXI/IntList.h
 Embed2Pages.o: ../../pigale/incl/TAXI/Tmessage.h
 Embed2Pages.o: ../../pigale/incl/TAXI/color.h
-EmbedFPP.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-EmbedFPP.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-EmbedFPP.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+EmbedFPP.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+EmbedFPP.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+EmbedFPP.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 EmbedFPP.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 EmbedFPP.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 EmbedFPP.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 EmbedFPP.o: ../../pigale/incl/TAXI/SchPack.h ../../pigale/incl/TAXI/IntList.h
 EmbedFPP.o: ../../pigale/incl/TAXI/MaxPath.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graphs.h
+EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tbase.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/graph.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/elmt.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tprop.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tsvector.h
-EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tbase.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tdebug.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/Errors.h
 EmbedTutteCircle.o: ../../pigale/incl/TAXI/Tpropio.h
@@ -267,9 +265,9 @@ EmbedVision.o: ../../pigale/incl/TAXI/Tpoint.h
 EmbedVision.o: ../../pigale/incl/TAXI/Tmessage.h
 EmbedVision.o: ../../pigale/incl/TAXI/MaxPath.h
 EmbedVision.o: ../../pigale/incl/TAXI/color.h
-FastTwit.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/graph.h
-FastTwit.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-FastTwit.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+FastTwit.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/Tbase.h
+FastTwit.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+FastTwit.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 FastTwit.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 FastTwit.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 FastTwit.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/graphs.h
@@ -284,14 +282,15 @@ File.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tgf.h
 File.o: ../../pigale/incl/TAXI/Tproptgf.h ../../pigale/incl/TAXI/Tfile.h
 File.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tsmap.h
 File.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tmessage.h
-Generate.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tdebug.h
-Generate.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/graphs.h
-Generate.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Generate.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Generate.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tpropio.h
-Generate.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
-GeoAlgs.o: ../../pigale/incl/TAXI/smatrix.h ../../pigale/incl/TAXI/Tsvector.h
-GeoAlgs.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/elmt.h
+Generate.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tbase.h
+Generate.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+Generate.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+Generate.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Generate.o: ../../pigale/incl/TAXI/Tsvector.h
+Generate.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
+Generate.o: ../../pigale/incl/TAXI/propdef.h
+GeoAlgs.o: ../../pigale/incl/TAXI/smatrix.h ../../pigale/incl/TAXI/Tbase.h
+GeoAlgs.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
 GeoAlgs.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 GeoAlgs.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tpoint.h
 GeoAlgs.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
@@ -317,16 +316,16 @@ k-InfOrient.o: ../../pigale/incl/TAXI/propdef.h
 k-InfOrient.o: ../../pigale/incl/TAXI/Tpoint.h
 k-InfOrient.o: ../../pigale/incl/TAXI/IntList.h
 LR-Algo.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-LR-Algo.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-LR-Algo.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+LR-Algo.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tprop.h
+LR-Algo.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 LR-Algo.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 LR-Algo.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 LR-Algo.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tpoint.h
 LR-Algo.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/lralgo.h
 LR-Algo.o: ../../pigale/incl/TAXI/DFSGraph.h ../../pigale/incl/TAXI/color.h
 LR-Map.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-LR-Map.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-LR-Map.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+LR-Map.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tprop.h
+LR-Map.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 LR-Map.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 LR-Map.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 LR-Map.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tpoint.h
@@ -334,17 +333,18 @@ LR-Map.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/lralgo.h
 LR-Map.o: ../../pigale/incl/TAXI/DFSGraph.h ../../pigale/incl/TAXI/color.h
 LR-Map.o: ../../pigale/incl/TAXI/embed.h ../../pigale/incl/TAXI/DFSLow.h
 LR-Map.o: ../../pigale/incl/TAXI/Tmessage.h
-mark.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-mark.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-mark.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+mark.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+mark.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+mark.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 mark.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 mark.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 mark.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 mark.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/Tmessage.h
 MaxPlanar.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-MaxPlanar.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-MaxPlanar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
-MaxPlanar.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
+MaxPlanar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tprop.h
+MaxPlanar.o: ../../pigale/incl/TAXI/Tsvector.h
+MaxPlanar.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+MaxPlanar.o: ../../pigale/incl/TAXI/Tpropio.h
 MaxPlanar.o: ../../pigale/incl/TAXI/Tstring.h
 MaxPlanar.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/color.h
 MaxPlanar.o: ../../pigale/incl/TAXI/DFSGraph.h
@@ -356,17 +356,17 @@ more.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 more.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/propdef.h
 more.o: ../../pigale/incl/TAXI/Tpoint.h
 netcut.o: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/graphs.h
-netcut.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-netcut.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-netcut.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+netcut.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+netcut.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+netcut.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 netcut.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 netcut.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 netcut.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
 netcut.o: ../../pigale/incl/TAXI/Tmessage.h
 NewPolar.o: ../../pigale/incl/TAXI/Dos.h ../../pigale/incl/TAXI/graphs.h
-NewPolar.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-NewPolar.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-NewPolar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+NewPolar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+NewPolar.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+NewPolar.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 NewPolar.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 NewPolar.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 NewPolar.o: ../../pigale/incl/TAXI/Tpoint.h
@@ -383,8 +383,8 @@ NpBiconnect.o: ../../pigale/incl/TAXI/Tpoint.h
 NpBiconnect.o: ../../pigale/incl/TAXI/Tmessage.h
 NpBiconnect.o: ../../pigale/incl/TAXI/color.h
 Planar.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Planar.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Planar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+Planar.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tprop.h
+Planar.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 Planar.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 Planar.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 Planar.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/lralgo.h
@@ -393,60 +393,60 @@ Planar.o: ../../pigale/incl/TAXI/DFSGraph.h ../../pigale/incl/TAXI/color.h
 Planar.o: ../../pigale/incl/TAXI/embed.h ../../pigale/incl/TAXI/DFSLow.h
 Planar.o: ../../pigale/incl/TAXI/ndfs.h ../../pigale/incl/TAXI/Tmessage.h
 PropTgf.o: ../../pigale/incl/TAXI/Tproptgf.h ../../pigale/incl/TAXI/Tprop.h
-PropTgf.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+PropTgf.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tsvector.h
 PropTgf.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tdebug.h
 PropTgf.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 PropTgf.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tgf.h
 PropTgf.o: ../../pigale/incl/TAXI/Tpoint.h
-PSet.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-PSet.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/elmt.h
+PSet.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tbase.h
+PSet.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/elmt.h
 PSet.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 PSet.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
-reduce.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/graphs.h
-reduce.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-reduce.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-reduce.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+reduce.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tbase.h
+reduce.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+reduce.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+reduce.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 reduce.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 reduce.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 reduce.o: ../../pigale/incl/TAXI/Tmessage.h
 Schnyder.o: ../../pigale/incl/TAXI/SchPack.h ../../pigale/incl/TAXI/graphs.h
-Schnyder.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-Schnyder.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-Schnyder.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+Schnyder.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+Schnyder.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+Schnyder.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 Schnyder.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 Schnyder.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 Schnyder.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/IntList.h
 Schnyder.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
-STList.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
-STList.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-STList.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+STList.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
+STList.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+STList.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 STList.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 STList.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 STList.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 STList.o: ../../pigale/incl/TAXI/Tmessage.h
 Tgf.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tgf.h
-TopoAlgs.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/graphs.h
-TopoAlgs.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
-TopoAlgs.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
-TopoAlgs.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tdebug.h
+TopoAlgs.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tbase.h
+TopoAlgs.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+TopoAlgs.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+TopoAlgs.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 TopoAlgs.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 TopoAlgs.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 TopoAlgs.o: ../../pigale/incl/TAXI/bicon.h ../../pigale/incl/TAXI/Tmessage.h
 TopoAlgs.o: ../../pigale/incl/TAXI/color.h
 Twit.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
-Twit.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/graph.h
-Twit.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
-Twit.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+Twit.o: ../../pigale/incl/TAXI/lralgo.h ../../pigale/incl/TAXI/Tbase.h
+Twit.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+Twit.o: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
 Twit.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 Twit.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/graphs.h
 Twit.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/DFSGraph.h
 Twit.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/bicon.h
 VertexPacking.o: ../../pigale/incl/TAXI/SchPack.h
 VertexPacking.o: ../../pigale/incl/TAXI/graphs.h
+VertexPacking.o: ../../pigale/incl/TAXI/Tbase.h
 VertexPacking.o: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 VertexPacking.o: ../../pigale/incl/TAXI/Tprop.h
 VertexPacking.o: ../../pigale/incl/TAXI/Tsvector.h
-VertexPacking.o: ../../pigale/incl/TAXI/Tbase.h
 VertexPacking.o: ../../pigale/incl/TAXI/Tdebug.h
 VertexPacking.o: ../../pigale/incl/TAXI/Errors.h
 VertexPacking.o: ../../pigale/incl/TAXI/Tpropio.h

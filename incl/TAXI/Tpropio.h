@@ -11,6 +11,9 @@
 
 #ifndef TPROPIO_H
 #define TPROPIO_H
+
+#include <TAXI/Tsvector.h>
+#include <TAXI/Tbase.h>
 #include <TAXI/Tsvector.h>
 #include <TAXI/Tstring.h>
 

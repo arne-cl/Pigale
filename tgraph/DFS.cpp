@@ -10,10 +10,10 @@
 *****************************************************************************/
 
 
+#include <TAXI/Tbase.h>
 #include <TAXI/graphs.h>
 #include <TAXI/bicon.h>
 #include <TAXI/color.h>
-#include <assert.h>
 
 int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   {if(debug())DebugPrintf("Executing Graph:GDFSRenum");

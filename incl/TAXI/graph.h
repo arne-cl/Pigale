@@ -40,13 +40,13 @@ public:
         General = G.General; V=G.V; E=G.E; B=G.B; m=G.m; n=G.n;
         return *this;
         }
-    void swap(GraphContainer &G)
+    void Tswap(GraphContainer &G)
         { int tmp = n; n=G.n; G.n=tmp;
         tmp = m; m=G.m; G.m=tmp;
-        General.swap(G.General);
-        V.swap(G.V);
-        B.swap(G.B);
-        E.swap(G.E);
+        General.Tswap(G.General);
+        V.Tswap(G.V);
+        B.Tswap(G.B);
+        E.Tswap(G.E);
         }
     int nv() const {return n;}
     int ne() const {return m;}
@@ -119,7 +119,7 @@ public:
 	 const GraphContainer &me() const {return rG;}
 	 GraphContainer &Container() {return rG;}
 	 const GraphContainer &Container() const {return rG;}
-     void swap(GraphContainer &G) { rG.swap(G);}
+     void Tswap(GraphContainer &G) { rG.Tswap(G);}
  
 };
 #define ForAllEdges(e,G)     for(e=1;e<=G.ne();e++)

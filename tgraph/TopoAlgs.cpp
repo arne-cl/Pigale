@@ -274,7 +274,7 @@ int TopologicalGraph::MakeConnected(bool mark_cc)
       }
   if (mark_cc)
      {Prop<tvertex> rep(Set(tvertex()),PROP_REPRESENTATIVEV);
-     comp.swap(rep);
+     comp.Tswap(rep);
      }
   return ncc - 1;
   }
@@ -1085,13 +1085,13 @@ bool TopologicalGraph::CheckSubdivTriconnected()
   bool res;
   svector<bool> save_oriented(0,ne());
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
-  save_oriented.swap(oriented);
+  save_oriented.Tswap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(-1);save_oriented.swap(oriented);RestoreOrientation();return false;}  
+      {setError(-1);save_oriented.Tswap(oriented);RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if (nsinks > 1)
-      {save_oriented.swap(oriented);RestoreOrientation(); return false;}
+      {save_oriented.Tswap(oriented);RestoreOrientation(); return false;}
   // Check that vin[-1] is a sink
 
   tbrin b = -1;
@@ -1100,7 +1100,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
       if(b() > 0){sink = false;break;}
   while((b = cir[b]) != -1);
   if(!sink)
-      {save_oriented.swap(oriented);RestoreOrientation(); return false;}
+      {save_oriented.Tswap(oriented);RestoreOrientation(); return false;}
 
   // Now we know that G is plane and biconnected
   Prop1<int> isbicon(Set(),PROP_BICONNECTED);
@@ -1165,7 +1165,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
       res = false;
   }
   delete pAGC;delete pDAGC;
-  save_oriented.swap(oriented);
+  save_oriented.Tswap(oriented);
   RestoreOrientation();
   return res;
   }
@@ -1275,14 +1275,14 @@ bool TopologicalGraph::CheckTriconnected()
   int nsinks;
   svector<bool> save_oriented(0,ne());
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
-  save_oriented.swap(oriented);
+  save_oriented.Tswap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
       {setError(A_ERRORS_BIPOLAR_PSEUDO_PLAN);
-      save_oriented.swap(oriented);RestoreOrientation();return false;
+      save_oriented.Tswap(oriented);RestoreOrientation();return false;
       }  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
-  if(nsinks > 1){save_oriented.swap(oriented);RestoreOrientation();return false;}
+  if(nsinks > 1){save_oriented.Tswap(oriented);RestoreOrientation();return false;}
   // Check that vin[-1] is a sink
   tbrin b = -1;
   bool sink = true;
@@ -1290,7 +1290,7 @@ bool TopologicalGraph::CheckTriconnected()
       if(b() > 0){sink = false;break;}
   while((b = cir[b]) != -1);
 
-  if(!sink){save_oriented.swap(oriented); RestoreOrientation();return false;}
+  if(!sink){save_oriented.Tswap(oriented); RestoreOrientation();return false;}
 
   // G is plane and biconnected
   Prop1<int> isbicon(Set(),PROP_BICONNECTED);
@@ -1300,7 +1300,7 @@ bool TopologicalGraph::CheckTriconnected()
   bool res=TriconCheck.DoIt(first);
     
   if(res)Prop1<int> istricon(Set(),PROP_TRICONNECTED);
-  save_oriented.swap(oriented); RestoreOrientation();
+  save_oriented.Tswap(oriented); RestoreOrientation();
   return res;
   }
 
@@ -1310,14 +1310,14 @@ bool TopologicalGraph::CheckSerieParallel()
     
   svector<bool> save_oriented(0,ne());
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
-  save_oriented.swap(oriented);
+  save_oriented.Tswap(oriented);
   tbrin first = 1;
   int nsinks;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(-1);save_oriented.swap(oriented); RestoreOrientation();return false;}  
+      {setError(-1);save_oriented.Tswap(oriented); RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if (nsinks > 1)
-      {save_oriented.swap(oriented); RestoreOrientation(); return false;}
+      {save_oriented.Tswap(oriented); RestoreOrientation(); return false;}
   // Check that vin[-1] is a sink
   tbrin b = -1;
   bool sink = true;
@@ -1325,7 +1325,7 @@ bool TopologicalGraph::CheckSerieParallel()
       if(b() > 0){sink = false;break;}
   while((b = cir[b]) != -1);
   if(!sink)
-      {save_oriented.swap(oriented); RestoreOrientation(); return false;}
+      {save_oriented.Tswap(oriented); RestoreOrientation(); return false;}
 
   // G is plane and biconnected
   Prop1<int> isbicon(Set(),PROP_BICONNECTED);
@@ -1337,7 +1337,7 @@ bool TopologicalGraph::CheckSerieParallel()
   res = DG.CheckAcyclic(ns,nt);
   }
   delete &DGC;
-  save_oriented.swap(oriented); RestoreOrientation();
+  save_oriented.Tswap(oriented); RestoreOrientation();
   return res;
   }
 

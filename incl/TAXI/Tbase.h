@@ -12,6 +12,37 @@
 #ifndef _TBASE_H_INCLUDED_
 #define _TBASE_H_INCLUDED_
 
+#ifndef  GCC_VERSION
+#define GCC_VERSION (__GNUC__ * 10000 \
+                              + __GNUC_MINOR__ * 100 \
+                              + __GNUC_PATCHLEVEL__)
+#endif
+
+#if GCC_VERSION < 30000
+#include <stdlib.h> 
+#include <stdio.h> 
+#include <stdarg.h>
+#include <string.h>
+#include <iostream.h>
+#include <fstream.h>
+#include <setjmp.h>
+#include <math.h>
+#include <assert.h>
+#include <new.h>
+#else
+#include <cstdlib> 
+#include <cstdio> 
+#include <cstring>
+#include <cstdarg>
+#include <cassert>
+#include <iostream>
+#include <fstream>
+#include <csetjmp>
+#include <cmath>
+#include <new>
+#endif
+
+
 #ifndef ALGOBASE_H
 template <class T,class U> inline T Min(const T a,const U b)
     {if(a <= (T)b) return a;

@@ -10,10 +10,7 @@
 *****************************************************************************/
 #ifndef NETCUT_H
 #define NETCUT_H
-#include <stdlib.h>
-#include <stdarg.h>
-#include <math.h>
-#include <stdio.h>
+
 #include <TAXI/graphs.h>
 #include <TAXI/Tbase.h>
 #include <TAXI/Tpoint.h>

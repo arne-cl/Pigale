@@ -11,18 +11,19 @@
 
 #ifndef LRALGO_H
 #define LRALGO_H
+
+#include <TAXI/Tbase.h>
 #include <TAXI/graph.h>
 #include <TAXI/graphs.h>
 #include <TAXI/DFSGraph.h>
 #include <TAXI/bicon.h>
-#include <setjmp.h>
 
 #ifndef NLRALGO_H
-#define GAUCHE (char)0
-#define DROITE (char)1
-#define AUTRE   (char)2
-#define PLANAR  (char)0
-#define NONPLANAR (char)1
+#define GAUCHE 0
+#define DROITE 1
+#define AUTRE   2
+#define PLANAR  0
+#define NONPLANAR 1
 
 #define FIN 2
 #define AGAIN 1

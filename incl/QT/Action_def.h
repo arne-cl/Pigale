@@ -111,8 +111,8 @@
 #define  A_ORIENT_TRICON           (A_ORIENT+3)         // ORIENT_TRICON
 #define  A_ORIENT_BIPAR            (A_ORIENT+4)         // ORIENT_BIPARTITE
 #define  A_ORIENT_SCHNYDER         (A_ORIENT+5)         // ORIENT_SCHNYDER 
-#define  A_ORIENT_BIPOLAR          (A_ORIENT+6)         // 0RIENT_BIPOLAR
-#define  A_ORIENT_BIPOLAR_NP       (A_ORIENT+7)         // 0RIENT_BIPOLAR_NON_PLANAR
+#define  A_ORIENT_BIPOLAR          (A_ORIENT+6)         // ORIENT_BIPOLAR
+#define  A_ORIENT_BIPOLAR_NP       (A_ORIENT+7)         // ORIENT_BIPOLAR_NON_PLANAR
 #define  A_REORIENT_COLOR          (A_ORIENT+8)         // REORIENT_COLOR_EDGES
 #define  A_ORIENT_END              (A_ORIENT+99)
 

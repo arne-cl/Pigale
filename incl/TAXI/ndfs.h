@@ -11,13 +11,14 @@
 
 #ifndef _NDFS_H_
 #define _NDFS_H_
+
+#include <TAXI/Tbase.h>
 #include <TAXI/color.h>
 #include <TAXI/graphs.h>
 #define PRIVATE
 #include <TAXI/lralgo.h>
 #undef PRIVATE
 #include <TAXI/Tdebug.h>
-#include <assert.h>
 
 
 // _DFS structure to handle DFS of simple connected graphs

@@ -12,7 +12,8 @@
 
 #ifndef __SMATRIX_H__
 #define __SMATRIX_H__
-#include <math.h>
+
+#include <TAXI/Tbase.h>
 #include <TAXI/Tsvector.h>
 #define EPSILON (1E-9)
 

@@ -10,9 +10,6 @@
 *****************************************************************************/
 
 
-#include  <stdio.h>
-#include  <math.h>
-
 #include  <TAXI/Tbase.h>
 #include  <TAXI/Tstring.h>
 #include  <TAXI/graph.h>
@@ -23,6 +20,8 @@
 #include  <TAXI/Tsmap.h>
 #include  <TAXI/color.h>
 #include  <TAXI/Tmessage.h>
+
+using namespace std;
 
 // tags for TGF file format
 #define  TAG_NAME         512

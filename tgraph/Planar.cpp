@@ -18,7 +18,7 @@
 #include <TAXI/color.h>
 #include <TAXI/DFSGraph.h> 
 #include <TAXI/ndfs.h>
-#include <TAXI/Tmessage.h>
+#include <TAXI/Tmessage.h> 
 
 int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
 // after DFS
@@ -177,7 +177,7 @@ int TopologicalGraph::Planarity()
       DebugPrintf("GDFSRenum ERROR");
       setError(A_ERRORS_GDFSRENUM);return A_ERRORS_GDFSRENUM;
       }
-  nvin.swap(vin);
+  nvin.Tswap(vin);
   _Bicon Bicon(n);
   int ret = bicon(n,m,vin,Bicon,low);
   if(ret) Prop1<int> isbicon(Set(),PROP_BICONNECTED);
@@ -187,10 +187,10 @@ int TopologicalGraph::Planarity()
 
   _Hist Hist(n,m);
   ret = lralgo(n,m,vin,Bicon,LrSort,Hist);
-  if(debug())DebugPrintf("Executing Embed lralgo = %d",ret);
+  if(debug())DebugPrintf("Executing Embed lralgo = %d (0 NP)",ret);
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
-  nvin.swap(vin);
+  nvin.Tswap(vin);
   // Prop<tbrin> Gcir(PB(),PROP_CIR);
   Prop<long> ivl(PV(),PROP_LABEL);
   Prop<long> iel(PE(),PROP_LABEL);
@@ -204,7 +204,7 @@ int TopologicalGraph::Planarity()
       else xcir[-iel[b]] = iel[b2];
       }
   xcir[0]=0;
-  xcir.swap(cir);
+  xcir.Tswap(cir);
   Prop<tbrin> acir(PB(),PROP_ACIR);
   for (b = -ne(); b<= ne(); b++)
       acir[cir[b]] = b;

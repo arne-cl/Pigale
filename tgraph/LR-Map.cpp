@@ -10,8 +10,6 @@
 *****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include <TAXI/graph.h>
 #include <TAXI/graphs.h>
 #include <TAXI/bicon.h>
@@ -52,7 +50,7 @@ int Embed::LowerSideUpperSide()
       tab[j--] = ej;
       // if(ej == 0) ++Side.blk_num[0]; /* Un nouveau bloc */
       do
-          {Side.up[tab[j]] = (char)( ((int)Side.up[tab[j + 1]]) ^ Hist.Dus[tab[j]] );
+          {Side.up[tab[j]] =  Side.up[tab[j + 1]] ^ Hist.Dus[tab[j]] ;
 
           /* restoration of flipping index of each erased edge */
           if(Hist.Flip[tab[j]] == -1)
@@ -62,7 +60,7 @@ int Embed::LowerSideUpperSide()
 
   // compute low Side (ls) for cotree edges
   for(je = n;je <= m;++je)
-      Side.dwn[je] = (char)( ((int)Side.up[je]) ^ Hist.Flip[je]);
+      Side.dwn[je] =  Side.up[je] ^ Hist.Flip[je];
 
   // computation of ls and us of non-reference thin and thick edges
   for(je = 1;je < n;++je)
@@ -77,7 +75,7 @@ int Embed::LowerSideUpperSide()
       else if(Hist.Link[je] > 0)
           {Hist.Flip[je] = Hist.Flip[Hist.Link[je]] ^  Hist.Dus[je];
           Side.dwn[je] = Side.dwn[Hist.Link[je]];
-          Side.up[je] = (char)( (int)Side.dwn[je] ^ Hist.Flip[je]);
+          Side.up[je] = Side.dwn[je] ^ Hist.Flip[je];
           }
       else
           {Side.dwn[je] = DROITE;
@@ -89,6 +87,11 @@ int Embed::LowerSideUpperSide()
 void Embed::PrintLowerSideUpperSide()
   {if(m == n - 1)return;
   printf("planar original representation\n ej       Left       Right\n");
+  for(tbrin ej = 1;ej < n;++ej)
+      printf("T:%4d %4d\n",vin[ej](),vin[-ej]());
+  for(tbrin ej = n;ej <= m;++ej)
+    printf("CT:%4d %4d\n",vin[ej](),vin[-ej]());
+
   for(tbrin ej = n;ej <= m;++ej)
       {switch(Side.dwn[ej]*2 + Side.up[ej])
           {case 0 :
@@ -100,7 +103,7 @@ void Embed::PrintLowerSideUpperSide()
           case 3 :
               printf("%4d%17d\n%21d\n",ej(),vin[-ej](),vin[ej]());break;
           default:
-              printf("ej=%d err=%d\n",ej(),Side.dwn[ej]*2 + Side.up[ej]);
+              printf("ej=%d err=%d %d\n",ej(),Side.dwn[ej],Side.up[ej]);
               break;
           }
       printf("--------------------------\n");
@@ -222,8 +225,8 @@ void Embed::fuse(tvertex vi,tbrin topri,tbrin toprif,tbrin topli,tbrin toplif,
   cir[botri] = treein(vi).secondtbrin();
   }
 int Embed::FillLowerHalfEdges()
-  {svector<tbrin> left(0,n);
-  svector<tbrin> ref(0,n);
+  {svector<tbrin> left(0,n);        left.SetName("Embed::left");
+  svector<tbrin> ref(0,n);          ref.SetName("Embed::ref");
   for(int je = -m;je < n; je++) acir[cir[je]] = je;
   tbrin ee = 1;
   left[1]=1;

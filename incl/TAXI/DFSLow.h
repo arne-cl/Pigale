@@ -11,19 +11,20 @@
 
 #ifndef _DFSLOW_H_
 #define _DFSLOW_H_
+
+#include <TAXI/Tbase.h>
 #include <TAXI/color.h>
 #include <TAXI/DFSGraph.h>
 #define PRIVATE
 #include <TAXI/lralgo.h>
 #undef PRIVATE
 #include <TAXI/Tdebug.h>
-#include <assert.h>
 
 struct DFSLow : public DFSGraph
 {
     Prop<tedge> elow;
     Prop<tvertex> low;
-    Prop<char> status;
+    Prop<int> status;
     
     DFSLow(DFSGraph &DG) : DFSGraph(DG),
         elow(Set(tvertex()),PROP_ELOW), 

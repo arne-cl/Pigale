@@ -64,8 +64,8 @@ void InvertSomeCir(TopologicalGraph &G, svector<bool> &Invert)
           nacir[b]=G.acir[b];
           }
       }
-  ncir.swap(G.cir);
-  nacir.swap(G.acir);
+  ncir.Tswap(G.cir);
+  nacir.Tswap(G.acir);
   }
 
 double ComputeCotreeHeights(DoubleOccurenceSequence &Dos, svector<double> &h,
