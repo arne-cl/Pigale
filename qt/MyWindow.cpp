@@ -87,9 +87,11 @@ static char undofile[L_tmpnam];
 
 
 MyWindow::MyWindow()
-    : QMainWindow(0,"_Pigale",WDestructiveClose ),
-      GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1),IsUndoEnable(true),
-      MacroRecording(false),MacroExecuting(false)
+    : QMainWindow(0,"_Pigale",WDestructiveClose )
+    ,MacroLooping(false)
+    ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
+    ,IsUndoEnable(true)
+    ,MacroRecording(false),MacroExecuting(false)
   {int id;
 
   // Export some data
@@ -203,7 +205,7 @@ MyWindow::MyWindow()
   QPixmap macroplayIcon = QPixmap(macroplay);
  
   //ToolBar
-  QToolBar *tb = new QToolBar(this,"toolbar" );
+  tb = new QToolBar(this,"toolbar" );
   QToolButton *fileopen,*filenew,*filesave,*fileprint,*info,*macroplay;
   filenew = new QToolButton(newIcon,"New Graph",QString::null,this,SLOT(newgraph()),tb,"New");
   fileopen = new QToolButton(openIcon,"Open File (tgf/txt)",QString::null,this,SLOT(load()),tb,"Open");
@@ -297,6 +299,7 @@ MyWindow::MyWindow()
   embed->insertItem("FPP Visi&bility",       253);
 #ifdef ALPHA 
   embed->insertItem("&General Visibility",   254);
+  embed->insertItem("&T Contact",            255);
 #endif
   embed->insertItem("&Contact Biparti",      251);
   embed->insertSeparator();
@@ -613,6 +616,8 @@ void MyWindow::load(int pos)
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
+  TopologicalGraph G(GC);
+  G.RemoveLoops();
   banner();
   if(MacroExecuting)return;
   information(); gw->update();
