@@ -63,7 +63,8 @@ int & pauseDelay()
   }
 void MyWindow::keyPressEvent(QKeyEvent *k)
   {key = k->key();
-  QWidget::keyPressEvent(k);
+  //qDebug("win:%d",k->key());
+  //QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;
