@@ -305,8 +305,8 @@ MyWindow::MyWindow()
   embed->insertItem("&Polar",                A_EMBED_POLAR);
   id = embed->insertItem(xmanIcon,"Sprin&g",gw,SLOT(Spring()));
   embed->setWhatsThis(id,spring_txt);
-  id = embed->insertItem(xmanIcon,"Spring &Jacquard",gw,SLOT(SpringJacquard()));
-  embed->setWhatsThis(id,jacquard_txt);
+  embed->insertItem(xmanIcon,"Spring &Jacquard",gw,SLOT(SpringJacquard()),0,A_EMBED_JACQUARD);
+  embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
