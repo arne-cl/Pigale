@@ -18,21 +18,24 @@
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tmessage.h>
 
-struct _Error {
-   _T_Error error;
-   char *file;
-   int line;
-   };
+
 
 static char LogName[] = "log.txt";
 static int Indent = 0;
 static bool first = true;
 static _Error MainError;
 
-_T_Error &ErrorPositioner(char *f, int l)
+_T_Error &ErrorPositioner(const char *f, int l)
      {MainError.file=f; MainError.line=l; return MainError.error;}
-int getError() {return (int) MainError.error;}
-//const _T_Error &getError() {return MainError.error;}
+
+int getError() 
+  {return (int) MainError.error;}
+const char * getErrorMsg()
+  {return MainError.error.msg;}
+const char * getErrorFile()
+  {return MainError.file;}
+int getErrorLine()
+  {return MainError.line;}
 
 bool& debug()
   {static bool i = 0;

@@ -28,11 +28,20 @@ struct _T_Error
    operator int () const { return code;}
    };
 
-_T_Error &ErrorPositioner(char *f, int l);
-//const _T_Error &getError();
-int  getError();
+struct _Error {
+   _T_Error error;
+   const char *file;
+   int line;
+   };
 
-#define setError ErrorPositioner(__FILE__,__LINE__)=_T_Error
+
+_T_Error &ErrorPositioner(const char *f, int l);
+int  getError();
+const char * getErrorMsg();
+const char * getErrorFile();
+int getErrorLine();
+
+#define setError ErrorPositioner((const char *)__FILE__,__LINE__)=_T_Error
 #define _PRINTFL(arg)   DebugPrintf("%s line:%d -> %d",__FILE__, __LINE__,arg)
 
 #ifdef TDEBUG
