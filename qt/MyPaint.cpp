@@ -289,8 +289,7 @@ DrawThing DrawFunctions[] =
     };
 
 MyPaint::~MyPaint()
-  {delete printer;
-  }
+  { }
 MyPaint::MyPaint(QWidget *parent, const char *name,MyWindow *f):
     QWidget(parent,name),father(f),isHidden(true)
   {index = -1;
