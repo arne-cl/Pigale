@@ -274,7 +274,7 @@ void DrawFPPVisibility(QPainter *p,MyPaint *paint)
   // Draw edges
   int h1,h2,x1,x2;
   double alpha = .5;
-  double beta  = .8;
+  double beta  = .825;
   Tpoint a,b;
   for(tedge e=1; e <= G.ne();e++)
       {h1 = y[G.vin[e]]; 
@@ -308,7 +308,9 @@ void DrawFPPVisibility(QPainter *p,MyPaint *paint)
       }
 
   // Draw vertices
-  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  double xt = .9*Min(2*alpha*paint->xscale,beta*paint->yscale);
+  //p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("lucida",Min((int)(xt + .5),13)));
   QString t;
   for(tvertex v=1; v <= G.nv();v++) 
       {if(ShowVertex() == -1 || !vlabel)
@@ -334,8 +336,8 @@ void DrawVisibility(QPainter *p,MyPaint *paint)
       vlabel = &label.vector();
       }
 
-  double alpha=0.3;
-  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  double alpha=0.35;
+  p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   Tpoint a,b;
   QString t;
   for(tvertex v=1;v<=G.nv();v++)
@@ -368,11 +370,11 @@ void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
       {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
       vlabel = &label.vector();
       }
-  double alpha=0.3;
+  double alpha=0.35;
   Tpoint a,b;
 
 
-  p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
   for(tvertex v=1;v<=G.nv();v++)
       {if(x1m[v] != x2m[v]) // always 

@@ -258,17 +258,15 @@ int EmbedPolyline(TopologicalGraph &G)
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);  
   tvertex vv;
-  Tpoint p_min,p_max;
-  p_min.x() = p_max.y() = .0;
+  pmin() = Tpoint(0,0);
+  pmax() = Tpoint(0,0);
   ForAllVertices(vv, G0) 
    {Vcoord[vv] = Tpoint(x[vv], y[vv]);
-   if (Vcoord[vv].x() > p_max.x())
-       p_max.x() = Vcoord[vv].x();
-   if (Vcoord[vv].y() > p_max.y())
-       p_max.y() = Vcoord[vv].y();
+   if (Vcoord[vv].x() > pmax().x())
+       pmax().x() = Vcoord[vv].x();
+   if (Vcoord[vv].y() > pmax().y())
+       pmax().y() = Vcoord[vv].y();
    }
-  pmin() = p_min;  
-  pmax() = p_max;  
 
   ForAllEdges(ee, G) {
     Epoint1[ee] = Vcoord[G.vin[ee]];
