@@ -315,4 +315,6 @@ void Graph_Properties::update()
   int g = G.ComputeGenus();
   if(g)Tprintf("Genus of the current map: %d",g);
   if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
+  else if(A)Tprintf("Acyclic Orientation");
+  else if(!A)Tprintf("Not Acyclic Orientation");
   }
