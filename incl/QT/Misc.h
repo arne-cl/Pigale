@@ -12,6 +12,7 @@
 #ifndef MISC_H
 #define MISC_H
 
+#include <qstring.h> 
 
 // in Misc.cpp 
 void DefineGraphContainer(GraphContainer *GC);
@@ -23,6 +24,7 @@ void DrawGraph(void);
 void DrawGraph(Graph &G);
 GraphContainer& GetMainGraph();
 int GraphInformation();
+QString  getErrorString();
 void Normalise();
 void Normalise(GeometricGraph &G); 
 void Normalise(TopologicalGraph &G);

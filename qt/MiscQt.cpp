@@ -12,7 +12,7 @@
 #include <qapplication.h>
 //#include <TAXI/Tbase.h>
 #include "MyWindow.h" 
-//#include "mouse_actions.h" 
+#include "GraphWidget.h" 
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -36,7 +36,7 @@
 #include <iostream.h>
 
 void DrawGraph(Graph &G) {}
-void DrawGraph() {}
+
 
 static GraphContainer* gC;
 static MyWindow* mw;
@@ -48,11 +48,15 @@ void DefineGraphContainer(GraphContainer *GC0)
   {gC = GC0;}
 GraphContainer& GetMainGraph()
   {return *gC;}
-
-void Twait(const char *s)
+void DrawGraph()
   {if(!mw)return;
-  int rep = QMessageBox::information (mw,"Wait",s,"","ABORT","",0,0);
-  if(rep == 1)mw->close();
+  mw->gw->update();
+  }
+int Twait(const char *s)
+  {if(!mw)return 0;
+  int rep = QMessageBox::information (mw,"Wait",s,"","CANCEL","EXIT",0,0);
+  if(rep == 2)mw->close();
+  return (rep == 1) ? 0:1;
   }
 void Tmessage(const char *string)
   {if(!mw)return;
@@ -70,6 +74,14 @@ void Tprintf(const char *fmt,...)
   vsprintf(texte_print,fmt,arg_ptr);
   va_end(arg_ptr);
   mw->Message((const char *)texte_print);
+  }
+QString  getErrorString()
+  {QString m;
+  if(getErrorMsg() &&  strlen(getErrorMsg()))
+      m.sprintf("Error:%d '%s' in %s:%d",getError(),getErrorMsg(),getErrorFile(),getErrorLine());
+  else
+      m.sprintf("Error:%d in %s:%d",getError(),getErrorFile(),getErrorLine());
+  return m;
   }
 bool & ShowOrientation()
   {static bool showorientation = false;
