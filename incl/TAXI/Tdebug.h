@@ -11,6 +11,7 @@
 
 #ifndef __MYDEBUG_H__
 #define __MYDEBUG_H__
+#include <TAXI/Errors.h>
 
 bool & debug();
 int& Error();

@@ -113,7 +113,7 @@ int TopologicalGraph::BipolarPlan(tbrin FirstBrin)
   if(debug())
       {int ns,nt;
       CheckAcyclic(ns,nt);
-      if(ns != 1 || nt != 1)Twait("Error Bipolar");
+      if(ns != 1 || nt != 1)Error() = A_ERRORS_BIPOLAR_PLAN;
       }
   return 0;
   }

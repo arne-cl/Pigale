@@ -164,7 +164,7 @@ int TopologicalGraph::Planarity()
   MakeConnected();
   int m = ne();
   int n = nv();
-  if(debug() && m != m_origin)DebugPrintf("Planarity:Graph not connected");
+  if(debug() && m != m_origin){Error()=A_ERRORS_BAD_INPUT;DebugPrintf("Planarity:Graph not connected");}
   svector<tvertex> nvin(-m,m);
   svector<tvertex> &low = *new svector<tvertex>(0,n);
   svector<tbrin> xcir;
@@ -172,7 +172,7 @@ int TopologicalGraph::Planarity()
   tbrin b0 = extbrin();
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
-      {delete &low;DebugPrintf("GDFSRenum ERROR");return -1;}
+      {delete &low;DebugPrintf("GDFSRenum ERROR");Error()=A_ERRORS_GDFSRENUM;return -1;}
   nvin.swap(vin);
   _Bicon Bicon(n);
   int ret = bicon(n,m,vin,Bicon,low);
@@ -218,7 +218,7 @@ int TopologicalGraph::Planarity()
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
-	  {DebugPrintf("ERROR genus:%d",g);Twait("Planarity Error");}
+	  {DebugPrintf("ERROR genus:%d",g);Error()=A_ERRORS_PLANARITY;Twait("Planarity Error");}
       }
 
   if(m != m_origin)
