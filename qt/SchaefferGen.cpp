@@ -2563,6 +2563,8 @@ int pmFreeMap(pmMap *Map)
 #include <TAXI/graphs.h>
 #include <time.h>
 
+bool & EraseMultipleEdges();
+
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 //n_ask must be even
   {pmSize Size;
@@ -2589,38 +2591,70 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   Meth.core = 0; Meth.pic = 0;
   Meth.verbose = 0;
   //Allowed approximation on n,m
-  Size.t = 0;
+  Size.t = -1;
 
   char t[256];
   bool loops = false;
+  bool multiple = false;
   if(type == 3)// Cubic
-     {Size.b = 1; Size.t = 0; n_ask += n_ask%2;
-      if(e_connectivity == 2)     Size.m = 1;
-      else if(e_connectivity == 3){Size.m = 2;Size.t = (int)(n_ask*.01 +.5);}
-      else if(e_connectivity == 4){Size.m = 3;Size.t = (int)(n_ask*.02 +.5);}
+     {Size.b = 1; Size.t = 0; 
+     if(e_connectivity == 2)      
+	 {n_ask = Max(n_ask,6); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
+	 Size.m = 1;multiple = true;
+	 }
+      else if(e_connectivity == 3)
+	  {n_ask = Max(n_ask,6); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
+	  Size.m = 2;
+	  Size.t = (int)(n_ask*.01 +.5);
+	  }
+      else if(e_connectivity == 4)
+	  {Size.m = 3;
+	  n_ask = Max(n_ask,12); n_ask = (n_ask*2)/3;n_ask += n_ask%2;
+	  Size.t = (int)(n_ask*.02 +.5);
+	  }
       sprintf(t,"Cubic_%d",e_connectivity);
      }
   else if(type == 4)// Quadric
-      {if(e_connectivity == 2)    {Size.m = 4; Size.b = 4;Size.t = (int)(n_ask*.01 +.5);}
-      else if(e_connectivity == 4){Size.m = 5; Size.b = 5;Size.t = (int)(n_ask*.02 +.5);}
-      else if(e_connectivity == 6){Size.m = 6; Size.b = 5;Size.t = (int)(n_ask*.10 +.5);}
+      {if(e_connectivity == 2)    
+	  {Size.m = 4; Size.b = 4;
+	  n_ask = Max(n_ask,4);n_ask /= 2;
+	  Size.t = (int)(n_ask*.02 +.5);multiple = true;
+	  }
+      else if(e_connectivity == 4)
+	  {Size.m = 5; Size.b = 5;
+	  n_ask = Max(n_ask,8);n_ask /= 2;
+	  Size.t = (int)(n_ask*.04 +.5);multiple = true;
+	  }
+      else if(e_connectivity == 6)
+	  {Size.m = 6; Size.b = 5;
+	  n_ask = Max(n_ask,12);n_ask /= 2;
+	  Size.t = (int)(n_ask*.20 +.5);
+	  }
       else if(e_connectivity == 0)//BiQuadric
-	  {Size.m = 9; Size.b = 9; n_ask += n_ask%2;} 
+	  {Size.m = 9; Size.b = 9; 
+	  n_ask = Max(n_ask,12);n_ask /= 2;
+	  n_ask += n_ask%2;multiple = true;
+	  } 
       sprintf(t,"Quadric_%d:%d",type,e_connectivity/2);
       }
   else if(type == 2)// Bipartite
       {if(e_connectivity == 1)
 	  {sprintf(t,"Bipartite");
 	  Outp.transform = 1;
-	  Size.m = 9; Size.b = 9;
+	  n_ask += n_ask%2;
+	  Size.m = 9; Size.b = 9;multiple = true;
 	  }
       else if(e_connectivity == 2)
 	   {sprintf(t,"CubicBipartite_2");
+	   n_ask = Max(n_ask,6);
+	   n_ask = (n_ask*2)/3;
 	   n_ask += n_ask%2;
-	   Size.m = 7; Size.b = 7;
+	   Size.m = 7; Size.b = 7;multiple = true;
 	   }
       else if(e_connectivity == 3)
 	   {sprintf(t,"CubicBipartite_3");
+	   n_ask = Max(n_ask,12);
+	   n_ask = (n_ask*2)/3;
 	   n_ask += n_ask%2;
 	   Size.m = 8; Size.b = 7;Size.t = (int)(n_ask*.04 +.5);
 	   }
@@ -2629,14 +2663,24 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       {Outp.transform = 1;
       sprintf(t,"Planar_%d",e_connectivity);
       if(e_connectivity == 1)
-	  {Size.m = 4; Size.b = 4;Size.t = (int)(n_ask*.02 +.5);loops = true;}
+	  {Size.m = 4; Size.b = 4;
+	  Size.t = (int)(n_ask*.02 +.5);
+	  loops = multiple = true;
+	  }
       else if(e_connectivity == 2)
-	  {Size.m = 5; Size.b = 5;Size.t = (int)(n_ask*.04 +.5);}
+	  {Size.m = 5; Size.b = 5;
+	  n_ask = Max(n_ask,2);
+	  Size.t = (int)(n_ask*.04 +.5);
+	  multiple = true;
+	  }
       else if(e_connectivity == 3)
-	  {Size.m = 6; Size.b = 5;Size.t = (int)(n_ask*.06 +.5);}
+	  {Size.m = 6; Size.b = 5;
+	  n_ask = Max(n_ask,6);
+	  Size.t = (int)(n_ask*.06 +.5);
+	  }
       }
-  Size.t = -1;
-  if(debug())LogPrintf("<");
+  
+  if(debug())LogPrintf("<%d",n_ask);
   Size.v = n_ask; 
   if(!pmInitRND(&Meth))return NULL;
   if(!pmSetParameters(&Size, &Meth))return NULL;
@@ -2724,6 +2768,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   TopologicalGraph TG(GC);
   int nloops = 0;
   if(loops)nloops = TG.RemoveLoops();
+  if(EraseMultipleEdges() && multiple)TG.Simplify();
   pmFreeMap(&Map);
   if(debug())LogPrintf("%d:%d %d>",n,m,nloops);
   return &GC;

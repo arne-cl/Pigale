@@ -19,6 +19,12 @@
 #include <TAXI/Tdebug.h>
 #include <TAXI/graphs.h>
 
+bool & EraseMultipleEdges();
+bool & EraseMultipleEdges()
+  {static bool _Erase = false;
+  return _Erase;
+  }
+
 GraphContainer *GenerateGrid(int a, int b)
   {if(debug())DebugPrintf("GenerateGrid");   
   GraphContainer &GC = *new GraphContainer;
@@ -170,5 +176,6 @@ GraphContainer *GenerateRandomGraph(int a,int b)
       }while(bb++ < m);
       
   TopologicalGraph TG(GC);
+  if(EraseMultipleEdges())TG.Simplify();
   return &GC;
 }
