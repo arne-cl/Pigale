@@ -27,6 +27,7 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(close,SIGNAL(clicked()),SLOT(closeConnection()));
   connect(quit,SIGNAL(clicked()),SLOT(stop()));
   connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+  connect(this,SIGNAL(WriteToClient(QString)),SLOT(writeToClient(QString)));
   // create the socket and connect various of its signals
   socket = new QSocket( this );
   cls.setDevice(socket);
@@ -37,7 +38,28 @@ Client::Client(const QString &host, Q_UINT16 port)
   connect(socket,SIGNAL(error(int)),SLOT(socketError(int)));
   // connect to the server
   infoText->append("Trying to connect to the server\n" );
+  //emit WriteToClient("Trying to connect to the server");
   socket->connectToHost(host,port);
+  }
+void Client::socketConnected()
+  {connect(this,SIGNAL(threadSendToServer(QString&)),SLOT(sendToServer(QString&)));
+  start();
+  infoText->append("Connected to server");
+  //emit WriteToClient("Connected to server");
+  }
+void Client::socketConnectionClosed()
+  {infoText->append("Connection closed by the server\n");
+  stop();
+  }
+void Client::socketClosed()
+  {infoText->append("Connection closed\n");
+  }
+void Client::socketError(int e)
+  {infoText->append(QString("Error number %1 occurred\n").arg(e));
+  }
+void Client::writeToClient(QString str)
+  {//infoText->append(str);
+  cout << str << endl;
   }
 void Client::stop()
   {terminate();wait();
@@ -55,11 +77,12 @@ void Client::sendToServer()
   QString str = inputText->text();
   sendToServer(str);
   inputText->setText("");
+  emit WriteToClient("");
   }
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)
       {qDebug("state:%d",socket->state());return;}
-  else qDebug("client:%s",(const char *)str);
+  //else qDebug("client:%s",(const char *)str);
   //split str -> 1 command per line if not a comment
   if(str.at(0) == '#' || str.at(0) == '!')
       {cls << str << endl;
@@ -81,20 +104,25 @@ int Client::sendToServerGraph(QString &data)
   if(fields.count() < 1)return -1;
   QString GraphFileName = fields[1].stripWhiteSpace();
   QFileInfo fi = QFileInfo(GraphFileName);
-  if(GraphFileName.isEmpty()){infoText->append("no graph file");return -1;}
+  if(GraphFileName.isEmpty())
+      {emit WriteToClient(QString("NO FILE:%1").arg(GraphFileName));
+      return -1;
+      }
   uint size = fi.size();
-  if(size)infoText->append(QString("SENDING:%1").arg(GraphFileName));
-  else {infoText->append("empty file");return -1;}
+  if(size)
+      emit WriteToClient(QString("SENDING:%1").arg(GraphFileName));
+  else 
+      {emit WriteToClient("empty file");return -1;}
+  
   cls << data << endl;
   QFile file(GraphFileName);
   file.open(IO_ReadOnly);
   QDataStream stream(&file);
   char *buff = new char[size];
   stream.readRawBytes(buff,size); 
-  clo << size;
-  clo.writeRawBytes(buff,size);
-  //clo.writeBytes(buff,size);
-  infoText->append(QString("SENT:%1 bytes").arg(size));
+//   clo << size;   clo.writeRawBytes(buff,size);
+  clo.writeBytes(buff,size);
+  emit WriteToClient(QString("SENT:%1 bytes").arg(size));
   delete [] buff;
   return 0;
   }
@@ -103,30 +131,29 @@ void Client::socketReadyRead()
       {QString str = socket->readLine();
       str = str.stripWhiteSpace();
       if(str.at(0) == ':')
-	  infoText->append(str.mid(1));
+	  //infoText->append(str.mid(1));
+	  emit WriteToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
 	  {ActionTreated = false;
 	  QString PngFile = QString("image%1.png").arg(++numPng);
-	  QString m = QString("getting:%1").arg(PngFile);
-	  infoText->append(m);
+	  emit WriteToClient(QString("GETTING:%1").arg(PngFile));
 	  QFile file(PngFile);
 	  file.open(IO_ReadWrite);
 	  QDataStream stream(&file);
-	  //char *buff;
+	  char *buff;
 	  uint size;
-	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
-	  clo >> size;
-	  qDebug("Getting PNG: %d bytes",size);
-	  char *buff = new char[size+1];
-	  Q_ULONG  nb;
-	  while((nb = socket->bytesAvailable()) < size)
-	      {socket->waitForMore(100);qDebug(". %ld",nb);}
-	  clo.readRawBytes(buff,size);
-	  //clo.readBytes(buff,size);
+// 	  while(socket->bytesAvailable() < 4){socket->waitForMore(100);qDebug(".");} 
+// 	  clo >> size;
+// 	  char *buff = new char[size+1];
+// 	  Q_ULONG  nb;
+// 	  while((nb = socket->bytesAvailable()) < size)
+// 	      {socket->waitForMore(100);qDebug(". %ld",nb);}
+// 	  clo.readRawBytes(buff,size);
+	  clo.readBytes(buff,size);
 	  stream.writeRawBytes(buff,size);
 	  file.close();
 	  delete [] buff;
-	  infoText->append("END PNG");
+	  //emit WriteToClient("END PNG");
 	  ActionTreated = true;
 	  }
       else if(str.at(0) == '!')//server has finished
@@ -135,29 +162,11 @@ void Client::socketReadyRead()
 	  cout << str << endl;
       }
   }
-void Client::socketConnected()
-  {infoText->append("Connected to server\n");
-  connect(this,SIGNAL(threadSendToServer(QString&)),SLOT(sendToServer(QString&)));
-  connect(this,SIGNAL(threadWriteToClient(QString&)),SLOT(writeToClient(QString&)));
-  start();
-  }
-void Client::socketConnectionClosed()
-  {infoText->append("Connection closed by the server\n");
-  stop();
-  }
-void Client::socketClosed()
-  {infoText->append("Connection closed\n");
-  }
-void Client::socketError(int e)
-  {infoText->append(QString("Error number %1 occurred\n").arg(e));
-  }
-void Client::writeToClient(QString & str)
-  {cout << str << endl;
-  }
+
 void Client::run() 
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
-  //usleep(500000);// sleep.5s
+  usleep(500000);// sleep.5s
   QString str;
   if(socket->state() != QSocket::Connected)return;
   int i = 0;

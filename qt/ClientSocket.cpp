@@ -118,18 +118,12 @@ void ClientSocket::readClient()
           xhandler(str);   
       }
   }
-// int ClientSocket::parseSplitAction(const QString& data)
-//   {QStringList fields = QStringList::split(ACTION_SEP,data);
-//   for(int i = 0;i < (int)fields.count();i++)
-//       xhandler(fields[i]);
-//   return 0;
-//   }
 int ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
-  if(sdebug)cli <<"#debug:'"<<dataAction<<"'-> "<<action<<endl;
+  if(sdebug)cli <<"#DEBUG:'"<<dataAction<<"'-> "<<action<<endl;
 
   // call the right handler
   int err = 0;
@@ -143,7 +137,7 @@ int ClientSocket::xhandler(const QString& dataAction)
       {if(mw->menuBar()->isItemEnabled(action))
           mw->handler(action);
       else 
-          cli <<":Action not allowed:"<<mw->getActionString(action)<< endl;
+          cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
   else if(action > A_TRANS && action < A_TRANS_END)
       {if(action == A_TRANS_PNG)
@@ -157,7 +151,7 @@ int ClientSocket::xhandler(const QString& dataAction)
       err = UNKNOWN_COMMAND;
 
   if(err)
-      {cli <<": ERREUR '"<<mw->getActionString(action)<<"' -> "
+      {cli <<":ERREUR '"<<mw->getActionString(action)<<"' -> "
            << mw->getActionString(err)<<endl;
       cli <<": " <<dataAction<< endl;
       }
@@ -169,7 +163,7 @@ int ClientSocket::Png()
   QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
   QFileInfo fi = QFileInfo(PngFileName);
   if(PngFileName.isEmpty())
-      {cli << "no png file" << endl;return -1;}
+      {cli << ":NO PNG FILE" << endl;return -1;}
   else
       cli << ":SENDING:" << PngFileName << endl;
   uint size = fi.size();
@@ -193,12 +187,12 @@ int ClientSocket::ReadRemoteGraph(QString &dataParam)
   uint size = 0;
   Q_ULONG  nb = bytesAvailable();
   while(bytesAvailable() < 4){waitForMore(100);qDebug(".");} 
-  qDebug("nbytes=%ld",nb);
+  qDebug("READING GRAPH");
+  if(sdebug)qDebug("nbytes=%ld",nb);
   clo >>  size;
   if(size <= 0)return -1;
   if(sdebug)qDebug("should read:%d bytes",size);
   char *buff  = new char[size+1];
-//   Q_ULONG nb0 = 0;
   int i = 0;
   Q_ULONG nread = 0;
   char *pbuff = buff;

@@ -62,7 +62,7 @@ public:
 
 signals:
   void threadSendToServer(QString &str);
-  void threadWriteToClient(QString &str);
+  void WriteToClient(QString str);
 
 private slots:
   void closeConnection();
@@ -72,8 +72,8 @@ private slots:
   void socketConnected();
   void socketConnectionClosed();
   void socketClosed();
-  void socketError( int e );
-  void writeToClient(QString& str);
+  void socketError(int e);
+  void writeToClient(QString str);
   void stop();
 
 private:

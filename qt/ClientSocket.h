@@ -52,7 +52,6 @@ private slots:
 private: 
   void sendServerId();
   void writeServer(QString&  msg);
-  int parseSplitAction(const QString& data);
   int xhandler(const QString& data);
   int Png();
   int ReadRemoteGraph(QString &dataParam);
