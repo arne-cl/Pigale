@@ -11,7 +11,7 @@ MMOC=$(MQTDIR)/bin/moc
 IFLAGS =  -I$(MQTDIR)/include 
 IFLAGS += -I$(PIGALEPATH)/incl
 #One can link with qt or qt-mt (multithread version of qt) 
-UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lGL -lGLU -L/usr/local -lglut
+UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local -lglut -lGL -lGLU  
 PIGALELIB =  -L$(PIGALEPATH)/lib  -ltgraph$(OPT)  -l$(L)$(OPT)
 PIC=-fpic
 CC=g++
@@ -53,7 +53,7 @@ $(DLIB):$(OBJECTS)
 	@g++ -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
 $(P)$(OPT) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	g++  $(CFLAGS) -o $(P)$(OPT)  $(UNIXLIB) $(PIGALELIB) 
+	g++  $(CFLAGS) -o $(P)$(OPT) $(PIGALELIB)  $(UNIXLIB) 
 
 clean:
 	@rm -f $(VPATH)/*.o
