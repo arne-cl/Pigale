@@ -305,8 +305,8 @@ MyWindow::MyWindow()
   algo->insertItem("Find &Kuratowski",              601);
   algo->insertItem("Find &Cotree Critical",         602);
   algo->insertItem("Color red  non critical edges ",612);
-  algo->insertItem("&Max.Planar (fast)",            603);
-  algo->insertItem("Max.Planar (slow)",             604);
+  algo->insertItem("Max.Planar (simple graph) Fast",603);
+  algo->insertItem("&Max.Planar (simple graph) Slow ",604);
   algo->insertSeparator();
   algo->insertItem("Use &Geometric Map",            607);
   algo->insertItem("Use &LRALGO Map",               608);
@@ -343,13 +343,23 @@ MyWindow::MyWindow()
   generate->insertSeparator();
   generate->insertItem("&Complete",           504);
   generate->insertItem("&Bipartite",          505);
+  generate->insertItem("&Random",             506);
   generate->insertSeparator();
-  spin_N1 = new QSpinBox(1,500,1,generate,"spinN1");
-  spin_N1->setValue(10);     spin_N1->setPrefix("N1: ");
-  spin_N2 = new QSpinBox(1,500,1,generate,"spinN2");
-  spin_N2->setValue(10);     spin_N2->setPrefix("N2: ");
-  spin_M = new QSpinBox(1,1000,1,generate,"spinM");
-  spin_M->setValue(60);      spin_M->setPrefix("M: ");
+#if QT_VERSION >= 300
+  int Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
+  int Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
+  int Gen_M  = setting.readNumEntry("/pigale/generate/gen M",30);
+#else
+  int Gen_N1 = 10;
+  int Gen_N2 = 10;
+  int Gen_M  = 30;
+#endif
+  spin_N1 = new QSpinBox(1,100000,1,generate,"spinN1");
+  spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
+  spin_N2 = new QSpinBox(1,100000,1,generate,"spinN2");
+  spin_N2->setValue(Gen_N2);     spin_N2->setPrefix("N2: ");
+  spin_M = new QSpinBox(1,300000,1,generate,"spinM");
+  spin_M->setValue(Gen_M);      spin_M->setPrefix("M: ");
   generate->insertItem(spin_N1);
   generate->insertItem(spin_N2);
   generate->insertItem(spin_M);
@@ -459,7 +469,7 @@ MyWindow::MyWindow()
   mainWidget->setFocus();
   DebugPrintf("Debugprintf messages\nUndoFile:%s",undofile);
   if(Error() == -1){Twait("Impossible to write in log.txt");Error() = 0;}
-  gw->update();
+  
   
   QFileInfo fi  = QString(getenv("TGF"));
   if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
@@ -499,6 +509,7 @@ MyWindow::MyWindow()
       }
   setting.writeEntry("/pigale/Documentation dir",DocPath);
 #endif  
+  // if no load check pgraphindex
   load(0);
   }
 
@@ -688,7 +699,7 @@ void MyWindow::handler(int action)
   if(ret == 1)
       gw->update();
   else if(ret == 2)
-      {gw->update(); information();}
+      {information();gw->update();}
    else if(ret == 3)
        mypaint->update(drawing); 
   else if(ret == 4) //3d
@@ -698,7 +709,7 @@ void MyWindow::handler(int action)
       graphsym->update();
       }
   double TimeG = timer.elapsed()/1000.;
-  Tprintf("Used time:%3.3f (G:%3.3f)",Time,TimeG);
+  Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
   }
 void MyWindow::banner()
   {QString m;  
