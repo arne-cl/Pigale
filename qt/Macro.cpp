@@ -112,12 +112,11 @@ void MyWindow::macroHandler(int event)
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
 	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
+	  gw->update();
 	  if(!getError())
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
-	      {gw->update();
 	      DebugPrintf("END PLAY ERROR iter=%d",j);
-	      }
 	  break;
       case 5:// insert a pause
 	  if(MacroRecording)macroRecord(A_PAUSE);
