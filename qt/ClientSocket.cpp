@@ -105,12 +105,12 @@ void ClientSocket::readClient()
       //qDebug("R:'%s'",(const char *)str);
       if(++line == 10000)line = 0;
       if(str.at(0) == '#')
-	  cli << str << endl;
+          cli << str << endl;
       else if(str.at(0) == '!')
-	  cli << ":END OF FILE" << endl;
+          cli << ":END OF FILE" << endl;
       else 
-	  //parseSplitAction(str);  
-	  xhandler(str); // now the server split actions  
+          //parseSplitAction(str);  
+          xhandler(str); // now the server split actions  
       }
   }
 int ClientSocket::parseSplitAction(const QString& data)
@@ -125,12 +125,11 @@ int ClientSocket::xhandler(const QString& dataAction)
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   if(sdebug)cli <<"# '"<<dataAction<<"'"<<endl;
-  bool ok;
-  int action = beg.toInt(&ok);
+  int action = mw->getActionInt(beg);
   int err = 0;
-  if(!ok)
+  if(action == 0)
       {err = ACTION_NOT_INT;
-      cli <<": ERREUR '"<<dataAction <<"' -> "<<mw->getActionString(err) << endl;
+      cli <<": ERREUR '"<<dataAction <<"'" << endl;
       cli <<": data param:" <<  beg << endl;
       return err;
       }
@@ -142,9 +141,9 @@ int ClientSocket::xhandler(const QString& dataAction)
       err =  handlerInput(action,dataParam);
   else if(action > A_AUGMENT && action < A_TEST_END)
       {if(mw->menuBar()->isItemEnabled(action))
-	  mw->handler(action);
+          mw->handler(action);
       else 
-	  cli <<":Action not allowed:"<<mw->getActionString(action)<< endl;
+          cli <<":Action not allowed:"<<mw->getActionString(action)<< endl;
       }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
@@ -153,9 +152,9 @@ int ClientSocket::xhandler(const QString& dataAction)
       QString InputFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
       QFileInfo fi = QFileInfo(InputFileName);
       if(InputFileName.isEmpty())
-	  {cli << "no png file" << endl;return -1;}
+          {cli << "no png file" << endl;return -1;}
       else
-	  cli << ":SENDING:" << InputFileName << endl;
+          cli << ":SENDING:" << InputFileName << endl;
       uint size = fi.size();
       QFile file(InputFileName);
       file.open(IO_ReadWrite);
@@ -171,7 +170,7 @@ int ClientSocket::xhandler(const QString& dataAction)
       err = UNKNOWN_COMMAND;
   if(err)
       {cli <<": ERREUR '"<<mw->getActionString(action)<<"' -> "
-	   << mw->getActionString(err)<<endl;
+           << mw->getActionString(err)<<endl;
       cli <<": " <<dataAction<< endl;
       }
   return err; 
@@ -183,42 +182,42 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
   bool ok;
   switch(action)
       {case A_INPUT_READ_GRAPH:
-	   {if(nfield == 0)return WRONG_PARAMETERS;
-	   mw->InputFileName = fields[0];
-	   int num = 1;
-	   if(nfield > 1)num = fields[1].toInt(&ok);
-	   if(!ok)return WRONG_PARAMETERS;
-	   if(mw->publicLoad(num) < 0)return READ_ERROR;
-	   }
-	   break;
+           {if(nfield == 0)return WRONG_PARAMETERS;
+           mw->InputFileName = fields[0];
+           int num = 1;
+           if(nfield > 1)num = fields[1].toInt(&ok);
+           if(!ok)return WRONG_PARAMETERS;
+           if(mw->publicLoad(num) < 0)return READ_ERROR;
+           }
+           break;
       case  A_INPUT_NEW_GRAPH:
-	  mw->NewGraph();
-	  break;
+          mw->NewGraph();
+          break;
       case A_INPUT_NEW_VERTEX:
-	  {int n = 1;
-	  if(nfield > 0)
-	      {n = fields[0].toInt(&ok);
-	      if(!ok)return WRONG_PARAMETERS; 
-	      }
-	  TopologicalGraph G(mw->GC);
-	  for(int i = 0;i < n;i++)G.NewVertex();
-	  }
-	  break;
+          {int n = 1;
+          if(nfield > 0)
+              {n = fields[0].toInt(&ok);
+              if(!ok)return WRONG_PARAMETERS; 
+              }
+          TopologicalGraph G(mw->GC);
+          for(int i = 0;i < n;i++)G.NewVertex();
+          }
+          break;
       case A_INPUT_NEW_EDGE:
-	  {if(nfield < 2)return WRONG_PARAMETERS; 
-	  int v1 = fields[0].toInt(&ok);
-	  if(!ok)return WRONG_PARAMETERS; 
-	  int v2 = fields[1].toInt(&ok);
-	  if(!ok)return WRONG_PARAMETERS;
-	  TopologicalGraph G(mw->GC);
-	  if(v1 > G.nv() || v2 > G.nv() || v1 == v2)return WRONG_PARAMETERS;
-	  G.NewEdge((tvertex)v1,(tvertex)v2);
-	  mw->gw->update();
-	  }
-	  break;
+          {if(nfield < 2)return WRONG_PARAMETERS; 
+          int v1 = fields[0].toInt(&ok);
+          if(!ok)return WRONG_PARAMETERS; 
+          int v2 = fields[1].toInt(&ok);
+          if(!ok)return WRONG_PARAMETERS;
+          TopologicalGraph G(mw->GC);
+          if(v1 > G.nv() || v2 > G.nv() || v1 == v2)return WRONG_PARAMETERS;
+          G.NewEdge((tvertex)v1,(tvertex)v2);
+          mw->gw->update();
+          }
+          break;
       default:
-	  return  UNKNOWN_COMMAND;
-	  break;
+          return  UNKNOWN_COMMAND;
+          break;
       }
   return 0;
   }
@@ -229,69 +228,69 @@ int ClientSocket::handlerInfo(int action)
   cli << mw->getActionString(action) << ":";
   switch(action)
       {case A_INFO_N:
-	   cli << G.nv() << endl;
-	   break;
+           cli << G.nv() << endl;
+           break;
       case A_INFO_M:
-	    cli << G.ne() << endl;
-	    break;
+            cli << G.ne() << endl;
+            break;
       case A_INFO_SIMPLE:
-	  cli << inf->Simple() << endl;
-	  break;
+          cli << inf->Simple() << endl;
+          break;
       case A_INFO_PLANAR:
-	  cli << inf->Planar() << endl;
-	  break;
+          cli << inf->Planar() << endl;
+          break;
       case A_INFO_OUTER_PLANAR:
-	  cli << inf->OuterPlanar() << endl;
-	  break;
+          cli << inf->OuterPlanar() << endl;
+          break;
       case A_INFO_SERIE_PAR:
-	  cli << inf->SeriePlanar() << endl;
-	  break;
+          cli << inf->SeriePlanar() << endl;
+          break;
       case A_INFO_MAX_PLANAR:
-	  cli << inf->Triangulation() << endl;
-	  break;
+          cli << inf->Triangulation() << endl;
+          break;
       case A_INFO_BIPAR:
-	  cli << inf->Biparti() << endl;
-	  break;
+          cli << inf->Biparti() << endl;
+          break;
       case A_INFO_MAX_BIPAR:
-	  cli << inf->MaxBiparti() << endl;
-	  break;
+          cli << inf->MaxBiparti() << endl;
+          break;
       case A_INFO_REGULIER:
-	  cli << inf->Regular() << endl;
-	  break;
+          cli << inf->Regular() << endl;
+          break;
       case A_INFO_CON1:
-	  cli << inf->Con1() << endl;
-	  break;
+          cli << inf->Con1() << endl;
+          break;
       case A_INFO_CON2:
-	  cli << inf->Con2() << endl;
-	  break;
+          cli << inf->Con2() << endl;
+          break;
       case A_INFO_CON3:
-	  cli << inf->Con3() << endl;
-	  break;
+          cli << inf->Con3() << endl;
+          break;
       case A_INFO_MIN_D:
-	  cli << inf->DegreeMin() << endl;
-	  break;
+          cli << inf->DegreeMin() << endl;
+          break;
       case A_INFO_MAX_D:
-	  cli << inf->DegreeMax() << endl;
-	  break;
+          cli << inf->DegreeMax() << endl;
+          break;
       case A_INFO_COORD:
-	  {if(!G.Set(tvertex()).exist(PROP_COORD)) return PROP_NOT_DEFINED;
-	  Prop<Tpoint> coord(G.Set(tvertex()),PROP_COORD);
-	  cli << endl;
-	  for(tvertex v = 1;v <= G.nv();v++)
-	      cli << coord[v].x() <<" "<< coord[v].y() << endl;
-	  }
-	  break;
+          {if(!G.Set(tvertex()).exist(PROP_COORD)) return PROP_NOT_DEFINED;
+          Prop<Tpoint> coord(G.Set(tvertex()),PROP_COORD);
+          cli << endl;
+          for(tvertex v = 1;v <= G.nv();v++)
+              cli << coord[v].x() <<" "<< coord[v].y() << endl;
+          }
+          break;
       case A_INFO_VLABEL:
-	  {if(!G.Set(tvertex()).exist(PROP_LABEL)) return PROP_NOT_DEFINED;
-	  Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-	  cli << endl;
-	  for(tvertex v = 1;v <= G.nv();v++)
-	      cli << label[v] << endl;
-	  }
-	  break;
+          {if(!G.Set(tvertex()).exist(PROP_LABEL)) return PROP_NOT_DEFINED;
+          Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+          cli << endl;
+          for(tvertex v = 1;v <= G.nv();v++)
+              cli << label[v] << endl;
+          }
+          break;
       default:
-	  return  UNKNOWN_COMMAND;
-	  break;
+          return  UNKNOWN_COMMAND;
+          break;
       }
   return 0;
   }
