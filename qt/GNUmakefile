@@ -16,6 +16,7 @@ MQTDIR=$(QTDIR)
 #One can link with qt or qt-mt (multithread version of qt) 
 #UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
 UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt -L/usr/local/lib -lglut -lGL -lGLU 
+SUNIXLIB  =  -L/usr/local/lib -lglut -lGL -lGLU 
 
 #include paths
 IFLAGS =  -I$(MQTDIR)/include 
@@ -26,8 +27,13 @@ AWK=awk
 ####################### END EDITING #########################
 PIGALEPATH=../../pigale
 NVERSION=BETA
-# P = prefix name of program
-P=pigale_
+# P = name of output program
+ifeq ($(OPT),opt)
+P=pigale
+else
+P=pigale_dbg
+endif
+
 # L = name of libray
 L=qt
 MMOC=$(MQTDIR)/bin/moc
@@ -48,7 +54,7 @@ CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
-#CFLAGSopt +=  -DQT_THREAD_SUPPORT 
+CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = $(PIGALEPATH)/tmp.$(OPT)
@@ -63,7 +69,7 @@ OBJECTS       =  $(patsubst %.cpp,%.o, $(FILES_W_MOC))
 OBJ           =  $(patsubst %.cpp,$(VPATH)/%.o, $(FILES_W_MOC))
 ALLOBJ        = $(wildcard $(VPATH)/*.o)
 
-all :   $(P)$(OPT) 
+all :   $(P)
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
@@ -78,8 +84,8 @@ $(DLIB):$(OBJECTS)
 	@rm -f $(PIGALEPATH)/lib/lib$L$(OPT).so
 	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
-$(P)$(OPT) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	$(CC)  $(CFLAGS) -o $(P)$(OPT) $(PIGALELIB)  $(UNIXLIB) 
+$(P) :$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
+	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
 
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
@@ -88,7 +94,7 @@ test:
 	@echo obj=$(OBJ)
 
 static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	g++  $(CFLAGS) -o s$(P)$(OPT) $(ALLOBJ)  $(UNIXLIB) 
+	g++  $(CFLAGS) -o s$(P) $(ALLOBJ)  $(UNIXLIB) 
 
 moc_cpp:    $(MOC_CPP)
 

@@ -1,8 +1,11 @@
 # !/bin/sh
+
+if test $OPT = "opt"; then
+a=./pigale
+else
+a=./pigale_dbg
+fi
+
 cd ..
-make && cd qt && ./pigale_$OPT&
-
-
-
-
+make && cd qt && $a &
 
