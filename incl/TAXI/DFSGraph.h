@@ -20,26 +20,27 @@
 
 struct DFSGraph : public GraphAccess
 {
-    GraphAccess &G;
-    Prop<tvertex> Gvin;     // vin du graphe initial
-    Prop<tvertex> nvin;
-    Prop<tbrin> _ib;
+  GraphAccess &G;
+  Prop<tvertex> Gvin;     // vin du graphe initial
+  Prop<tvertex> nvin;
+  Prop<tbrin> _ib;
+  svector<tedge> uptree;
     
-    //svector<tvertex> nvin;
-
-
-    DFSGraph(GraphContainer &GC,Graph &GG,tbrin b0=1) :
-        GraphAccess(GC), G(GG), Gvin(GG.Set(tbrin()),PROP_VIN),
-        nvin(Set(tbrin()),PROP_VIN), _ib(Set(tedge()),PROP_INITIALB)
-        {setsize(G.nv(),G.ne());
-        nvin.SetName("DFSGraph:1:nvin");
-        _ib.SetName("DFSGraph:1:_ib");
-        DoDFS(b0);
-        } 
+  //svector<tvertex> nvin;
+  
+  
+  DFSGraph(GraphContainer &GC,Graph &GG,tbrin b0=1) :
+    GraphAccess(GC), G(GG), Gvin(GG.Set(tbrin()),PROP_VIN),
+    nvin(Set(tbrin()),PROP_VIN), _ib(Set(tedge()),PROP_INITIALB), uptree(G.nv(),G.ne())
+  {setsize(G.nv(),G.ne());
+  nvin.SetName("DFSGraph:1:nvin");
+  _ib.SetName("DFSGraph:1:_ib");
+  DoDFS(b0);
+  } 
 
     DFSGraph(GraphContainer &GC,DFSGraph &GG) :
         GraphAccess(GC), G(GG), Gvin(GG.Set(tbrin()),PROP_VIN),
-        nvin(Set(tbrin()),PROP_VIN), _ib(Set(tedge()),PROP_INITIALB)
+        nvin(Set(tbrin()),PROP_VIN), _ib(Set(tedge()),PROP_INITIALB), uptree(G.nv(),G.ne())
         {setsize(GG.nv(),GG.ne());
         nvin.SetName("DFSGraph:2:nvin");
         _ib.SetName("DFSGraph:2:_ib");
@@ -48,7 +49,7 @@ struct DFSGraph : public GraphAccess
         }
     DFSGraph(DFSGraph &DG) : 
 	GraphAccess(DG), G(DG.G), Gvin(DG.G.Set(tbrin()),PROP_VIN),
-	    nvin(Set(tbrin()) ,PROP_VIN), _ib(Set(tedge()),PROP_INITIALB)
+      nvin(Set(tbrin()) ,PROP_VIN), _ib(Set(tedge()),PROP_INITIALB),uptree(DG.uptree)
         {}
     ~DFSGraph() {}
     int Kuratowski();

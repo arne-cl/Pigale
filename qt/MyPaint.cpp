@@ -300,11 +300,7 @@ void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
       }
   double alpha=0.3;
   Tpoint a,b;
-  for (tedge e = 1;e <= G.ne();e++)
-      {a.x() = P1[e].x(); a.y() = P1[e].y();
-      b.x() = P1[e].x();  b.y() = P2[e].y();
-      paint->DrawSeg(p,a,b,ecolor[e]);
-      }
+
 
   p->setFont(QFont("lucida",Min((int)(2*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   QString t;
@@ -320,6 +316,13 @@ void DrawGeneralVisibility(QPainter *p,MyPaint *paint)
 	  t.sprintf("%2.2ld",(*vlabel)[v()]);
       paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,t,vcolor[v]);
       }
+  for (tedge e = 1;e <= G.ne();e++)
+    {a.x() = P1[e].x(); a.y() = P1[e].y();
+    if (a.x()>=x1[G.vin[e]] && a.x()<=x2[G.vin[e]]) a.y()+=alpha;
+    b.x() = P1[e].x();  b.y() = P2[e].y();
+    if (b.x()>=x1[G.vin[-e]] && b.x()<=x2[G.vin[-e]]) b.y()-=alpha;
+    paint->DrawSeg(p,a,b,ecolor[e]);
+    }
   }
 
 //**********************************************************************************************
