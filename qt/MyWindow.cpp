@@ -612,6 +612,7 @@ void MyWindow::load(int pos)
   if(pos == 1)++(*pGraphIndex);
   else if(pos == -1)--(*pGraphIndex);
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
+  else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
   if(ReadGraph(GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
       {m.sprintf("Could not read:%s",(const char *)InputFileName);
       statusBar()->message(m,2000);
@@ -830,16 +831,7 @@ void MyWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
   }
 void MyWindow::userHandler(int event)
-  {
-//   GeometricGraph G(GC);
-//   load(1);
-//   if(G.ne() != G.ecolor.vector().n()-1)qDebug("ERROR ecolor");
-//   else qDebug("OK ecolor");
-  Test(GC,event);
-  //GeometricGraph G(GC);
-//   if(G.ne() != G.ecolor.vector().n()-1)qDebug("ERROR ecolor");
-//   else qDebug("OK ecolor");
-  
+  {Test(GC,event);
   //Call the editor
   gw->update();
   }
