@@ -203,6 +203,7 @@ private:
   double xstep,ystep;
   double undoxstep,undoystep;
   bool IsGrid;
+  int key_pressed;
 };
 
 
