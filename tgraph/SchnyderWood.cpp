@@ -21,7 +21,6 @@
 SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   : G(G0), FirstBrin(fb),v_1(G.vin[fb]), v_2(G.vin[-fb]), v_n(G.vin[-G.acir[fb]]),
    ParentB(1,G.nv(),0), ParentG(1,G.nv(),0), ParentR(1,G.nv(),0), brin_color(-G.ne(),G.ne(), Black) {
-  isOK = true;
   svector<short> UnmarkedNeighbors(1, G.nv(), 0);
   tvertex v;
   tbrin left, right, b, bb;
@@ -32,16 +31,10 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   ParentR.SetName("ParentR");
   UnmarkedNeighbors.SetName("UnmarkedNeighbors");
 
-  KantShelling KS(G,fb);
+
+  LMCShelling  KS(G,fb);
 
 
-  /*  ForAllEdges(e,G) {
-    ++UnmarkedNeighbors[G.vin[e.firsttbrin()]];
-    ++UnmarkedNeighbors[G.vin[e.secondtbrin()]];
-  }*/
-
-
-  // Treate v_1 and v_2
   assert(ParentG[v_1] == 0);
   ParentG[v_1] = fb;
   assert(brin_color[fb] == Black);
@@ -51,29 +44,15 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   ParentB[v_2] = -fb;
   assert(brin_color[-fb] == Black);
   brin_color[-fb] = Blue;
-  // Update UnmarkedNeigbhors
-  /*  for (b = G.cir[fb];  b != fb ; b =  G.cir[b]) {
-    UnmarkedNeighbors[G.vin[-b]] ++;
-  }
-  UnmarkedNeighbors[G.vin[-b]] ++;
-  for (b = G.cir[-fb];  b != -fb ; b =  G.cir[b]) {
-    UnmarkedNeighbors[G.vin[-b]] ++;
-  }
-  UnmarkedNeighbors[G.vin[-b]] ++;*/
-  //  assert( UnmarkedNeighbors[v_1] > 0);
-  //  assert( UnmarkedNeighbors[v_2] > 0);
-  cout << "v_1 = " << v_1 << endl;
-  cout << "v_2 = " << v_2 << endl;
-  cout << "v_n = " << v_n<< endl;
+
   while (1) {
     i=KS.FindNext(left,right);
-    cout << i << endl;
-    if (i==0) break;
+    //cout << i << endl;
+    if (i==0) 
+      break;
     if (i==1) { // a vertex shelled.
       
       v=G.vin[left];
-            cout << " v_left = " << G.vin[left] << " v_left = " << G.vin[-left] << endl;
-            cout << " v_right = " << G.vin[right] << " v_right = " << G.vin[-right]<< endl;
       assert(ParentB[v] == 0);
       ParentB[v]= left;
       assert(brin_color[left] == Black);
@@ -118,8 +97,6 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
     else {  // a face shelled.
       left = -left;
       v = G.vin[left];
-      cout << " v_left = " << G.vin[left] << " v_left = " << G.vin[-left] << endl;
-      cout << " v_right = " << G.vin[right] << " v_right = " << G.vin[-right]<< endl;
       assert(ParentB[v] == 0);
       ParentB[v] = left;
       assert(brin_color[left] == Black);
@@ -147,7 +124,6 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
       b=-G.acir[right];
       while (b !=-left) {
 	assert(b != left);
-	//	cout << "in " << G.vin[b] << endl;
 	assert(ParentG[G.vin[b]] == 0);
 	ParentG[G.vin[b]] = b;
 	assert(brin_color[b] == Black);
@@ -168,24 +144,7 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
 	assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
 	b=-G.acir[b];
       }
-      /*      if (G.vin[left] != G.vin[right]) {
-	      assert(ParentG[G.vin[-b]] == 0);
-	ParentG[G.vin[-b]] = -b;
-	assert(brin_color[-b] == Black);
-	brin_color[-b] = Green;
-	
-	assert(ParentB[G.vin[b]] == 0);
-	ParentB[G.vin[b]] = b;
-	assert(brin_color[b] == Black);
-	brin_color[b] = Blue;
-      }*/
 
-      /*      for (bb = G.cir[left];  bb != left ; bb =  G.cir[bb]) {
-	UnmarkedNeighbors[G.vin[-bb]] ++;
-	assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
-      }
-      UnmarkedNeighbors[G.vin[-bb]] ++;
-      assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);*/
       for (bb = G.cir[right];  bb !=right ; bb =  G.cir[bb]) {
 	UnmarkedNeighbors[G.vin[-bb]] ++;
 	assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
@@ -195,47 +154,28 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
 	
     }
   }
-  //  ForAllVertices(v,G) {
-  //    assert (UnmarkedNeighbors[v] == 0);
-  //  }
-  //  cout << "B ";
+
   ForAllVertices(v,G) {
     if (v != v_1) {
-      if (ParentB[v]  == 0)
-	isOK = false; //cout << v << " ";
-      else 
+      if (ParentB[v]  != 0)
 	assert(brin_color[ParentB[v]] == Blue);
-      //      assert (ParentB[v]  != 0);
     }
   }
-  //  cout << endl << "R ";
   ForAllVertices(v,G) {
     if (v != v_n) {
-      if (ParentR[v]  == 0)
-	isOK = false; //cout << v << " ";
-      else 
+      if (ParentR[v]  != 0)
 	assert(brin_color[ParentR[v]] == Red);
-      //assert (ParentR[v]  != 0);
     }
   }
   ForAllVertices(v,G) {
     if (v != v_2) {
-      if (ParentG[v]  == 0)
-	isOK = false; //cout << v << " ";
-      else 
+      if (ParentG[v]  != 0)
 	assert(brin_color[ParentG[v]] == Green);
-      //      assert (ParentG[v]  != 0);
     }
   }
-  cout << endl;
-  if (!isOK)
-    return;
   ForAllEdges(e,G) {
     assert(brin_color[e.firsttbrin()] != Black || brin_color[e.secondtbrin()] != Black);
   }
-  cout << "parentB v_2 = " << GetParentV(v_2,Blue) << endl;
-  cout << "parentG v_1 = " << GetParentV(v_1,Green) << endl;
-  cout << "parentR 1 = " << GetParentV(1,Red) << endl;
 
   //Check the vertex property
   ForAllVertices(v,G) {
@@ -254,19 +194,15 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   }
 
   while(CountDeltaSharpCW() != 0) {
-    cout << "deltaCW = " << CountDeltaSharpCW() << endl; 
     ForAllVertices(v,G) {
-      if (remove_cw_elbow(v, Red))
-	cout << "Red " << v << endl;
-      if (remove_cw_elbow(v, Blue))
-	cout << "Blue " <<  v << endl;
-      if (remove_cw_elbow(v, Green))
-	cout << "Green " << v << endl;
-      if (reverse_cw_face(v))
-	cout << "triangle " << v << endl;
+      remove_cw_elbow(v, Red);
+      remove_cw_elbow(v, Blue);
+      remove_cw_elbow(v, Green);
+      reverse_cw_face(v);
     }
   }
-  cout << " fin deltaCW = " << CountDeltaSharpCW() << endl; 
+
+  /*
   int nb_cwR = 0, nb_cwG = 0 , nb_cwB = 0;
   int nb_ccwR = 0, nb_ccwG = 0 , nb_ccwB = 0;
 
@@ -287,10 +223,10 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
       nb_ccwG++;
     if(is_ccw_elbow(v, Blue))
       nb_ccwB++;
-  }
+      }
   cout << "deltaCW =\t" << CountDeltaSharpCW() << "\tR = "<< nb_cwR << "\tG = "<< nb_cwG << "\tB = "<< nb_cwB <<endl;
-  cout <<  "deltaCCW =\t" << CountDeltaSharpCCW() <<"\tR = "<< nb_ccwR << "\tG = "<< nb_ccwG << "\tB = "<< nb_ccwB <<endl;
-  //  assert(CountDeltaSharp_ccw() == 0);
+  cout <<  "deltaCCW =\t" << CountDeltaSharpCCW() <<"\tR = "<< nb_ccwR << "\tG = "<< nb_ccwG << "\tB = "<< nb_ccwB <<endl;*/
+
 }
 
 bool SchnyderWood::IsSimple (tedge e) const {
@@ -301,8 +237,6 @@ bool SchnyderWood::IsSimple (tedge e) const {
 }
 
 bool SchnyderWood::IsBlack (tedge e) const {
-  //  if (brin_color[e.firsttbrin()] == Black && brin_color[e.secondtbrin()] == Black)
-  //    cout << "black " << G.vin[e.firsttbrin()] << "  " <<G.vin[e.secondtbrin()] << endl;
   return (brin_color[e.firsttbrin()] == Black && brin_color[e.secondtbrin()] == Black);
 }
 
@@ -361,7 +295,7 @@ short SchnyderWood::GetBrinColor (tbrin b) const {
   return brin_color[b];
 }
 
-//easy
+
 bool SchnyderWood::remove_cw_elbow (tvertex v, short c) {
   if (!is_cw_elbow(v,c))
     return false;
@@ -421,7 +355,7 @@ bool SchnyderWood::is_cw_elbow(tvertex v, short c) const {
   return true;
 }
 
-//easy
+
 bool SchnyderWood::remove_ccw_elbow (tvertex v, short c) {
   if (!is_ccw_elbow(v,c))
     return false;
@@ -485,7 +419,6 @@ bool SchnyderWood::is_ccw_elbow(tvertex v, short c)  const {
 
 
 
-// Check if v is a blue-red corner of a cw_face
 bool SchnyderWood::is_cw_face(tvertex v)  const {
   if (v == v_1 || v == v_2 || v == v_n)
     return false;
@@ -523,7 +456,6 @@ bool SchnyderWood::reverse_cw_face(tvertex v) {
 }
 
 
-// Check if v is a red-blue corner of a ccw_face
 bool SchnyderWood::is_ccw_face(tvertex v) const {
   if (v == v_1 || v == v_2 || v == v_n)
     return false;
@@ -544,7 +476,6 @@ bool SchnyderWood::reverse_ccw_face(tvertex v) {
   b1 = ParentR[v];
   b2 = G.acir[-b1];
   b3 = G.acir[-b2];
-
 
   u= GetParentV(v,Red);  
   w= GetParentV(u,Blue);
@@ -598,7 +529,6 @@ int SchnyderWood::CountDeltaSharpCCW ()  const {
 }
 
 bool SchnyderWood::is_ccw_smooth(tvertex v) const {
-  //    if (IsRoot(v))
   if (v == v_n)
       return false;
   tbrin b1, b2, b3, b4;
@@ -626,8 +556,6 @@ bool SchnyderWood::is_ccw_smooth(tvertex v) const {
     while (IsBlack(b3.GetEdge()))
       b3 = G.acir[b3];
   }
-  if (brin_color[b2] == Blue && brin_color[b3] == Green)
-    cout << "smooth ccw" << v << endl;
   return (brin_color[b2] == Blue && brin_color[b3] == Green);
 }
 
@@ -672,8 +600,6 @@ bool SchnyderWood::is_cw_smooth(tvertex v) const {
     while (IsBlack(b3.GetEdge()))
       b3 = G.cir[b3];
   }
-  if (brin_color[b2] == Green && brin_color[b3] == Blue)
-    cout << "smooth cw" << v << endl;
   return (brin_color[b2] == Green && brin_color[b3] == Blue);
 }
 
@@ -716,7 +642,6 @@ bool SchnyderWood::cw_merge (tvertex v, short c) {
     setError();
     return false;
   }
-  //  G.DeleteEdge(b1.GetEdge());
   return true;
 }
 
@@ -742,9 +667,7 @@ bool SchnyderWood::ccw_merge (tvertex v, short c) {
     setError();
     return false;
   }
-  //  G.DeleteEdge(b1.GetEdge());
   return true;
-
 }
 
 
@@ -763,7 +686,7 @@ void SchnyderWood::CyclicColors(short c, short &c_left, short &c_right) const {
     setError();
   }
 }
-tvertex SchnyderWood::GetFirstChildren( tvertex v, short c)  const {
+tvertex SchnyderWood::GetFirstChild( tvertex v, short c)  const {
   short c_left, c_right;
   CyclicColors(c, c_left, c_right);
   tbrin b_next;
@@ -782,7 +705,7 @@ tvertex SchnyderWood::GetFirstChildren( tvertex v, short c)  const {
     return 0;
 }
 
-tvertex SchnyderWood::GetNextChildren (tvertex current_child, short c) const  {
+tvertex SchnyderWood::GetNextChild (tvertex current_child, short c) const  {
   assert(current_child != GetRoot(c));
   tbrin b_next;
   tbrin bp = GetParentBr(current_child, c);
@@ -791,7 +714,7 @@ tvertex SchnyderWood::GetNextChildren (tvertex current_child, short c) const  {
   for(b_next = -G.acir[-bp]; IsBlack(b_next.GetEdge()); b_next = -G.acir[-b_next]);
   tvertex child = G.vin[b_next];
   if (GetParentV(child,c) == GetParentV(current_child,c)) {
-    if (child != GetFirstChildren(GetParentV(current_child,c),c))
+    if (child != GetFirstChild(GetParentV(current_child,c),c))
       return child;
     else
       return 0;
@@ -800,7 +723,7 @@ tvertex SchnyderWood::GetNextChildren (tvertex current_child, short c) const  {
     return 0;
 }
 
-tvertex SchnyderWood::GetLastChildren( tvertex v, short c) const {
+tvertex SchnyderWood::GetLastChild( tvertex v, short c) const {
   short c_left, c_right;
   CyclicColors(c,c_left,c_right);
   tbrin p_right = GetParentBr(v,c_right);
@@ -818,14 +741,14 @@ tvertex SchnyderWood::GetLastChildren( tvertex v, short c) const {
     return 0;
 }
 
-tvertex SchnyderWood::GetPreviousChildren (tvertex current_child, short c) const {
+tvertex SchnyderWood::GetPreviousChild (tvertex current_child, short c) const {
   assert(current_child != GetRoot(c));
   tbrin bp = GetParentBr(current_child,c);
   if (bp == 0)
     return 0;
   tvertex child = G.vin[-G.cir[-bp]];
   if (GetParentV(child,c) == GetParentV(current_child,c)) {
-    if (child != GetLastChildren(GetParentV(current_child,c),c))
+    if (child != GetLastChild(GetParentV(current_child,c),c))
       return child;
     else
       return 0;
@@ -834,9 +757,6 @@ tvertex SchnyderWood::GetPreviousChildren (tvertex current_child, short c) const
     return 0;
 }
 
-
-// 1: equilateral 2: to left 3: to right
-//int SchnyderShape;
   
 
 
