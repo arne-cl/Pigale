@@ -148,6 +148,7 @@
 #define A_SET_SCH_COLOR             (A_SET+4)
 #define A_SET_LFACE                 (A_SET+3)
 #define A_SET_ORIENT                (A_SET+20)
+#define A_SET_ARROW                 (A_SET+21)
 #define A_SET_ERASE_MULT            (A_SET+6)
 #define A_SET_PAUSE_DELAY           (A_SET+11)
 #define A_SET_SAVE                  (A_SET+11)

@@ -557,6 +557,9 @@ pigaleWindow::pigaleWindow()
   spin_MaxND->setValue(MaxND);      
   spin_MaxND->setPrefix(tr("Display: "));
   popupLimits->insertItem(spin_MaxND);
+  //Edge arrow
+  settings->insertItem(tr("Show arrows"),A_SET_ARROW);
+  settings->setItemChecked(A_SET_ARROW,ShowArrow());
    //Vertex Label Options
   settings->insertSeparator();
   settings->insertItem(tr("&Vertex show"),popupLabel);
@@ -960,11 +963,12 @@ int pigaleWindow::handler(int action)
       SchnyderLongestFace() =  menuBar()->isItemChecked(A_SET_LFACE);
       SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
       ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
+      ShowArrow()     =  menuBar()->isItemChecked(A_SET_ARROW);
       randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
       randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
       pauseDelay() = macroSpin->value();
       if(action == A_SET_UNDO)UndoEnable(menuBar()->isItemChecked(action));
-      if(action == A_SET_ORIENT)gw->update();
+      if(action == A_SET_ORIENT || action == A_SET_ARROW )gw->update();
       return 0;
       }
   else

@@ -31,6 +31,7 @@ void Normalise(TopologicalGraph &G);
 int & pauseDelay();
 int & useDistance();
 bool & ShowOrientation();
+bool & ShowArrow();
 int & ShowVertex();
 QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);

@@ -55,6 +55,10 @@ bool & ShowOrientation()
   {static bool showorientation = false;
   return showorientation;
   }
+bool & ShowArrow()
+  {static bool showarrow= true;
+  return showarrow;
+  }
 int & ShowVertex()
 // -1:index 0:label
   {static int _show = 0; 

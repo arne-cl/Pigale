@@ -322,7 +322,8 @@ QPointArray ArrowItem::areaPoints () const
   {return refresh;
   }
 void ArrowItem::drawShape ( QPainter & p )
-  {p.drawLine(pts[1],pts[0]);
+  {if(!ShowArrow())return;
+  p.drawLine(pts[1],pts[0]);
   p.drawLine(pts[2],pts[0]);
   //p.drawLine(refresh[1],refresh[0]); 
   }

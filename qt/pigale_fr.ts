@@ -879,5 +879,9 @@ en minimisant l&apos;augmentation des degrès</translation>
         <source>Quadrangulate a PLANAR  bipartite graph</source>
         <translation>Quadranguler un graphe biparti planaire</translation>
     </message>
+    <message>
+        <source>Show arrows</source>
+        <translation type="unfinished">Montrer les flèches</translation>
+    </message>
 </context>
 </TS>
