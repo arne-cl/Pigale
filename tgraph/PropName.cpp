@@ -248,10 +248,10 @@ struct _PropName {
      desc[256+(29)]="vertex is an hyperedge";
      name[256+(30)]="PROP_NLOOPS";
      desc[256+(30)]="# of attached loops";
-     name[256+(31)]="PROP_COORD3";
-     desc[256+(31)]="Coord for Embed3d";
-     name[256+(32)]="PROP_EIGEN";
-     desc[256+(32)]="eigenvalues for Embed3d";
+     name[256+(PROP_DRAWING+31)]="PROP_COORD3";
+     desc[256+(PROP_DRAWING+31)]="Coord for Embed3d";
+     name[256+(PROP_DRAWING+32)]="PROP_EIGEN";
+     desc[256+(PROP_DRAWING+32)]="eigenvalues for Embed3d";
      name[256+(PROP_CANVAS+1)]="PROP_CANVAS_ITEM";
      desc[256+(PROP_CANVAS+1)]="NodeItem";
      name[256+(PROP_CANVAS+2)]="PROP_CANVAS_COORD";
