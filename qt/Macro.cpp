@@ -225,11 +225,10 @@ void MyWindow::macroPlay()
 	  ++record;continue;
 	  }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
-      if(!MacroLooping &&  EditNeedUpdate)
-	  {gw->update(-1);EditNeedUpdate = false;}
       // Execute the macro
       ret_handler = handler(action);
       if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
+      else if(ret_handler >= 7 && ret_handler <= 8)EditNeedUpdate = false;
       // update the editor if a pause 
       if(record != MacroNumActions && action == A_PAUSE && EditNeedUpdate)
 	  {gw->update();EditNeedUpdate = false;}
