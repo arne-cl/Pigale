@@ -13,8 +13,10 @@
 #include <TAXI/Tmessage.h> 
 #include <TAXI/color.h> 
 #include <TAXI/graphs.h>
-#include <TAXI/Tfile.h> 
+#include <TAXI/Tfile.h>
 
+int NPBipolar(TopologicalGraph &G, tbrin bst);
+int EmbedGVision(TopologicalGraph &G);
 int TestOuterPlanar(TopologicalGraph &G);
 //Drawings
 bool & SchnyderRect();

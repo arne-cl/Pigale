@@ -43,7 +43,7 @@
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTATC_BIPARTI 
 #define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 
 #define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
-#define  A_EMBED_FPP_GVISION        (A_EMBED+54)        // FPP_GVISION 
+#define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
 #define  A_EMBED_T_CONTACT          (A_EMBED+55)        // T_CONTACT
 #define  A_EMBED_3d                 (A_EMBED+98)        // EMBED-3d
 #define  A_EMBED_END                (A_EMBED+99)
@@ -112,7 +112,8 @@
 #define  A_ORIENT_BIPAR            (A_ORIENT+4)         // ORIENT_BIPARTITE
 #define  A_ORIENT_SCHNYDER         (A_ORIENT+5)         // ORIENT_SCHNYDER 
 #define  A_ORIENT_BIPOLAR          (A_ORIENT+6)         // 0RIENT_BIPOLAR
-#define  A_REORIENT_COLOR          (A_ORIENT+7)         // REORIENT_COLOR_EDGES
+#define  A_ORIENT_BIPOLAR_NP       (A_ORIENT+7)         // 0RIENT_BIPOLAR_NON_PLANAR
+#define  A_REORIENT_COLOR          (A_ORIENT+8)         // REORIENT_COLOR_EDGES
 #define  A_ORIENT_END              (A_ORIENT+99)
 
 //User Test
