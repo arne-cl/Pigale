@@ -51,7 +51,8 @@ GraphContainer& GetMainGraph()
 
 void Twait(const char *s)
   {if(!mw)return;
-  QMessageBox::information(mw,"Wait",s,QMessageBox::Ok );
+  int rep = QMessageBox::information (mw,"Wait",s,"","ABORT","",0,0);
+  if(rep == 1)mw->close();
   }
 void Tmessage(const char *string)
   {if(!mw)return;
