@@ -198,6 +198,7 @@ void pigaleWindow:: SaveSettings()
   setting.writeEntry("/pigale/geometry width",this->width());
   setting.writeEntry("/pigale/geometry height",this->height());
   setting.writeEntry("/pigale/debug enable",debug());
+  setting.writeEntry("/pigale/arrow enable",ShowArrow());
   setting.writeEntry("/pigale/randomSeed enable",randomSeed());
   setting.writeEntry("/pigale/randomSeed seed",(int)randomSetSeed());
   setting.writeEntry("/pigale/undo enable",IsUndoEnable);
@@ -261,6 +262,7 @@ void pigaleWindow::LoadSettings()
   pigaleWindowInitYsize = setting.readNumEntry("/pigale/geometry height",600);
   pigaleWindowInitXsize = setting.readNumEntry("/pigale/geometry width",800);
   debug() = setting.readBoolEntry("/pigale/debug enable",false);
+  ShowArrow() = setting.readBoolEntry("/pigale/arrow enable",true);
   randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   randomSetSeed() = (long) setting.readNumEntry("/pigale/randomSeed seed",1);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);

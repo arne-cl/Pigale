@@ -285,7 +285,8 @@ ArrowItem::ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g)
     : QCanvasPolygonalItem (g->canvas)
   {gwp = g;
   pts.resize(3);
-  refresh.resize(3);
+  //refresh.resize(3);
+  refresh.resize(4);
   edgeItem = edgeitem;
   ComputeCoord(); 
   SetColor();
@@ -310,12 +311,20 @@ void ArrowItem::ComputeCoord()
   QPoint p1 =  edgeItem->endPoint() - v -u/diviseur2;
   QPoint p2 =  edgeItem->endPoint() + v - u/diviseur2;
    pts[0] = edgeItem->endPoint();  pts[1] = p1;  pts[2] = p2;
-   // compute the boundary
-   int diviseur3 = (diviseur2*8)/10; diviseur3 = Max(diviseur3,1);
-   QPoint vb = QPoint(-u.y()/diviseur2,u.x()/diviseur2);
-   QPoint p1b =  edgeItem->endPoint() - vb -u/diviseur3;
-  QPoint p2b =  edgeItem->endPoint() + vb - u/diviseur3;
-  refresh[0] = edgeItem->endPoint() + u/diviseur;  refresh[1] = p1b;  refresh[2] = p2b;
+   // compute the boundary (might be easyer to use a rectangle)
+ //   int diviseur3 = (diviseur2*8)/10; diviseur3 = Max(diviseur3,1);
+//    QPoint vb = QPoint(-u.y()/diviseur2,u.x()/diviseur2);
+//    QPoint p1b =  edgeItem->endPoint() - vb -u/diviseur3;
+//   QPoint p2b =  edgeItem->endPoint() + vb - u/diviseur3;
+//   refresh[0] = edgeItem->endPoint() + u/diviseur;  refresh[1] = p1b;  refresh[2] = p2b;
+   int xmin = Min(edgeItem->endPoint().x(),p1.x(),p2.x()) -4;
+   int xmax = Max(edgeItem->endPoint().x(),p1.x(),p2.x())+4;
+   int ymin = Min(edgeItem->endPoint().y(),p1.y(),p2.y())-4;
+   int ymax = Max(edgeItem->endPoint().y(),p1.y(),p2.y())+4;
+   refresh[0] = QPoint(xmin,ymin);
+   refresh[1] = QPoint(xmin,ymax);
+   refresh[2] = QPoint(xmax,ymax);
+   refresh[3] = QPoint(xmax,ymin);
    update();
   }
 QPointArray ArrowItem::areaPoints () const
@@ -326,6 +335,8 @@ void ArrowItem::drawShape ( QPainter & p )
   p.drawLine(pts[1],pts[0]);
   p.drawLine(pts[2],pts[0]);
   //p.drawLine(refresh[1],refresh[0]); 
+  //p.drawLine(refresh[0],refresh[1]);   p.drawLine(refresh[1],refresh[2]);   
+  //p.drawLine(refresh[2],refresh[3]);   p.drawLine(refresh[3],refresh[0]); 
   }
 void ArrowItem::SetColor()
   {GeometricGraph & G = *(gwp->pGG);
