@@ -13,6 +13,7 @@
 #include "GraphWidget.h"
 #include "mouse_actions.h"
 #include <QT/Misc.h> 
+#include <QT/Action_def.h> 
 #include <qapplication.h> 
 #include <qspinbox.h> 
 #include <qslider.h> 
@@ -71,7 +72,7 @@ void MyWindow::macroHandler(int event)
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat));
-	      if(escape)break;
+	      if(escape || Error())break;
 	      qApp->processEvents(5);
 	      }
 	  escape = 0;
@@ -94,17 +95,18 @@ void MyWindow::macroPlay()
   if(MacroNumActions == 0){load(1);return;}
   MacroExecuting = true;
   int record = 1;
-  if(MacroActions[record] < 500 || MacroActions[record] > 600)
+  if(MacroActions[record] < A_GENERATE || MacroActions[record] >  A_GENERATE_END)
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
       if(MacroExecuting && record == MacroNumActions && !MacroLooping)
 	  {MacroExecuting = false;
 	  // Call editor if last action is an embedding not in graph editor
-	  if(MacroActions[record] > 205 && MacroActions[record] < 300)
+	  if(MacroActions[record] > A_EMBED_TUTTE && MacroActions[record] < A_EMBED_END)
 	      gw->update();
 	  }
       handler(MacroActions[record++]);
+      if(Error())break;
       }
   if(!MacroLooping)information();
   }

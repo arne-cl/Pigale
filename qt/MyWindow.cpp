@@ -797,7 +797,16 @@ void MyWindow::handler(int action)
       gw->SpringJacquard();
 
   double TimeG = timer.elapsed()/1000.;
-  if(!MacroExecuting || debug())Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
+  if(!MacroExecuting)
+      {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
+      if(Error()){Tprintf("Last Error:%d",Error());Error() = 0;}
+      }
+  else if(Error())
+      {Tprintf("Last Error:%d",Error());
+      Twait("ERROR");
+      Error() = 0;
+      }
+      
   }
 void MyWindow::banner()
   {QString m;  
