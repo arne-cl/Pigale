@@ -261,6 +261,7 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
 
   // delete the edges added by Connexity and Triangulation
   for(tedge e = ne();e > OldNumEdge;e--)DeleteEdge(e);
+  extbrin() = FirstBrin;
   return 0;
   }
 int TopologicalGraph::SchnyderV(tbrin FirstBrin)

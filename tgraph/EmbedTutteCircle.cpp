@@ -26,7 +26,7 @@ int EmbedTutteCircle(TopologicalGraph &G)
     
   tbrin FirstBrin;
   int len;
-  G.LongestFaceWalk(FirstBrin,len);
+  G.LongestFaceWalk(FirstBrin,len);G.extbrin() = FirstBrin;
   len++;
   svector<tbrin> fb(1,len);
   svector<tvertex> newv(1,len);

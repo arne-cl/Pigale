@@ -172,7 +172,7 @@ int EmbedFPP(TopologicalGraph &G)
   int len;
   tbrin ee;
   if(SchnyderLongestFace() && !MaxPlanar)
-      G.LongestFace(ee,len);
+      {G.LongestFace(ee,len);G.extbrin() = ee;}
   else
       ee = G.extbrin();
   if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
@@ -251,7 +251,7 @@ int EmbedFPP_Rect(TopologicalGraph &G)
   int len;
   tbrin ee;
   if(SchnyderLongestFace() && !MaxPlanar)
-      G.LongestFace(ee,len);
+      {G.LongestFace(ee,len);G.extbrin() = ee;}
   else
       ee = G.extbrin();
   if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
