@@ -20,7 +20,6 @@
 #include <qspinbox.h> 
 #include <qslider.h> 
 
-
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
@@ -57,6 +56,7 @@ void MyWindow::macroHandler(int event)
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat));
+	      qApp->processEvents(5);
 	      }
 	  escape = 0;
 	  looping = false;
