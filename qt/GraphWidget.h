@@ -27,7 +27,7 @@ public:
   void print(QPrinter *printer);
   void png();
 public slots:
-  void update(bool compute=true);
+  void update(int compute=1);
   void zoom();
   void ozoom();
   void uzoom();

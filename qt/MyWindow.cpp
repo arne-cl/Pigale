@@ -882,7 +882,7 @@ int MyWindow::handler(int action)
   else if(ret == 20) // Remove handler
       {if(!MacroRecording)information();
       if(!MacroExecuting )
-	  gw->update(false);
+	  gw->update(0);
       }
   else if(ret == 3)
       mypaint->update(drawing); 

@@ -35,14 +35,13 @@ GraphWidget::GraphWidget(QWidget *parent,const char *name,MyWindow *mywindow)
   }
 GraphWidget::~GraphWidget()
   {delete d->pGG;   delete d;}
-void GraphWidget::update(bool compute)
-// called when loading a graph compute = true
-// if we only have erased eges and/or vertice compute = false
+void GraphWidget::update(int compute)
+// called when loading a graph compute = 1 or -1
+// if we only have erased edges and/or vertice compute = 0
   {if(!d->is_init)
       {d->editor = new GraphEditor(d,this);
       d->is_init = true;
       }
-  //else if(d->mywindow->MacroLooping)return;
   else
       delete d->pGG;
   
@@ -64,7 +63,7 @@ void GraphWidget::update(bool compute)
   else
       d->editor->load(false);
       
-  d->mywindow->tabWidget->showPage(this);
+  if(compute != -1)d->mywindow->tabWidget->showPage(this);
   }
 
 void GraphWidget::print(QPrinter *printer)

@@ -137,7 +137,7 @@ void MyWindow::macroHandler(int event)
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
 	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
-	  if(EditNeedUpdate)gw->update();
+	  if(EditNeedUpdate)gw->update(-1);
 	  if(!getError())
 	      DebugPrintf("END PLAY OK iter:%d",j);
 	  else
@@ -226,13 +226,13 @@ void MyWindow::macroPlay()
 	  }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       if(!MacroLooping &&  EditNeedUpdate)
-	  {MacroExecuting = false; gw->update(); MacroExecuting = true;EditNeedUpdate = false;}
+	  {gw->update(-1);EditNeedUpdate = false;}
       // Execute the macro
       ret_handler = handler(action);
       if(ret_handler == 1 || ret_handler == 2)EditNeedUpdate = true;
       // update the editor if a pause 
       if(record != MacroNumActions && action == A_PAUSE && EditNeedUpdate)
-	  {MacroExecuting = false; gw->update(); MacroExecuting = true;EditNeedUpdate = false;}
+	  {gw->update();EditNeedUpdate = false;}
       if(getError())
 	  {DebugPrintf("MACRO %s",(const char *)getErrorString());
 	  setError();
@@ -245,5 +245,5 @@ void MyWindow::macroPlay()
       }
 
   MacroWait = MacroExecuting = false;
-  if(!MacroLooping  && EditNeedUpdate)gw->update();
+  if(!MacroLooping  && EditNeedUpdate)gw->update(-1);
   }
