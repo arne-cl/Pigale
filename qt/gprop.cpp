@@ -112,7 +112,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   LayoutP->addWidget(RBOuPlanar);
 
   RBSerie = new RoRadioButton(this,"RBSerie");
-  RBSerie->setText("Series-//");
+  RBSerie->setText("Series-// 2C");
   LayoutP->addWidget(RBSerie);
 
   RBSimple = new RoRadioButton(this,"Simple");
@@ -194,12 +194,9 @@ void Graph_Properties::update(bool print)
       else if(G.CheckConnected())
 	  C1 = true;
       }
-  if(P && C2 && !C3)
-      {Serie = G.CheckSerieParallel();
-      if(Serie && dmin == 2 && TestOuterPlanar(G))Outer = true;
-      }
-  else if(G.nv() == 2 && G.ne() == 1)
-      Serie = Outer = true;
+  if(P && C2 && !C3) Serie = G.CheckSerieParallel();
+  if(P  && !C3 && dmin == 2 && TestOuterPlanar(G)) Outer = true;
+  if(G.nv() == 2 && G.ne() == 1) Serie = Outer = true;
   if(C3)C2 = true;
   if(C2)C1 = true;
 
