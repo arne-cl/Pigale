@@ -4,8 +4,8 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Pigale
-PROJECT_NUMBER         = 1.0
-OUTPUT_DIRECTORY       = /home/leda/
+PROJECT_NUMBER         = 1.2.2
+OUTPUT_DIRECTORY       = ~/
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
