@@ -761,7 +761,7 @@ void GraphSym::png()
   if(QFileInfo(FileName).extension(false) != (const char *)"png")
       FileName += (const char *)".png";
   d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
-  QPixmap pixmap = QPixmap::grabWidget (this,11,11,this->width()-22,this->height()-52); 
+  QPixmap pixmap = QPixmap::grabWidget (d->editor); 
   pixmap.save(FileName,"PNG");
   }
 void GraphSym::resizeEvent(QResizeEvent* e)
