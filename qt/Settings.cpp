@@ -30,7 +30,7 @@
 #undef QTextEdit
 #include <qtextview.h>
 #define QTextEdit QTextView
-#include <qsettings.h>
+
 #else
 #include <qtextedit.h>
 #include <qsettings.h>
@@ -39,50 +39,51 @@
 #if QT_VERSION < 300
 void MyWindow::SaveSettings()  
   { // Save colors
-  QFile settings("settings.txt");
-  if(settings.open(IO_ReadWrite)) 
-      {QTextStream txt(&settings);
-      int r,g,b;
-      txt << "colors" << endl;
-      for(int i = 0;i <= 3; i++)
-	  {QColor col = QColor(QColorDialog::customColor(i));
-	  col.rgb(&r,&g,&b); 
-	  txt << i <<" "<< r <<" " << g <<" " << b << endl; 
-	  }
-      settings.close();
-      }
+//   QFile settings("settings.txt");
+//   if(settings.open(IO_ReadWrite)) 
+//       {QTextStream txt(&settings);
+//       int r,g,b;
+//       txt << "colors" << endl;
+//       for(int i = 0;i <= 3; i++)
+// 	  {QColor col = QColor(QColorDialog::customColor(i));
+// 	  col.rgb(&r,&g,&b); 
+// 	  txt << i <<" "<< r <<" " << g <<" " << b << endl; 
+// 	  }
+//       settings.close();
+//       }
   }
 void MyWindow::LoadSettings()
 {}
 int GetPigaleColors()
-  {QFileInfo fi("settings.txt"); 
-  if(!fi.exists())return -1;
-  QFile settings("settings.txt");
-  if(settings.open(IO_ReadWrite))
-      {QString s;
-      int ii,r,g,b;
-      QColor col;
-      QTextStream txt(&settings);
-      s = txt.readLine(); 
-      if(s.contains("colors") == 0)
-	  {settings.close();
-	  qDebug("Error reading settings.txt");
-	  return -1;
-	  }
-      for(int i = 0;i <= 3; i++)
-	  {txt >> ii >> r >>  g >> b;
-	  col.setRgb(r,g,b);
-	  if(col.isValid() && i < 4)
-	      QColorDialog::setCustomColor(i,col.rgb());
-	  else 
-	      {qDebug("Error reading settings.txt");
-	      settings.close();
-	      return -1;
-	      }
-	  }
-      settings.close();
-      return 0;
-      }
+  {
+//   QFileInfo fi("settings.txt"); 
+//   if(!fi.exists())return -1;
+//   QFile settings("settings.txt");
+//   if(settings.open(IO_ReadWrite))
+//       {QString s;
+//       int ii,r,g,b;
+//       QColor col;
+//       QTextStream txt(&settings);
+//       s = txt.readLine(); 
+//       if(s.contains("colors") == 0)
+// 	  {settings.close();
+// 	  qDebug("Error reading settings.txt");
+// 	  return -1;
+// 	  }
+//       for(int i = 0;i <= 3; i++)
+// 	  {txt >> ii >> r >>  g >> b;
+// 	  col.setRgb(r,g,b);
+// 	  if(col.isValid() && i < 4)
+// 	      QColorDialog::setCustomColor(i,col.rgb());
+// 	  else 
+// 	      {qDebug("Error reading settings.txt");
+// 	      settings.close();
+// 	      return -1;
+// 	      }
+// 	  }
+//       settings.close();
+//       return 0;
+//       }
   return -1;
   }
 #else
@@ -105,6 +106,8 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/generate/gen N1",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen N2",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
+  setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
+  setting.writeEntry("/pigale/generate/gen EraseMultiple",EraseMultipleEdges());
   // Printer
   setting.writeEntry("/pigale/printer colormode",printer->colorMode());
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
@@ -145,6 +148,7 @@ void MyWindow::LoadSettings()
   SchnyderLongestFace() = setting.readBoolEntry("/pigale/embed/schnyder longestface",true);
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readBoolEntry("/pigale/embed/distance dist",1);
+  EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   }
 int GetPigaleColors()
   {QSettings setting;
@@ -216,6 +220,7 @@ void InitPigaleFont()
 #endif
   int fontsize = (h > 600) ? 12 : 11;
   QFont font = QFont("helvetica",fontsize);
+  font.setPixelSize(fontsize);
   QApplication::setFont(font,true);
   }
 
