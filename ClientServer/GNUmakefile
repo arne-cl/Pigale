@@ -13,14 +13,13 @@ UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt
 .SUFFIXES:.cpp .o
 
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O2 -m486 -fstrength-reduce $(PIC)
+CFLAGSopt = -O3 -fsigned-char $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith
 CFLAGSopt +=  -fomit-frame-pointer -pipe
 CFLAGSopt += -DQT_THREAD_SUPPORT 
 #DEBUGGING OPTIONS
-CFLAGSdbg  =  -g -Wall  $(PIC)
+CFLAGSdbg  =  -g -Wall -fsigned-char $(PIC)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith
-CFLAGSdbg +=  -fomit-frame-pointer
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg += -DQT_THREAD_SUPPORT 
 

@@ -21,16 +21,15 @@ CC=g++
 #GENERAL OPTIONS
 .SUFFIXES:.cpp .o
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O2 -m486 -fstrength-reduce $(PIC)
+CFLAGSopt = -O3  -fsigned-char $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror
 CFLAGSopt +=  -fomit-frame-pointer -pipe
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION)
 
 
 #DEBUGGING OPTIONS
-CFLAGSdbg  =  -g -Wall  $(PIC)
+CFLAGSdbg  =  -g -Wall -fsigned-char  $(PIC)
 CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror
-CFLAGSdbg +=  -fomit-frame-pointer
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 

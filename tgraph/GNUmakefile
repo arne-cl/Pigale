@@ -21,13 +21,13 @@ CC=g++
 AWK=awk
 
 #OPTIMIZED OPTIONS
-CFLAGSopt = -O2 -m486 -fstrength-reduce $(PIC)
+CFLAGSopt = -O3  -fsigned-char $(PIC)
 CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror
 # -Winline
 CFLAGSopt += -fomit-frame-pointer
 
 #DEBUGGING OPTIONS (-pg -a for sampling)
-CFLAGSdbg  =  -g -Wall -Werror  $(PIC)
+CFLAGSdbg  =  -g -Wall -Wstrict-prototypes -Wpointer-arith -Werror -fsigned-char $(PIC)
 CFLAGSdbg +=  -DTDEBUG
 
 DLIB    = $(PIGALEPATH)/lib/lib$L$(OPT).so
