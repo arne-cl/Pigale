@@ -9,3 +9,6 @@ Gilles Schaeffer:
 Nicolas Bonichon:
      - generation of random outerplanar graphs
      - drawing with polylines
+     - convex drawing
+     - compact convex drawing
+     

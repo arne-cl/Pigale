@@ -8,7 +8,8 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
-
+#include  <TAXI/Tmessage.h>
+#include  <TAXI/color.h>
 
 #include <TAXI/KantShel.h>
 // vertex:Candidates.push(-v)
@@ -98,26 +99,27 @@ void KantShelling::SetAdjFaces()
     */
   {tbrin b, b0;
   // Mark the vertices incident to the last face
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
   b = b0 = FirstBrin();
   do
       {BelongToLastFace[G.vin[b]()] = 1;
+      if(debug()) {ecolor[b.GetEdge()] = Green2;ewidth[b.GetEdge()] = 3;}
       }while((b = -G.cir[b]) != b0);
-  
-  IntList Brins;
-  int i;
-  for(i = -G.ne();i <= G.ne();i++)if(i)Brins.push(i);
+
+  IntList Brins;  // Brins: list of all brins 
+  for(int i = -G.ne();i <= G.ne();i++)
+      if(i)Brins.push(i);
   // the edge {v_1,v_2}. IsOuterE is set to 0.
   Brin2Face[FirstBrin()]=1;			  
   IsOuterV[v_1] = 1;
   Brins.del(FirstBrin());
 
-  // the outer face is inedexd 1
+  // the outer face is indexed 1
   b = G.cir[-FirstBrin];
-
   do 
       {Brins.del(b());
       Brin2Face[b()] = 1;
-      //      IsOuterE[abs(b())] = 1;
       IsOuterE[b.GetEdge()] = 1;
       IsOuterV[G.vin[b]()] = 1;
       }while ((b = G.cir[-b])  != FirstBrin);
@@ -127,9 +129,11 @@ void KantShelling::SetAdjFaces()
   int FaceIndex=2;
   while (!Brins.empty()) 
       {b0 = b =Brins.first();
+       if(debug())cout << "face:" << FaceIndex << endl;
       do 
           {Brins.del(b());
           Brin2Face[b]=FaceIndex;
+           if(debug())cout << G.vin[b]() << " " <<endl;
           } 
       while((b = G.cir[-b]) != b0);
 
@@ -137,3 +141,6 @@ void KantShelling::SetAdjFaces()
       FaceIndex++;
       }
   }
+
+
+

@@ -249,7 +249,7 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
       LongestFace(FirstBrin,len);
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
-
+ tbrin extOld = extbrin();
   //if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return -2;
   if(!MaxPlanar && ZigZagTriangulate())return -2;
 
@@ -266,7 +266,7 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
 
   // delete the edges added by Connexity and Triangulation
   for(tedge e = ne();e > OldNumEdge;e--)DeleteEdge(e);
-  extbrin() = FirstBrin;
+  extbrin() = extOld;
   return 0;
   }
 int TopologicalGraph::SchnyderXYZ(tbrin FirstBrin,svector<int> &x,svector<int>&y,svector<int>&z)

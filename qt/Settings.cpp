@@ -260,11 +260,7 @@ void pigaleWindow::LoadSettings()
   // Screen size
   pigaleWindowInitYsize = setting.readNumEntry("/pigale/geometry height",600);
   pigaleWindowInitXsize = setting.readNumEntry("/pigale/geometry width",800);
-#ifndef  TDEBUG
   debug() = setting.readBoolEntry("/pigale/debug enable",false);
-#else
-  debug() = true;
-#endif
   randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   randomSetSeed() = (long) setting.readNumEntry("/pigale/randomSeed seed",1);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);

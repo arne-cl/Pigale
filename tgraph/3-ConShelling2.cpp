@@ -15,10 +15,6 @@
 #include  <TAXI/color.h>
 #include  <TAXI/Tmessage.h>
 
-
-//void DrawGraph();
- 
-
 int KantShelling::FindNext(tbrin &left, tbrin &right)
 // return = 0: if there is no vertex nor face to shell.
 //        = 1: if a vertex v has been shelled. left (resp. right)
@@ -27,8 +23,8 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
 //        = k (>1): a face has been shelled. k is the length
 //             of the shelled chain {v_1,...,v_p}.
 //             left=(v_1,v_2), right=(v_{p-1},v_p).
-// MarkedV indique si un sommet est sature -> Red
-// MarkedE indique si une are a ete packer -> Red
+// MarkedV = 1 if the vertex is saturated -> Red
+// MarkedE =1 if the edge had been packed -> Red or Violet
   {int i,count;
   tbrin b,b0,LastB,StopB;
   tvertex v;
@@ -43,25 +39,28 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
               {count=0;
               left=G.cir[FirstBrin];
               right=left;
-              do {count++;right=G.cir[-right];} while (right!=-FirstBrin);
+              do 
+                  {count++;right=G.cir[-right];
+                  MarkedE[right.GetEdge()] = 1;
+                  } 
+              while (right!=-FirstBrin);
               right=-G.acir[right];
+              MarkedE[left.GetEdge()] = 1;
               MarkedV[G.vin[-G.cir[FirstBrin]]()]=1;
-              /*
-              if(debug())
-                  {for(tedge e = 1;e <= G.ne();e++){ecolor[e]=Black;ewidth[e] = 1;}
+              
+              //if(debug())
+                  {for(tedge e = 1;e <= G.ne();e++) {ecolor[e]=Black;ewidth[e] = 1;}
                   for(tedge e = 1;e <= G.ne();e++)
                       {if(IsOuterE[e])ecolor[e]=Green; // exterior face
-                      if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 2;}
+                      if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 4;}
                       }
                   for(tvertex w=1;w < G.nv();w++)
                       {if(MarkedV[w])vcolor[w] = Red;}
                   ecolor[FirstBrin.GetEdge()()] = Yellow;
-                  ecolor[left] = Blue;
-                  ecolor[right] = Orange;
-                  
-                  DrawGraph();// red: treated green: exterior face
+                   if(debug())cout << "last  path length: " << count << endl;
+                   if(debug())Twait("end packing");
+                  DrawGraph();
                   }
-              */
               return count;
               }
           // return FirstBrin at the last time.
@@ -69,32 +68,38 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           return 0; // no more vertex or face to shell.
           }
       i = Candidates.pop();
-      }while (i > 0 && 
-              (MarkedF[i] || Brin2Face[-FirstBrin]==i) || (i<0 && MarkedV[-i]));
+      }while (i > 0 &&  (MarkedF[i] || Brin2Face[-FirstBrin] == i) || (i < 0 && MarkedV[-i]) );
   // skip marked faces, the face incident to v_1 and v_2, and marked vertices
-  // list of the faces which were not separation faces before the shelling.  
+
+  // list of the faces which were not separating faces before the shelling.  
   IntList NonSepFaces; 
   // list of the faces which become separating faces by the shelling.
   IntList NewSepFaces; 
   // list of the vertices which become incident to F_out by the shelling.
   IntList NewOuterVertices;
-  /*
-   if(debug())
-        {for(tedge e = 1;e <= G.ne();e++){ecolor[e]=Black;ewidth[e] = 1;}
-        for(tedge e = 1;e <= G.ne();e++)
-            {if(IsOuterE[e])ecolor[e]=Green; // exterior face
-            if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 2;}
+  
+  if(debug())
+        {for(tedge e = 1;e <= G.ne();e++)
+            {if(ecolor[e] == Violet)continue;
+            if(IsOuterE[e])ecolor[e]=Green; // exterior face
+            if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 3;}
             }
         for(tvertex w=1;w < G.nv();w++)
-            {if(MarkedV[w])vcolor[w] = Red;}
+            {if(MarkedV[w])vcolor[w] = Red;
+            else vcolor[w] = Yellow;
+            }
         ecolor[FirstBrin.GetEdge()()] = Yellow;
-        DrawGraph();// red: treated green: exterior face
+        static int firstTime = 1;
+        if(firstTime)
+            {firstTime = 0;
+             cout <<"v1: " << v_1<< "  v2: " <<v_2 << "  vn: "<< v_n << endl;
+            DrawGraph();// red: treated green: exterior face
+            Twait("Init");
+            }
         }
- 
-  */
-  if (i > 0) // shell a face ======================================= 
+
+  if (i > 0) // shell a path  ======================================= 
       {int f=i; 
-         
       MarkedF[f]=1;
       // Let (v_1,...,v_p) the chain to shell of length count
       // vin[left] = v_1  vin[-right] = v_p
@@ -110,61 +115,64 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
       do
           count++;
       while((b = G.cir[-b]) != right);
-      /*
+
       if(debug())
-          {ecolor[right.GetEdge()()] = Orange;ewidth[right.GetEdge()()] = 2; 
-          ecolor[left.GetEdge()()] = Blue; ewidth[right.GetEdge()()] = 2; 
+          {ecolor[right.GetEdge()()] = Orange;ewidth[right.GetEdge()()] = 3; 
+          ecolor[left.GetEdge()()] = Blue; ewidth[right.GetEdge()()] = 3; 
+          cout << "***Packing  chain length: "<< count << "*************************"<<endl;
+          cout << " v_left = " << G.vin[left] << " v_left = " << G.vin[-left] << endl;
+          cout << " v_right = " << G.vin[right] << " v_right = " << G.vin[-right]<< endl;
           }
-      */
+      
       // update IsOuterV, IsOuterE.
       // update new face 
       b=-G.acir[left];
       LastB=G.cir[-right];
       while (1) 
-          //          {IsOuterE[abs(b())]=1;
           {IsOuterE[b.GetEdge()]=1;
           if (b==LastB) break;
           IsOuterV[G.vin[b]()] = 1;
           b=-G.acir[b];
           }
-      //if(debug()){DrawGraph();Twait("Packingface: left right green");}   
+      if(debug()){DrawGraph();Twait("Packing chain: blue orange");}   
+
       // update MarkedV[v], MarkedE[e].
-      // TsuTsu     b=right;   while (b!=left) 
-      b = right; LastB =-G.acir[left];
+      b = right; //LastB =-G.acir[left];
       while (b != left) 
           {MarkedV[G.vin[b]()] = 1;
-          /*
-          if(debug())
-              {vcolor[G.vin[b]()] = Red;
-              ecolor[b.GetEdge()()] = Red;ewidth[b.GetEdge()()] = 2;
-              }
-          */
+          vcolor[G.vin[b]()] = Red;
+          ecolor[b.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
           MarkedE[b.GetEdge()()] = 1;
           b = -G.acir[b];
           }
       MarkedE[left.GetEdge()()] = 1;
-      //if(debug()){ecolor[b.GetEdge()()] = Red;ewidth[b.GetEdge()()] = 2;}
-      
+
+      if(debug()){ecolor[left.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;}
+      if(debug()){DrawGraph();Twait("Packing chain: done");}   
       // update visited[v].
       _visited(G.vin[left](),1);    _visited(G.vin[-right](),1);
 
       // set NewOuterVertices, NonSepFaces.
       // check faces which have a vertex on the new face
-      b=-G.acir[left];
-      LastB = G.cir[-right];
+      b=-G.acir[left];      LastB = G.cir[-right];
       while (b != LastB)
           {NewOuterVertices.push(G.vin[b]());
-          StopB = G.acir[b];
-          b = G.cir[b]; // orbit of belongs to another face
+          //StopB = G.acir[b]; //hub
+          StopB = b;
+          b = G.cir[b]; 
           do
               {f = Brin2Face[b];
+              if(debug())cout << "f:  " << f << endl;
               if(outv[f] < 3 && (outv[f] != 2 || oute[f] != 0)) 
                   {if(!NonSepFaces.InList(f))
-                      NonSepFaces.push(f);
+                      {NonSepFaces.push(f);
+                       if(debug())cout << "pushing NonSepFace: "<< f << endl;
+                      }
                   }
               b = G.cir[b];
               } while (b != StopB);
-          b = -StopB;
+          b = -G.acir[b];
+          //b = -StopB;//hub
           }
 
       // for all v newly incident to F_out, 
@@ -181,14 +189,16 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
               b=G.cir[b];
               } while (b != b0);
           b=-G.acir[b];  // to the next brin...
-          }       
+          }  
       _oute(Brin2Face[-b],1);
 
       // set NewSepFaces.
       NonSepFaces.ToHead();
       while ((f=~NonSepFaces) != 0)
           {if (outv[f] >= 3 || (outv[f] == 2 && oute[f] == 0))
-              NewSepFaces.push(f);
+              {NewSepFaces.push(f);
+               if(debug())cout << "pushing NewSepFaces f: "<< f  <<  endl;
+              }
           ++NonSepFaces;
           }         
       // for all f \in NewSepFaces, for all v incident to f, sepf[v]++;
@@ -211,7 +221,7 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
   else   // shell a vertex ========================================
       {v = -i;
       MarkedV[v]=1;
-      
+       if(debug())cout << "packing vertex:" <<-i << "*************************"<< endl;
       // set leftmost & rightmost brins incident to v.
       // G.vin[left]() = G.vin[right]() = v()
       if (v == v_n) 
@@ -223,21 +233,27 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           right  = G.acir[left];
           while (MarkedV[G.vin[-right]()]) right = G.acir[right];
           }
-      /*
+      
       if(debug())
           {vcolor[v] = Red;
           ecolor[left.GetEdge()()] = Blue;
           ecolor[right.GetEdge()()] = Orange; 
-          DrawGraph();Twait("vertex left right");
+          ewidth[left.GetEdge()()] = 3; 
+          ewidth[right.GetEdge()()] = 3; 
+          cout << "***Packing vertex = " << -i << endl;
+          cout  << " v_left = " << G.vin[-left] << "  v_right = " << G.vin[-right]<< endl;
+           DrawGraph();Twait("packing vertex");
           }
-      */
+      
       // MarkedE[e] -> 1 for all incident edges of v
       b=left;
-      while(!MarkedE[b.GetEdge()()])
-          {MarkedE[b.GetEdge()()]=1;
+      while(!MarkedE[b.GetEdge()])
+          {MarkedE[b.GetEdge()]=1;
+          if(b!=left && b !=right)ecolor[b.GetEdge()] = Pink;
+          else ecolor[b.GetEdge()] = Red;
           b=G.cir[b];
           }
-
+      
       // update MarkedF[f], IsOuterV[v], IsOuterE[e].
       // visited : vertices adjacent to v => _visited has at least a  MarkedE
       // Mark edges of the new face under the v umbrella
@@ -246,38 +262,48 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
       b=-G.acir[-left];
       int f;
       while (1)
-          {f=Brin2Face[b()];
+          {f = Brin2Face[b()];
           MarkedF[f]=1;
+          if(debug())cout << "marking face:" << f << endl;
           IsOuterV[G.vin[b]()] = 1;
           IsOuterE[b.GetEdge()()] = 1;
           //tsu _visited(G.vin[b](),1);
           b = G.acir[b];
           if(-b == right())break;
-          if(G.vin[-b] == v)
-              {_visited(G.vin[b](),1); //hub
+          if(G.vin[-b] == v)//hub
+              {_visited(G.vin[b](),1); 
               b = G.acir[b];
               }
           b = -b;
           }
-      
+
       // set NewOuterVertices, NonSepFaces.
       b = -G.acir[-left];
       LastB = G.cir[-right];
       while (b != LastB)  //id precedent
-          {NewOuterVertices.push(G.vin[b]());
-          StopB = b;
-          do
-              {StopB = G.acir[StopB];}
-          while (G.vin[-StopB]==v);
-          while(b != StopB)
-              {b = G.cir[b];
-              f = Brin2Face[b];
-              if(outv[f]<3 && (outv[f]!=2 || oute[f]!=0)) 
-                  if(!NonSepFaces.InList(f)) 
-                      NonSepFaces.push(f);
+              {NewOuterVertices.push(G.vin[b]());
+              if(debug())vcolor[G.vin[b]] = Green;
+              StopB = b;
+              do
+                  {StopB = G.acir[StopB];
+                  } while (G.vin[-StopB] == v); // once or twice
+              //StopB = G.cir[StopB]; //hub
+               if(debug())cout << "--------b:"<< G.vin[b]() << "  "<< G.vin[StopB]()<< endl;
+              while(b != StopB)
+                  {b = G.cir[b];
+                   if(debug())cout << G.vin[ b]() << endl;
+                  f = Brin2Face[b];
+                  if(debug())cout << "Faces:  " << f << endl;
+                  if(outv[f] < 3 && (outv[f] != 2 || oute[f] != 0)) 
+                      if(!NonSepFaces.InList(f)) 
+                          {NonSepFaces.push(f);
+                          if(debug())cout << "pushing NonSepFace: "<< f << endl;
+                          }
+                  }
+              b=-StopB;
               }
-          b=-StopB;
-          }
+  if(debug()){ DrawGraph();Twait("vertex:packed");}
+
       // for all v newly incident to F_out, 
       //   for all f incident to v, outv[f]++.
       // update oute[f].
@@ -295,14 +321,16 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           b = -b;
           }       
       _oute(Brin2Face[-b],1);
-		
+
       // set NewSepFaces.
       NonSepFaces.ToHead();
       while ((f = ~NonSepFaces) != 0)
           {if(outv[f] >=3 || (outv[f] == 2 && oute[f] == 0)) 
-              NewSepFaces.push(f);
+              {NewSepFaces.push(f);
+                if(debug())cout << "pushing NewSepFaces f: "<< f  <<  endl;
+              }
           ++NonSepFaces;
-          }         
+          }        
       // for all f \in NewSepFaces, for all v incident to f, sepf[v]++;
       UpdateSepf1(NewSepFaces);
       // for all v \in NewOuterVertices, update sepf[v].

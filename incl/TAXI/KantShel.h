@@ -56,6 +56,8 @@ class KantShelling {
         ,error(0)
         {
         if (G.ComputeGenus()) {error=1; return;}
+        G.CheckTriconnected();
+        if(!G.Set().exist(PROP_TRICONNECTED)){error=1; return;}
         BelongToLastFace.clear();
         MarkedV.SetName("MarkedV");
         MarkedE.SetName("MarkedE");
@@ -78,12 +80,11 @@ class KantShelling {
             
         // initialize oute.                            
         b = FirstBrin;
-        //b = G.cir[-b];
+        b = G.cir[-b]; 
         // Skip  edge {v_1,v_2}. Otherwise, the last face would not be shelled.
         do 
             oute[Brin2Face[-b]]++; 
         while ((b = G.cir[-b])  != FirstBrin);
-        
         _visited(v_n(),1);
         }
 

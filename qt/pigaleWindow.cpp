@@ -515,10 +515,6 @@ pigaleWindow::pigaleWindow()
   connect(comboDistance,SIGNAL(activated(int)),popupDistance,SLOT(hide()));
   connect(popupEmbed,SIGNAL(activated(int)),SLOT(handler(int)));
   settings->insertTearOffHandle();
-  //debug()
-#ifdef TDEBUG
-	debug() = 1;
-#endif
   settings->insertItem(tr("&Debug"),A_SET_DEBUG);
   settings->setItemChecked(A_SET_DEBUG,debug());
   //undoEnable

@@ -24,7 +24,6 @@ IFLAGS = -I$(PIGALEPATH)/incl
 
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3   $(PIC) $(CPU)
-//CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated -pipe
 CFLAGSopt += -Wall -Wstrict-prototypes -Wpointer-arith -Werror -pipe
 CFLAGSopt +=  -fomit-frame-pointer
 
@@ -60,13 +59,14 @@ clean:
 	@rm -f *~ *bak *.flc $(OBJ) *.flc $(DLIB)
 
 depend:
-	@makedepend -o.$(OPT) -fgnumakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
+	@makedepend -o.$(OPT) -f gnumakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
 
 nodepend:
-	@makedepend -o.$(OPT) -fgnumakefile  -Y  2> /dev/null
+	@makedepend -o.$(OPT) -f gnumakefile  -Y  2> /dev/null
 
 list:
 	../makelist *.cpp >Make.lst
+	
 md:depend
 	@if ! test -d .obj ; then mkdir .obj ; fi
 test:
@@ -93,7 +93,7 @@ test:
 3-ConOrientTriang.dbg: ../../pigale/incl/TAXI/Tflist.h
 3-ConOrientTriang.dbg: ../../pigale/incl/TAXI/Tstack.h
 3-ConOrientTriang.dbg: ../../pigale/incl/TAXI/Tarray.h
-3-ConShelling1.dbg: ../../pigale/incl/TAXI/KantShel.h
+3-ConShelling1.dbg: ../../pigale/incl/TAXI/Tmessage.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/graphs.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/Tbase.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/graph.h
@@ -106,6 +106,8 @@ test:
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/Tstring.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/propdef.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/Tpoint.h
+3-ConShelling1.dbg: ../../pigale/incl/TAXI/color.h
+3-ConShelling1.dbg: ../../pigale/incl/TAXI/KantShel.h
 3-ConShelling1.dbg: ../../pigale/incl/TAXI/IntList.h
 3-ConShelling2.dbg: ../../pigale/incl/TAXI/KantShel.h
 3-ConShelling2.dbg: ../../pigale/incl/TAXI/graphs.h
