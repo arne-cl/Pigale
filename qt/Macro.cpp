@@ -52,6 +52,8 @@ void AllowAllMenus(QMenuBar *menubar)
 void macroRecord(int action)
   {if(action > 10000)return;
   MacroActions(++MacroNumActions) = action;
+  QString str_action = GetMyWindow()->getActionString(action);
+  Tprintf("Recording action (%d): %d %s",MacroNumActions,action,(const char *)str_action);
   GeometricGraph G(GetMainGraph());
   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
@@ -138,21 +140,23 @@ void MyWindow::macroPlay()
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
-      if(Executing && record == MacroNumActions && !MacroLooping)
+      if(record == MacroNumActions && !MacroLooping)
 	  {gw->update();
 	  Executing = false;
 	  }
-      //qDebug("macro action:%d/%d -> %d",record,MacroNumActions,MacroActions[record]);
+      if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
+      if(getError()){Executing = false;break;}
+      if(debug())LogPrintf("macro action:OK\n");
       }
-  
+  if(getError())
+      {DebugPrintf("MACRO error=%d",getError());
+      MacroLooping = false;
+      }
   if(!MacroLooping)
       {information();
       Tprintf("MacroNumActions:%d",MacroNumActions);
       }
-  if(getError())
-      {DebugPrintf("MACRO error=%d",(int)getError());
-      MacroLooping = false;
-      }
+
   MacroExecuting = Executing;
   }
