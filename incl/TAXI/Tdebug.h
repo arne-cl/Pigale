@@ -14,15 +14,25 @@
 #include <TAXI/Errors.h>
 
 bool & debug();
-int & Error();
 void myabort();
 void DebugPuts(const char *str);
 void DebugPrintf(const char *fmt,...);
 void LogPrintf(const char *fmt,...);
 void DebugIndent(int i);
 
+struct _T_Error 
+   {int code;
+   char *msg;
 
-#define _PERRORFL       {if(Error())DebugPrintf("%s line:%d error:%d",__FILE__, __LINE__,Error());}
+   _T_Error(int c=0, char *m=(char *)0) : code(c), msg(m) {}
+   operator int () const { return code;}
+   };
+
+_T_Error &ErrorPositioner(char *f, int l);
+//const _T_Error &getError();
+int  getError();
+
+#define setError ErrorPositioner(__FILE__,__LINE__)=_T_Error
 #define _PRINTFL(arg)   DebugPrintf("%s line:%d -> %d",__FILE__, __LINE__,arg)
 
 #ifdef TDEBUG
