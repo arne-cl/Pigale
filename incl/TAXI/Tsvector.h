@@ -205,7 +205,7 @@ class _svector
         {strncpy(name,txt,sizeof(name)-1);}
     const char *GetName() const {return name;}
 
-#ifdef DEBUG
+#ifdef TDEBUG
     void check(int i) const
         {if (!InRange(i))
             {if (empty()) 

@@ -362,7 +362,7 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
   
   GraphContainer GC(G.Container());
   TopologicalGraph G0(GC);
-#ifdef DEBUG
+#ifdef TDEBUG
   Prop<int> ewidth(G0.Set(tedge()),PROP_WIDTH,1);
   Prop<short> ecolor(G0.Set(tedge()),PROP_COLOR);
   if (debug())
@@ -382,7 +382,7 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
   for (i=0;i<ei;i++)
       {b=eorder[i].firsttbrin();
       e0=G0.NewEdge(G.vin[b],orig[-b]);
-#ifdef DEBUG
+#ifdef TDEBUG
       if (debug())
           {
           ecolor[e0]=Cyan;
@@ -396,7 +396,7 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
               {G0.MoveBrin(e0.secondtbrin(),order[j]);
               if (G0.TestPlanar())
                   { G.MoveBrin(-b,order[j]);
-#ifdef DEBUG
+#ifdef TDEBUG
                   if (debug())
                       {
                       ecolor[e0]=Green;
@@ -411,7 +411,7 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
           if (j==n) 
               {
               G0.MoveBrin(e0.firsttbrin(),orig[b]);
-#ifdef DEBUG
+#ifdef TDEBUG
               if (debug())
                   {
                   ecolor[e0]=Red;

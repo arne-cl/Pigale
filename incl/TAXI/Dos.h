@@ -95,7 +95,7 @@ public:
         int iw1=OldToNew(Index(First(ew)),b0);
         int iw2=OldToNew(Index(Second(ew)),b0);
         // (iv1,iv2) et (iw1,iw2) ne doivent pas etre entrelaces!
-#ifdef DEBUG
+#ifdef TDEBUG
         if ((iv1<iw1) && (iv2<iw2) || (iw1<iv1) && (iw2<iv2))
             {
             DPRINTF(("Interlaced Tree Pairs!!\n"));
@@ -183,7 +183,7 @@ public:
     // (first or second)
     void SwapBrins(tbrin b, tbrin b2)
     {
-#ifdef DEBUG
+#ifdef TDEBUG
     if (_IsTree[b.GetEdge()])
         {DPRINTF(("Brin %d belongs to the tree", b()));
         myabort();
@@ -210,7 +210,7 @@ public:
     Dos[i]=b2; DosInv[b2]=i;
     Dos[i2]=b; DosInv[b]=i2;
     // First should remain unchanged!!!
-#ifdef DEBUG
+#ifdef TDEBUG
     if (i2<DosInv[_First(b.GetEdge())])
         {DPRINTF(("Brin %d becomes first brin", b()));
         myabort();

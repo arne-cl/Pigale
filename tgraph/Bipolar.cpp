@@ -42,7 +42,7 @@ void BipExtend(TopologicalGraph &G, tbrin bst, svector<bool> &vmark)
                   din[G.vin[b]]++;
       }
   // only the source should be marked and have din=0
-  #ifdef DEBUG
+  #ifdef TDEBUG
   for (v=1; v<=n; v++)
       if (din[v]==0)
           {if (vmark[v] && (v!=G.vin[bst]))
@@ -73,7 +73,7 @@ void BipExtend(TopologicalGraph &G, tbrin bst, svector<bool> &vmark)
   while (bot<top)
       {v=queue[bot++]; // minimal vertex ?
       if (processed[v]) continue;
-#ifdef DEBUG
+#ifdef TDEBUG
       if (din[v]!=0) return; //error
 #endif
       b=b0=G.pbrin[v];
@@ -95,7 +95,7 @@ void BipExtend(TopologicalGraph &G, tbrin bst, svector<bool> &vmark)
           if (b.out()^Reoriented[b.GetEdge()])
               {if (--din[w]==0)
                   queue[top++]=w;
-#ifdef DEBUG
+#ifdef TDEBUG
               if (din[w]<0) return; // error
 #endif
               }

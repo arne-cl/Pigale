@@ -20,7 +20,7 @@ void DebugPrintf(char *fmt,...);
 void LogPrintf(char *fmt,...);
 void DebugIndent(int i);
 
-#ifdef DEBUG
+#ifdef TDEBUG
   #include  <stdlib.h>
 
   #define DOPEN()   { DebugIndent(1); }

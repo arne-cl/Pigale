@@ -260,12 +260,12 @@ int Vision(TopologicalGraph &xG)
   svector<tvertex> orig(0,n); 
   if (BipPlanarize(G,topin,order,orig,bst)!=0)
     return -3;
-#ifdef DEBUG
+#ifdef TDEBUG
   if (!G.TestPlanar())
     return -4;
 #endif
   G.Planarity();
-#ifdef DEBUG
+#ifdef TDEBUG
   if (G.ComputeGenus()!=0)
     return -5;
 #endif

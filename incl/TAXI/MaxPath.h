@@ -46,7 +46,7 @@ class MaxPath
    int insert(int iv1, int iv2, int len)
      {if(!iv1)return(m);
      ++m;
-#ifdef DEBUG
+#ifdef TDEBUG
      if(iv1 < 0 || iv2 < 0)
        { DPRINTF(("negative constraint\n")); myabort();}
      if(iv1 > n_max || iv2 > n_max || m > m_max)

@@ -316,7 +316,7 @@ public:
         }
     void Push(int n, const T& x)
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (x==T(0))
             {DPRINTF(("Value 0 reserved (element)!"));
             myabort();
@@ -335,7 +335,7 @@ public:
         }
     T Pop(int n)
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (n==0)
             {DPRINTF(("Value 0 reserved (stack)!"));
             myabort();
@@ -352,7 +352,7 @@ public:
         }
     bool InStack(int n, const T& x) // x should be there or nowhere!
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (x==T(0))
             {DPRINTF(("Value 0 reserved (element)!"));
             myabort();
@@ -409,7 +409,7 @@ public:
         }
     bool TryPop(int n, const T& x)
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (x==T(0))
             {DPRINTF(("Value 0 reserved (element)!"));
             myabort();
@@ -426,7 +426,7 @@ public:
         }
     bool Exchange(int n, const T& x,const T& y)
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (x==T(0) || y==T(0))
             {DPRINTF(("Value 0 reserved (element)!"));
             myabort();
@@ -469,7 +469,7 @@ public:
         }      
     bool IsEmpty(int n)
         {
-#ifdef DEBUG
+#ifdef TDEBUG
         if (n==0)
             {DPRINTF(("Value 0 reserved (stack)!"));
             myabort();
@@ -558,7 +558,7 @@ bool SwapBadBrins(DoubleOccurenceSequence &Dos)
               }
           if ((b2=PS.Top((v=Dos.vin[-b])()))!=-b) // -b is a first brin
               {BadExists=true;
-#ifdef DEBUG
+#ifdef TDEBUG
               if (Dos.IsSecond(b2))
                   {DPRINTF(("%d is a second brin ???",b2()));
                   myabort();
