@@ -65,7 +65,7 @@ Among other things, the <b>Settings</b> menu allows you to:
 <li> define the <b>Pigale colors</b> used by Pigale.
 <li> define the <b>limits</b> of pigale: i.e. define the maximum number of vertices above which graph are not displayed and slow algorithms are not performed.
 <li>define what the <b>vertex show</b> i.e. their labels or their index (or whatever the user programmed).
-<li> define some <b>embed options</b>, now for Schnyder drawings.
+<li> define some <b>embed options</b>, now for geometric drawings.
 <li> define the <b>distance</b> used to embed the graph in <b>R<sup>n-1</sup></b>
 <li> save the settings if the version of <b>Qt</b> is at least 3.0:
 <ul>
@@ -179,9 +179,11 @@ The user have the choice among the following distances:
 <li> Czekanovski-Dice has been shown effective for graph partitioning,
 <li> Bisect is such that the isometries of the graph are in a one to one correspondence with its
 automorphisms,
-<li> Incidence is not an Euclidean distance,
-<li> Incidence M is a modification of the previous one and might be Euclidean,
-<li> Oriented is a generalization to directed graphs of the Czekanovski-Dice distance.
+<li> Adjacence is not an Euclidean distance,
+<li> Adjacence M is a modification of the previous one and is Euclidean,
+<li> Laplacian is defined by the laplacian of the complemented graph and is Euclidean,
+<li> Oriented is a generalization to directed graphs of the Czekanovski-Dice distance,
+<li> R2 is the one used by the drawing in the editor an is used for experiments.
 
 </ul>
 The axes <b>X</b>,<b>Y</b>,<b>Z</b> are respectively colored <b>Red</b>,<b>Green</b>,<b>Blue</b>
