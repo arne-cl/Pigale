@@ -10,22 +10,6 @@
 #include <TAXI/graphs.h> 
 
 bool & EraseMultipleEdges();
-long & setSeed()
-  {static long _seed = 1;
-  return _seed;
-  }
-bool & randomSeed()
-  {static bool  _random = false;
-  return _random;
-  }
-void randomInit()
-  {if(randomSeed())
-      {time_t time_seed;
-      time(&time_seed);
-      setSeed() = (long)time_seed; 
-      }
-  srand48(setSeed());
-  }
 
 //PMdef.c
 #define PMTRUE -1
@@ -2027,7 +2011,7 @@ int pmParseArgs(int argc, char *argv[],
   Size->t = -1; Size->dgArr = NULL;
   /* Meth preinit */
   Meth->core = 0; Meth->pic = 0;
-  Meth->seed = setSeed();
+  Meth->seed = 1;
   Meth->verbose = 0;
 
   /* main loop to parse args */
@@ -2589,13 +2573,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   Sizes.r = 0; Sizes.g = 0; Sizes.d = 0;
   Sizes.t = -1; Sizes.dgArr = NULL;
   /* Meth preinit */
-  //init seed
-  static bool init = false;
-  if(!init)
-      {randomInit();
-      init = true;
-      }
-  Meth.seed = lrand48();
   Meth.core = 0; Meth.pic = 0;
   Meth.verbose = 0;
   //Allowed approximation on n,m
@@ -2695,7 +2672,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   
   if(debug())LogPrintf("<%d",n_ask);
   Sizes.v = n_ask; 
-  if(!pmInitRND(&Meth))return NULL;
+  //if(!pmInitRND(&Meth))return NULL;
   if(!pmSetParameters(&Sizes,&Meth))return NULL;
   if(!pmMemoryInit(&Sizes,&Meth,&Mem))return NULL;
   if(!pmExtendMemory(&Sizes,&Meth,&Mem,0))return NULL;

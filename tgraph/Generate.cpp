@@ -21,8 +21,26 @@
 
 bool & EraseMultipleEdges();
 bool & EraseMultipleEdges()
+// if true the generators generate simple graphs
   {static bool _Erase = false;
   return _Erase;
+  }
+long & setSeed()
+  {static long _seed = 1;
+  return _seed;
+  }
+bool & randomSeed()
+  {static bool  _random = false;
+  return _random;
+  }
+void randomInit()
+// should be called before nay random graph generator
+  {if(randomSeed())
+      {time_t time_seed;
+      time(&time_seed);
+      setSeed() = (long)time_seed; 
+      }
+  srand48(setSeed());
   }
 
 GraphContainer *GenerateGrid(int a, int b)
@@ -140,8 +158,8 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
 }
 
 static int random(int range) 
-//returns a positve integer < range
-  {return (int)( ((rand())&0x7FFFFFFF) %(long)range);
+//returns an integer >=0 && < range
+  {return (int)(lrand48()%(long)range);
   }
 GraphContainer *GenerateRandomGraph(int a,int b)
   {if(debug())DebugPrintf("GenerateRandomGraph");  
@@ -168,10 +186,6 @@ GraphContainer *GenerateRandomGraph(int a,int b)
     }
   for (e=0; e<=m; e++)
     elabel[e]=e();
-  //init random seed
-  time_t time_seed;
-  time(&time_seed);
-  srand(time_seed);
   for(tbrin bb = 1;bb <= m;bb++)
       {while((v = random(n+1)) == 0);
       while((w = random(n+1)) == 0 || w == v);
