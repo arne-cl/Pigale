@@ -35,7 +35,11 @@ int main(int argc,char ** argv)
   InitPigaleColors();
 
   //Translations
+#ifdef _WINDOWS
+  QString transDict= QString(".")+ QDir::separator();
+#else
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
+#endif
   // translation file for Qt
   QTranslator qt( 0 );
   qt.load(QString("qt_") + QTextCodec::locale(),transDict);
