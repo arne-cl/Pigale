@@ -57,34 +57,6 @@ void MyWindow::LoadSettings()
 {}
 int GetPigaleColors()
   {
-//   QFileInfo fi("settings.txt"); 
-//   if(!fi.exists())return -1;
-//   QFile settings("settings.txt");
-//   if(settings.open(IO_ReadWrite))
-//       {QString s;
-//       int ii,r,g,b;
-//       QColor col;
-//       QTextStream txt(&settings);
-//       s = txt.readLine(); 
-//       if(s.contains("colors") == 0)
-// 	  {settings.close();
-// 	  qDebug("Error reading settings.txt");
-// 	  return -1;
-// 	  }
-//       for(int i = 0;i <= 3; i++)
-// 	  {txt >> ii >> r >>  g >> b;
-// 	  col.setRgb(r,g,b);
-// 	  if(col.isValid() && i < 4)
-// 	      QColorDialog::setCustomColor(i,col.rgb());
-// 	  else 
-// 	      {qDebug("Error reading settings.txt");
-// 	      settings.close();
-// 	      return -1;
-// 	      }
-// 	  }
-//       settings.close();
-//       return 0;
-//       }
   return -1;
   }
 #else

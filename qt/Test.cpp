@@ -6,19 +6,18 @@ int Test(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
   int err = 0;
   if(action == 1)
-      {err = G.Planarity();
-      //{err = (int)G.CheckBiconnected();
+      {//for(int i=1; i<100;i++)
+	  err = G.TestPlanar();
       if(err != 1)
-	  {DebugPrintf("Test Planarity() err=%d  Error():%d",err,Error());
-	  Error() = -12345; 
-	  }
+	  setError(-12345); 
       return 0;
       }
   if(action == 2)
-      {err = G.TestPlanar();
+      {//for(int i=1; i<100;i++)
+	  err = G.TestPlanar2();
       if(err != 1)
-	  {DebugPrintf("Test TestPlanar() err=%d  Error():%d",err,Error());
-	  Error() = -12345; 
+	  {DebugPrintf("Test TestPlanar() err=%d  Error():%d",err,getError());
+	  setError(-12345); 
 	  }
       return 0;
       }

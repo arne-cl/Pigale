@@ -156,9 +156,9 @@ void Graph_Properties::update()
       Twait("memory error");
       }
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  if(Error())
-      {if(debug())DebugPrintf("GP Error:%d",Error());
-      else Tprintf("GP Error:%d",Error());
+  if(getError())
+      {if(debug())DebugPrintf("GP Error:%d",(int)getError());
+      else Tprintf("GP Error:%d",(int)getError());
       }
   int nloops = G.RemoveLoops();
   if(nloops)
@@ -281,17 +281,17 @@ void Graph_Properties::update()
       ;
   else if(T && G.nv() > 3)
       {E = G.CheckNoC3Sep();
-      if(Error()){Error() = 0;Tprintf("Error CheckNoC3Sep");}
+      if(getError()){setError();Tprintf("Error CheckNoC3Sep");}
       else if(E) Tprintf("No C3 Separator");
       else Tprintf("C3 Separator");
       }
 
   else if(P && S && !M && dmin > 2  && G.CheckTriconnected())
-      {if(Error()){Error() = 0;Tprintf("Error CheckTriconnected");}
+      {if(getError()){setError();Tprintf("Error CheckTriconnected");}
       }
 
   else if(P && S && !M && G.CheckSubdivTriconnected())
-      {if(Error()){Error() = 0;Tprintf("Error CheckSubdivTriconnected");}
+      {if(getError()){setError();Tprintf("Error CheckSubdivTriconnected");}
       else Tprintf("Subdivision of a 3-Connected");
       }
       

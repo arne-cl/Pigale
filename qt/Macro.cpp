@@ -107,12 +107,12 @@ void MyWindow::macroHandler(int event)
 	  DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
 	  t0.restart();
 	  DebugPrintf("Macro stop at:%s",(const char *)t0.toString(Qt::TextDate)); 
-	  if(!Error())
-	      DebugPrintf("END PLAY OK times:%d MacroNumActions:%d",j,MacroNumActions);
+	  if(!getError())
+	      DebugPrintf("END PLAY OK iter:%d MacroNumActions:%d",j,MacroNumActions);
 	  else
 	      {gw->update();
-	      DebugPrintf("END PLAY ERROR times=%d MacroNumActions:%d",j,MacroNumActions);
-	      Error()=0;
+	      DebugPrintf("END PLAY ERROR iter=%d MacroNumActions:%d",j,MacroNumActions);
+	      setError();
 	      }
 	  break;
       default:
@@ -148,8 +148,8 @@ void MyWindow::macroPlay()
       {information();
       Tprintf("MacroNumActions:%d",MacroNumActions);
       }
-  if(Error())
-      {DebugPrintf("MACRO error=%d",Error());
+  if(getError())
+      {DebugPrintf("MACRO error=%d",(int)getError());
       MacroLooping = false;
       }
   }

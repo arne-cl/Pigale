@@ -160,7 +160,7 @@ int Graph::Planarity()//BUG in PrepDFS if not connected
 int TopologicalGraph::Planarity()
   {if(debug())DebugPrintf("Executing Planarity");
   if(debug()  && !DebugCir())
-      {DebugPrintf("input Cir is wrong");Error()=A_ERRORS_BAD_INPUT;return A_ERRORS_BAD_INPUT;}
+      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
   if(!ne())return 1;
   int m_origin = ne();
   MakeConnected();
@@ -173,7 +173,10 @@ int TopologicalGraph::Planarity()
   tbrin b0 = extbrin();
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
-      {delete &low;DebugPrintf("GDFSRenum ERROR");Error()=A_ERRORS_GDFSRENUM;return A_ERRORS_GDFSRENUM;}
+      {delete &low;
+      DebugPrintf("GDFSRenum ERROR");
+      setError(A_ERRORS_GDFSRENUM);return A_ERRORS_GDFSRENUM;
+      }
   nvin.swap(vin);
   _Bicon Bicon(n);
   int ret = bicon(n,m,vin,Bicon,low);
@@ -219,7 +222,7 @@ int TopologicalGraph::Planarity()
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
-	  {DebugPrintf("ERROR genus:%d",g);Error()=A_ERRORS_PLANARITY;Twait("Planarity Error");}
+	  {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
       }
 
   if(m != m_origin)

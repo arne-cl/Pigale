@@ -107,12 +107,12 @@ void TutteCircle(GeometricGraph &G, tbrin FirstBrin)
   int res;
   if ((res=SetTutteCircle(G,M,x0,y0,FirstBrin))!=0)
       {Tprintf("Error in SetTutteCircle : %d",res);
-      Error() = A_ERRORS_TUTTECIRCLE; 
+      setError(A_ERRORS_TUTTECIRCLE); 
       return;
       }
   if ((res=ComputeBary(G,M,x0,y0))!=0)        
       {Tprintf("Error in ComputeBarry : %d",res);
-      Error() =  A_ERRORS_BARYCENTER; 
+      setError(A_ERRORS_BARYCENTER); 
       return;
       }
   }
