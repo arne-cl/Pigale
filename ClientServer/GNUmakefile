@@ -85,16 +85,17 @@ test:
 
 # DO NOT DELETE
 
-client.o: client.h /usr/local/qt/include/qsocket.h
-client.o: /usr/local/qt/include/qobject.h /usr/local/qt/include/qobjectdefs.h
-client.o: /usr/local/qt/include/qglobal.h /usr/local/qt/include/qwindowdefs.h
-client.o: /usr/local/qt/include/qstring.h /usr/local/qt/include/qcstring.h
-client.o: /usr/local/qt/include/qmemarray.h /usr/local/qt/include/qgarray.h
-client.o: /usr/local/qt/include/qshared.h /usr/local/qt/include/qnamespace.h
-client.o: /usr/local/qt/include/qevent.h /usr/local/qt/include/qregion.h
-client.o: /usr/local/qt/include/qrect.h /usr/local/qt/include/qsize.h
-client.o: /usr/local/qt/include/qpoint.h /usr/local/qt/include/qmime.h
-client.o: /usr/local/qt/include/qmap.h /usr/local/qt/include/qdatastream.h
+client.o: client.h ../../pigale/incl/QT/Action_def.h
+client.o: /usr/local/qt/include/qsocket.h /usr/local/qt/include/qobject.h
+client.o: /usr/local/qt/include/qobjectdefs.h /usr/local/qt/include/qglobal.h
+client.o: /usr/local/qt/include/qwindowdefs.h /usr/local/qt/include/qstring.h
+client.o: /usr/local/qt/include/qcstring.h /usr/local/qt/include/qmemarray.h
+client.o: /usr/local/qt/include/qgarray.h /usr/local/qt/include/qshared.h
+client.o: /usr/local/qt/include/qnamespace.h /usr/local/qt/include/qevent.h
+client.o: /usr/local/qt/include/qregion.h /usr/local/qt/include/qrect.h
+client.o: /usr/local/qt/include/qsize.h /usr/local/qt/include/qpoint.h
+client.o: /usr/local/qt/include/qmime.h /usr/local/qt/include/qmap.h
+client.o: /usr/local/qt/include/qdatastream.h
 client.o: /usr/local/qt/include/qiodevice.h /usr/local/qt/include/qpair.h
 client.o: /usr/local/qt/include/qvaluelist.h /usr/local/qt/include/qtl.h
 client.o: /usr/local/qt/include/qtextstream.h
@@ -127,9 +128,8 @@ client.o: /usr/local/qt/include/qbutton.h
 client.o: /usr/local/qt/include/qkeysequence.h
 client.o: /usr/local/qt/include/qiconset.h /usr/local/qt/include/qpixmap.h
 client.o: /usr/local/qt/include/qradiobutton.h /usr/local/qt/include/qfile.h
-client.o: /usr/local/qt/include/qthread.h /usr/local/qt/include/qmutex.h
-client.o: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/QT/Action.h
 client.o: /usr/local/qt/include/qfileinfo.h /usr/local/qt/include/qdatetime.h
+client.o: /usr/local/qt/include/qthread.h /usr/local/qt/include/qmutex.h
 server.o: server.h /usr/local/qt/include/qsocket.h
 server.o: /usr/local/qt/include/qobject.h /usr/local/qt/include/qobjectdefs.h
 server.o: /usr/local/qt/include/qglobal.h /usr/local/qt/include/qwindowdefs.h

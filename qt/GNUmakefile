@@ -196,7 +196,7 @@ GraphGL.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 GraphGL.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
 GraphGL.o: GraphGL.h glcontrolwidget.h mouse_actions.h
 GraphGL.o: ../../pigale/incl/QT/GLWindow.h ../../pigale/incl/QT/MyQcolors.h
-GraphGL.o: ../../pigale/incl/TAXI/netcut.h
+GraphGL.o: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/embedrn.h
 GraphSym.o: MyWindow.h ../../pigale/incl/Pigale.h
 GraphSym.o: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
 GraphSym.o: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/graphs.h
