@@ -156,6 +156,7 @@ struct _PropName {
      desc[0+(32)]="#meta edges";
      name[0+(PROP_DRAWING+1)]="PROP_POINT_MIN";
      name[0+(PROP_DRAWING+2)]="PROP_POINT_MAX";
+     name[0+(PROP_DRAWING+3)]="PROP_RNEMBED";
      name[256+(0)]="PROP_LABEL";
      desc[256+(0)]="Label";
      name[512+(0)]="PROP_LABEL";
