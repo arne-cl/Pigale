@@ -14,8 +14,10 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/Tflist.h>
 #include <TAXI/KantShel.h>
+#include <TAXI/SWShelling.h>
 #include <TAXI/Tdebug.h>
 #include <TAXI/color.h>
+
 
 
 SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
@@ -32,9 +34,19 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   UnmarkedNeighbors.SetName("UnmarkedNeighbors");
 
 
-  LMCShelling  KS(G,fb);
+  //LMCShelling  KS(G,fb);
+  SWShelling  S2(G, fb);
+  tbrin  LeftConnection;
+  //int nb_shelled = 0;
+  int leftActive, rightActive;
+  /*     do {
+     i = S2.FindNext(left, right, LeftConnection, leftActive, rightActive);
+     cout << i << " " << G.vin[left] << " " << G.vin[-right] << " " << G.vin[LeftConnection] << endl;
+     nb_shelled +=i;
+   } while (i != 0);
+   assert (nb_shelled == G.nv() - 2);*/
 
-
+   //  LMCShelling  KS(G,fb);
   assert(ParentG[v_1] == 0);
   ParentG[v_1] = fb;
   assert(brin_color[fb] == Black);
@@ -45,115 +57,69 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   assert(brin_color[-fb] == Black);
   brin_color[-fb] = Blue;
 
+  // Compute the minimal Schnyder wood of G
   while (1) {
-    i=KS.FindNext(left,right);
-    //cout << i << endl;
-    if (i==0) 
+    i=S2.FindNext(left, right, LeftConnection, leftActive, rightActive);
+    if (i == 0)
       break;
-    if (i==1) { // a vertex shelled.
-      
-      v=G.vin[left];
-      assert(ParentB[v] == 0);
-      ParentB[v]= left;
-      assert(brin_color[left] == Black);
-      brin_color[left] = Blue;
-      if (UnmarkedNeighbors[G.vin[-left]] == 0) { //last
-	assert(ParentR[G.vin[-left]] == 0);
-	ParentR[G.vin[-left]] = -left;
-	assert(brin_color[-left] == Black);
-	brin_color[-left] = Red;
-      }
-      
-      assert(ParentG[v] == 0);
-      ParentG[v] = right;
-        assert(brin_color[right] == Black);
-      brin_color[right] = Green;
-      if (UnmarkedNeighbors[G.vin[-right]] == 0) { //last
-	assert(ParentR[G.vin[-right]] == 0);
-	ParentR[G.vin[-right]] = -right;
+    tvertex vLeftConnection = G.vin[LeftConnection];
+    tvertex vRight = G.vin[-right];
+    v = G.vin[left];
+    tvertex vCurrent;
+    
+    // Color left connection
+    for (b = -LeftConnection; b != left; b= -G.cir[b]) {
+      vCurrent = G.vin[b];
+
+      assert(ParentB[vCurrent] == 0);
+      ParentB[vCurrent] = b;
+      assert(brin_color[b] == Black);
+      brin_color[b] = Blue;
+
+      assert(ParentG[vCurrent] == 0);
+      ParentG[vCurrent] = G.cir[b];
+      assert(brin_color[G.cir[b]] == Black);
+      brin_color[G.cir[b]] = Green;
+    }
+    // color green parent of v
+    assert(ParentG[v] == 0);
+    ParentG[v] = right;
+    assert(brin_color[right] == Black);
+    brin_color[right] = Green;
+ 
+    // color blue parent of v
+    assert(ParentB[v] == 0);
+    ParentB[v] = left;
+    assert(brin_color[left] == Black);
+    brin_color[left] = Blue;
+
+    // color red children of v
+    for (b=G.cir[left]; b != right; b= G.cir[b]) {
+      vCurrent = G.vin[-b];
+      assert(ParentR[vCurrent] == 0);
+      ParentR[vCurrent] = -b;
+      assert(brin_color[-b] == Black);
+      brin_color[-b] = Red;
+    }
+
+    // Color parentEdge of leftConnection
+    if (!leftActive) {
+	assert(ParentR[vLeftConnection] == 0);
+	ParentR[vLeftConnection] = LeftConnection;
+	assert(brin_color[LeftConnection] == Black);
+	brin_color[LeftConnection] = Red;
+    }
+
+    // Color parentEdge of vRight
+    if (!rightActive) {
+	assert(ParentR[vRight] == 0);
+	ParentR[vRight] = -right;
 	assert(brin_color[-right] == Black);
 	brin_color[-right] = Red;
-      }
-      
-	  
-      b = G.cir[left];
-      while (b != right) {
-	assert(ParentR[G.vin[-b]] == 0);
-	ParentR[G.vin[-b]]= -b;
-	assert(brin_color[-b] == Black);
-	brin_color[-b] = Red;
-	b  = G.cir[b];
-      }
-
-      // Update UnmarkedNeigbhors
-      for (b = G.cir[left];  b != left ; b =  G.cir[b]) {
-	UnmarkedNeighbors[G.vin[-b]] ++;
-	assert( UnmarkedNeighbors[G.vin[-b]] >= 0);
-      }
-      UnmarkedNeighbors[G.vin[-b]] ++;
-      assert( UnmarkedNeighbors[G.vin[-b]] >= 0);
-      // assert( UnmarkedNeighbors[v] > 0);
     }
-    else {  // a face shelled.
-      left = -left;
-      v = G.vin[left];
-      assert(ParentB[v] == 0);
-      ParentB[v] = left;
-      assert(brin_color[left] == Black);
-      brin_color[left] = Blue;
-      if (UnmarkedNeighbors[G.vin[-left]] == 0) { //last
-	assert(ParentR[G.vin[-left]] == 0);
-	ParentR[G.vin[-left]] = -left;
-	assert(brin_color[-left] == Black);
-	brin_color[-left] = Red;
-      }
 
-
-      v=G.vin[right];
-      assert(ParentG[v] == 0);
-      ParentG[v] = right;
-      assert(brin_color[right] == Black);
-      brin_color[right] = Green;
-      if (UnmarkedNeighbors[G.vin[-right]] == 0) { //last
-	assert(ParentR[G.vin[-right]] == 0);
-	ParentR[G.vin[-right]] = -right;
-	assert(brin_color[-right] == Black);
-	brin_color[-right] = Red;
-      }
-      
-      b=-G.acir[right];
-      while (b !=-left) {
-	assert(b != left);
-	assert(ParentG[G.vin[b]] == 0);
-	ParentG[G.vin[b]] = b;
-	assert(brin_color[b] == Black);
-	brin_color[b] = Green;
-
-
-	assert(ParentB[G.vin[-b]] == 0);
-	ParentB[G.vin[-b]] = -b;
-	assert(brin_color[-b] == Black);
-	brin_color[-b] = Blue;
-	
-	// Update UnmarkedNeigbhors
-	for (bb = G.cir[b];  bb != b ; bb =  G.cir[bb]) {
-	  UnmarkedNeighbors[G.vin[-bb]] ++;
-	  assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
-	}
-	UnmarkedNeighbors[G.vin[-bb]] ++;
-	assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
-	b=-G.acir[b];
-      }
-
-      for (bb = G.cir[right];  bb !=right ; bb =  G.cir[bb]) {
-	UnmarkedNeighbors[G.vin[-bb]] ++;
-	assert( UnmarkedNeighbors[G.vin[-bb]] >= 0);
-      }
-      UnmarkedNeighbors[G.vin[-bb]] ++;
-      assert(UnmarkedNeighbors[G.vin[-bb]] >= 0);
-	
-    }
   }
+  
 
   ForAllVertices(v,G) {
     if (v != v_1) {
@@ -193,16 +159,17 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
     }
   }
 
-  while(CountDeltaSharpCW() != 0) {
+  assert (CountDeltaSharpCW() == 0);
+  /*while(CountDeltaSharpCW() != 0) {
     ForAllVertices(v,G) {
       remove_cw_elbow(v, Red);
       remove_cw_elbow(v, Blue);
       remove_cw_elbow(v, Green);
       reverse_cw_face(v);
     }
-  }
+    }*/
 
-  /*
+  
   int nb_cwR = 0, nb_cwG = 0 , nb_cwB = 0;
   int nb_ccwR = 0, nb_ccwG = 0 , nb_ccwB = 0;
 
@@ -224,8 +191,8 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
     if(is_ccw_elbow(v, Blue))
       nb_ccwB++;
       }
-  cout << "deltaCW =\t" << CountDeltaSharpCW() << "\tR = "<< nb_cwR << "\tG = "<< nb_cwG << "\tB = "<< nb_cwB <<endl;
-  cout <<  "deltaCCW =\t" << CountDeltaSharpCCW() <<"\tR = "<< nb_ccwR << "\tG = "<< nb_ccwG << "\tB = "<< nb_ccwB <<endl;*/
+  //  cout << "deltaCW =\t" << CountDeltaSharpCW() << "\tR = "<< nb_cwR << "\tG = "<< nb_cwG << "\tB = "<< nb_cwB <<endl;
+  //  cout <<  "deltaCCW =\t" << CountDeltaSharpCCW() <<"\tR = "<< nb_ccwR << "\tG = "<< nb_ccwG << "\tB = "<< nb_ccwB <<endl;
 
 }
 
@@ -760,3 +727,52 @@ tvertex SchnyderWood::GetPreviousChild (tvertex current_child, short c) const {
   
 
 
+bool SchnyderWood::is_unpointed_face(tbrin b) const {
+  assert(!IsBlack(b.GetEdge()));
+  tbrin current_b = b;
+  tbrin prev_b = b;
+  do {
+    prev_b = current_b;
+    current_b = G.cir[-current_b];
+    while (IsBlack(current_b.GetEdge()))
+      current_b = G.cir[current_b];
+    if (brin_color[-current_b] == brin_color[prev_b] && brin_color[-current_b] != Black)
+      return false;
+  } while (b != current_b);
+  //  cout << "unpointed " << G.vin[b] << " " << G.vin[-b] << " " << G.vin[prev_b] << endl;
+  return true;
+}
+
+bool SchnyderWood::isFirstBrinOfFace(tbrin b) const {
+  assert(!IsBlack(b.GetEdge()));
+  int min_b = abs(b());
+  tbrin current_b = b;
+  do {
+    current_b = G.cir[-current_b];
+    while (IsBlack(current_b.GetEdge()))
+      current_b = G.cir[current_b];
+    if (abs(current_b()) < min_b) 
+      return false;
+  } while (b != current_b);
+  return true;
+}
+
+int SchnyderWood::CountUnpointedFaces() const {
+  tedge e;
+  tbrin b;
+  int nb_unpointed = 0;
+  ForAllEdges(e,G) {
+    if (!IsBlack(e)) {
+      b= e.firsttbrin();
+      if (isFirstBrinOfFace(b))
+	if (is_unpointed_face(b))
+	  nb_unpointed ++;
+      b= e.secondtbrin();
+      if (isFirstBrinOfFace(b))
+	if (is_unpointed_face(b))
+	  nb_unpointed ++;
+    }
+  }
+  //  assert(nb_unpointed % 2 == 0);
+  return nb_unpointed ;
+}

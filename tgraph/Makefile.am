@@ -43,6 +43,7 @@ libtgraph_la_SOURCES= \
     SchaefferGen.cpp\
     Schnyder.cpp\
     SchnyderWood.cpp\
+    SWShelling.cpp\
     STList.cpp\
     Tgf.cpp\
     TopoAlgs.cpp\

@@ -276,6 +276,8 @@ EmbedCCD.opt: ../../pigale/incl/TAXI/Tpoint.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/SchnyderWood.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/IntList.h ../../pigale/incl/TAXI/color.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/Tstack.h ../../pigale/incl/TAXI/Tarray.h
+EmbedCCD.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
+EmbedCCD.opt: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graphs.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/Tprop.h
@@ -540,6 +542,7 @@ SchnyderWood.opt: ../../pigale/incl/TAXI/Tflist.h
 SchnyderWood.opt: ../../pigale/incl/TAXI/Tstack.h
 SchnyderWood.opt: ../../pigale/incl/TAXI/Tarray.h
 SchnyderWood.opt: ../../pigale/incl/TAXI/KantShel.h
+SchnyderWood.opt: ../../pigale/incl/TAXI/SWShelling.h
 STList.opt: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/Tbase.h
 STList.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 STList.opt: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tsvector.h
@@ -547,6 +550,23 @@ STList.opt: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
 STList.opt: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
 STList.opt: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 STList.opt: ../../pigale/incl/TAXI/Tmessage.h
+SWShelling.opt: ../../pigale/incl/TAXI/SWShelling.h
+SWShelling.opt: ../../pigale/incl/TAXI/graphs.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+SWShelling.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tsvector.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tdebug.h
+SWShelling.opt: ../../pigale/incl/TAXI/Errors.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tpropio.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tstring.h
+SWShelling.opt: ../../pigale/incl/TAXI/propdef.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tpoint.h
+SWShelling.opt: ../../pigale/incl/TAXI/IntList.h
+SWShelling.opt: ../../pigale/incl/TAXI/color.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tmessage.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tflist.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tstack.h
+SWShelling.opt: ../../pigale/incl/TAXI/Tarray.h
 Tgf.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tgf.h
 TopoAlgs.opt: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/Tbase.h
 TopoAlgs.opt: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
