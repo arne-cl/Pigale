@@ -166,20 +166,21 @@ void GraphEditor::Spring()
 //**************************************************************************************
 void GraphEditor::SpringPreservingMap()
 /*
-t current tanslation
+t current tanslation of v0
 */
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
   DoNormalise = true;
+  //int option = Twait("option");
   int h = gwp->canvas->height(),w = gwp->canvas->width();
   double mhw = Min(w,h) - 2*BORDER;
-  //Tpoint center((w - space - sizerect)/2.,h/2.);
   int n_red,n = G.nv(),m =G.ne();
   double len,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
   double expand = 1.;
-  double hw,hw0 = .25*(mhw*mhw)/(n*m);//.5
+  double hw,hw0 = .1*(mhw*mhw)/(n*m);//.25
+  //double hw,hw0 = .5*(mhw*mhw)/(n*m);//.5
   int iter,niter = 2000;
   double dist2,strength,dx,dy,dep;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
@@ -232,10 +233,9 @@ t current tanslation
 	      if (count!=0)
 		pcenter /= count;
 	      else pcenter=p0;
-	      dist2 = Max(Distance2(pcenter,p),1E-4);
+	      dist2 = Max(Distance2(pcenter,p),.1); // better than 1E-4
 	      strength = (hw/dist2);
 	      t += strength * (pcenter-p);
-	      // t += (p0 - p)*strength; 
 	      }
 
 	  //v0 is attracted or repulsed by its neighbours (1/d)
@@ -244,8 +244,7 @@ t current tanslation
 	  do
 	      {tvertex v=G.vin[-b];
 	      p = G.vcoord[v];
-	      dist2 = Max(Distance2(p0,p),.01);
-	      //strength = Min(sqrt(hw/dist2),1);
+	      dist2 = Max(Distance2(p0,p),.1);
 	      double pond = .5*(1. + degree[v0]/(degree[v0]+degree[v]));
 	      strength = Min(sqrt(hw/dist2),1)*pond;
 	      if(dist2 > len02/4)
@@ -265,8 +264,8 @@ t current tanslation
 	      {tvertex v = G.vin[e], w = G.vin[-e];
 	      if(v0 == v || v0 == w)continue;
 	      dist2 = dist_seg(p00,G.vcoord[v],G.vcoord[w],p);
-	      if(dist2 > 2.)
-		  {strength = (hw/dist2);
+	      if(dist2 > 2.) //2. good value
+		  {strength = (hw/dist2)*2.; //better with *2
 		  t += (p00 - p)*strength;
 		  }
 	      else
@@ -279,13 +278,8 @@ t current tanslation
 		  }
 		if (tt*tt!=0) tt = tt/sqrt(tt*tt); // normalize
 		else qDebug("null vector");
-		//t += 5.*tt;
-		t += hw/2.*tt;
+		t += hw/2.*tt; // should not be decrease
 		}
-// 	      else if(G.vcoord[v].y() != G.vcoord[v].y())
-// 		  t.x() += 5.;
-// 	      else
-// 		  {t.x() += 5.;t.y() += 5.;}
 
 	      }
 	  t *= force;
