@@ -83,7 +83,7 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/generate/gen N1",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen N2",spin_N1->value());
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
-  setting.writeEntry("/pigale/generate/gen EraseMultiple",EraseMultipleEdges());
+  setting.writeEntry("/pigale/generate/gen EraseMultiple",randomEraseMultipleEdges());
   // macro
 //setting.writeEntry("/pigale/generate/gen Repeat",spinMacro->value());
   setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getNum());
@@ -133,7 +133,7 @@ void MyWindow::LoadSettings()
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
   pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
-  EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
+  randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   }
 int GetPigaleColors()
