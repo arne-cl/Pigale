@@ -16,6 +16,7 @@
 #include <qmainwindow.h>
 #include <qdatetime.h>
 #include <qstring.h>
+#include <qmap.h>
 #include <Pigale.h> 
 
 #if QT_VERSION < 300
@@ -80,12 +81,15 @@ public slots:
   void information();
   void print();
   void png();
+private:
+  void mapActionsInit();
 public:
   void Message(QString s);
   void MessageClear();
   void UndoTouch(bool save=false);
   void blockInput(bool t);
   int MyWindow::getKey();
+  QString& getActionString(int action);
 
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
@@ -100,6 +104,7 @@ public:
   GraphContainer GC;
   QString DirFilePng;
   bool MacroLooping;
+
  
 private:
   QToolBar *tb;
@@ -113,6 +118,8 @@ private:
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroExecuting;
+  typedef QMap<int,QString> IntStringMap;
+  IntStringMap mapActions;
 };
 
 
