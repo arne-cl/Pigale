@@ -146,11 +146,16 @@ void MyWindow::LoadSettings()
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
   // if pigale was called with arguments, we may modify some values
   if(qApp->argc() < 3)return;
+  bool DirFileModified = false;
+  bool InputModified = false;
+  bool OutputModified = false;
   for(int i = 1; i < qApp->argc()-1;i++)
       {if(QString((const char *)qApp->argv()[i]) == "-fd")
 	  {QString FileName = (const char *)qApp->argv()[i+1];
 	   QFileInfo fi = QFileInfo(FileName);
-	   if(fi.exists() && fi.isDir())DirFile = fi.filePath();
+	   //if(fi.exists() && fi.isDir())DirFile = fi.fileName();
+	   if(fi.exists() && fi.isDir())
+	       {DirFile = FileName;DirFileModified = true;}
 	   else qDebug("%s is not a valid directory",(const char *)FileName);
 	  }
       }
@@ -158,13 +163,24 @@ void MyWindow::LoadSettings()
       {if(QString((const char *)qApp->argv()[i]) == "-fi")
 	  {InputFileName =  DirFile + QDir::separator()
 	  +(const char *)qApp->argv()[i+1];
+	  InputModified = true;
 	  QFileInfo fi = QFileInfo(InputFileName);
 	  if(!fi.exists()) 
 	      qDebug("%s does not exist",(const char *)InputFileName);
 	  }
       if(QString((const char *)qApp->argv()[i]) == "-fo")
-	  OutputFileName =  DirFile + QDir::separator()
+	  {OutputFileName =  DirFile + QDir::separator()
 	  +(const char *)qApp->argv()[i+1];
+	  OutputModified = true;
+	  }
+      }
+  if(DirFileModified && !InputModified)
+      {QFileInfo fi = QFileInfo(InputFileName);
+      InputFileName = DirFile + QDir::separator() + fi.fileName();
+      }
+  if(DirFileModified && !OutputModified)
+      {QFileInfo fi = QFileInfo(OutputFileName);
+      OutputFileName = DirFile + QDir::separator() + fi.fileName();
       }
   }
 int GetPigaleColors()
