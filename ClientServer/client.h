@@ -29,16 +29,7 @@
 #include <qmutex.h>
 #include <QT/clientEvent.h> 
 #include <QT/Action_def.h>
-#include <unistd.h>
-
-#define GCC_VERSION (__GNUC__ * 10000 \
-                              + __GNUC_MINOR__ * 100 \
-                              + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION >=  30000
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
+#include <TAXI/Tbase.h> 
 
 /* 
 In the input:
@@ -49,7 +40,7 @@ In the input:
 - line  starting by ':d' signals the client not to echo the comments
 
 - otherwise a line contains commands  separated by ':'
-- commands may conTains arguments separated by ';'
+- commands may contain arguments separated by ';'
 
 When reading from the server
 - lines starting with ! are commands
