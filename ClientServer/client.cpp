@@ -46,11 +46,17 @@ int Client::ChangeActionsToDo(int delta)
   mutex.lock();
   i=(ActionsToDo += delta);
   mutex.unlock();
+  if(!stack.isEmpty() && delta < 0)
+      {if(debug()) writeToClient("...... "+*stack.top()+" processed");
+      stack.pop(); 
+      }
   return i;
   }
 void Client::socketConnected()
   {infoText->append("Connected to server");
   ActionsToDo = 1; // wait server answers
+  QString *txt  =  new QString("WAIT_SERVER");
+  stack.push(txt);
   ThreadRead.pclient = this;
   ThreadRead.start();
   }
@@ -108,6 +114,8 @@ void Client::sendToServer(QString &str)
       {writeToClient(QString("state:%1").arg(socket->state()));return;}
   if(str.at(0) == '#' || str.at(0) == '!') //split str -> 1 command per line if not a comment
       {cls << str << endl;
+      QString *txt  =  new QString(str);
+      stack.push(txt);
       ChangeActionsToDo(1);
       return;
       }
@@ -119,6 +127,8 @@ void Client::sendToServer(QString &str)
       else
           {cls << fields[i] << endl;
           ChangeActionsToDo(1);
+          QString *txt  =  new QString(fields[i]);
+          stack.push(txt);
           //if(debug())writeToClient(QString(" action:%1 -%2-").arg(ActionsToDo).arg( fields[i]));
           }
       }
@@ -133,6 +143,8 @@ int Client::sendToServerGraph(QString &data)
       {writeToClient(QString("NO FILE:%1").arg(GraphFileName));
       return -1;
       }
+  QString *txt  =  new QString("RC_GRAPH");
+  stack.push(txt);
   ChangeActionsToDo(1);
   uint size = fi.size();
   if(debug()) writeToClient(QString("SENDING:%1 %2 bytes").arg(GraphFileName).arg(size));
@@ -211,7 +223,16 @@ void threadRead::run()
       while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
           if(++retry %100 == 0 && pclient->debug())
-              pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100).arg(pclient->ChangeActionsToDo(0)));
+              {
+              if(!pclient->stack.isEmpty()) 
+                  {QString action = *pclient->stack.top(); 
+                  pclient-> writeToClient(QString("Waiting %1s (%2-%3)").arg(retry/100).arg(action)
+                                      .arg(pclient->ChangeActionsToDo(0)));
+                  }
+              else
+                  pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100)
+                                      .arg(pclient->ChangeActionsToDo(0)));
+              }
           }
       str = stream.readLine(); 
       QChar ch = str.at(0);

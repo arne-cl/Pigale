@@ -27,6 +27,7 @@
 #include <qfileinfo.h>
 #include <qthread.h>
 #include <qmutex.h>
+#include <qptrstack.h>
 #include <QT/clientEvent.h> 
 #include <QT/Action_def.h>
 #include <TAXI/Tbase.h> 
@@ -81,6 +82,7 @@ public:
   int ActionsToDo;
   bool dbg;
   int ChangeActionsToDo(int delta);
+  QPtrStack<QString > stack;
 
 private:
   int sendToServerGraph(QString &str);

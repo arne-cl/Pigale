@@ -13,7 +13,7 @@ SYMETRIE
 PNG
 
 # read another tgf file and load the second graph
-RC_GRAPH;ex.tgf;2
+RC_GRAPH;ex.tgf;1
 # get the number of vertices and edges
 N:M
 # ask for a spring embedder
