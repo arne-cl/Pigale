@@ -75,7 +75,4 @@ int getErrorLine();
   #define DPUTS(str) {}
   #define CHKNEW(p)
 #endif
-
-
 #endif
-

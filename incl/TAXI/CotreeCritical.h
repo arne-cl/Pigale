@@ -12,8 +12,8 @@
 #ifndef _NNDFS_H_
 #define _NNDFS_H_
 #include <TAXI/DFSGraph.h>
+#include <TAXI/Tmessage.h>
 
-void DrawGraph();
 struct DFSKura : public DFSGraph
 {
     Prop<int> ewidth;

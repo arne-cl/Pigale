@@ -44,7 +44,7 @@ class GraphWidgetPrivate
   InfoItem* info_item;
   GeometricGraph* pGG;
   GraphEditor* editor;
-  MyWindow *mywindow;
+  pigaleWindow *mywindow;
   bool moving_subgraph;
   GraphWidget *GW;
   svector<ColorItem *>NodeColorItem;

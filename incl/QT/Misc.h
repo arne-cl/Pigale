@@ -16,10 +16,10 @@
 
 // in Misc.cpp 
 void DefineGraphContainer(GraphContainer *GC);
-void DefineMyWindow(MyWindow *father);
-void DefineMyPaintWindow(MyPaint *p);
-MyWindow* GetMyWindow();
-MyPaint* GetMyPaintWindow();
+void DefinepigaleWindow(pigaleWindow *father);
+void DefinepigalePaintWindow(pigalePaint *p);
+pigaleWindow* GetpigaleWindow();
+pigalePaint* GetpigalePaintWindow();
 void DrawGraph(void);
 void DrawGraph(Graph &G);
 GraphContainer& GetMainGraph();

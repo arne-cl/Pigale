@@ -11,7 +11,7 @@
 
 #ifndef _TBASE_H_INCLUDED_
 #define _TBASE_H_INCLUDED_
-
+//#include <config.h>
 #ifdef __GNUC__
 #ifndef  GCC_VERSION
 #define GCC_VERSION (__GNUC__ * 10000 \

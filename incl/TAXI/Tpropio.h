@@ -65,5 +65,4 @@ struct TypeHandler<tstring>
         }
 };
 
-
 #endif

@@ -9,25 +9,23 @@
 **
 *****************************************************************************/
 
-#ifndef _TMESSAGE_H_INCLUDED_
-#define _TMESSAGE_H_INCLUDED_
+#ifndef __TGDEBUG_H__
+#define __TGDEBUG_H__
+
 #include  <TAXI/graphs.h>
 
 class GraphDebug {
  public:
   virtual void DrawGraph(Graph &G) {}
   virtual void DrawGraph(void) {}
-  virtual int wait(const char *) {return 0;}
-  virtual void clear(void) {}
+  virtual int Twait(const char *) {return 0;}
   virtual void printf(const char *,...) {}
   static GraphDebug *gd;
-  GraphDebug() {if (gd==(GraphDebug *)0) gd=this;}
 };
 
 inline void DrawGraph(Graph &G) {GraphDebug::gd->DrawGraph(G);}
 inline void DrawGraph() {GraphDebug::gd->DrawGraph();}
-inline int Twait(const char *msg) {return GraphDebug::gd->wait(msg);}
-inline void Tclear() {GraphDebug::gd->clear();}
+inline int Twait(const char *msg) {return GraphDebug::gd->Twait(msg);}
 #define Tprintf GraphDebug::gd->printf
 inline void SetGDebug(GraphDebug *gdbg) {GraphDebug::gd=gdbg;}
 

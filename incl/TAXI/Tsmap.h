@@ -27,15 +27,15 @@ Utilisation:
       while...
           key= ..
           value=...
-          MyMap[key]=value;
+          pigaleMap[key]=value;
           ..
-          toto=MyMap[autreKey];
+          toto=pigaleMap[autreKey];
 
   Utilisation avec test:
 
      int i;
-     if ((i=MyMap.ExistingIndexByKey(key))>=0)
-        MyMap.ValueByIndex(i)=...
+     if ((i=pigaleMap.ExistingIndexByKey(key))>=0)
+        pigaleMap.ValueByIndex(i)=...
      else
         ...
 */

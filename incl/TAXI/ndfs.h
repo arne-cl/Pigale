@@ -15,6 +15,7 @@
 #include <TAXI/Tbase.h>
 #include <TAXI/color.h>
 #include <TAXI/graphs.h>
+#include <TAXI/Tmessage.h>
 #define PRIVATE
 #include <TAXI/lralgo.h>
 #undef PRIVATE
@@ -104,7 +105,6 @@ struct _DFS
     int Lralgo( _LrSort &LrSort, _FastHist &Hist);
 };
 
-void DrawGraph();
 
 class _Kuratowski : public _DFS
 {
