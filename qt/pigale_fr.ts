@@ -78,11 +78,11 @@
     </message>
     <message>
         <source>Fit grid</source>
-        <translation>Sur G.</translation>
+        <translation>Sur Grille</translation>
     </message>
     <message>
         <source>Show grid</source>
-        <translation>Montrer G.</translation>
+        <translation>Montrer Grille</translation>
     </message>
     <message>
         <source>Force G</source>
@@ -138,6 +138,14 @@
     <message>
         <source>Curves</source>
         <translation>Courbes</translation>
+    </message>
+    <message>
+        <source></source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>default </source>
+        <translation>défaut</translation>
     </message>
 </context>
 <context>
@@ -743,11 +751,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Pigale Editor 1.2.5 Debug Mode</source>
-        <translation>Editeur Pigale 1.2.5 (mode debug)</translation>
+        <translation type="obsolete">Editeur Pigale 1.2.5 (mode debug)</translation>
     </message>
     <message>
         <source>Pigale Editor 1.2.5</source>
-        <translation>Editeur Pigale 1.2.5</translation>
+        <translation type="obsolete">Editeur Pigale 1.2.5</translation>
     </message>
     <message>
         <source>Choose the documentation directory &lt;em&gt;Doc&lt;/em&gt;</source>
@@ -768,6 +776,18 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>I cannot find the inline manual &lt;em&gt;manual.html&lt;/em&gt;</source>
         <translation>Je ne trouve pas le fichier &lt;em&gt;manual.html&lt;/em&gt;</translation>
+    </message>
+    <message>
+        <source>Set a font</source>
+        <translation>Choisir une police</translation>
+    </message>
+    <message>
+        <source>Pigale Editor</source>
+        <translation>Editeur Pigale</translation>
+    </message>
+    <message>
+        <source>Debug Mode</source>
+        <translation>Mode debug</translation>
     </message>
 </context>
 </TS>
