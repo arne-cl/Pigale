@@ -168,6 +168,7 @@ private:
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent*);
   void paintEvent(QPaintEvent *);
+  void UpdateSizeGrid();
 
   QPoint start_position;
   GraphWidgetPrivate* gwp;

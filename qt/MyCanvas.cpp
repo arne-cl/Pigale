@@ -192,10 +192,9 @@ void GraphWidget::ForceGrid()
   {if(d->mywindow->MacroLooping)return;
   d->ForceGrid = true;
   d->ForceGridOk = true;
-  //d->OldFitSizeGrid = d->FitSizeGrid;
   d->OldFitToGrid = (d->mywindow->mouse_actions->ButtonUndoGrid->isEnabled()) ? true : false;
   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(false);
-  //d->FitSizeGrid = d->SizeGrid;
+  //d->editor->zoom = 1;
   d->editor->load();
   if(d->ForceGridOk)
       {d->OldFitSizeGrid = d->FitSizeGrid;
@@ -940,6 +939,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       node->moveBy(dx,-dy);
       gwp->moving_item = 0;
       canvas()->update();
+      UpdateSizeGrid();
       return;
       }
   if(gwp->moving_subgraph == true)
@@ -947,15 +947,28 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       if(!IsGrid)return;
       GeometricGraph & G = *(gwp->pGG);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-      tvertex v = 1;
-      double prev_x = G.vcoord[v].x();
-      double prev_y = G.vcoord[v].y();
-      ToGrid(v);
-      double dx =  G.vcoord[v].x() - prev_x;
-      double dy =  G.vcoord[v].y() - prev_y;
-      for(v = 1;v <= G.nv();v++)
-	  nodeitem[v]->moveBy(dx,-dy);
+      short vcol;  G.vcolor.getinit(vcol);
+      NodeItem * node;
+      // Find a vertex of the subgraph
+      tvertex mv = 0;
+      for(tvertex v = 1; v <= G.nv();v++)
+	  {node =(NodeItem *)nodeitem[v];
+	  if(G.vcolor[node->v] != vcol)continue;
+	  else {mv = v;break;}
+	  }
+      if(!mv)return;
+      double prev_x = G.vcoord[mv].x();
+      double prev_y = G.vcoord[mv].y();
+      ToGrid(mv);
+      double dx =  G.vcoord[mv].x() - prev_x;
+      double dy =  G.vcoord[mv].y() - prev_y;
+      for(tvertex v = 1;v <= G.nv();v++)
+	  {node =(NodeItem *)nodeitem[v];
+	  if(G.vcolor[node->v] != vcol)continue;
+	  node->moveBy(dx,-dy);
+	  }
       canvas()->update();
+      UpdateSizeGrid();
       return;
       }
   if(gwp->curs_item)// end creating an edge
@@ -977,6 +990,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
 	  v2 = G.NewVertex(pp);ToGrid(v2);
 	  nodeitem[v2] = CreateNodeItem(v2,gwp);
 	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+	  if(IsGrid)UpdateSizeGrid();
 	  }
       else
 	  v2 = node->v;
@@ -1194,6 +1208,28 @@ void GraphEditor::UndoGrid()
   InitGrid();
   canvas()->update(); 
   }
+void GraphEditor::UpdateSizeGrid()
+  {GeometricGraph & G = *(gwp->pGG);
+  int nxstep_old = nxstep;
+  int nystep_old = nystep;
+  max_used_x = min_used_x = G.vcoord[1].x(); 
+  max_used_y = min_used_y = G.vcoord[1].y();
+  for (int i = 2;i <= G.nv();i++)
+      {min_used_x = Min(min_used_x,G.vcoord[i].x());
+      max_used_x = Max(max_used_x,G.vcoord[i].x());
+      min_used_y = Min(min_used_y,G.vcoord[i].y());
+      max_used_y = Max(max_used_y,G.vcoord[i].y());
+      }
+  nxstep = (int)(.5 + (max_used_x - min_used_x)/xstep);
+  nystep = (int)(.5 + (max_used_y - min_used_y)/ystep);
+  if(nxstep == nxstep_old && nystep == nystep_old)return; 
+  //Update the display
+  int nstep = Max(nxstep,nystep);
+  gwp->SizeGrid = nstep;
+  gwp->RedrawGrid = false; //as the slider will send a message
+  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
+  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+  }
 int GraphEditor::InitGrid()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
@@ -1225,7 +1261,7 @@ int GraphEditor::InitGrid()
       return 0; 
       }
   int genus0 = -1;
-  if(gwp->ForceGrid && G.CheckConnected())
+  if(gwp->ForceGrid && G.CheckConnected() && G.CheckSimple())
       genus0 = G.ComputeGeometricCir();
   int *heap = new int[n+1];    coord = new double[n+1];
   // x-coordinates
@@ -1316,7 +1352,8 @@ int GraphEditor::InitGrid()
       {maxused_x = Max(maxused_x,G.vcoord[i].x());
       maxused_y = Max(maxused_y,G.vcoord[i].y());
       }
-  if(!Equal(max_used_x,maxused_x) || !Equal(max_used_y,maxused_y))
+  //if(!Equal(max_used_x,maxused_x) || !Equal(max_used_y,maxused_y))
+  if(max_used_x < maxused_x || max_used_y < maxused_y)
       {NeedNormalise = 1;
       max_used_x = maxused_x; max_used_y = maxused_y;
       }
