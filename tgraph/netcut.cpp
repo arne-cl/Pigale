@@ -124,8 +124,9 @@ void EmbedRnGraph::init()
       else
 	  DebugPrintf("Distance: Orient"); 
       }
-
-  if(useDistance() == 2)//Incidence
+  if(useDistance() == 1)//Bissection
+      ComputeBissectDistances();
+  else if(useDistance() == 2)//Incidence
       ComputeIncidenceDistances();
   else if(useDistance() == 3)
       ComputeIncidenceMDistances();
@@ -134,7 +135,7 @@ void EmbedRnGraph::init()
   else if(useDistance() == 5)
       ComputeR2Distances();
   else
-      ComputeDistances(); //Neigbour or Bissect
+      ComputeDistances(); //Neigbour
 
   if(diag(Coords,nv(),Distances,EigenValues))ok = false;
   }
@@ -320,7 +321,26 @@ int EmbedRnGraph::ComputeAdjMatrix()
       }
   return 0;
   }
+int EmbedRnGraph::ComputeBissectDistances()
+  {// Compute degrees
+  degree.resize(1,nv()); 
+  for(tvertex v = 1 ;v <= nv();v++)
+      degree[v()] = Degree(v);
 
+  for(int i = 1;i <= nv();i++)
+      for(int j = 1;j <= nv();j++)
+	  Distances[i][j] = 1.;
+  double d;
+  for(tedge e = 1;e <= ne();e++)
+      {tvertex v = vin[e];
+      tvertex w  = vin[-e];
+      d = (degree[v] + degree[w])/(double)(degree[v] + degree[w] + 2);
+      Distances[v()][w()] = Distances[w()][v()] = d;
+      }
+  for(int i = 1;i <= nv();i++)
+      Distances[i][i] = .0;
+  return 0;
+  }
 int EmbedRnGraph::ComputeIncidenceDistances()
   {int i,j;
   for(i = 1;i <= nv();i++)
@@ -408,8 +428,7 @@ double EmbedRnGraph::ComputeDistance(int vertex1,int vertex2)
           }
       }
 
-  if(useDistance() == 1)//Bissection
-      NCommonVertices = adjacent ? 1 : 0; 
+  //if(useDistance() == 1) NCommonVertices = adjacent ? 1 : 0; //Bissection
   
   int SymDiff = degree[vertex1] + degree[vertex2] + 2 -2*NCommonVertices;
   double d = (double)SymDiff/(double)(degree[vertex1] + degree[vertex2] + 2);

@@ -105,6 +105,7 @@ class EmbedRnGraph : public TopologicalGraph
   double ComputeOutDist(int vertex1,int vertex2);
   int ComputeIncidenceDistances();
   int ComputeIncidenceMDistances();
+  int ComputeBissectDistances();
   int ComputeR2Distances();
   
 
