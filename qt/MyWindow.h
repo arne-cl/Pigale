@@ -127,6 +127,14 @@ private:
   QString DirFileMacro;
   QString MacroFileName;
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
+  // settings
+  QString DirFileDoc;
+  int Gen_N1,Gen_N2,Gen_M;
+  int MyWindowInitYsize,MyWindowInitXsize;
+  int macroRepeat,macroMul;
+  int MaxNS,MaxND;
+  int PrinterOrientation,PrinterColorMode;
+  //
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroLooping;

@@ -32,15 +32,15 @@
 #undef QTextEdit
 #include <qtextview.h>
 #define QTextEdit QTextView
-
+#include <qtextstream.h>
 #else
 #include <qtextedit.h>
 #include <qsettings.h>
 #endif
 
 #if QT_VERSION < 300
-void MyWindow::SaveSettings()  
-  { // Save colors
+
+   // Save colors
 //   QFile settings("settings.txt");
 //   if(settings.open(IO_ReadWrite)) 
 //       {QTextStream txt(&settings);
@@ -53,9 +53,135 @@ void MyWindow::SaveSettings()
 // 	  }
 //       settings.close();
 //       }
-  }
+  
+void MyWindow::SaveSettings()
+  {QFile settings("settings.txt");
+  if(!settings.open(IO_WriteOnly))return; 
+  QTextStream txt(&settings);
+  txt << "GeometryHeight=" << this->height() << endl;
+  txt << "GeometryWidth=" << this->width() << endl;
+  txt << "InputFileName=" << InputFileName << endl;
+  txt << "OutputFileName=" << OutputFileName << endl;
+  txt << "Debug=" << debug() << endl;
+  txt << "IsUndoEnable=" << IsUndoEnable << endl;
+  txt << "RandomSeedEnable=" << randomSeed() << endl;
+  txt << "RandomSeed=" << randomSetSeed() << endl;
+  txt << "LimitsSlow=" << spin_MaxNS->value() << endl;
+  txt << "LimitsDisplay=" << spin_MaxND->value() << endl;
+  txt << "EmbedShowLabels=" << ShowVertex() << endl;
+  txt << "EmbedRect=" << SchnyderRect() << endl;
+  txt << "EmbedLongestFace=" << SchnyderLongestFace() << endl;
+  txt << "EmbedSchnyderColor=" << SchnyderColor() << endl;
+  txt << "EmbedDistance=" << useDistance() << endl;
+  txt << "GenerateN1=" << spin_N1->value() << endl;
+  txt << "GenerateN2=" << spin_N2->value() << endl;
+  txt << "GenerateM=" << spin_M->value() << endl;
+  txt << "GenerateMultiple=" << randomEraseMultipleEdges() << endl;
+  txt << "MacroRepeat=" << macroLine->getNum() << endl;
+  txt << "MacroRepeatMul=" << macroLine->getMul() << endl;
+  txt << "MacroDelay=" << pauseDelay() << endl;
+  txt << "MacroDir=" << DirFileMacro << endl;
+  txt << "PngDir=" << DirFilePng << endl;
+  txt << "DocDir=" << DirFileDoc << endl; 
+  txt << "PrinterColorMode=" << printer->colorMode() << endl;
+  txt << "PrinterOrientation=" << printer->orientation() << endl;
+  settings.close();
+  }  
 void MyWindow::LoadSettings()
-{}
+  {// define default values
+  MyWindowInitYsize = 600;
+  MyWindowInitXsize = 800;
+  InputFileName = OutputFileName = "a.txt";
+  IsUndoEnable = true;
+  debug() = false;
+  randomSeed() = true;
+  randomSetSeed() = 1;
+  pauseDelay() = 1;
+  macroRepeat = 1;
+  macroMul = 0;
+  MaxNS = 500;
+  MaxND = 500;
+  Gen_N1 = Gen_N2 = 10;
+  Gen_M = 60;
+  PrinterOrientation = 1;
+  PrinterColorMode = 1;
+  DirFileMacro = ".";
+  DirFilePng = ".";
+  DirFileDoc = "Doc";
+ 
+  // Read settings
+  QFile settings("settings.txt");
+  if(!settings.open(IO_ReadOnly))return; 
+  QTextStream txt(&settings);
+  QString str,arg,param;
+  int pos;
+  bool ok;
+  int val;
+  while(!txt.atEnd())
+      {str = txt.readLine();
+       pos = str.find('=');
+       arg = str.left(pos); param = str.right(str.length() - 1 - pos);
+       ok = true;
+       if(arg == "GeometryHeight")
+          {val = param.toInt(&ok); if(ok)MyWindowInitYsize = val;}
+       else if(arg == "GeometryWidth")
+          {val = param.toInt(&ok); if(ok)MyWindowInitXsize = val;}
+       else if(arg == "InputFileName")
+          {if(!param.isEmpty())InputFileName = param;}
+       else if(arg == "OutputFileName")
+          {if(!param.isEmpty())OutputFileName = param;}
+       else if(arg == "Debug")
+          {val = param.toInt(&ok); if(ok)debug() = (bool)val;}
+       else if(arg == "IsUndoEnable")
+          {val = param.toInt(&ok); if(ok)IsUndoEnable = (bool)val;}
+       else if(arg == "RandomSeedEnable")
+          {val = param.toInt(&ok); if(ok)randomSeed() = (bool)val;}
+       else if(arg == "RandomSeed")
+          {val = param.toInt(&ok); if(ok)randomSetSeed() = val;}
+       else if(arg == "LimitsSlow")
+          {val = param.toInt(&ok); if(ok)MaxNS = val;}
+       else if(arg == "LimitsDisplay")
+          {val = param.toInt(&ok); if(ok)MaxND = val;}
+       else if(arg == "EmbedShowLabels")
+          {val = param.toInt(&ok); if(ok)ShowVertex() = val;}
+       else if(arg == "EmbedLongestFace")
+          {val = param.toInt(&ok); if(ok)SchnyderLongestFace() = (bool)val;}
+       else if(arg == "EmbedSchnyderColor")
+          {val = param.toInt(&ok); if(ok)SchnyderColor() = (bool)val;}
+       else if(arg == "EmbedRect")
+          {val = param.toInt(&ok); if(ok)SchnyderRect() = (bool)val;}
+       else if(arg == "EmbedDistance")
+          {val = param.toInt(&ok); if(ok)useDistance() = val;}
+       else if(arg == "GenerateN1")
+          {val = param.toInt(&ok); if(ok)Gen_N1 = val;}
+       else if(arg == "GenerateN2")
+          {val = param.toInt(&ok); if(ok)Gen_N2 = val;}
+       else if(arg == "GenerateM")
+          {val = param.toInt(&ok); if(ok)Gen_M = val;}
+       else if(arg == "GenerateMultiple")
+          {val = param.toInt(&ok); if(ok)randomEraseMultipleEdges() = (bool)val;}
+       else if(arg == "MacroRepeat")
+          {val = param.toInt(&ok); if(ok)macroRepeat  = val;}
+       else if(arg == "MacroRepeatMul")
+          {val = param.toInt(&ok); if(ok)macroMul  = val;}
+       else if(arg == "MacroDelay")
+          {val = param.toInt(&ok); if(ok)pauseDelay()  = val;}
+      else if(arg == "MacroDir")
+          {if(!param.isEmpty())DirFileMacro = param;}
+      else if(arg == "PngDir")
+          {if(!param.isEmpty())DirFilePng = param;}
+      else if(arg == "DocDir")
+          {if(!param.isEmpty())DirFileDoc = param;}
+       else if(arg == "PrinterOrientation")
+          {val = param.toInt(&ok); if(ok)PrinterOrientation = val;}
+       else if(arg == "PrinterColorMode")
+          {val = param.toInt(&ok); if(ok)PrinterColorMode = val;}
+      else
+         LogPrintf("could not interpret:\n%s\n",(const char *)str);
+      if(!ok)LogPrintf("ERROR SETTINGS:%s -> %s\n",(const char *)arg,(const char *)param);
+      } 
+  settings.close();
+  }
 int GetPigaleColors()
   {
   return -1;
@@ -83,7 +209,7 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/embed/distance dist",useDistance());
   // generate
   setting.writeEntry("/pigale/generate/gen N1",spin_N1->value());
-  setting.writeEntry("/pigale/generate/gen N2",spin_N1->value());
+  setting.writeEntry("/pigale/generate/gen N2",spin_N2->value());
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
   setting.writeEntry("/pigale/generate/gen EraseMultiple",randomEraseMultipleEdges());
   // macro
@@ -96,6 +222,7 @@ void MyWindow:: SaveSettings()
   setting.writeEntry("/pigale/printer orientation",printer->orientation());
   // DirFilePng 
   setting.writeEntry("/pigale/png dir",DirFilePng);
+  setting.writeEntry("/pigale/Documentation dir",DirFileDoc);
   // Custom colors
   int r,g,b;
   QColor col = QColor(QColorDialog::customColor(0));
@@ -122,6 +249,9 @@ void MyWindow:: SaveSettings()
 void MyWindow::LoadSettings()
   {QSettings setting;
   setting.insertSearchPath(QSettings::Windows,"/pigale");
+  // Screen size
+  MyWindowInitYsize = setting.readNumEntry("/pigale/geometry height",600);
+  MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",800);
 #ifndef  TDEBUG
   debug() = setting.readBoolEntry("/pigale/debug enable",false);
 #else
@@ -130,14 +260,25 @@ void MyWindow::LoadSettings()
   randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   randomSetSeed() = (long) setting.readNumEntry("/pigale/randomSeed seed",1);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);
+  // limits to display and execute slow algos
+  MaxNS = setting.readNumEntry("/pigale/limits slow_algo",500);
+  MaxND = setting.readNumEntry("/pigale/limits display",500);
+  // Embed
   ShowVertex() = setting.readNumEntry("/pigale/embed/label show",0);
   SchnyderRect() = setting.readBoolEntry("/pigale/embed/schnyder rect",false);
   SchnyderLongestFace() = setting.readBoolEntry("/pigale/embed/schnyder longestface",true);
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
+  // Macro
   pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
+  macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
+  macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
+  // Generator
+  Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
+  Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
+  Gen_M  = setting.readNumEntry("/pigale/generate/gen M",30);
   randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
-  //DirFile = setting.readEntry("/pigale/TgfFile dir"," ");
+  //DirFile 
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
   InputFileName = setting.readEntry("/pigale/TgfFile input"
@@ -145,6 +286,7 @@ void MyWindow::LoadSettings()
 				    + QDir::separator() 
 				    + QString("a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
+  DirFileDoc = setting.readEntry("/pigale/Documentation dir","Doc"); 
 }
 
 int GetPigaleColors()
@@ -202,6 +344,7 @@ void MyWindow::ParseArguments()
 	  qDebug("valid options:\n -fi input\n -fo output\n -macro macro\n -server");
 	  }
       }
+  if(Server || MacroPlay)IsUndoEnable = false;
   }
 void MyWindow::SetPigaleColors()
   {QColor  initial = QColor(248,238,224);

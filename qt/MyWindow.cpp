@@ -128,16 +128,9 @@ MyWindow::MyWindow()
   atexit(UndoErase);
 
   // Load settings, input and output filenames
-#if QT_VERSION < 300
-  {QString DirFile;
-  QFileInfo fi  = QString(getenv("TGF"));
-  if(fi.exists() && fi.isDir() )DirFile = fi.filePath();
-  DirFile = ".";
-  InputFileName = DirFile + QDir::separator() + "a.txt";
-  OutputFileName = InputFileName;
-  }
-#else
+#if QT_VERSION >= 300
   QSettings setting;
+#endif
   {LoadSettings();
   QFileInfo fi0 =  QFileInfo(InputFileName);
   QFileInfo fi = QFileInfo(fi0.dirPath());
@@ -148,7 +141,7 @@ MyWindow::MyWindow()
       OutputFileName = InputFileName;
       }
   }
-#endif
+
   // Modify settings according to passed arguments
    ParseArguments();
 
@@ -161,13 +154,13 @@ MyWindow::MyWindow()
 
   // Create a printer
   printer = new QPrinter;
-#if QT_VERSION >= 300
-  if(setting.readNumEntry("/pigale/printer orientation",QPrinter::Landscape) != QPrinter::Landscape)
+#if QT_VERSION >= 300 || _WINDOWS
+  if(PrinterOrientation == QPrinter::Portrait)
       printer->setOrientation(QPrinter::Portrait); 
   else
       printer->setOrientation(QPrinter::Landscape); 
 
-  if(setting.readNumEntry("/pigale/printer colormode",QPrinter::Color) != QPrinter::Color)
+  if(PrinterColorMode == QPrinter::GrayScale)
       printer->setColorMode(QPrinter::GrayScale);
   else
       printer->setColorMode(QPrinter::Color);
@@ -176,17 +169,7 @@ MyWindow::MyWindow()
   printer->setColorMode(QPrinter::Color);
 #endif
 
-  // Window size
-#if QT_VERSION >= 300
-  QRect rect = QApplication::desktop()->screenGeometry();
-  int MyWindowInitYsize = setting.readNumEntry("/pigale/geometry height",rect.height());
-  int MyWindowInitXsize = setting.readNumEntry("/pigale/geometry width",850);
-#else
-  QWidget *d = QApplication::desktop();
-  int MyWindowInitYsize = d->height();
-  int MyWindowInitXsize = 850; 
-#endif
-  // sizes of the message window
+  // sizes of the editor window
   int MyEditorMinXsize  = 250, MyEditorMaxXsize  = 250;
   int MyEditorMinYsize  = 150;
   // When testing screens 800x600
@@ -201,7 +184,7 @@ MyWindow::MyWindow()
   QHBoxLayout * leftLayout = new QHBoxLayout(topLayout,0,"leftLayout");
   tabWidget = new  QTabWidget(mainWidget,"tab");
   leftLayout->addWidget(tabWidget,1);
-  tabWidget->setMinimumSize(525,525);
+  tabWidget->setMinimumSize(465,425);
   tabWidget->setPalette(LightPalette);
   mypaint =  new MyPaint(tabWidget,"paint",this);
   gw = new  GraphWidget(tabWidget,"graphwidget",this);
@@ -213,20 +196,13 @@ MyWindow::MyWindow()
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
-#if QT_VERSION >= 300
+
+#if QT_VERSION >= 300 || _WINDOWS
   QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
-  tabWidget->addTab(browser,"User Guide"); 
-  QPalette bop(QColorDialog::customColor(3));
-  browser->setPalette(bop);
-#elif _WINDOWS
-  QTextBrowser *browser = new QTextBrowser(tabWidget,"doc");
-  browser->mimeSourceFactory()->setFilePath("Doc");
-  browser->setSource("manual.html");
   tabWidget->addTab(browser,"User Guide"); 
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
 #endif
- 
  
    // rightLayout
   QGridLayout *rightLayout = new  QGridLayout(topLayout,2,4,-1,"rightLayout");
@@ -476,18 +452,9 @@ MyWindow::MyWindow()
   // Erase multiple edges
   generate->insertItem("Erase multiple edges",10006);
   generate->setItemChecked(10006,randomEraseMultipleEdges());
-#if QT_VERSION >= 300
-  int Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
-  int Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
-  int Gen_M  = setting.readNumEntry("/pigale/generate/gen M",30);
-#else
-  int Gen_N1 = 10;
-  int Gen_N2 = 10;
-  int Gen_M  = 30;
-#endif
   spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
-  spin_N1->setFocusPolicy(QWidget::ClickFocus); 
+  spin_N1->setFocusPolicy(QWidget::StrongFocus); 
   spin_N2 = new QSpinBox(0,100000,1,generate,"spinN2");
   spin_N2->setValue(Gen_N2);     spin_N2->setPrefix("N2: ");
   spin_M = new QSpinBox(0,300000,1,generate,"spinM");
@@ -505,13 +472,6 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
   macroSpin = new QSpinBox(0,60,1,macroMenu,"macroSpin");
-#if QT_VERSION >= 300
-  int macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
-  int macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
-#else
-  int macroRepeat = 1;
-  int macroMul = 0;
-#endif
   macroSpin->setValue(pauseDelay());macroSpin->setPrefix("Seconds: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
@@ -579,13 +539,6 @@ MyWindow::MyWindow()
   //Pigale limits
   settings->insertItem("Limit number of vertices",popupLimits);
   popupLimits->insertItem("for slow algorithms");
-#if QT_VERSION >= 300
-  int MaxNS = setting.readNumEntry("/pigale/limits slow_algo",500);
-  int MaxND = setting.readNumEntry("/pigale/limits display",500);
-#else
-  int MaxNS = 500;
-  int MaxND = 500;
-#endif
   spin_MaxNS->setValue(MaxNS);    
   spin_MaxNS->setPrefix("Slow algorithms: ");
   popupLimits->insertItem(spin_MaxNS);
@@ -656,32 +609,29 @@ MyWindow::MyWindow()
   DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
   DebugPrintf("Init seed:%ld",randomSetSeed());
   
-
-#if QT_VERSION >= 300
+#if QT_VERSION >= 300 || _WINDOWS
   //Check for documentation repertory
-  QString DocPath = setting.readEntry("/pigale/Documentation dir","documentation");
-  QFileInfo fdoc = QFileInfo(DocPath);
+  QFileInfo fdoc = QFileInfo(DirFileDoc);
   if(!fdoc.exists() || !fdoc.isDir())
       {int rep = QMessageBox::warning(this,"Pigale Editor"
-				      ,"I cannot find the repertory <b>documentation.<br>"
+				      ,"I cannot find the repertory <b>Doc.<br>"
 				      "Load manually ?"
 				      ,QMessageBox::Ok
 				      ,QMessageBox::Cancel);
       if(rep == 1)
-	  {DocPath = QFileDialog::getExistingDirectory(".",this,"find",
+	      {DirFileDoc = QFileDialog::getExistingDirectory(".",this,"find",
 						       "Choose the documentation directory",TRUE);
-	  if(!DocPath.isEmpty())
-	      {browser->mimeSourceFactory()->setFilePath(DocPath);
-	      browser->setSource("manual.html");
-	      setting.writeEntry("/pigale/Documentation dir",DocPath);
+	      if(!DirFileDoc.isEmpty())
+	          {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
+	          browser->setSource("manual.html");
+              SaveSettings();
+	         }
 	      }
-	  }
       }
   else
-      {browser->mimeSourceFactory()->setFilePath(DocPath);
+      {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
       browser->setSource("manual.html");
       }
-  setting.writeEntry("/pigale/Documentation dir",DocPath);
 #endif  
   gw->update();
   if(!Server)load(0);
@@ -729,18 +679,15 @@ void MyWindow::load()
 	  }
       else load(0);
       }
-
   }
 int MyWindow::publicLoad(int pos)
   {setError();
   QString m;
-  //if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
    QFileInfo fi(InputFileName);
    if(!fi.exists() || fi.size() == 0)
       {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
-      statusBar()->message(m,2000);
+      //statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
-      gw->update();
       return -1;
       }      
   UndoClear();UndoSave();
@@ -750,14 +697,14 @@ int MyWindow::publicLoad(int pos)
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
   if(ReadGraph(GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
       {m.sprintf("Could not read:%s",(const char *)InputFileName);
-      statusBar()->message(m,2000);
+      //statusBar()->message(m,2000);
       return -2;
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   UndoSave();
-  banner();
+  //banner();
   information(); gw->update();
   return *pGraphIndex;
   }
@@ -766,11 +713,9 @@ int MyWindow::load(int pos)
   QString m;
   QFileInfo fi(InputFileName);
   if(!fi.exists() || fi.size() == 0)
-  //if(IsFileTgf((const char *)InputFileName) == -1)//file does not exist
       {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
       statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
-      //gw->update();
       return -1;
       }      
   UndoClear();UndoSave();
@@ -877,8 +822,8 @@ void MyWindow::reload()
 void MyWindow::next()
   {load(1);}
 void MyWindow::information()
-  {if(!getError() && !MacroExecuting)MessageClear();
-  graph_properties->update(!MacroExecuting);
+  {if(!getError() && !MacroExecuting && !ServerExecuting)MessageClear();
+  graph_properties->update(!MacroExecuting && !ServerExecuting);
   }
 void MyWindow::MessageClear()
   {e->setText("");}

@@ -44,6 +44,7 @@ using namespace std;
 
 // reserve TAG de 4096 a 8191
 //#if defined(__WATCOMC__) || defined(__GNUC__)
+
 #if defined(__toto__)
 //#pragma pack (4);
 
@@ -59,6 +60,9 @@ struct e_struct{
   long width __attribute__ ((aligned(4) ));
 };
 #else
+#ifdef _WINDOWS
+#pragma pack(4)
+#endif
 struct coord   {int label; double x,y ;};
 struct e_struct{long v1,v2,color,width;};
 #endif
@@ -131,7 +135,8 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
 	  G.Set().erase(PROP_NLOOPS);
       return 0;
       }
-  //return 3;
+//  return 3;
+
   file.FieldRead(TAG_N, n);
   file.FieldRead(TAG_M, m);
   int Titlesize = file.GetTagLength(TAG_NAME);
