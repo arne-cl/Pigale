@@ -8,6 +8,9 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
+/*! \file GraphGL.h
+\brief 3D embedding class definition
+\ingroup qt */
 
 #ifndef _GRAPH_GL_H_INCLUDED_
 #define _GRAPH_GL_H_INCLUDED_
@@ -43,6 +46,7 @@ private slots:
 private:
   void resizeEvent(QResizeEvent*);
   GraphGLPrivate* d;
+  QSpinBox *spin_X,*spin_Y,*spin_Z;
 };
 
 #endif

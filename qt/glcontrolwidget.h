@@ -1,5 +1,7 @@
 #ifndef GLCONTROLWIDGET_H
 #define GLCONTROLWIDGET_H
+/*! \file glcontrolwidget.h
+\ingroup qt */
 
 #include <qgl.h> 
 //! This class handles the user inputs to perform rotations, translations and zoom.

@@ -8,7 +8,9 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
-
+/*! \file GraphGL.cpp
+\brief 3D embedding class methods
+\ingroup qt */
 #include "MyWindow.h"
 #include "GraphGL.h"
 #include "glcontrolwidget.h"
@@ -17,20 +19,14 @@
 #include <QT/Misc.h>
 #include <QT/MyQcolors.h>
 #include <TAXI/netcut.h>
+#include <GL/glut.h>
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qapplication.h>
-// glut: library to draw the labels
-#include <GL/glut.h>
+#include <unistd.h>
 
-//! GraphGL creates a GraphGLPrivate and GLWindow contains a pointer to it
-/*! This class take care of all the widgets and signals and contains GLWindow which
- is responsible for the display.
- GLWindow derives from  GLControlWidget, a general widget whih takes care of the user inputs to
- perform rotations, translations and zoom.
- */
 class GraphGLPrivate
 {public:
   GraphGLPrivate()
@@ -57,7 +53,6 @@ class GraphGLPrivate
   QCheckBox* bt_color;
   QSlider *Slider;
   QHButtonGroup* bt_group;
-  QSpinBox *spin_X,*spin_Y,*spin_Z;
   MyWindow *mywindow;
   RnEmbedding *pSG;
   GraphContainer *pGC;
@@ -67,7 +62,7 @@ class GraphGLPrivate
   GraphContainer &GC() {return *pGC;}
 };
 
-//! takes care of the widgets and connections
+//*****************************************************
 GraphGL::GraphGL(QWidget *parent,const char *name,MyWindow *mywindow)
     : QWidget( parent, name )
   {d = new GraphGLPrivate;
@@ -112,10 +107,7 @@ int GraphGL::update()
       d->bt_group = new QHButtonGroup(this);
       d->bt_group->setFrameShape(QFrame::NoFrame); 
       d->bt_group->setPalette(d->mywindow->LightPalette);
-      d->bt_group->setMaximumHeight(30); 
-#ifndef _WINDOWS
-	  d->bt_group->setInsideMargin(5); 
-#endif
+      d->bt_group->setMaximumHeight(30); d->bt_group->setInsideMargin(5); 
       hb->addWidget(d->bt_group);
       QRadioButton* rb_x = new QRadioButton("X",d->bt_group,"x");
       QRadioButton* rb_y = new QRadioButton("Y",d->bt_group,"y");
@@ -123,19 +115,19 @@ int GraphGL::update()
       rb_x->setChecked(FALSE);
       rb_y->setChecked(FALSE);
       rb_z->setChecked(TRUE);
-      d->spin_X = new QSpinBox(1,100,1,this,"spinX");
-      d->spin_Y = new QSpinBox(1,100,1,this,"spinY");
-      d->spin_Z = new QSpinBox(1,100,1,this,"spinZ");
-      d->spin_X->setValue(1);     d->spin_X->setPrefix("X: ");
-      d->spin_Y->setValue(2);     d->spin_Y->setPrefix("Y: ");
-      d->spin_Z->setValue(3);     d->spin_Z->setPrefix("Z: ");
-      hb->addWidget(d->spin_X); hb->addWidget(d->spin_Y); hb->addWidget(d->spin_Z);
+      spin_X = new QSpinBox(1,100,1,this,"spinX");
+      spin_Y = new QSpinBox(1,100,1,this,"spinY");
+      spin_Z = new QSpinBox(1,100,1,this,"spinZ");
+      spin_X->setValue(1);     spin_X->setPrefix("X: ");
+      spin_Y->setValue(2);     spin_Y->setPrefix("Y: ");
+      spin_Z->setValue(3);     spin_Z->setPrefix("Z: ");
+      hb->addWidget(spin_X); hb->addWidget(spin_Y); hb->addWidget(spin_Z);
       d->is_init = true;
       connect(spin_Edge,SIGNAL(valueChanged(int)),SLOT(EdgeWidth(int)));
       connect(spin_Vertex,SIGNAL(valueChanged(int)),SLOT(VertexWidth(int)));
-      connect(d->spin_X,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(d->spin_Y,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
-      connect(d->spin_Z,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(spin_X,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(spin_Y,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
+      connect(spin_Z,SIGNAL(valueChanged(int)),SLOT(Reload(int)));
       connect(d->bt_facet,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_color,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_label,SIGNAL(clicked()),SLOT(Reload()));
@@ -169,10 +161,8 @@ int GraphGL::update()
 #else
   d->mywindow->tabWidget->setTabLabel(this,"3-d Embedding");
 #endif
-  d->spin_X->setValue(1);  d->spin_Y->setValue(2);  d->spin_Z->setValue(3);
-  d->spin_X->setMaxValue(d->embed().dmax);  
-  d->spin_Y->setMaxValue(d->embed().dmax);  
-  d->spin_Z->setMaxValue(d->embed().dmax);
+  spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
+  spin_X->setMaxValue(d->embed().dmax);  spin_Y->setMaxValue(d->embed().dmax);  spin_Z->setMaxValue(d->embed().dmax);
   Reload(1);
   return 0;
   }
@@ -194,9 +184,9 @@ void GraphGL::Reload(int i)
   {if(i == 0){d->editor->initialize(false);return;}
   RnEmbedding &em = d->embed();
   int i1,i2,i3;
-  i1 = d->spin_X->value(); i1 = Min(i1,em.dmax);
-  i2 = d->spin_Y->value(); i2 = Min(i2,em.dmax);
-  i3 = d->spin_Z->value(); i3 = Min(i3,em.dmax);
+  i1 = spin_X->value(); i1 = Min(i1,em.dmax);
+  i2 = spin_Y->value(); i2 = Min(i2,em.dmax);
+  i3 = spin_Z->value(); i3 = Min(i3,em.dmax);
   em.SetAxes(i1,i2,i3);
   d->editor->initialize(true);
   }
@@ -260,7 +250,7 @@ void GLWindow::initializeGL()
   //fog
   glEnable(GL_FOG);
   glFogi(GL_FOG_MODE, GL_LINEAR);
-  glFogf(GL_FOG_DENSITY,(GLfloat).15);
+  glFogf(GL_FOG_DENSITY,.15);
   glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
   GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
   glFogfv(GL_FOG_COLOR,fog_color);
@@ -273,12 +263,12 @@ void GLWindow::initialize(bool init)
   updateGL();
   }
 GLuint GLWindow::load(bool init)
-  {GLfloat ds = (GLfloat)(1./40.)*glp->vertex_width;
+  {GLfloat ds = (1./40.)*glp->vertex_width;
   if(init)
       {xRot = yRot = zRot = 0.0;
       xTrans = yTrans = 0.0;
       zTrans = -10.0;
-      scale = (GLfloat)1.41;
+      scale = 1.41;
       }
   RnEmbedding &embed = glp->embed();
   GeometricGraph G(glp->GC());
@@ -297,7 +287,7 @@ GLuint GLWindow::load(bool init)
       x1 = (GLfloat)embed.rx(v1);y1 = (GLfloat)embed.ry(v1);z1 = (GLfloat)embed.rz(v1);
 
       if(G.ecolor[e] == Black && WithFaces)glColor3f(.5,.5,.5);
-      else if(G.ecolor[e] == Black)glColor3f((GLfloat)1.,(GLfloat)1.,(GLfloat).8);
+      else if(G.ecolor[e] == Black)glColor3f(1.,1.,.8);
       else qglColor(color[G.ecolor[e]]);
       glVertex3f(x0,y0,z0);      glVertex3f(x1,y1,z1);
       }
@@ -393,7 +383,14 @@ void GLWindow::hideEvent(QHideEvent*)
   glp->isHidden = true;
   }
 void GLWindow::showEvent(QShowEvent*)
-  {if(glp->isHidden)glp->isHidden = false;
+  {if(glp->isHidden)
+      {glp->isHidden = false;
+      //as now we may load a graph while this window is active
+      // we have to reset the speed
+//       glp->idelay = 2;
+//       glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
+//       glp->mywindow->mouse_actions->Slider->setValue(glp->idelay);
+      }
   }
 QSize GLWindow::sizeHint() const
   {return QSize(glp->GL->width(),glp->GL->height());
@@ -407,7 +404,7 @@ void GLWindow::resizeGL(int w,int h)
   glMatrixMode(GL_MODELVIEW);
   }
 void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
-  {GLfloat sat = (GLfloat).1  ;
+  {GLfloat sat = .1  ;
   glColor3f(sat,sat,1.);
   glBegin(GL_POLYGON);//bas
   glVertex3f(x-size,y-size,z-size);
@@ -415,7 +412,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x+size,y+size,z-size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  glColor3f(sat,sat,(GLfloat).7);
+  glColor3f(sat,sat,.7);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z+size);
   glVertex3f(x-size,y+size,z+size);
@@ -429,7 +426,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x-size,y+size,z+size);
   glVertex3f(x-size,y+size,z-size);
   glEnd();
-  glColor3f((GLfloat).7,sat,sat);
+  glColor3f(.7,sat,sat);
   glBegin(GL_POLYGON);
   glVertex3f(x+size,y-size,z-size);
   glVertex3f(x+size,y-size,z+size);
@@ -443,7 +440,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x+size,y-size,z+size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  glColor3f(sat,(GLfloat).7,sat);
+  glColor3f(sat,.7,sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y+size,z-size);
   glVertex3f(x-size,y+size,z+size);
@@ -466,7 +463,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y+size,z-size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  sat = (GLfloat)1.;
+  sat = 1.;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z+size);
@@ -474,7 +471,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y+size,z+size);
   glVertex3f(x+size,y-size,z+size);
   glEnd();
-  sat = (GLfloat).5;
+  sat = .5;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z-size);
@@ -482,7 +479,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x-size,y+size,z+size);
   glVertex3f(x-size,y+size,z-size);
   glEnd();
-  sat =(GLfloat).5;
+  sat =.5;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x+size,y-size,z-size);
@@ -490,7 +487,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y+size,z+size);
   glVertex3f(x+size,y+size,z-size);
   glEnd();
-  sat = (GLfloat).8;
+  sat = .8;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z-size);
@@ -498,7 +495,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,QColor &col)
   glVertex3f(x+size,y-size,z+size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  sat =(GLfloat).8;
+  sat =.8;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y+size,z-size);

@@ -3,6 +3,9 @@
 #include <qcursor.h>
 #include <qevent.h>
 #include <qtimer.h>
+/*! \file glcontrolwidget.cpp
+\ingroup qt 
+*/
 
 GLControlWidget::GLControlWidget( QWidget *parent, const char *name, QGLWidget *share, WFlags f )
 : QGLWidget( parent, name, share, f ),

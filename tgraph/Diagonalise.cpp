@@ -8,7 +8,12 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
-
+/*! 
+\ingroup core
+*/
+/*! \file Diagonalise.cpp
+  \brief Computation of the eigenspaces of a metric and of the embedding of a set of points
+*/
 
 #include <TAXI/Tbase.h>
 #include <TAXI/Tdebug.h>
@@ -415,5 +420,4 @@ void CalcNorm(double p, double q,double &norm, double &c, double &s)
   if(Abs(s) < epsilon)s = .0;
   if(Abs(p) < epsilon)p = .0;
   }
-
-  
+ 

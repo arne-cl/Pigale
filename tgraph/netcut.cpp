@@ -8,6 +8,12 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
+/*! 
+\ingroup core
+*/
+/*! \file netcut.cpp
+  \brief Embedder and Partitioner method implementation
+*/
 
 #include <TAXI/netcut.h>
 #include <TAXI/color.h>
@@ -16,13 +22,29 @@
 //! local structure 
 static Locals *l;
 
-//! defines the distance that will be used to isometrically embed the graph in \f$\mathbb{R}^{n-1}\f$
+//! Defines the distance that will be used to isometrically embed the graph in \f$\mathbb{R}^{n-1}\f$
+/*!
+  The returned reference has the following meaning:
+  \arg \c 0 \link EmbedRnGraph::ComputeCzekanovskiDistances() Czekanovski-Dice distance \endlink
+  \arg \c 1 \link EmbedRnGraph::ComputeBisectDistances() Bisection distance \endlink
+  \arg \c 2 \link EmbedRnGraph::ComputeAdjacenceDistances() Adjacency distance \endlink
+  \arg \c 3 \link EmbedRnGraph::ComputeAdjacenceMDistances() Translated adjacency distance \endlink
+  \arg \c 4 \link EmbedRnGraph::ComputeLaplacianDistances() Laplacian distance \endlink
+  \arg \c 5 \link EmbedRnGraph::ComputeOrientDistances() Oriented distance \endlink
+  \arg \c 6 \link EmbedRnGraph::ComputeR2Distances() R2 distance \endlink
+  \sa EmbedRnGraph::init()
+  \relates EmbedRnGraph
+*/
 int & useDistance()
   {static int _dist = 4;
   return _dist;
   }
 
 //! Embed the graph in \f$\mathbb{R}^{n-1}\f$ and fill the coordinates of the point in an \f$\mathbb{R}^3\f$ projection
+/*!
+  \param G0 Refrence to the topologcal graph to embed
+  \pre The graph should have at least 3 vertices and 2 edges
+*/
 int Embed3d(TopologicalGraph &G0)
   {if(G0.nv() < 3 || G0.ne() < 2)return -1;
   EmbedRnGraph G(G0);
@@ -52,6 +74,11 @@ int Embed3d(TopologicalGraph &G0)
        embeds the graph in \f$\mathbb{R}^{n-1}\f$
       \li calls SplitGraph::Segment to perform the partition 
       \li color the vertices according to its class G.ClassNumber[v()]
+*/
+/*!
+  \param G0 Refrence to the topological graph to embed
+  \param NumberOfClasses Required number of classes
+  \pre The graph should have at least 3 vertices and 2 edges
 */
 int split(Graph &G0,int &NumberOfClasses)
 // Pas de boucles ou aretes multiples
@@ -756,3 +783,4 @@ int SplitGraph::Segment()
   delete l;
   return 0;
   }
+
