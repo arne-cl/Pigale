@@ -57,6 +57,8 @@ client: $(PIGALEPATH)/incl/QT/Action.h client.o  moc_client.o
 clean:
 	@rm -f *.o
 	@rm -f moc_*.cpp
+	@rm -f Client Server
+	@rm -f *~ *bak  *.flc	
 
 depend:
 	@makedepend -o.o  -fGNUmakefile -I$(PIGALEPATH)/incl -Y   $(FILES_WO_MOC)  2> /dev/null
