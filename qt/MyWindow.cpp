@@ -24,6 +24,7 @@
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
+#include <QT/Action.h>
 #include <QT/MyPaint.h>
 #include <QT/MyCanvas.h>
 
@@ -83,7 +84,7 @@ int Test(GraphContainer &GC,int action);
 void macroRecord(int action);
 void UndoErase();
 void SaveSettings();
-static char undofile[L_tmpnam] = "undo_tgf_XXXXXX" ;
+static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 
 
 MyWindow::MyWindow()
@@ -97,6 +98,8 @@ MyWindow::MyWindow()
   // Export some data
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
+  // Create the actions map
+  mapActionsInit();
   //Create an  undofile name
   mkstemp(undofile);
   // Atexit: Erase undo_tgf_XXXXXX
@@ -597,6 +600,14 @@ MyWindow::MyWindow()
 MyWindow::~MyWindow()
   {delete printer;
   }
+void MyWindow::mapActionsInit()
+  {int na = (int)(sizeof(actions)/sizeof(_Action));
+  for(int i = 0;i < na;i++)
+      mapActions[actions[i].num] = actions[i].name;
+  }
+QString& MyWindow::getActionString(int action)
+  {return mapActions[action];
+  }
 void MyWindow::load()
   {QString FileName = QFileDialog::
   getOpenFileName(DirFile,"Tgf Files(*.tgf);;Text Files (*.txt);;All (*)",this);
@@ -726,14 +737,15 @@ void MyWindow::next()
   {load(1);}
 void MyWindow::information()
   {if(!getError() && !MacroExecuting)MessageClear();
+  if(MacroRecording)return;
   graph_properties->update();
   }
 void MyWindow::MessageClear()
   {e->setText("");}
 void MyWindow::Message(QString s)
-  {if(MacroRecording)return;
+  {//if(MacroRecording)return;
   e->append(s);
-#if QT_VERSION == 300
+#if QT_VERSION >= 300
   e->scrollToBottom ();
 #endif
   } 
@@ -797,8 +809,8 @@ void MyWindow::handler(int action)
   else
       return;
 
-  //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
-  // 3:(Drawing) 4:(3d) 5:symetrie
+  //-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
+  // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
   if(ret < 0)return;
   double Time = t.elapsed()/1000.;
   if(ret == 1)
@@ -810,30 +822,29 @@ void MyWindow::handler(int action)
       if(!MacroRecording)information();
       gw->update();
       }
-  else if(ret == 20)
+  else if(ret == 20) // Remove handler
       {if(MacroExecuting )return;
-      if(!MacroRecording)information();
+      information();
       gw->update(false);
       }
   else if(ret == 3)
-      {
-       mypaint->update(drawing); 
-      }
+      mypaint->update(drawing); 
   else if(ret == 4) //3d
       graphgl->update(); 
   else if(ret == 5) //symetrie
       {graphgl->update(); 
       graphsym->update();
       }
+  // cases 6-7-8 we need a canvas with the current graph loaded
   else if(ret == 6)
-      gw->Spring();
+      {gw->update();gw->Spring();}
   else if(ret == 7)
-      gw->SpringPreservingMap();
+      {gw->update();gw->SpringPreservingMap();}
   else if(ret == 8)
-      gw->SpringJacquard();
+      {gw->update();gw->SpringJacquard();}
 
   double TimeG = t.elapsed()/1000.;
-  if(!MacroLooping || !MacroRecording)
+  if(!MacroLooping && !MacroRecording)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
 	  {Tprintf("Handler Last Error:%d",(int)getError());
