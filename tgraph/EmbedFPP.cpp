@@ -162,6 +162,8 @@ int ShellingOrder::findver(tvertex &iv,tbrin &left,tbrin &right)
   return 0;
   }
 
+//*********************************************************************
+//*********************************************************************
 class Constraints: public TopologicalGraph
 {public:
   Constraints(Graph &G);
@@ -359,3 +361,237 @@ int EmbedFPP(TopologicalGraph &G)
   }
 
 
+//***************************************************************************************
+//***************************************************************************************
+class Recti: public TopologicalGraph
+{public:
+  Recti(Graph &G);
+  ~Recti();
+  int  hauteur(tbrin lee,tbrin ree);
+  void con_iv(tbrin lee,tbrin ree);
+  void con1_ee(tbrin ee,tbrin ree);
+  void con2_ee(tbrin ee);
+  void addrecti(tedge je,tedge jf,int len);
+  void resolve(void);
+  void solve(tedge je);
+  int  lrver(void);
+
+  svector<int> length,xliv,xriv,y,xje;
+  tvertex iv1;
+  int m_origin;
+
+private:
+  svector<tedge> push0_by,push1_by,push2_by,back;
+ 
+};
+Recti::~Recti()
+  {}
+Recti::Recti(Graph &G) :
+    TopologicalGraph(G)
+  {push0_by.resize(0,ne()); push0_by.clear(); push0_by.SetName("push0_by");
+  push1_by.resize(0,ne());  push1_by.clear(); push1_by.SetName("push1_by");
+  push2_by.resize(0,ne());  push2_by.clear(); push2_by.SetName("push2_by");
+  length.resize(0,ne());    length.clear();   length.SetName("length");
+  back.resize(0,ne());      back.clear();     back.SetName("length");
+  xje.resize(0,ne());       xje.clear();      xje.SetName("xje");
+  xliv.resize(0,nv());      xliv.clear();     xliv.SetName("xliv");
+  xriv.resize(0,nv());      xriv.clear();     xriv.SetName("xriv");
+  y.resize(0,nv());         y.clear();        y.SetName("y");
+  }
+int Recti::hauteur(tbrin lee,tbrin ree)
+  {int h = 0;
+  while((lee = -cir[-lee]) != ree)
+      {h = Max(h,y[vin[lee]]);
+      }
+  return h;
+  }
+void Recti::con_iv(tbrin lee,tbrin ree)
+  {tbrin ee = lee;
+  while(ee != ree)
+      {con1_ee(lee,ree);
+      ee = lee;lee = -cir[-lee];
+      }
+  }
+void Recti::con1_ee(tbrin ee,tbrin ree)
+  {tbrin gg;
+  int h,hee,hff,hgg;
+  tbrin ff = cir[ee];
+  h = y[vin[-ee]];hee = y[vin[ee]];hff = y[vin[-ff]];
+  
+  if(hee == h && ee == ree)
+      {gg = acir[ee];
+      if(y[vin[-gg]])addrecti(ff.GetEdge(),gg.GetEdge(),0);
+      addrecti(acir[-ee].GetEdge(),cir[ee].GetEdge(),2);
+      return;
+      }
+  else if(hee == h)
+      {addrecti(acir[ee].GetEdge(),cir[-ee].GetEdge(),2);
+      return;
+      }
+  else if(hff && (hff < hee))
+      {addrecti(ff.GetEdge(),ee.GetEdge(),0);
+      }
+  else if(hff && (hff ==  hee) && (vin[ee] != iv1))
+      {gg = cir[-ff];hgg = y[vin[-gg]];
+      if(hgg > hee){addrecti(gg.GetEdge(),ee.GetEdge(),2);}
+
+      ff = cir[ff];
+      hff = y[vin[-ff]];
+      if(hff && (hff < hee))addrecti(ff.GetEdge(),ee.GetEdge(),0);
+      }
+  con2_ee(ee);
+  }
+
+void Recti::con2_ee(tbrin ee)
+  {tbrin ff,gg;
+  int hee,hff,hgg;
+  hee = y[vin[ee]];
+  ff = acir[ee];hff = y[vin[-ff]];
+  if(hff == 0)return;
+  if((hff > hee) && (hff != y[vin[ff]]) && (hff != y[vin[-ee]]))
+      {addrecti(ee.GetEdge(),ff.GetEdge(),1);return;}
+  gg = acir[-ff];hgg = y[vin[-gg]];
+  if((hgg > hff) && hff != hee)
+      {addrecti(ee.GetEdge(),gg.GetEdge(),1);
+      addrecti(ff.GetEdge(),gg.GetEdge(),1);
+      }
+  gg = cir[-ff];hgg = y[vin[-gg]];
+  if(hgg && (hff == hee) && (hgg < hee))
+      {addrecti(ee.GetEdge(),gg.GetEdge(),2);}
+  }
+void Recti::addrecti(tedge je,tedge jf,int len)
+  {if(len)
+      {if(push1_by[jf] == 0)
+	  {push1_by[jf] = je;length[je] = len;}
+      else
+	  {push2_by[jf] = je;length[je] = len;}
+      }
+  else
+      push0_by[jf] = je;
+  }
+void Recti::resolve(void)
+  {for(tedge je = 1;je <= ne();je++)
+      {if(vin[je] == 0)continue;
+      if(xje[je] != 0)continue;
+      solve(je);
+      }
+  }
+void Recti::solve(tedge je)
+  {tedge jje;
+  for(;;)
+      {if((jje = push1_by[je]) != 0)
+	  {back[jje] =je;push1_by[je] = 0;
+	  je = jje;
+	  }
+      else if((jje = push2_by[je]) != 0)
+	  {back[jje] =je;push2_by[je] = 0;
+	  je = jje;
+	  }
+      else if((jje = push0_by[je]) != 0)
+	  {back[jje] =je;
+	  je = jje;
+	  }
+      else if((jje = back[je]) != 0)
+	  {if(push0_by[jje] == je)
+	      {push0_by[jje] = 0;
+	      xje[jje] = Max(xje[jje],xje[je]);
+	      je = jje;
+	      }
+	  else
+	      {xje[jje] = Max(xje[jje],xje[je] + length[je]);
+	      je = jje;
+	      }
+	  }
+      else
+	  return;
+      }
+  }
+int Recti::lrver(void)
+  {tbrin ref,ee;
+  int xx,xmax = 0;
+  bool vertical;
+  for(tvertex iv = 1;iv <= nv();iv++)
+      {ref = ee = pbrin[iv];
+      // Check exist vertical edges around iv from original graph
+      vertical = false;
+      do    
+	  {if(y[vin[ee]] == y[vin[-ee]])continue;
+	  if(ee.GetEdge() <= m_origin)
+	      vertical = true;
+	  }while(!vertical && (ee = acir[ee]) != ref);
+
+      ee = ref;
+      xliv[iv] = 0x7FFF;
+      do    
+	  {if(y[vin[ee]] == y[vin[-ee]])continue;
+	  if(vertical && ee.GetEdge() > m_origin)continue;
+	  xx = xje[ee.GetEdge()];
+	  xliv[iv] = Min(xliv[iv],xx);
+	  xriv[iv] = Max(xriv[iv],xx);
+	  xmax = Max(xmax,xriv[iv]);
+	  }while((ee = acir[ee]) != ref);
+      }
+  return(xmax);
+  }
+
+
+int EmbedFPPRecti(TopologicalGraph &G)
+  {int OldNumEdge = G.ne();
+  G.MakeConnected();
+  G.Simplify();
+  if(!G.CheckPlanar())return -1;
+  bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
+  int len;
+  tbrin ee;
+  if(SchnyderLongestFace() && !MaxPlanar)
+      G.LongestFace(ee,len);
+  else
+      ee = G.extbrin();
+  if(!MaxPlanar && G.ZigZagTriangulate())return -2;
+  tvertex iv,iv1,iv2,iv3;
+
+  ShellingOrder shell(G);   shell.init(ee);
+  Recti recti(G);              
+  recti.m_origin = OldNumEdge;
+  recti.iv1 = iv1 = G.vin[ee];iv2 = G.vin[-ee];iv3 = G.vin[-G.acir[ee]];
+  recti.y[iv1] = recti.y[iv2] = 1;recti.xje[G.acir[ee].GetEdge()] = 1;
+  int h,h0;
+  tbrin left,nleft,pright,right;
+  tvertex ivl,nivl,pivr,ivr;
+  for(int i = 3;i <= G.nv();i++)
+      {if(shell.findver(iv,left,right) != 0)return -2;
+      ivl = G.vin[left];nleft = G.acir[-G.acir[left]];nivl = G.vin[nleft];
+      ivr = G.vin[right];pright = G.cir[-G.cir[right]];pivr = G.vin[pright];
+      // calcul de la hauteur du nouveau sommet iv 
+      h0 = Max(recti.y[ivl],recti.y[ivr]);
+      if((h = recti.hauteur(left,right)) != 0)
+	  {h += 2;h = Max(h,h0);}
+      else if(recti.y[ivl] != recti.y[ivr])
+	  h = h0;
+      else
+	  h = recti.y[ivl] + 2;
+      recti.y[iv] = h;
+      // calcul des pousseurs introduits sur les aretes 
+      recti.con_iv(left,right);
+      }
+  // resolution des contraintes
+  recti.resolve();
+  int xmax = recti.lrver();
+  
+  // Erase added edges
+  for(tedge e = G.ne();e > OldNumEdge;e--)
+      G.DeleteEdge(e);
+  // Defines properties for the drawing
+  Prop<int> pxliv(G.Set(tvertex()),PROP_DRAW_INT_1);
+  Prop<int> pxriv(G.Set(tvertex()),PROP_DRAW_INT_2);
+  Prop<int> py(G.Set(tvertex()),PROP_DRAW_INT_3);
+  Prop<int> pxje(G.Set(tedge()),PROP_DRAW_INT_4);
+  pxliv.vector() = recti.xliv;  pxriv.vector() = recti.xriv;  
+  py.vector() = recti.y;  pxje.vector() = recti.xje;
+  // define the boundaries
+  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+  Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+  pmin() = Tpoint(.0,-1.);
+  pmax() = Tpoint((double)xmax+1.,(double)recti.y[iv3]+ 1.);
+  return 0;
+  }
