@@ -172,7 +172,7 @@ void GraphGL::Reload(int i)
   double min123 = min1; min123 = Min(min123,min2);min123 = Min(min123,min3);
   double max123 = max1; max123 = Max(max123,max2);max123 = Max(max123,max3);
   double alpha = Max(-min123,max123);
-  alpha = 1./alpha;
+  alpha = (alpha < 1.E-10) ? .0 : 1./alpha;
   Prop<Tpoint3> Coord3(GeoG.Set(tvertex()),PROP_COORD3);
   for(int i = 1;i <= GeoG.nv();i++)
       {Coord3[i].x() = alpha * d->pSG->Coords[i][i1];
