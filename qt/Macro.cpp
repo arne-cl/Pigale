@@ -19,12 +19,13 @@
 #include <qapplication.h> 
 #include <qspinbox.h> 
 #include <qslider.h> 
+#include <qmenubar.h> 
+#include <qtoolbar.h> 
 
 static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
 static int volatile escape = 0;
-static bool looping = false;
 
 void macroRecord(int action)
   {if(action > 10000)return;
@@ -49,9 +50,10 @@ void MyWindow::macroHandler(int event)
 	  MacroRecording = true;
 	  break; 
       case 4:// play repeat times
-	  looping = true;
+	  MacroLooping = true;
+	  menuBar()->setEnabled(FALSE); tb->setEnabled(FALSE);
 	  for(int i = 1;i <= repeat;i++)
-	      {if(i == repeat || escape)looping = false;
+	      {if(i == repeat || escape)MacroLooping = false;
 	      macroPlay();
 	      mouse_actions->LCDNumber->display((int)(i*100./repeat));
 	      mouse_actions->Slider->setValue((int)(i*100./repeat));
@@ -59,7 +61,8 @@ void MyWindow::macroHandler(int event)
 	      qApp->processEvents(5);
 	      }
 	  escape = 0;
-	  looping = false;
+	  MacroLooping = false;
+	  menuBar()->setEnabled(TRUE); tb->setEnabled(TRUE);
 	  break;
       default:
 	  break;
@@ -81,7 +84,7 @@ void MyWindow::macroPlay()
       load(1); 
   while(record <= MacroNumActions)
       {macroDefColors(record);
-      if(MacroExecuting && record == MacroNumActions && !looping)
+      if(MacroExecuting && record == MacroNumActions && !MacroLooping)
 	  {MacroExecuting = false;
 	  // Call editor if last action is an embedding not in graph editor
 	  if(MacroActions[record] > 205 && MacroActions[record] < 300)
@@ -89,7 +92,7 @@ void MyWindow::macroPlay()
 	  }
       handler(MacroActions[record++]);
       }
-  if(!looping)information();
+  if(!MacroLooping)information();
   }
 void MyWindow::keyPressEvent(QKeyEvent *k)
   {if(k->key() == Qt::Key_Escape)
