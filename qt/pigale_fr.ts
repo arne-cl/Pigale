@@ -47,11 +47,11 @@
     </message>
     <message>
         <source>Max. OuterPlanar</source>
-        <translation type="unfinished"></translation>
+        <translation>Extraplanaire maximal</translation>
     </message>
     <message>
         <source>OuterPlanar</source>
-        <translation type="unfinished"></translation>
+        <translation>Extraplanaire</translation>
     </message>
 </context>
 <context>
@@ -204,33 +204,33 @@
     </message>
     <message>
         <source>Make &amp;Connected</source>
-        <translation>Rendre &amp;connexe</translation>
+        <translation type="obsolete">Rendre &amp;connexe</translation>
     </message>
     <message>
         <source>Make a graph 2-connected</source>
-        <translation>Rendre  2-connexe</translation>
+        <translation type="obsolete">Rendre  2-connexe</translation>
     </message>
     <message>
         <source>Make &amp;2-Connected</source>
-        <translation>Rendre &amp;2-connexe</translation>
+        <translation type="obsolete">Rendre &amp;2-connexe</translation>
     </message>
     <message>
         <source>Make a PLANAR graph 2-connected</source>
-        <translation>Rendre 2-connexe (graphe planaire)</translation>
+        <translation type="obsolete">Rendre 2-connexe (graphe planaire)</translation>
     </message>
     <message>
         <source>Make 2-Connected &amp;Opt</source>
-        <translation>Rendre 2-connexe (&amp;opt)</translation>
+        <translation type="obsolete">Rendre 2-connexe (&amp;opt)</translation>
     </message>
     <message>
         <source>Make a PLANAR graph 2-connected
  with a minimal degree increase</source>
-        <translation>Rendre 2-connexe un graphe planaire
+        <translation type="obsolete">Rendre 2-connexe un graphe planaire
 en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Make 2-Connected &amp;NP</source>
-        <translation>Rendre 2-connexe un gaphe &amp;non-planaire</translation>
+        <translation type="obsolete">Rendre 2-connexe un gaphe &amp;non-planaire</translation>
     </message>
     <message>
         <source>&amp;Vertex Triangulate</source>
@@ -238,7 +238,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Triangulate a PLANAR graph by adding vertices</source>
-        <translation>Trianguler (ajoùt de sommets)
+        <translation type="obsolete">Trianguler (ajoùt de sommets)
 </translation>
     </message>
     <message>
@@ -263,7 +263,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Quadrangulate a planar bipartite graph</source>
-        <translation>quadrangule un graphe planaire biparti</translation>
+        <translation type="obsolete">quadrangule un graphe planaire biparti</translation>
     </message>
     <message>
         <source>&amp;Bisect all edges</source>
@@ -800,6 +800,84 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Color c&amp;onnected components</source>
         <translation>Colorier les c&amp;omposantes connexes</translation>
+    </message>
+    <message>
+        <source>Make &amp;Connected (edge)</source>
+        <translation>Rendre &amp;Connexe (arête)</translation>
+    </message>
+    <message>
+        <source>Make a graph connected adding edges</source>
+        <translation>Rendre un graphe connexe en ajoutant des arêtes</translation>
+    </message>
+    <message>
+        <source>Make &amp;Connected (vertex) </source>
+        <translation type="obsolete">Rendre &amp;Connexe (sommet)</translation>
+    </message>
+    <message>
+        <source>Make a graph connected adding a vertex</source>
+        <translation>Rendre un graphe connexe en ajoutant un sommet</translation>
+    </message>
+    <message>
+        <source>Make 2-Connected &amp;NP (edge)</source>
+        <translation type="obsolete">Rndre 2-connexe &amp;N (arête)</translation>
+    </message>
+    <message>
+        <source>Make a graph 2-connected adding edges</source>
+        <translation type="obsolete">Rendre un graphe 2- en ajoutant des arêtes</translation>
+    </message>
+    <message>
+        <source>Make 2-Connected N&amp;P (vertex)</source>
+        <translation type="obsolete">Rndre 2-connexe &amp;P (sommet)</translation>
+    </message>
+    <message>
+        <source>Make a graph 2-connected adding vertices</source>
+        <translation type="obsolete">Rendre un graphe 2-connexe en ajoutant des sommets</translation>
+    </message>
+    <message>
+        <source>Make Connected (vertex) </source>
+        <translation>Rendre Connexe (sommet)</translation>
+    </message>
+    <message>
+        <source>Make &amp;2-Connected a planar graph (edge)</source>
+        <translation>Rendre &amp;2-connexe un graphe planaire (arête)</translation>
+    </message>
+    <message>
+        <source>Make a PLANAR graph 2-connected adding edges</source>
+        <translation>Rendre 2-connexe un graphe planaire en ajoutant des arêtes</translation>
+    </message>
+    <message>
+        <source>Make 2-Connected a planar graph &amp;Opt (edge)</source>
+        <translation>Rendre 2-connexe un graphe planaire (&amp;Opt)</translation>
+    </message>
+    <message>
+        <source>Make a PLANAR graph 2-connected
+ adding edges with a minimal degree increase</source>
+        <translation>Rendre 2-connexe un graphe planaire\n
+en minimisant l&apos;augmentation des degrès</translation>
+    </message>
+    <message>
+        <source>Make 2-Connected  (edge)</source>
+        <translation>Rendre 2-connexe un graphe (arête)</translation>
+    </message>
+    <message>
+        <source>Make 2-connected a graph (planar or not)  adding edges</source>
+        <translation>Rendre 2-connexe un graphe (planaire ou non) en ajoutant des arêtes</translation>
+    </message>
+    <message>
+        <source>Make 2-Connected   (vertex)</source>
+        <translation>Rendre 2-connexe un graphe (sommet)</translation>
+    </message>
+    <message>
+        <source>Make 2-connected a graph (planar or not) adding vertices</source>
+        <translation>Rendre 2-connexe un graphe (planaire ou non) en ajoutant des sommets</translation>
+    </message>
+    <message>
+        <source>Triangulate a PLANAR graph  adding vertices</source>
+        <translation>Trianguler un graphe planaire en ajoutant des sommets</translation>
+    </message>
+    <message>
+        <source>Quadrangulate a PLANAR  bipartite graph</source>
+        <translation>Quadranguler un graphe biparti planaire</translation>
     </message>
 </context>
 </TS>
