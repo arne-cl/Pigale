@@ -295,9 +295,12 @@ MyWindow::MyWindow()
   embed->insertSeparator();
   embed->insertItem("&Visibility",           250);
   embed->insertItem("FPP Visi&bility",       253);
+#ifdef ALPHA 
+  embed->insertItem("&General Visibility",   254);
+#endif
   embed->insertItem("&Contact Biparti",      251);
   embed->insertSeparator();
-  embed->insertItem("&Polar",               252);
+  embed->insertItem("&Polar",                252);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",298);
   embed->setWhatsThis(298,embed3d_txt);
@@ -369,7 +372,7 @@ MyWindow::MyWindow()
   popupQuadric->insertItem("dual:1 connnected (M)",513);
   popupQuadric->insertItem("dual:2 connnected (M)",514);
   popupQuadric->insertItem("dual:3 connnected (M)",515);
-  popupQuadric->insertItem("Bi-Quadric (N1)"       ,516);
+  //popupQuadric->insertItem("Bi-Quadric (N1)"       ,516);
   generate->insertItem("&Planar bipartite",popupBipar);
   popupBipar->insertItem("Bipartite (M)"           ,517);
   popupBipar->insertItem("Bipartite cubic dual:2 connected (M)",518);
