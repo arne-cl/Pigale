@@ -24,26 +24,32 @@
 
 
 static void CalcNorm(double p,double q,double &norm,double &c,double &s);
-static int ComputeBilinearForm(double **dis,double ** Distances,int ni,double& trace);
+static int ComputeBilinearForm(double **dis,double ** Distances,int ni);
 static int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues);
 
 
 const double  epsilon = 1.E-12;      //bon ave 1.E-100
 
 
-int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenValues)
+int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenValues,bool project)
   {int i,j;
 
   int ni = nb_vertex;
   int nf = ni - 1;
-  double TraceInit,Trace;
-  // Compute dis, the matrix to be diagonalized (sum of elements in a line == 0)
-  if(ComputeBilinearForm(dis,Distances,ni,TraceInit) != 0)
-      return 1;
-  if(TraceInit < epsilon)
-      {Tprintf("Trace is null !");
-      return 2;
-      }
+  double Trace;
+
+  // copy the matrix Distances -> dis
+  for(i = 1; i <= ni; i++)
+      for(j = 1; j <= i; j++)
+          dis[i][j] = dis[j][i] = (double)Distances[i][j];
+
+  // Compute dis, the projection matrix to be diagonalized (sum of elements in a line == 0)
+  if(project && ComputeBilinearForm(dis,Distances,ni) != 0) return 1;
+
+  // Compute the trace
+  double TraceInit = .0;
+  for(i = 1;i <= ni;i++)TraceInit += dis[i][i];	  
+  if(TraceInit < epsilon){Tprintf("Trace is null !"); /* return 2;*/}
 
   if(debug())
       {LogPrintf("\nDiagonalisation(trace_init=%f)",TraceInit);
@@ -153,7 +159,7 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
   delete [] Multiplicite;
   return 0;
   }
-int ComputeBilinearForm(double **dis,double **Distances,int ni,double& trace)
+int ComputeBilinearForm(double **dis,double **Distances,int ni)
 // Form the distance matrix Distances, computes the bilinear form to diagonalise
   {int i,j;
   double dd;
@@ -162,12 +168,7 @@ int ComputeBilinearForm(double **dis,double **Distances,int ni,double& trace)
   if(dj == NULL)return 1;
 
   // dis: matrice a diagonaliser (ni X ni)
-  dis[1][1] = 0.;
-  for(i = 1; i <= ni; i++)
-      {for(j = 1; j <= i-1; j++)
-          dis[i][j] = dis[j][i] = (double)Distances[i][j];
-      dis[i][i] = 0.;
-      }
+  for(i = 1; i <= ni; i++)dis[i][i] = (double)Distances[i][i];
 
   // Calcul dj[i] = poids de l'element i / poids total (=ni)
   for(i = 1; i <= ni; i++)
@@ -185,10 +186,6 @@ int ComputeBilinearForm(double **dis,double **Distances,int ni,double& trace)
   for(i = 1; i <= ni; i++)
       for(j = 1; j <= ni; j++)
           dis[i][j] = -0.5 * (dis[i][j] - dj[i] - dj[j] + dd)/ni;
-
-  // Calcul de la trace
-  trace = .0;
-  for(i = 1;i <= ni;i++)trace += dis[i][i];
 
   delete [] dj;
   return 0;

@@ -495,10 +495,9 @@ MyWindow::MyWindow()
   comboDistance->insertItem("Bisect");
   comboDistance->insertItem("Adjacence");
   comboDistance->insertItem("Adjacence M");
+  comboDistance->insertItem("Laplacian");
   comboDistance->insertItem("Oriented");
-#ifdef VERSION_ALPHA  
   comboDistance->insertItem("R2");
-#endif
   comboDistance->setCurrentItem(useDistance());distOption(useDistance());
   //Save Settings
   settings->insertSeparator();
@@ -747,7 +746,7 @@ void MyWindow::handler(int action)
       }
   else if(action > 10000)
       {if(action == 10010){SetPigaleColors();return;}
-      else if(action == 10011){SaveSettings();Twait("Settings saved");return;}
+      else if(action == 10011){SaveSettings();return;}
       menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
       debug()               =  menuBar()->isItemChecked(10001);
       SchnyderRect()        =  menuBar()->isItemChecked(10002);

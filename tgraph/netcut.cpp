@@ -112,32 +112,41 @@ void EmbedRnGraph::init()
 
   if(debug()) 
       {if(useDistance() == 0)
-	  DebugPrintf("Distance: Neighoor"); 
+	  DebugPrintf("Distance: Czekanovski-Dice"); 
       else if(useDistance() == 1)
-	  DebugPrintf("Distance: Bissection"); 
+	  DebugPrintf("Distance: Bisection"); 
       else if(useDistance() == 2)
 	  DebugPrintf("Distance: Adjacence"); 
       else if(useDistance() == 3)
 	  DebugPrintf("Distance: Adjacence M"); 
       else if(useDistance() == 4) 
-	  DebugPrintf("Distance: Orient"); 
+	  DebugPrintf("Distance: Laplacian"); 
+      else if(useDistance() == 5) 
+	  DebugPrintf("Distance: Orient");
+       else if(useDistance() == 6) 
+	  DebugPrintf("Distance: R2");
       else
-	  DebugPrintf("Distance: Orient"); 
+	  DebugPrintf("Distance: Czekanovski-Dice!!!!"); 
       }
-  if(useDistance() == 1)//Bissection
-      ComputeBissectDistances();
-  else if(useDistance() == 2)//Adjacence
+  bool project = true;
+  if(useDistance() == 0)             // Czekanovski-Dice
+      ComputeCzekanovskiDistances();            
+  else if(useDistance() == 1)        // Bisection
+      ComputeBisectDistances();
+  else if(useDistance() == 2)        // Adjacence
       ComputeAdjacenceDistances();
-  else if(useDistance() == 3)
+  else if(useDistance() == 3)        // Adjacence M
       ComputeAdjacenceMDistances();
-  else if(useDistance() == 4)
+  else if(useDistance() == 4)        // Laplacian 
+      {ComputeLaplacianDistances();project = false;}
+  else if(useDistance() == 5)        // Orient 
       ComputeOrientDistances();
-  else if(useDistance() == 5)
+  else if(useDistance() == 6)        // R2 
       ComputeR2Distances();
   else
-      ComputeDistances(); //Neigbour
+      ComputeCzekanovskiDistances(); //Neigbour
 
-  if(diag(Coords,nv(),Distances,EigenValues))ok = false;
+  if(diag(Coords,nv(),Distances,EigenValues,project))ok = false;
   }
 void EmbedRnGraph::release()
   {// Desallocation du tableau Distances
@@ -321,7 +330,7 @@ int EmbedRnGraph::ComputeAdjacenceMatrix()
       }
   return 0;
   }
-int EmbedRnGraph::ComputeBissectDistances()
+int EmbedRnGraph::ComputeBisectDistances()
   {// Compute degrees
   degree.resize(1,nv()); 
   for(tvertex v = 1 ;v <= nv();v++)
@@ -352,6 +361,19 @@ int EmbedRnGraph::ComputeAdjacenceDistances()
       Distances[i][i] = .0;
   return 0;
   }
+int EmbedRnGraph::ComputeLaplacianDistances()
+// Compute the laplacian fo the complement
+  {int i,j;
+  for(i = 1;i <= nv();i++)
+      for(j = 1;j <= nv();j++)
+	  Distances[i][j] = -1.;
+  for(tedge e = 1;e <= ne();e++)
+      Distances[vin[e]()][vin[-e]()] = Distances[vin[-e]()][vin[e]()] = .0;
+  for(tvertex v = 1;v <= nv();v++)
+      //Distances[v()][v()] = (double)Degree(v);
+        Distances[v()][v()] = (double)(nv()-Degree(v));
+  return 0;
+  }
 int EmbedRnGraph::ComputeR2Distances()
   {int i,j;
   Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
@@ -377,7 +399,7 @@ int EmbedRnGraph::ComputeAdjacenceMDistances()
       Distances[i][i] = .0;
   return 0;
   }
-int EmbedRnGraph::ComputeDistances()
+int EmbedRnGraph::ComputeCzekanovskiDistances()
   {int i;
   // distance entre vertex1 et ses voisins inferieurs => triangle
   // now fill all distances to be safe
