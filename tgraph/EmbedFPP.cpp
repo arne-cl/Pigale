@@ -690,6 +690,8 @@ int EmbedTContact(TopologicalGraph &G)
 	  {if(x1 < xv)Ver[v] = xv = x1 + 1;
 	  else if(xv < x2)Ver[v] = xv = x2 -1;
 	  }
+      if(v == iv1() && G.Degree(iv1) == 1)
+	  Ver[v] = xv = x1 = Ver[iv2]-1;
       // general case
       x1 = Min(x1,xv); x2 = Max(x2,xv);
       hp1[v].x() = (x1 != xv) ? (double)x1 + epsilon :(double) x1 - xminsize;
