@@ -157,6 +157,8 @@ void Graph_Properties::update()
       Twait("memory error");
       }
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
+  if(!G.CheckNoLoops())
+      {G.RemoveLoops();Twait("Graph had loops");}
   int ns,nt;
   bool S = G.CheckSimple();
   bool P = G.CheckPlanar();
