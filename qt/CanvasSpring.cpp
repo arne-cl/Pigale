@@ -33,8 +33,8 @@ void GraphEditor::Spring()
   int n_red,n = G.nv(),m =G.ne();
   double len,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
-  double hw = .5*(mhw*mhw)/(n*m); //.5
-  //double hw = .5*(mhw*mhw)/(n*n);
+  //double hw = .5*(mhw*mhw)/(n*m); //.5
+  double hw = .25*(mhw*mhw)/(n*m);
   int iter,niter = 2000;
   double dist2,strength,dx,dy;
   Tpoint p0,p;
@@ -94,7 +94,7 @@ void GraphEditor::Spring()
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  dist2 = Max(Distance2(p0,center),1.);
-	  strength = Min(sqrt(hw/dist2),.5);
+	  strength = Min(sqrt(hw/dist2),.5)*.5;
 	  translate[v0] -= (p0 - center)*strength;
 	  }
 
