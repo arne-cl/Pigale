@@ -250,6 +250,7 @@ void Graph_Properties::update()
   menu->setItemEnabled(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   menu->setItemEnabled(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
   menu->setItemEnabled(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
+  menu->setItemEnabled(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   //dual
   menu->setItemEnabled(A_GRAPH_DUAL,(G.nv() > 1) && P); 
   menu->setItemEnabled(A_GRAPH_DUAL_G,(G.nv() > 1) && P);

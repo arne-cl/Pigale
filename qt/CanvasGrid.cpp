@@ -121,22 +121,10 @@ void GraphWidget::Spring()
   {if(!d->is_init)return;
   d->editor->Spring();
   }
-// void GraphWidget::EraseColorVertices()
-//   {if(d->mywindow->MacroLooping)return;
-//   d->mywindow->UndoSave();
-//    d->editor-> EraseColorVertices();
-//   d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-//   }
-// void GraphWidget::EraseColorEdges()
-//   {if(d->mywindow->MacroLooping)return;
-//   d->mywindow->UndoSave();
-//   d->editor-> EraseColorEdges();
-//   }
-// void GraphWidget::EraseThickEdges()
-//   {if(d->mywindow->MacroLooping)return;
-//   d->mywindow->UndoSave();
-//   d->editor-> EraseThickEdges();
-//   }
+void GraphWidget::SpringJacquard()
+  {if(!d->is_init)return;
+  d->editor->SpringJacquard();
+  }
 void GraphWidget::resizeEvent(QResizeEvent* e)
   {if(d->mywindow->MacroLooping)return;
   if(d->editor)d->editor->initialize();
@@ -184,7 +172,6 @@ void GraphWidget::sizegridChanged(int sg)
   d->editor->DrawGrid(d->editor->current_grid);// compute the grid
   d->editor->canvas()->update();
   }
-
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphEditor

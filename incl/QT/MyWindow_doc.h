@@ -15,7 +15,8 @@ const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>
 const char * left_txt = "Opens <b>previous</b> graph from  the current <em>tgf</em> file";
 const char * redo_txt = "Reload the <b>current</b> graph from the current  opened <em>tgf</em> file";
 const char * right_txt = "Opens <b>next</b> graph of the current opened <em>tgf</em> file";
-const char * spring_txt ="This beta version of a spring embedder does not preserve planarity\nTutte Circle is usually more adapted to planar graphs\nESC to stop";
+const char * spring_txt ="This beta version of a spring embedder does not preserve planarity\nESC to stop";
+const char * jacquard_txt ="This is the Jacquard spring embedder which preserves planarity\nTutte circle may give better results\nESC to stop";
 const char *schnyder_txt ="<qt>
 <ul>
 <li> <b>Schnyder</b> triangulates the graph by adding edges.

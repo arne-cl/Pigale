@@ -30,13 +30,16 @@ void MyWindow::keyPressEvent(QKeyEvent *k)
   {if(k->key() == Qt::Key_Escape)
       escape = 1;
   key = k->key();
+  QWidget::keyPressEvent(k);
   }
 int MyWindow::getKey()
   {int key0 = key;
   key = 0;
   return key0;
   }
-
+void MyWindow::blockInput(bool t)
+  {menuBar()->setEnabled(!t); tb->setEnabled(!t);
+  }
 void macroRecord(int action)
   {if(action > 10000)return;
   MacroActions(++MacroNumActions) = action;
@@ -61,7 +64,7 @@ void MyWindow::macroHandler(int event)
 	  break; 
       case 4:// play repeat times
 	  MacroLooping = true;
-	  menuBar()->setEnabled(FALSE); tb->setEnabled(FALSE);
+	  blockInput(true);
 	  for(int i = 1;i <= repeat;i++)
 	      {if(i == repeat || escape)MacroLooping = false;
 	      macroPlay();
@@ -72,7 +75,7 @@ void MyWindow::macroHandler(int event)
 	      }
 	  escape = 0;
 	  MacroLooping = false;
-	  menuBar()->setEnabled(TRUE); tb->setEnabled(TRUE);
+	  blockInput(false);
 	  break;
       default:
 	  break;

@@ -84,6 +84,7 @@ public:
   void Message(QString s);
   void MessageClear();
   void UndoTouch(bool save=false);
+  void blockInput(bool t);
   int MyWindow::getKey();
 
 public:

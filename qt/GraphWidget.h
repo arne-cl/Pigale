@@ -31,10 +31,8 @@ public slots:
   void zoom();
   void ozoom();
   void uzoom();
-//   void EraseColorVertices();
-//   void EraseColorEdges();
-//   void EraseThickEdges();
   void Spring();
+  void SpringJacquard();
   void showgridChanged(bool i);
   void fitgridChanged(bool i);
   void sizegridChanged(int i);

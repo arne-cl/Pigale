@@ -163,6 +163,7 @@ class GraphEditor : public QCanvasView
   void ToGrid(QPoint &p);
   void Zoom(int dir);
   void Spring();
+  int SpringJacquard();
   int FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge);
   int FindItem(QPoint &p,EdgeItem* &edge);
   int FindItem(QPoint &p,ColorItem* &coloritem);
@@ -182,6 +183,7 @@ private:
   void hideEvent(QHideEvent*);
   void resizeEvent(QResizeEvent*);
   void paintEvent(QPaintEvent *);
+  void keyPressEvent(QKeyEvent *k);
   void UpdateSizeGrid();
 
   QPoint start_position;
