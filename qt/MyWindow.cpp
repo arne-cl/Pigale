@@ -80,7 +80,7 @@
 #include "icones/macroplay.xpm"
 
 void Test(GraphContainer &GC,int action);
-void MacroRecord(int action);
+void macroRecord(int action);
 void UndoErase();
 void SaveSettings();
 static char undofile[L_tmpnam];
@@ -362,24 +362,27 @@ MyWindow::MyWindow()
   popupPlan->insertItem("2-connnected (M)",         506);
   popupPlan->insertItem("3-connnected (M)",         507);
   generate->insertItem("&Planar cubic",popupCubic);
-  popupCubic->insertItem("dual:2 connnected (N1)",  510);
-  popupCubic->insertItem("dual:3 connnected (N1)",  511);
-  popupCubic->insertItem("dual:4 connnected (N1)",  512);
+  popupCubic->insertItem("dual:2 connnected (M)",  510);
+  popupCubic->insertItem("dual:3 connnected (M)",  511);
+  popupCubic->insertItem("dual:4 connnected (M)",  512);
   generate->insertItem("&Planar quadric",popupQuadric);
-  popupQuadric->insertItem("dual:1 connnected (N1)",513);
-  popupQuadric->insertItem("dual:2 connnected (N1)",514);
-  popupQuadric->insertItem("dual:3 connnected (N1)",515);
+  popupQuadric->insertItem("dual:1 connnected (M)",513);
+  popupQuadric->insertItem("dual:2 connnected (M)",514);
+  popupQuadric->insertItem("dual:3 connnected (M)",515);
   popupQuadric->insertItem("Bi-Quadric (N1)"       ,516);
   generate->insertItem("&Planar bipartite",popupBipar);
   popupBipar->insertItem("Bipartite (M)"           ,517);
-  popupBipar->insertItem("Bipartite cubic dual:2 connected (N1)",518);
-  popupBipar->insertItem("Bipartite cubic dual:3 connected (N1)",519);
+  popupBipar->insertItem("Bipartite cubic dual:2 connected (M)",518);
+  popupBipar->insertItem("Bipartite cubic dual:3 connected (M)",519);
   generate->insertItem("&Grid (N1,N2)",             501);
   generate->insertSeparator();
   generate->insertItem("&Complete (N1)",            502);
   generate->insertItem("&BipartiteComplete (N1,N2)",503);
   generate->insertItem("&Random (N1,M)",            504);
   generate->insertSeparator();
+  // Erase multiple edges
+  generate->insertItem("Erase multiple edges",10006);
+  generate->setItemChecked(10006,EraseMultipleEdges());
 #if QT_VERSION >= 300
   int Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
   int Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
@@ -402,8 +405,13 @@ MyWindow::MyWindow()
   QPopupMenu *macroMenu = new QPopupMenu( this );
   menuBar()->insertItem("&Macro",macroMenu);
   connect(macroMenu,SIGNAL(activated(int)),SLOT(macroHandler(int)));
-  spinMacro = new QSpinBox(1,1000,1,macroMenu,"spinMacro");
-  spinMacro->setValue(1);spinMacro->setPrefix("Repeat: ");
+  spinMacro = new QSpinBox(1,10000,1,macroMenu,"spinMacro");
+#if QT_VERSION >= 300
+  int Repeat = setting.readNumEntry("/pigale/generate/gen Repeat",100);
+#else
+  int Repeat = 100;
+#endif
+  spinMacro->setValue(Repeat);spinMacro->setPrefix("Repeat: ");
   macroMenu->insertItem("Start recording",1);
   macroMenu->insertItem("Stop  recording",2);
   macroMenu->insertItem("Continue recording",3);
@@ -696,7 +704,7 @@ void MyWindow::handler(int action)
   {int ret = 0;
   int drawing;
   if(debug())DebugPrintf("handler:%d",action);
-  if(MacroRecording)MacroRecord(action);
+  if(MacroRecording)macroRecord(action);
   if(action < 200)
       {UndoSave();timer.restart();
       ret = AugmentHandler(action);
@@ -734,6 +742,8 @@ void MyWindow::handler(int action)
       SchnyderLongestFace() =  menuBar()->isItemChecked(10003);
       SchnyderColor()       =  menuBar()->isItemChecked(10004);
       ShowOrientation()     =  menuBar()->isItemChecked(10020);
+      EraseMultipleEdges()  =  menuBar()->isItemChecked(10006);
+
       if(action == 10005)UndoEnable(menuBar()->isItemChecked(action));
       if(action == 10020)gw->update();
       return;
