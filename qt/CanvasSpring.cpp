@@ -126,10 +126,11 @@ void GraphEditor::Spring()
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
 	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      nodeitem[v]->moveBy(translate[v].x(),-translate[v].y());
+	      nodeitem[v]->moveTo(G.vcoord[v]);
 	      }
 	  else
 	      {nodeitem[v]->SetColor(red);++n_red;}
+	  
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
       stop = (n_red == G.nv())? ++stop : 0;
@@ -137,7 +138,7 @@ void GraphEditor::Spring()
       if(dep < .25 || stop == 4)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
-      // Compute bounds ro adapt the expand factor
+      // Compute bounds ro adapt the expand factor (should not be too strong)
       ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
       if(sizex > sizex0 && sizey > sizey0)
 	  expand /= Max(sizex/sizex0,sizey/sizey0);
