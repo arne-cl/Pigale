@@ -1,0 +1,35 @@
+ 
+body    {background-color: #D0F0D0;
+	color: #000000;
+	}
+ :link  {color: #00A0FF; 
+	background-color: #D0F0D0;
+	}
+ :visited {color: #F000F0; 
+	background-color: #D0F0D0;	
+	}
+ :active {color: #FF0000; 
+	background-color: #D0F0D0;
+	}
+table,td,tr{color: #000000;
+	background-color: #D0F0D0;
+	padding: 1em
+	}
+td.c1   {color: #00520E;
+	background-color: #92AC96;
+	font-family: Helvetica;
+	font-size: 172%;
+	}
+table.c2{color: #000000;
+	background-color: #ABBCAE;
+	width: 100%;
+	padding: 2px;
+	}
+td.c2   {color: #33663C;
+	background-color: #ABBCAE;
+	font-family: Helvetica;
+	font-size: 144%;
+	}
+H1      {color: #000000;
+	background-color: #D0F0D0;
+	}

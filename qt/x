@@ -1,0 +1,8 @@
+# !/bin/sh
+cd ..
+make && cd qt && ./pigale_$OPT&
+
+
+
+
+

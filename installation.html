@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <META NAME="Author" CONTENT="Hubert de Fraysseix">
+    <title>Compilation and Installation</title>
+    <link type="text/css" rel="stylesheet"  href="style.css">
+  </head>
+
+<body>
+
+<table ALIGN="center">
+<tr>
+<td><IMG SRC="misspost.jpg" HSPACE=0 BORDER=1  ALIGN=LEFT ALT="logo"></td>
+<td align= "center">
+	  <FONT SIZE="+3"><B><A HREF="pigale.html">P.I.G.A.L.E.</A></B><BR><BR></FONT>
+	  <FONT SIZE="+2"><B>P</B>ublic <B>I</B>mplementation of a <B>G</B>raph <B>A</B>lgorithm
+	    <B>L</B>ibrary and <B>E</B>ditor </FONT>
+	  <FONT SIZE="-1"><BR><A HREF="index.html" TARGET="_top" > H. de Fraysseix</A>, 
+	      <A HREF="../pom/index.html" TARGET="_top"> P. Ossona de Mendez</A>
+	    <br> hf @ ehess.fr
+	  </FONT><BR> 
+</td>
+</tr>
+</table>
+<hr>
+
+    <table width="100%" cellpadding="12">
+      <tr><td align="center" bgcolor="#92AD96" class="c1"><b>Compilation and Installation</b></td></tr>
+    </table>
+
+    <p>This package includes a stand alone library <b>tgraph</b> and an editor.<br>
+      The editor is based on the <b>Qt</b> toolkit and uses 
+      the <b>OpenGL</b> libraries for the 3-dimensional drawings.
+      <br>
+      <b>g++</b>,<b>Qt</b> and <b>Mesa3D</b> are availaible under the <b>GNU</b> license: 
+    </p>
+    <ul>
+      <li><b>g++</b> compiler: g++-2.96 or higher 
+	<a href="http://www.gnu.org/software/gcc/gcc.html">(GCC home page)</a></li>
+      <li><b>Qt</b>library: 3.0 (at least 2.3.1), with openGL support 
+	<a href="http://www.trolltech.com">(Qt home page)</a></li>
+      <li><b>OpenGL</b> : Mesa3D-3.4. 
+	<a href="http://www.Mesa3D.org">(Mesa 3D home page)</a></li>
+      <li><b>Doxygen</b> (Documentation tool). 
+	<a href="http://www.stack.nl/~dimitri/doxygen/index.html">(Doxygen home page)</a></li>
+    </ul>
+
+    The Mesa 3D libraries are included in XFree86 version 4, but sometimes the glut library 
+    is not.<br>
+    The QT libraries are included in all Linux distributions providing
+    access to <b>KDE</b>. <br>
+    Doxygen is only needed if you want to create the online
+    documentation.
+
+    <p>By default the compilation creates the dynamic libraries
+      <tt>tgraph</tt> (the main one), the library <tt>leda</tt> which
+      contains the modules needed by our editor under LEDA and the
+      library <tt>qt</tt> which contains the modules needed by our editor
+      under Qt.</p>
+    <br>
+
+
+    <table class="c2">
+      <tr><td class="c2"><b>Linux</b></td></tr>
+    </table>
+    <br>
+    <p>The files <tt>pigale/GNUMake.src</tt> and
+      <tt>qt/GNUmakefile</tt> might need to be edited for particular
+      goals (level of optimization, multiprocessor option, location of
+      files, etc.).<br>
+      The <tt>moc_*.cpp</tt> in <tt>pigale/qt</tt> must be generated with
+      the <b>moc</b> program corresponding to your qt headers.
+      Otherwise, at the link time, you will get messages such as:<br>
+      <tt>../pigale/lib/libqtopt.so: undefined reference to `GraphWidget
+	virtual table'</tt> <br>
+      You can regenerate those files by typing "<b>make</b> <tt>moc_cpp</tt>" 
+      in the <tt>pigale/qt</tt> repertory.</p>
+
+    <p>The command <b>make</b> (GNU make) creates the libraries in <tt>pigale/lib</tt>
+      and the executable programs in <tt>pigale/qt</tt>.
+    <ul>
+      <li>If the variable <tt>OPT</tt> is set to dbg (debugging mode) the
+	resulting programs are named <b>pigale_dbg</b>.
+      </li>
+      <li>If the variable <tt>OPT</tt> is set to opt (optimize mode) the
+	resulting programs are named <b>pigale_opt</b>.
+      </li>
+    </ul>
+    
+
+    <p>If you only need the tgraph library, you must first copy
+    <tt>dummy.cpp</tt> into <tt>tgraph</tt>, then, in the repertory
+    <tt>tgraph</tt>, type <b>make</b>. 
+    </p><br>
+
+
+    <table class="c2">
+      <tr><td class="c2"> <b>Other Systems</b></td></tr>
+    </table>
+    <br>
+    <p>This program has also been compiled under different UNIX
+      systems, using the gcc compilers. By default, (usually) the make
+      uses the file <tt>Makefile</tt> which in turns uses
+      <tt>MakeSrc</tt> and <tt>MakePro</tt>. <tt>MakeSrc</tt> is the only
+      one that might need edition. The libraries are created in
+      <tt>pigale/lib</tt> and the programs in <tt>pigale/leda</tt> and
+      <tt>pigale/qt.</tt><br>
+      These programs run under Windows, but we did not test the Qt
+      version which is not free under those systems.</p>
+    <br>
+
+
+    <table class="c2">
+      <tr><td class="c2"> <b>Execution of pigale_xxx</b></td></tr>
+    </table>
+    <br><p>
+      The input/output files are expected to be in a repertory
+      <tt>pigale/tgf</tt>. The Qt version needs the environment variable
+      TGF to point to a <tt>tgf</tt> directory <em>e.g.</em> <tt>../tgf</tt>;
+      <br>
+      When the program is executed a <tt>log.txt</tt> is produced.
+      <br>
+      In debugging mode (libraries compiled with OPT=dbg),
+      <tt>log.txt</tt> logs the errors and other useful informations.<br> 
+      In normal operation, one can dynamically turn on a debug mode
+      which logs the algorithms that are called and the properties that are checked.<br>
+    </p>
+    <br>
+
+
+    <table class="c2">
+      <tr><td class="c2"> <b>Loading and saving files</b></td></tr>
+    </table>
+    <br>
+    <p>We use a general proprietary format TGF. A TGF file contains
+      records (here corresponding to graphs), each record consisting of a
+      variable number of fields. One of its main advantage is that we can
+      write and read any complex data structure. But it is dependent of
+      the processor type (Low or High indian etc).</p>
+
+    <p>We also provide a very simple ASCII format file.</p>
+    <p>
+      For any problem, please email me at <b>hf @ ehess.fr</b>. 
+      
+    </p>
+    <br>
+    <hr>
+<!-- hhmts start -->
+Last modified: Wed Apr 10 11:52:18 CEST 2002
+<!-- hhmts end -->
+</body>
+
+</html>
+

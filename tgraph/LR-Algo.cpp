@@ -1,0 +1,201 @@
+/****************************************************************************
+**
+** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+** All rights reserved.
+** This file is part of the PIGALE Toolkit.
+**
+** This file may be distributed under the terms of the GNU Public License
+** appearing in the file LICENSE.HTML included in the packaging of this file.
+**
+*****************************************************************************/
+
+
+#include <stdio.h>
+#include <TAXI/graph.h>
+#include <TAXI/graphs.h>
+#include <TAXI/bicon.h>
+#define PRIVATE 
+#include <TAXI/lralgo.h>
+#undef PRIVATE
+
+
+void LralgoSort(int n, int m, svector<tvertex> &vin, const _Bicon &Bicon ,const svector<tvertex> &low,_LrSort &LrSort)
+  {svector<tedge> thin(0,n); thin.clear();
+  thin.SetName("thin Lr-Algo.cpp");
+  svector<tedge> thick(0,n); thick.clear();
+  thick.SetName("thick Lr-Algo.cpp");
+  tedge je,pje,nextje;
+  tvertex iv;
+
+  TEdgeStackPartition Stack(LrSort.linkt);
+  // filling piles thin and thick (sort by Bicon.low)
+  for(je = 1;je < tedge(n);je++) // tree edges 
+      {iv = low[je+1];
+      if(Bicon.status[je] == PROP_TSTATUS_THICK)
+          Stack.Push(thick[iv],je);
+      else
+          Stack.Push(thin[iv],je);
+      }
+  for(je = n;je <= m;je++) // cotree edges 
+      Stack.Push(thin[vin[je.firsttbrin()]],je);
+
+  // making the list of edges: filling LrSort.tel 
+  for(iv = n;iv >= 1;iv--)
+      {je = thick[iv];
+      while(je!=0)
+          { nextje = Stack.Next(je);
+          Stack.Push(LrSort.tel[vin[je.firsttbrin()]],je);
+          je = nextje;
+          }
+      je = thin[iv];
+      while(je!=0)
+          { nextje = Stack.Next(je);
+          if(je < n)
+              Stack.Push(LrSort.tel[vin[je.firsttbrin()]],je);
+          else
+              Stack.Push(LrSort.tel[vin[je.secondtbrin()]],je);
+          je = nextje;
+          }
+      }
+
+  // assigning a tremaux reference tree edge to each non-terminal vertex: filling LrSort.tref
+  for(iv=1;iv <= n;iv++)
+      {if ((je = LrSort.tel[iv])==0) continue;
+      if (je <n) {LrSort.tref[iv]=je; Stack.Pop(LrSort.tel[iv]); continue;}
+      while(je >= n)
+          {pje =je;	je = Stack.Next(je);}
+      if(je == 0)continue;
+      LrSort.tref[iv] = je;
+      /* a tree edge is found */
+      Stack.PopNext(pje);
+      }
+  }
+
+
+int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSort &LrSort, _Hist &Hist,bool OnlyTest)
+  {
+  _Twit Twit(m,n,vin, Hist);
+  svector<tedge> ctel(LrSort.tel); ctel.SetName("ctel Lr-Algo.cpp");
+  tvertex vi, vii;
+  tedge ej;
+  // Going up in the tree along LrSort.tref edges
+  vi = 1;
+  while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 
+
+  for(;;)
+      {if(ctel[vi] == 0)                                    // No Edge
+          {if(vi == tvertex(1))
+              return Twit.planar();
+          if(OnlyTest && !Twit.planar())return Twit.planar();
+          vii =vi;
+          vi = vin[treein(vi)];                             // Bactracking to the father of vi
+          Twit.Deletion(vi);                                // Delete cotree edges
+          if(LrSort.tref[vi] == treein(vii))                // Backtracking along a reference edge
+              continue;
+          if(Bicon.status[treein(vii)] > PROP_TSTATUS_LEAF) // Backtracking to a fork
+              {if(Bicon.status[treein(vii)] == PROP_TSTATUS_THIN) // Backtacking along a thin edge
+                  {ej = Twit.Twin().Firstbot();
+                  Hist.Dus[treein(vii)] = Hist.Flip[ej];    // tree edge side = side of ej
+                  Twit.Thin(ej);                            // Merge THIN
+                  }
+              else                                          // Backtacking along a thin edge
+                  {Twit.Thick();                            // Merge THICK
+                  ej=Twit.Twin().lbot();
+                  }
+              Hist.Link[treein(vii)] = Twit.Twin().ltop();  // Hist.Link edge to left top
+              Twit.NextFork();                              // Looking for nex fork
+              Twit.Fusion(ej);                              // fusion
+              }
+          else                                              // Backtacking along an isthmus
+              {Twit.NextFork();
+              Hist.Link[treein(vii)] = -1;
+              }
+          }
+      else if(ctel[vi] < n)                                 // Going up in the tree
+          {vii = treetarget(ctel[vi]);
+          Twit.NewFork(vi);                                 // New tree fork
+          ctel[vi] = LrSort.linkt[ctel[vi]];
+          vi = vii;                                         // updating current vertex
+          while(LrSort.tref[vi]!=0)vi = treetarget(LrSort.tref[vi]);
+          // Going up in the tree along LrSort.tref edges
+          continue;
+          }
+      else
+          {ej = ctel[vi];                                    // Treating a new cotree edge
+          ctel[vi] = LrSort.linkt[ctel[vi]];
+          Twit.NewTwin(ej);                                  // Create a new Twin
+          if(!Twit.FirstLink())Twit.Fusion(ej);              // Fusion
+          }
+      }
+  }
+
+int fastlralgo(int n, int m,svector<tvertex> &vin,const _Bicon &Bicon, _LrSort &LrSort, _FastHist &Hist)
+  {
+  _FastTwit Twit(m,n,vin, Hist);
+  svector<tedge> &ctel = LrSort.tel;
+  tvertex vi, vii;
+  tedge ej;
+  int ncotree;
+
+  // Subcalls do not need destructor call. Hence, we may use setjmp/longjmp facility.
+
+  int ret_val;
+  if ((ret_val = setjmp(Twit.env))!=0)
+      return Twit.planar();
+  // Going up in the tree along LrSort.tref edges
+  ncotree = 0;
+  vi = 1;
+  while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 
+  vii = vi; 
+  for(;;)
+      {if(ctel[vi] >= n) 
+          {ej = ctel[vi];                                    // Treating a new cotree edge
+          ctel[vi] = LrSort.linkt[ctel[vi]];
+          Twit.NewTwin(ej);                                  // Create a new Twin
+          LrSort.num[ej] = ++ncotree;
+          if(vi!=vii && !Twit.FirstLink())
+              Twit.Fusion(ej);                              // Fusion
+          }
+      else if(ctel[vi] == 0)                                    // No Edge
+          {if(vi == tvertex(1))return Twit.planar();
+          vii =vi;
+          vi = vin[treein(vi)];                             // Bactracking to the father of vi
+          Twit.Deletion(vi);                                // Delete cotree edges
+          if(LrSort.tref[vi] == treein(vii))                // Backtracking along a reference edge
+              continue;
+          if(Bicon.status[treein(vii)] > PROP_TSTATUS_LEAF) // Backtracking to a fork
+              {if(Bicon.status[treein(vii)] == PROP_TSTATUS_THIN) // Backtacking along a thin edge
+                  {ej = Twit.Twin().Firstbot();
+                  Twit.Thin(ej);                            // Merge THIN
+                  }
+              else                                          // Backtacking along a thin edge
+                  {Twit.Thick();                            // Merge THICK
+                  ej=Twit.Twin().lbot();
+                  } 
+              Twit.NextFork();                              // Looking for nex fork
+              Twit.Fusion(ej);                              // fusion
+              // if(!Twit.planar())return Twit.planar();
+              }
+          else                                              // Backtraking along an articulation
+              Twit.NextFork();
+          }
+      else                                                 // Going up in the tree
+          {vii = treetarget(ctel[vi]);
+          Twit.NewFork(vi);                                 // New tree fork
+          ctel[vi] = LrSort.linkt[ctel[vi]];
+          while(LrSort.tref[vii]!=0)vii = treetarget(LrSort.tref[vii]);
+          // Going up in the tree along LrSort.tref edges
+          vi = vii;
+          /* 
+             while(ctel[vi] >= n) 
+             {ej = ctel[vi];                                    // Treating a new cotree edge
+             ctel[vi] = LrSort.linkt[ctel[vi]];
+             Twit.NewTwin(ej);                                  // Create a new Twin
+             LrSort.num[ej] = ++ncotree;
+             }
+          */
+          continue;
+          }
+
+      }
+  } 

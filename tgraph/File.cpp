@@ -1,0 +1,376 @@
+/****************************************************************************
+**
+** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+** All rights reserved.
+** This file is part of the PIGALE Toolkit.
+**
+** This file may be distributed under the terms of the GNU Public License
+** appearing in the file LICENSE.HTML included in the packaging of this file.
+**
+*****************************************************************************/
+
+
+#include  <stdio.h>
+#include  <math.h>
+
+#include  <TAXI/Tbase.h>
+#include  <TAXI/Tstring.h>
+#include  <TAXI/graph.h>
+#include  <TAXI/Tpoint.h>
+#include  <TAXI/Tgf.h>
+#include  <TAXI/Tproptgf.h>
+#include  <TAXI/Tfile.h>
+#include  <TAXI/Tsmap.h>
+#include  <TAXI/color.h>
+#include  <TAXI/Tmessage.h>
+
+// tags for TGF file format
+#define  TAG_NAME         512
+#define  TAG_N            513
+#define  TAG_M            514
+#define  TAG_ELIST        515
+#define  TAG_COORDLAB     516
+#define  TAG_VCOLOR       517
+#define  TAG_LEDA         518
+#define  TAG_POM	      519
+
+#define  TAG_VCOORD	      520
+#define  TAG_VLABEL	      521
+#define  TAG_VIN	      522
+#define  TAG_ECOLOR	      523
+#define  TAG_ELABEL	      524
+#define  TAG_EWIDTH	      525
+// TAG 526 reserved
+
+// reserve TAG de 4096 a 8191
+//#if defined(__WATCOMC__) || defined(__GNUC__)
+#if defined(__toto__)
+//#pragma pack (4);
+
+struct coord   {
+  int label; 
+  double x __attribute__ ((aligned(4) )); 
+  double y __attribute__ ((aligned(4) ));
+};
+struct e_struct{
+  long v1;
+  long v2 __attribute__ ((aligned(4) )); 
+  long color __attribute__ ((aligned(4) )); 
+  long width __attribute__ ((aligned(4) ));
+};
+#else
+struct coord   {int label; double x,y ;};
+struct e_struct{long v1,v2,color,width;};
+#endif
+
+int DeleteTgfRecord(tstring filename,int index)
+  {if(!IsFileTgf(~filename))return -1;
+  Tgf file;
+  if(file.open(~filename, Tgf::old) == 0)return -1;
+  return file.DeleteRecord(index);
+  }
+int GetNumRecords(tstring fname)
+  {
+  if(!IsFileTgf(~fname))
+      {FILE *stream;
+      if((stream = fopen(~fname,"r")) == NULL)return -2;
+      fclose(stream);
+      return 1;
+      }
+  
+  Tgf file;
+  if(file.open(~fname, Tgf::old) == 0)return -1;
+  return file.RecordsNumber();
+  }
+int ReadGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
+  {if(IsFileTgf(~fname))
+      return ReadTgfGraph(G,fname,NumRecords,GraphIndex);
+  NumRecords = 1; GraphIndex = 1;
+  return ReadGraphAscii(G,fname);
+  }
+int ReadGeometricGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
+  {int rc;
+  if ((rc=ReadGraph(G,fname,NumRecords,GraphIndex))!=0)
+     return rc;
+  if (! G.Set(tvertex()).exist(PROP_COORD))
+     { Prop<Tpoint> vcoord(G.PV(),PROP_COORD);
+     int i;
+     // Calcul des coordonnes
+     double angle = 2.*acos(-1.)/G.nv();
+     vcoord[0]=Tpoint(0,0);
+     for (i=1; i<=G.nv(); i++)
+         vcoord[i] = Tpoint(cos(angle*i),sin(angle*i));
+     }
+  return 0;
+  }
+
+int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
+  {if(!IsFileTgf(~fname))return 1;
+  Tgf file;
+  int i,j,n, m;
+
+  if(file.open(~fname, Tgf::old) == 0)return 2;
+  NumRecords = file.RecordsNumber();
+  if(GraphIndex > NumRecords)GraphIndex = NumRecords;
+  if(GraphIndex <= 0)GraphIndex = 1;
+  file.SetRecord(GraphIndex);
+
+  G.clear();
+  short PomGraph = file.FieldRead(TAG_POM,PomGraph) ? 1 : 0;
+  if(PomGraph)
+      {
+      ReadTGF(G.Set(),file,0);
+      Prop1<int> n(G.Set(),PROP_N);
+      Prop1<int> m(G.Set(),PROP_M);
+      G.setsize(n(),m());
+      ReadTGF(G.Set(tvertex()),file,0);
+      ReadTGF(G.Set(tedge()),file,1);
+      ReadTGF(G.Set(tbrin()),file,2);
+      //return GraphIndex;
+      return 0;
+      }
+  //return 3;
+  file.FieldRead(TAG_N, n);
+  file.FieldRead(TAG_M, m);
+  int Titlesize = file.GetTagLength(TAG_NAME);
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  if(Titlesize)
+      {char *tmp = new char[Titlesize +1];
+      file.FieldRead(TAG_NAME,tmp);
+      tmp[Titlesize] = 0;
+      title() = tstring(tmp);
+      delete [] tmp;
+      }
+  else
+      title() = "No Name";
+            
+  G.setsize(n,m);
+
+  smap<int> map_label;                   //label -> index
+
+  // Creation des aretes
+  Prop<long> elabel(G.Set(tedge()),PROP_LABEL);
+  Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR,Black);
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH,1);
+  Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
+
+  e_struct *es = new e_struct[m+1];
+  file.FieldRead(TAG_ELIST, (char *)&es[1]);
+  int a;
+  int nloops = 0;
+  for (j = 1,i=1; j <= m; j++)
+      {if (es[j].v1 == es[j].v2){++nloops;continue;}   // skip loops
+      if (map_label.ExistingIndexByKey(es[j].v1) < 0)
+          {vlabel[i]=es[j].v1; map_label[es[j].v1]=i++;}
+      if (map_label.ExistingIndexByKey(es[j].v2) < 0)
+          {vlabel[i]=es[j].v2; map_label[es[j].v2]=i++;}
+      vin[j] = map_label[es[j].v1];
+      vin[-j] = map_label[es[j].v2];
+      elabel[j] = j;
+      a =  (es[j].color  <= 0) ? 1 : ((es[j].color >= 256) ? 256 :(short)es[j].color);
+      ecolor[j] =  (short)a;
+      a =  (es[j].width  <= 0) ? 1 : ((es[j].width > 3) ? 1 :(short)es[j].width);
+      ewidth[j] =  a;
+      }
+  vin[0]=0;
+  delete [] es;
+  if(nloops)
+      {DebugPrintf("Graph have %d loops",nloops);
+      m -= nloops;
+      G.setsize(tedge(),m);
+      }
+
+  // Creation des sommets et Lecture des coordonnes.
+  Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
+  vcoord.SetName("TFILE:vcoord");
+  coord *coords = new coord[n+1];
+   
+  file.FieldRead(TAG_COORDLAB, (char *)&coords[1]);
+  for(j = 1;j <= n;j++)
+      {if(Abs(coords[j].x) < DBL_EPSILON )coords[j].x=.0;
+      if(Abs(coords[j].y) < DBL_EPSILON )coords[j].y=.0;
+      if(map_label.ExistingIndexByKey(coords[j].label) < 0)
+	map_label[coords[j].label] = i++; 
+      vcoord[map_label[coords[j].label]] = Tpoint(coords[j].x,coords[j].y);
+      }
+  delete [] coords;
+
+  short LedaGraph = file.FieldRead(TAG_LEDA,LedaGraph) ? 1 : 0;
+  if(!LedaGraph)
+      {double xmax = 0.; double ymax = .0;
+      for(j = 1; j <= n;j++)
+          {xmax = Max(xmax,vcoord[j].x());
+          ymax = Max(ymax,vcoord[j].y());
+          }
+      double xx = 90./xmax;
+      double yy = 70./ymax;
+      for(j = 1; j <= n;j++)
+          {vcoord[j].x() = xx*vcoord[j].x() + 5.;
+          vcoord[j].y() = yy*vcoord[j].y() + 5.;
+          }
+      }
+ 
+
+  // Lecture des couleurs des sommets
+  if(file.GetTagLength(TAG_VCOLOR) == (long)(n*sizeof(short)))
+      {Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR,Yellow);
+      file.FieldRead(TAG_VCOLOR, (char *)&vcolor[1]);
+      }
+  return 0;
+  }
+
+int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
+  {if(filename == "")return 1;
+
+  Tgf file;
+  if(IsFileTgf(~filename) == 1)
+      {if((file.open(~filename, Tgf::old)) == 0)
+          return 1;
+      }
+  else
+      {if((file.open(~filename, Tgf::create)) == 0)
+          return 1;
+      }
+
+  file.CreateRecord();
+
+  if(tag == 1)
+      {file.FieldWrite(TAG_POM,(short)1);
+      Prop1<int> n(G.Set(),PROP_N);n()= G.nv();
+      Prop1<int> m(G.Set(),PROP_M);m()= G.ne();
+      WriteTGF(G.Set(),file,0);
+      WriteTGF(G.Set(tvertex()),file,0);
+      WriteTGF(G.Set(tedge()),file,1);
+      WriteTGF(G.Set(tbrin()),file,2);
+      return 0;
+      }
+
+  // write name, N and M
+  int n = G.nv();
+  int m = G.ne();
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  if(title().length() == 0)title() = "No Name";
+  file.FieldWrite(TAG_NAME, ~title());
+  file.FieldWrite(TAG_N, n);
+  file.FieldWrite(TAG_M, m);
+  file.FieldWrite(TAG_LEDA,(short)1);
+
+  Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
+  Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
+
+  // write edge list
+  e_struct *elist = new e_struct[m+1];
+  int i;
+  for(i=1;i<=m;i++)
+      {elist[i].v1 = vlabel[vin[i]];
+      elist[i].v2 = vlabel[vin[-i]];
+      elist[i].color = (long)ecolor[i];
+      elist[i].width = (long)ewidth[i];
+      }
+  file.FieldWrite(TAG_ELIST,(char *)&elist[1],m * sizeof(e_struct));
+  delete [] elist;
+  // write coordinates
+  Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
+  coord *coords = new coord[n+1];
+  for (i=1; i<=n;i++)
+      {coords[i].label = vlabel[i];
+      coords[i].x = vcoord[i].x();
+      coords[i].y = vcoord[i].y();
+      }
+  file.FieldWrite(TAG_COORDLAB,(char *)&coords[1],n * sizeof(coord));
+  delete [] coords;
+  // write color vertices
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  file.FieldWrite(TAG_VCOLOR,(char *)&vcolor[1],n * sizeof(short));
+  return 0;
+  }
+int ReadGraphAscii(GraphContainer& G,tstring filename)
+  { // Lecture d'une liste d'aretes
+  FILE *stream;
+  if((stream = fopen(~filename,"r")) == NULL)return -1;
+  char titre[80];
+  int i,ch,iv1,iv2;
+
+  G.clear();
+  // Lecture du titre
+  for(i = 0;i < 80;i++)
+      {ch = fgetc(stream);
+      if(ch == EOF)
+          return 1;
+      else if(ch == 10 || ch == 13)
+          break;
+      else
+          titre[i] = (char)ch;
+      }
+  titre[i] = (char) 0;
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  title() = titre;
+
+  smap<int>  map_label;      //label -> index
+  svector<long> map_index;   //index -> long
+
+  streampos pos = ftell(stream);
+  int m = 0;
+  int n = 0;
+  int fin;
+  while((EOF != (fin = fscanf(stream,"%d %d\n",&iv1,&iv2))) && iv1)
+      {if(iv1 == iv2)continue;
+      if(map_label.ExistingIndexByKey(iv1)< 0)
+          {map_label[iv1] = ++n;
+          map_index(n) = iv1;
+          }
+      if(map_label.ExistingIndexByKey(iv2)< 0)
+          {map_label[iv2] = ++n;
+          map_index(n) = iv2;
+          }
+      ++m;
+      }
+  if(fin == EOF)return 1;
+  G.setsize(n,m);
+  Prop<long> vlabel(G.PV(),PROP_LABEL);
+  Prop<long> elabel(G.PE(),PROP_LABEL);
+  Prop<tvertex> vin(G.PB(),PROP_VIN);
+  fseek(stream,pos,0);
+  // Lecture des aretes
+  tbrin b = 0;
+  for(;;)
+      {fscanf(stream,"%d %d\n",&iv1,&iv2);
+      if(iv1 == 0)break;
+      if(iv1 == iv2)continue;
+      ++b;
+      vin[b] = (tvertex)map_label[iv1];
+      vin[-b] = (tvertex)map_label[iv2];
+      }
+  vin[0]=0;
+  for (i=0; i<=m;i++) elabel[i] = i;
+  for (i=0; i<=n;i++) vlabel[i] = map_index[i];
+  fclose(stream);
+
+  Prop<Tpoint> vcoord(G.PV(),PROP_COORD);
+  // Calcul des coordonnes
+  double angle = 2.*acos(-1.)/n;
+  vcoord[0]=Tpoint(0,0);
+  for (i=1; i<=n; i++)
+      vcoord[i] = Tpoint(cos(angle*i),sin(angle*i));
+  return 0;
+  }
+
+int SaveGraphAscii(GraphAccess& G,tstring filename)
+  {FILE *out = fopen(~filename,"wt");
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  if(title().length() == 0)title() = "No Name";
+  fprintf(out,"%s\n",~title());
+  Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
+  // write edge list
+  for(int e = 1;e <= G.ne();e++)
+      fprintf(out,"%d %d\n",vin[(tbrin)e](),vin[(tbrin)-e]());
+
+  fprintf(out,"0 0\n");
+  fclose(out);
+  return 0;
+  }
+
+
