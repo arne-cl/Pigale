@@ -1,7 +1,10 @@
-# debug mode
+# client debug mode
 :D
+# server debug mode
+S_DEBUG
 # ask to transfer a file from the client and read the third graph
-RC_GRAPH;../../tgf/Sydney.tgf;3
+#RC_GRAPH;Sydney.tgf;3
+RC_GRAPH;ex.tgf;2
 # get the number of vertices and edges
 N:M
 # ask for a spring embedder

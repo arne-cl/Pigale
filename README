@@ -1,7 +1,7 @@
 
 					Pigale Installation
 
-Pigale uses GNU autoconfig for compilation and installation.
+Pigale uses GNU autoconfig for compilation and installation (but gnumakefiles are also provided).
 
 1/ Run the configure script
 ./configure [options]

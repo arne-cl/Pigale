@@ -146,8 +146,7 @@ int Client::sendToServerGraph(QString &data)
   delete [] buff;
   return 0;
   }
-//uint Client::readBuff(char  * buff)
-uint Client::readBuffer()
+uint Client::readBuffer(char  *  &buffer)
   {uint size;
   while(socket->bytesAvailable() < 4)socket->waitForMore(10); 
   clo >> size;
@@ -169,7 +168,7 @@ uint Client::readBuffer()
       nread += nb;
       clo.readRawBytes(pbuff,nb);
       pbuff += nb;
-      if(nread >= size0)
+      if(nread >= size0 && debug())
           {int percent = (int)(nread*100./size + .5);
           size0 = nread + size/10; // we write when at least 10% more  is read
           writeToClient(QString("%1 % (%2 / %3)").arg(percent).arg(nread).arg(size));
@@ -184,8 +183,8 @@ void Client::socketReadyRead()
       if(str.at(0) == ':')
           writeToClient(str.mid(1));
       else if(str == "!PNG")// receiving a png image
-          {//char * buff = NULL;
-          uint size = readBuffer();
+          {char * buffer = NULL;
+          uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PngFile = QString("image%1.png").arg(++numPng);
           QFile file(PngFile);          file.open(IO_ReadWrite);
@@ -193,7 +192,7 @@ void Client::socketReadyRead()
           stream.writeRawBytes(buffer,size);
           file.close();
           delete [] buffer;
-          writeToClient(QString("GOT:%1").arg(PngFile));
+          if(debug())writeToClient(QString("GOT:%1").arg(PngFile));
           ChangeActionsToDo(-1);
           }
       else if(str.at(0) == '!')//server has finished one action
@@ -211,7 +210,7 @@ void threadRead::run()
       {int retry = 0;
       while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
-          if(++retry %100 == 0)
+          if(++retry %100 == 0 && pclient->debug())
               pclient-> writeToClient(QString("Waiting %1s (%2)").arg(retry/100).arg(pclient->ChangeActionsToDo(0)));
           }
       str = stream.readLine(); 

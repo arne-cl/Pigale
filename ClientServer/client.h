@@ -63,7 +63,6 @@ class threadRead : public QThread
 {
 public:
   virtual void run();
-  
   Client* pclient; 
 };
 
@@ -94,8 +93,7 @@ public:
 
 private:
   int sendToServerGraph(QString &str);
-  //  uint readBuff(char  * buff);
-  uint readBuffer();
+  uint readBuffer(char  *  &buff);
   QMutex mutex;
   QTextStream cls;
   QDataStream clo;
@@ -103,13 +101,12 @@ private:
   QLineEdit *inputText;
   threadRead ThreadRead;
   int numPng;
-  char *buffer;
 
 public:
   bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
   void debug(bool b) {mutex.lock(); dbg=b; mutex.unlock();}
-  
 };
 
 
 #endif 
+

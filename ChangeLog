@@ -19,3 +19,5 @@
 09/03/2005: Corrected a bug that could occur while saving a tgf file.	
 11/03/2005: Now the zoom keeps the graph on a grid if any.
 16/03/2005: Added in the file menu an option to start the server.
+29/03/2005: Improved client-server.
+29/03/2005: Corrected a bug in Embedding in Rn (if an edge had a color index > 16).
