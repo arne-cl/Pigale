@@ -35,7 +35,7 @@ If the input is a file:
 - commands may contains arguments separated by ';'
 */
 
-Client::Client(const QString &host, Q_UINT16 port):debug(false),translate(false)
+Client::Client(const QString &host, Q_UINT16 port):debug(false)
   {infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
   inputText = new QLineEdit( hb1 );
@@ -87,9 +87,7 @@ void Client::sendToServer(QString &str)
   if(str.at(0) == '#'){os <<str << "\n";return;}
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
-      {if(translate)Translate(fields[i]);
-      else os <<fields[i] << "\n";
-      }
+      Translate(fields[i]);
   }
 void Client::Translate(QString &str)
   {int pos = str.find(';');
@@ -148,12 +146,6 @@ void Client::run()
 		      break;
 		  case 'd':
 		      debug = false;
-		      break;
-		  case 'T':
-		      translate = true;
-		      break;
-		  case 't':
-		      translate = false;
 		      break;
 		  default:
 		      break;

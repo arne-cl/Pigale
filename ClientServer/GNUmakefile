@@ -84,4 +84,4 @@ server.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tdebug.h
 server.o: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/Tpropio.h
 server.o: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
 server.o: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/Tfile.h
-server.o: ../../pigale/incl/QT/Action_def.h
+server.o: ../../pigale/incl/TAXI/random.h ../../pigale/incl/QT/Action_def.h

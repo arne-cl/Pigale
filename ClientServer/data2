@@ -1,9 +1,8 @@
 #if a line starts by '#' or ':' only the 2 first characters are interpreted
 #lines starting with '#' are comments
-#lines starting with ':' mofify the client-server behaviour
+#lines starting with ':' modify the client-server behaviour
 :D //echo comments
-:T // translate ascii commands to integers
-#create a graph 
+#create a graph
 N_GRAPH
 #create 5 vertices
 N_V;5
@@ -19,10 +18,10 @@ N_E;3;4
 N_E;3;5
 #graph has:
 N:M
-#graph planar ?
+#graph planar:
 PLAN:
 N_E;4;5
-#graph planar ?
+#graph planar:
 PLAN
 :!
 

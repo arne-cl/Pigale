@@ -58,7 +58,6 @@ private:
   typedef QMap<QString, int> ActionMap;
   ActionMap mActions;
   bool debug;
-  bool translate;
 
   void initMap();
   void Client::Translate(QString &str);

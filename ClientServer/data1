@@ -2,23 +2,22 @@
 #lines starting with '#' are comments
 #lines starting with ':' mofify the client-server behaviour
 :D //echo comments
-# 2999 debug server // echo received commands
-#2999
+
 #Read graph 1 of tgf file ex.tgf (on server side)
-2101;ex.tgf;1
-2001:2002:2014:2015
+R_GRAPH;ex.tgf;1
+N:M
 #Read the graph of ascci file graph0.txt (on server side)
-2101;graph0.txt
+R_GRAPH;graph0.txt
 #N
-2001
+N
 #M
-2002
+M
 #ask vertex labels
-2017
+VLAB
 #ask for a FPP embedding
-203
+FPP_FARY
 #ask coords
-2016
+COORD
 #end 
 :!
 
