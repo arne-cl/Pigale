@@ -104,7 +104,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   LayoutP->addWidget(RBPlanar);
 
   RBMxPlanar = new RoRadioButton(this,"RBMxPlanar");
-  RBMxPlanar->setText("Max. planar");
+  RBMxPlanar->setText("Triangulation");
   LayoutP->addWidget(RBMxPlanar);
 
   RBOuPlanar = new RoRadioButton(this,"RBOuPlanar");
@@ -141,33 +141,37 @@ void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
   e->accept();
 #endif
   }
-
-
 Graph_Properties::~Graph_Properties()
   { }
 void Graph_Properties::MaxNSlowChanged(int i)
-  {MaxNSlow = i;update();}
+  {MaxNSlow = i;update();
+  }
 void Graph_Properties::MaxNDisplayChanged(int i)
-  {MaxNDisplay = i;update();}
+  {MaxNDisplay = i;update();
+  }
 void Graph_Properties::update()
   {GeometricGraph G(GetMainGraph());
   int ns,nt;
   bool S = G.CheckSimple();
   bool P = G.CheckPlanar();
-  bool M = (G.ne() == 3*G.nv() - 6) ? true : false;
-  bool T = (P && S && M) ? true : false;     // Max Planar
+  bool SMALL = (G.nv() < 3) ? true : false;
+  bool M = (!SMALL  && (G.ne() == 3*G.nv() - 6)) ? true : false;
+  bool T = (P && S && M) ? true : false;     //Triangulation
   bool A = G.CheckAcyclic(ns,nt);
   bool B = G.CheckBipartite();
   int dmin,dmax;  G.MinMaxDegree(dmin,dmax);
   bool R = (dmin == dmax) ? true :false;
   bool C1,C2,C3;
+  C1 = C2 = C3 = false;
   bool Outer = false;
   bool Serie = false;
-  C1 = C2 = C3 = false;
+ 
   bool H = G.Set().exist(PROP_HYPERGRAPH);
   bool E;
   bool MB = P && B && S && (G.ne() == (2*G.nv() - 4));
-
+ 
+  if(S && G.nv() == 2 && G.ne() == 1) //One edge graph
+      C1 = true;
   if(T && G.nv() == 3)
       C1 = C2 = true;
   else if(T && G.nv() > 3) // MaxPlanar
@@ -184,6 +188,9 @@ void Graph_Properties::update()
       {Serie = G.CheckSerieParallel();
       if(Serie && dmin == 2 && TestOuterPlanar(G))Outer = true;
       }
+  else if(G.nv() == 2 && G.ne() == 1)
+      Serie = Outer = true;
+
   RBSimple->setChecked(S);
   RBPlanar->setChecked(P);
   RBMxPlanar->setChecked(T);
@@ -206,49 +213,47 @@ void Graph_Properties::update()
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
   bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;
-  menu->setItemEnabled(298,NotBigD);//Rn embedding
-  menu->setItemEnabled(609,NotBigS);//sym
-  menu->setItemEnabled(606,NotBigS);//partition
-  menu->setItemEnabled(603,NotBigS);//maxplanar
-  menu->setItemEnabled(604,NotBigS);//maxplanar
-  menu->setItemEnabled(252,NotBigD);//polair
+  menu->setItemEnabled(298,!SMALL && NotBigD);                     //Rn embedding
+  menu->setItemEnabled(609,!SMALL && NotBigS);                     //sym
+  menu->setItemEnabled(606,!SMALL && NotBigS);                     //partition
+  menu->setItemEnabled(603,!P && NotBigS);                         //maxplanar
+  menu->setItemEnabled(604,!P && NotBigS);                         //maxplanar
+  menu->setItemEnabled(252,NotBigD);                               //polair
 
   //Augment
-  menu->setItemEnabled(101,!C1);
-  menu->setItemEnabled(102,P && !C2);
-  menu->setItemEnabled(103,P && !C2);
-  menu->setItemEnabled(104,!C2);
-  menu->setItemEnabled(105,P && S && !T);
-  menu->setItemEnabled(106,P && S && !T);
-  menu->setItemEnabled(107,P && C3 && !T);
-  menu->setItemEnabled(108,P && B && S && !MB);
+  menu->setItemEnabled(101,(G.nv() > 1) && !C1);                   //make connected 
+  menu->setItemEnabled(102,(G.nv() > 1) && P && !C2);              //make 2 connected
+  menu->setItemEnabled(103,!SMALL && P && !C2);                    //make 2 connected opt
+  menu->setItemEnabled(104,(G.nv() > 1) && !C2);                   //make 2 connected NP  
+  menu->setItemEnabled(105,!SMALL && P && S && !T);                //vertex triangulate
+  menu->setItemEnabled(106,(G.nv() > 1) && P && S && !T);          //ZigZag 
+  menu->setItemEnabled(107,(G.nv() > 1) && P && C3 && !T);         //Tricon triangulate opt
+  menu->setItemEnabled(108,(G.nv() > 1) && P && B && S && !MB);    //Quadrangulate
   //Embed
-  menu->setItemEnabled(201,P && NotBigD);
-  menu->setItemEnabled(202,P && NotBigD);
-  menu->setItemEnabled(203,P && NotBigD);
-  menu->setItemEnabled(204,P && S && NotBigD);
-  menu->setItemEnabled(205,P && NotBigD);
-  menu->setItemEnabled(250,P && NotBigD);
-  menu->setItemEnabled(251,B && P && NotBigD);
-  menu->setItemEnabled(253,P && NotBigD);
+  menu->setItemEnabled(201,!SMALL && P && NotBigD);                 //Schnyder
+  menu->setItemEnabled(202,!SMALL && P && NotBigD);                 //Schnyder V 
+  menu->setItemEnabled(203,!SMALL && P && NotBigD);                 //Tutte
+  menu->setItemEnabled(204,!SMALL && P && S && NotBigD);            //Tutte Circle 
+  menu->setItemEnabled(205,!SMALL && P && NotBigD);                 //FPP Fary
+  menu->setItemEnabled(250,(!SMALL || G.ne() > 1) && P && NotBigD); //Vision
+  menu->setItemEnabled(251,(G.nv() > 1) && B && P && NotBigD);      //Biparti
+  menu->setItemEnabled(253,!SMALL && P && NotBigD);                 //FPP vision
   //dual
-  menu->setItemEnabled(301,P); 
-  menu->setItemEnabled(302,P);
-  menu->setItemEnabled(303,P);
-  menu->setItemEnabled(304,P);
+  menu->setItemEnabled(301,(G.nv() > 1) && P); 
+  menu->setItemEnabled(302,(G.nv() > 1) && P);
+  menu->setItemEnabled(303,(G.nv() > 1) && P);
+  menu->setItemEnabled(304,(G.nv() > 1) && P);
   //Algo
   menu->setItemEnabled(601,!P);
   menu->setItemEnabled(602,!P);
-  menu->setItemEnabled(603,!P);
-  menu->setItemEnabled(604,!P);
   menu->setItemEnabled(610,B);
   menu->setItemEnabled(611,P);
   menu->setItemEnabled(612,!P);
   //Orient
-  menu->setItemEnabled(703,P && C3);
-  menu->setItemEnabled(704,P && B);
-  menu->setItemEnabled(705,P);
-  menu->setItemEnabled(706,P && C2);
+  menu->setItemEnabled(703,!SMALL && P && C3);                        //planar 3-con 
+  menu->setItemEnabled(704,(G.nv() > 1) && P && B);                   //biparti 
+  menu->setItemEnabled(705,!SMALL && P);                              //planar schnyder
+  menu->setItemEnabled(706,(G.nv() > 1) && P && C2);                  //bipolar 
 
   //Print informations
   Prop1<tstring> title(G.Set(),PROP_TITRE);
