@@ -147,7 +147,7 @@ void MyWindow::LoadSettings()
   SchnyderRect() = setting.readBoolEntry("/pigale/embed/schnyder rect",false);
   SchnyderLongestFace() = setting.readBoolEntry("/pigale/embed/schnyder longestface",true);
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
-  useDistance() = setting.readBoolEntry("/pigale/embed/distance dist",1);
+  useDistance() = setting.readNumEntry("/pigale/embed/distance dist",1);
   EraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
   }
 int GetPigaleColors()
