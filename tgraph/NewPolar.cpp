@@ -464,7 +464,7 @@ public:
             }
         if (StackNext[x]==y) StackNext[x]=x;
         if (StackNext[y]==x) StackNext[y]=y;
-        swap(StackNext[x],StackNext[y]);
+        Tswap(StackNext[x],StackNext[y]);
         return true;
         }      
     bool IsEmpty(int n)

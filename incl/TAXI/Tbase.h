@@ -12,7 +12,6 @@
 #ifndef _TBASE_H_INCLUDED_
 #define _TBASE_H_INCLUDED_
 
-//Standart functions
 #ifndef ALGOBASE_H
 template <class T,class U> inline T Min(const T a,const U b)
     {if(a <= (T)b) return a;
@@ -30,18 +29,6 @@ inline double Min(const double a, const double b)
     {if(a <= b)return a;
     return b;
     }
-#ifndef QT
-inline void swap(int &a,int &b) {int c=a; a=b; b=c;}
-inline void swap(float &a,float &b) {float c=a; a=b; b=c;}
-inline void swap(double &a,double &b) {double c=a; a=b; b=c;}
-
-template <class T> inline void swap(T &a,T &b)
-    {char buf[sizeof(T)];
-    memcpy(buf,&a,sizeof(T));
-    memcpy(&a,&b,sizeof(T));
-    memcpy(&b,buf,sizeof(T));
-    }
-#endif
 #endif
 inline void Tswap(int &a,int &b) {int c=a; a=b; b=c;}
 inline void Tswap(float &a,float &b) {float c=a; a=b; b=c;}
