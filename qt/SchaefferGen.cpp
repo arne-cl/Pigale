@@ -2771,6 +2771,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   pmFreeMap(&Map);
   TopologicalGraph TG(GC);
   int erased  = 0;
+  if(!loops)Prop1<int> NoLoops(TG.Set(),PROP_NLOOPS);
   if(EraseMultipleEdges() && multiple)
       erased = TG.Simplify();
   else if(loops)
