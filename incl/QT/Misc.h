@@ -38,4 +38,6 @@ bool & ShowIndex();
 void ColorPoles(GeometricGraph &G);
 bool CheckCoordNotOverlap(GeometricGraph & G);
 void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
+//in Test.cpp
+void  initMenuTest();
 #endif

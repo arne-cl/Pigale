@@ -14,6 +14,7 @@
 
 #include <qglobal.h>
 #include <qmainwindow.h>
+#include <qpopupmenu.h>
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qmap.h>
@@ -111,6 +112,7 @@ public:
   QString getActionString(int action);
   int getActionInt(QString action_str);
   int publicLoad(int pos);
+ void setUserMenu(int i, const QString &txt);
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *e;
@@ -137,6 +139,7 @@ private:
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
   LineEditNum *macroLine;
   QLineEdit *seedEdit;
+ QPopupMenu *userMenu; 
   QPrinter *printer;
   QString DirFileMacro;
   QString MacroFileName;

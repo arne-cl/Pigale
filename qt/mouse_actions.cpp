@@ -21,38 +21,35 @@ static int mouse_action_1 = 3;
 int GetMouseAction_1()
   {return mouse_action_1;}
 // sizes cannot be known at this point by calling methods
-// but the width is defined by pigaleEditorMinXsize = pigaleEditorMaxXsize = 250
-// an we define here the height: 140
-// left and right width:  100
+// but the width is defined by pigaleEditorMinXsize = pigaleEditorMaxXsize = 280
 
-const int width = 250-5; //5 borders
+const int Height = 150; 
+const int Width = 280-5; //5 borders
 const int dy = 18;
-const int oy = 15;                // origin of first radiobutton  
+const int oy = 20;                // origin of first radiobutton  
 const int dx = 90;               // width of radiobuttons  (80) 
 const int ox1 = 6;               // postion of left group
-const int dx1 = 100;              // width radio group (90)
-const int dx2 = 100;             // group of radiobuttons
-//const int ox2 = width/2 + 18;    // postion of right group
-const int ox2 = width -ox1/2 - 100;    // postion of right group
-const int oy2 = 8;
-const int sliderOx = 120;
-//const int sliderOx = width/2;
+const int dx1 = 125;              // width radio group (90)
+const int sliderOx = ox1+dx1+3;
 const int sliderOy = 7;
 const int sliderWidth = 16;
 const int sliderHeight = 6*dy+oy-3; // +-height of the radiogroup
 const int sizegrid = 40; //init value of the grid size of the graph
-
+const int oy2 = 8;
+const int ox2 =  sliderOx + sliderWidth + 3;    // postion of right group
+const int dx2 = Width-ox2-1;             // group of radiobuttons
+const int dxb = dx2/2;// width of buttons
 
 Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 			     ,WFlags fl,GraphWidget* gw)
     : QWidget(parent,name,fl)
   {if(!name)setName("Mouse_Acions");
 
-  setMinimumHeight(140);  setMaximumHeight(140); 
+  setMinimumHeight(Height);  setMaximumHeight(Height); 
   //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
 
   ButtonGroup1 = new QButtonGroup(this,"ButtonGroup1");
-  ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,6*dy+oy+5)); 
+  ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,6*dy+oy+15)); 
   ButtonGroup1->setTitle(tr("Left Button"));
   ButtonGroup1->setRadioButtonExclusive(TRUE);
 
@@ -125,13 +122,13 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   ButtonShowGrid = new QCheckBox(this,"ButtonShowGrid");
   ButtonShowGrid->setGeometry(QRect(ox2,oy2+55,85,20)); 
   ButtonShowGrid->setText(tr("Show grid"));
-
+  
   ButtonForceGrid = new QPushButton(this,"ButtonForceGrid");
-  ButtonForceGrid->setGeometry(QRect(ox2,oy2+78,48,20));
+  ButtonForceGrid->setGeometry(QRect(ox2,oy2+78,dxb,20));
   ButtonForceGrid->setText(tr("Force G"));
 
   ButtonUndoGrid = new QPushButton(this,"ButtonUndoGrid");
-  ButtonUndoGrid->setGeometry(QRect(ox2+48,oy2+78,48,20));
+  ButtonUndoGrid->setGeometry(QRect(ox2+dxb,oy2+78,dxb,20));
   ButtonUndoGrid->setText(tr("Undo G"));
   ButtonUndoGrid->setDisabled(true);
 

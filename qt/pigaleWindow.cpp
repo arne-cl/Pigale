@@ -26,7 +26,6 @@
 #include <QT/pigalePaint.h> 
 #include <QT/pigaleCanvas.h>
 
-#include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qstatusbar.h>
 #include <qtoolbar.h>
@@ -158,7 +157,8 @@ pigaleWindow::pigaleWindow()
 #endif
 
   // sizes of the editor window
-  int pigaleEditorMinXsize  = 250, pigaleEditorMaxXsize  = 250;
+  // int pigaleEditorMinXsize  = 250, pigaleEditorMaxXsize  = 250;
+  int pigaleEditorMinXsize  = 280, pigaleEditorMaxXsize  = 280;
   int pigaleEditorMinYsize  = 150;
   // When testing screens 800x600
   //pigaleWindowInitXsize = 800;pigaleWindowInitYsize = 600;
@@ -204,8 +204,8 @@ pigaleWindow::pigaleWindow()
   mouse_actions = new Mouse_Actions(mainWidget,"mouseactions",0,gw);
   mouse_actions->setPalette(LightPalette);
   graph_properties = new Graph_Properties(mainWidget,menuBar(),"graph_properties");
-  graph_properties->setMinimumSize(pigaleEditorMinXsize,170);
-  graph_properties->setMaximumSize(pigaleEditorMinXsize,190);
+  graph_properties->setMinimumSize(pigaleEditorMinXsize,180);
+  graph_properties->setMaximumSize(pigaleEditorMinXsize,250);
   QLabel *lab0 = new QLabel(mainWidget);
 #ifdef _WINDOWS
   lab0->setText("<center>Messages</center>");
@@ -489,7 +489,7 @@ pigaleWindow::pigaleWindow()
   connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
   macroMenu->insertItem(tr("Repeat macro"),4);
  
-  QPopupMenu *userMenu = new QPopupMenu( this );
+   userMenu = new QPopupMenu( this );
   menuBar()->insertItem(tr("&UserMenu"),userMenu);
   connect(userMenu,SIGNAL(activated(int)),SLOT(handler(int)));
   userMenu->insertItem("Test &1",A_TEST_1);
@@ -510,7 +510,9 @@ pigaleWindow::pigaleWindow()
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
   connect(spin_MaxND,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNDisplayChanged(int)));
   connect(comboLabel,SIGNAL(activated(int)),SLOT(showLabel(int)));
+ connect(comboLabel,SIGNAL(activated(int)),popupLabel,SLOT(hide()));
   connect(comboDistance,SIGNAL(activated(int)),SLOT(distOption(int)));
+  connect(comboDistance,SIGNAL(activated(int)),popupDistance,SLOT(hide()));
   connect(popupEmbed,SIGNAL(activated(int)),SLOT(handler(int)));
   settings->insertTearOffHandle();
   //debug()
@@ -643,6 +645,7 @@ pigaleWindow::pigaleWindow()
       browser->setSource("manual.html");
       }
 #endif  
+  initMenuTest();
   gw->update();
   if(!Server)load(0);
   }
@@ -1071,6 +1074,9 @@ void pigaleWindow::SetPigaleFont()
   QFont font = QFontDialog::getFont( &ok, this->font(), this );
   if(!ok)return;
   QApplication::setFont(font,true);
+ }
+void  pigaleWindow::setUserMenu(int i, const QString &txt)
+ {userMenu->changeItem ( A_TEST+i,txt);
  }
 /*
 The copies are cleared when a new graph is loaded or generated, but the last graph is saved
