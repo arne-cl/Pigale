@@ -2,6 +2,8 @@ OPT=opt
 PIC=-fpic
 AWK=awk
 CC=g++
+#CPU="-mcpu=i686"
+#CPU=-m686 //
 
 MQTDIR=$(QTDIR)
 PIGALEPATH=../../pigale
@@ -15,7 +17,7 @@ UNIXLIB   =  -L$(MQTDIR)/lib -lqt-mt
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC)
 CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Wno-deprecated  -pipe
-CFLAGSopt += -DQT_THREAD_SUPPORT 
+CFLAGSopt += -DQT_THREAD_SUPPORT $(CPU)
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall  $(PIC) 
