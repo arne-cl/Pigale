@@ -9,6 +9,9 @@
 **
 *****************************************************************************/
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "MyWindow.h"
 #include "GraphWidget.h"
 #include "GraphGL.h"
@@ -75,6 +78,9 @@
 #include "icones/sfilesave.xpm"
 
 void Test(GraphContainer &GC,int action);
+void UndoErase();
+
+static char undofile[L_tmpnam];
 
 MyWindow::MyWindow()
     : QMainWindow(0,"_Pigale",WDestructiveClose ),
@@ -83,13 +89,17 @@ MyWindow::MyWindow()
   // Export some data
   DefineGraphContainer(&GC);
   DefineMyWindow(this);
-
+  //Create an  undofile name
+  tmpnam(undofile);
+  // Erase undo.tgf
+  atexit(UndoErase);
+  // Define some colors
   QPalette LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
   // Create a printer
   printer = new QPrinter;
   printer->setOrientation(QPrinter::Landscape); 
-  printer->setColorMode(QPrinter::Color); 
+  printer->setColorMode(QPrinter::Color);
 
   // Windows
 #if QT_VERSION >= 300
@@ -100,7 +110,7 @@ MyWindow::MyWindow()
   int MyWindowInitYsize = d->height();
 #endif
   int MyWindowInitXsize = 817; 
-  int MyEditorMinXsize  = 220, MyEditorMinYsize  = 200;
+  int MyEditorMinXsize  = 220, MyEditorMinYsize  = 180;
   int MyEditorMaxXsize  = 300, MyEditorMaxYsize  = 500;
 
   QWidget *mainWidget = new QWidget(this,"mainWidget");
@@ -418,7 +428,7 @@ MyWindow::MyWindow()
 
   resize(MyWindowInitXsize,MyWindowInitYsize);
   mainWidget->setFocus();
-  DebugPrintf("Debugprintf messages");
+  DebugPrintf("Debugprintf messages\nUndoFile:%s",undofile);
   if(Error() == -1){Twait("Impossible to write in log.txt");Error() = 0;}
   gw->update();
   
@@ -462,6 +472,7 @@ void MyWindow::load(int pos)
       gw->update();
       return;
       }      
+  UndoClear();UndoSave();
   int NumRecords =GetNumRecords((const char *)InputFileName);
   if(pos == 1)++(*pGraphIndex);
   else if(pos == -1)--(*pGraphIndex);
@@ -473,7 +484,6 @@ void MyWindow::load(int pos)
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
-  UndoClear();
   banner();
   information(); gw->update();
   }
@@ -506,9 +516,6 @@ void MyWindow::save_ascii()
   QString OutputAsciiFile = QFileDialog::
   getSaveFileName(DirFile,"Txt Files(*.txt)",this);
   if(OutputAsciiFile.isEmpty())return;
-
-//   if(IsFileTgf((const char *)OutputAsciiFile) > 0)
-//       {Twait("File is a Tgf file");return;}
   QFileInfo fi = QFileInfo(OutputAsciiFile);
   if(fi.exists())
       {int rep = QMessageBox::warning(this,"Pigale Editor"
@@ -541,11 +548,11 @@ void MyWindow::switchInputOutput()
   }
 void MyWindow::newgraph()
   {statusBar()->message("New graph");
+  UndoClear();UndoSave();
   Graph G(GetMainGraph());
   G.StrictReset();
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   if(debug())DebugPrintf("**** New graph");
-  UndoClear();
   information();gw->update();
   }
 void MyWindow::previous()
@@ -561,8 +568,7 @@ void MyWindow::information()
 void MyWindow::MessageClear()
   {e->setText("");}
 void MyWindow::Message(QString s)
-  {//e->setText(e->text()+s+"\n");
-  e->append(s);
+  {e->append(s);
 #if QT_VERSION == 300
   e->scrollToBottom ();
 #endif
@@ -584,8 +590,8 @@ void MyWindow::handler(int action)
       ret = RemoveHandler(action);
       }
   else if(action < 600)
-      {ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
-      UndoClear();
+      {UndoClear();UndoSave();
+      ret = GenerateHandler(action,spin_N1->value(),spin_N2->value(),spin_M->value());
       }
   else if(action < 700)
       ret = AlgoHandler(action,spin_N->value());
@@ -689,35 +695,34 @@ void MyWindow::print()
   }
 
 /*
-The copies are cleared when a new graph is loaded or generated
+The copies are cleared when a new graph is loaded or generated, but the last graph is saved
 A copy is created when edges/vertices are added/deleted outside the editor
 
-UndoMax  : #of save graphs
+UndoMax  : # of save graphs
 UndoSave : index of graph to restore [1,UndoMax]
 Should always be possible to restore 1
 */
 void MyWindow::Undo()
   {if(UndoIndex > 1)--UndoIndex;
-  if(ReadGraph(GC,"undo.tgf",UndoMax,UndoIndex) != 0)return;
+  if(ReadGraph(GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
-  this->undoR->setEnabled(UndoMax !=0 && UndoIndex < UndoMax);
+  this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
   }
 void MyWindow::UndoSave()
   {if(!IsUndoEnable)return;
   TopologicalGraph G(GC);
-  if(SaveGraphTgf(G,"undo.tgf",1) == 1)
-      {handler(10005);
-      return;
-      }
-  UndoMax = GetNumRecords("undo.tgf");
+  if(G.nv() == 0)return;
+  if(SaveGraphTgf(G,undofile,1) == 1)
+      {handler(10005);return;}
+  UndoMax = GetNumRecords(undofile);
   UndoIndex = UndoMax;
   this->undoL->setEnabled(true);
   banner();
   }
 void MyWindow::Redo()
   {if(UndoIndex < UndoMax)++UndoIndex;
-  if(ReadGraph(GC,"undo.tgf",UndoMax,UndoIndex) != 0)return;
+  if(ReadGraph(GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
   this->undoR->setEnabled(UndoIndex < UndoMax);
@@ -727,11 +732,11 @@ void MyWindow::UndoClear()
   UndoIndex = UndoMax = 0;
   this->undoL->setEnabled(false);
   this->undoR->setEnabled(false);
-  QFileInfo fi("undo.tgf");
+  QFileInfo fi(undofile);
   if(!fi.exists())return;
-  QFile undo_tgf("undo.tgf");
+  QFile undo_tgf(undofile);
   if(!undo_tgf.remove())
-      {Twait("Cannot remove undo.tgf");
+      {Twait("Cannot remove undofile");
       menuBar()->setItemChecked(10005,false);
       }
   }
@@ -739,4 +744,11 @@ void MyWindow::UndoEnable(bool enable)
   {this->undoS->setEnabled(enable);
   if(!enable){UndoClear();banner();}
   IsUndoEnable = enable;
+  }
+// UndoErase is called when the program exit
+void UndoErase()
+  {QFileInfo fi(undofile);
+  if(!fi.exists())return;
+  QFile undo_tgf(undofile);
+  undo_tgf.remove();
   }

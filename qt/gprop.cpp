@@ -31,9 +31,10 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   {if(!name)setName("Graph_Properties");
   //resize(227,166); //166
   menu = menubar;
-  QFont font = QFont("helvetica",12);
-  font.setBold(TRUE);
-  setFont(font);
+  //QFont font = QFont("helvetica",12);
+  QFont fnt = this->font();
+  fnt.setBold(true);
+  setFont(fnt,true);
   // 10 left margin,0 top margin,200 width (total width=220),165 hight 
   //this->setGeometry(QRect(10,0,200,185)); 
   this->setMinimumSize(QSize(220,180));

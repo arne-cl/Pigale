@@ -92,6 +92,7 @@ class GraphWidgetPrivate
       canvas = 0;
       editor = 0;
       SizeGrid = 100;
+      ShowGrid = false;
       CanvasHidden = false;
       }
   ~GraphWidgetPrivate()
@@ -209,10 +210,8 @@ void GraphWidget::sizegridChanged(int sg)
   d->SizeGrid = sg;
   if(d->FitToGrid && d->SizeGrid != d->FitSizeGrid)//and we are sure that ButtonFitGrid exists
       d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-  if(d->is_init)
-     {d->editor->clearGrid();
-     d->editor->DrawGrid(true);// draw a square grid
-     }
+  d->editor->clearGrid();
+  d->editor->DrawGrid(true);// draw a square grid
   }
 void GraphWidget::EraseColorVertices()
   {d->editor-> EraseColorVertices();

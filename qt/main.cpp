@@ -18,6 +18,7 @@
     email                : hf@ehess.fr
  ***************************************************************************/
 
+
 #include <qapplication.h>
 #include "MyWindow.h"
 #include <QT/Misc.h>
@@ -27,8 +28,20 @@
 
 int main(int argc,char ** argv)
   {QApplication a(argc,argv);
-  QFont font = QFont("helvetica",13);
-  QApplication::setFont(font,TRUE);
+
+  // Set the font for all widgets
+#if QT_VERSION >= 300
+  QRect rect = QApplication::desktop()->screenGeometry();
+  int h = rect.height();
+#else
+  QWidget *d = QApplication::desktop();
+  int h = d->height();
+#endif
+  int fontsize = (h > 600) ? 12 : 11;
+  QFont font = QFont("helvetica",fontsize);
+  QApplication::setFont(font,true);
+
+  // Set the colors of tha application
   if(GetPigaleColors() == -1)
       {QColor BackgroundColor  = QColor(170,187,203);
       QColor Base = QColor(248,238,224);
@@ -44,6 +57,7 @@ int main(int argc,char ** argv)
   Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
   Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
   QApplication::setPalette(Palette,TRUE);
+
   MyWindow *mw = new MyWindow();
   mw->show();
   a.connect( &a, SIGNAL(lastWindowClosed()),&a,SLOT(quit()));
