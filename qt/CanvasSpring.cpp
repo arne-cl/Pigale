@@ -20,6 +20,21 @@
 #include <QT/GraphWidgetPrivate.h>
 #include <qapplication.h> 
 
+int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax,double & dx,double & dy);
+int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax,double & dx,double & dy)
+  {if(G.nv() < 2)return -1;
+  tvertex v = 1;
+  xmin = xmax = G.vcoord[v].x();
+  ymin = ymax = G.vcoord[v].y();
+  for(v = 2; v <= G.nv();v++)
+      {xmin = Min(xmin,G.vcoord[v].x());xmax = Max(xmax,G.vcoord[v].x());
+      ymin = Min(ymin,G.vcoord[v].y());ymax = Max(ymax,G.vcoord[v].y());
+      }
+  dx = xmax - xmin;
+  dy = ymax - ymin;
+  return 0;
+  }
+
 void GraphEditor::Spring()
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
@@ -33,13 +48,18 @@ void GraphEditor::Spring()
   double len,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
   //double hw = .5*(mhw*mhw)/(n*m); //.5
-  double hw = .25*(mhw*mhw)/(n*m);
+  double expand = 1.;
+  double hw,hw0 = .2*(mhw*mhw)/(n*m);
   int iter,niter = 2000;
   double dist2,strength,dx,dy;
+  double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
   Tpoint p0,p;
   gwp->mywindow->blockInput(true);
   double force = 1.;
   int stop = 0;
+  // Compute bounds
+  ComputeBounds(G,xmin,xmax,ymin,ymax,sizex0,sizey0); 
+
   for(iter = 1;iter <= niter;iter++)
       {translate.clear();
       if(iter > 50)force *= .99;
@@ -51,7 +71,7 @@ void GraphEditor::Spring()
 	  len += Distance(p0,p);
 	  }
       len02 = len*len;
-
+      hw = expand*hw0;
       for(tvertex v0 = 1;v0 <= n;v0++)
 	  {p0 = G.vcoord[v0];
 	  // v0 repulse other vertices (1/d²)
@@ -77,19 +97,19 @@ void GraphEditor::Spring()
 	      else
 		  translate[v0].y() += 5.;
 	      }
-	  //v0 is attracted by its neighbours
+	  //v0 is attracted by its neighbours (1/d)
 	  tbrin b0 = G.pbrin[v0];
 	  tbrin b = b0;
 	  do
 	      {p = G.vcoord[G.vin[-b]];
 	      dist2 = Max(Distance2(p0,p),1.);
-	      strength = Min(sqrt(hw/dist2),.1)*.25;
+	      strength = Min(sqrt(hw/dist2),.1);
 	      if(dist2 > len02/4)
-		  translate[v0] -= (p-p0)*strength;
+		  translate[v0] += (p0-p)*strength*.5;
 	      else if(dist2 < 4*len02) 
-		  translate[v0]  -= (p0-p)*strength;
+		  translate[v0]  += (p-p0)*strength*.5;
 	      }while((b = G.cir[b]) != b0);
-	  // v0 is attracted by the center
+	  // v0 is attracted by the center (1/d)
 	  dist2 = Max(Distance2(p0,center),1.);
 	  strength = Min(sqrt(hw/dist2),.5)*.5;
 	  translate[v0] -= (p0 - center)*strength;
@@ -102,9 +122,7 @@ void GraphEditor::Spring()
       double dep = .0;
       n_red = 0;
       for(tvertex v = 1;v <= n;v++)
-	  {//translate[v] *= force;
-	  //G.vcoord[v] += translate[v];
-	  dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
+	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
 	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
@@ -118,11 +136,14 @@ void GraphEditor::Spring()
       if(dep < .25 || stop == 4)break;
       qApp->processEvents(1);
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
-      if(stop == 1)
-	  {Normalise();
-	   for(tvertex v = 1;v <= n;v++)
-	       nodeitem[v]->moveTo(G.vcoord[v]);
-	  }
+      // Compute bounds ro adapt the expand factor
+      ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
+      if(sizex > sizex0 && sizey > sizey0)
+	  expand /= Max(sizex/sizex0,sizey/sizey0);
+      else if(sizex < sizex0 && sizey < sizey0)
+	  expand *= Max(sizex0/sizex,sizey0/sizey);
+      sizex0 = sizex;      sizey0 = sizey;
+      //qDebug("expand=%f hw=%f",expand,hw);
       }
 
   gwp->mywindow->blockInput(false);
@@ -132,11 +153,6 @@ void GraphEditor::Spring()
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
-
-//   len = .0; // mean length
-//   for(tedge e = 1; e <= m;e++)
-//       len += Distance(G.vcoord[G.vin[e]],G.vcoord[G.vin[-e]]);
-//   len /= m;
   Tprintf("Spring-Iter=%d len=%d",iter,(int)len);
   }
 /*
