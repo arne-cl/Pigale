@@ -113,7 +113,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
   LayoutP->addWidget(RBOuPlanar);
 
   RBSerie = new RoRadioButton(this,"RBSerie");
-  RBSerie->setText("Serie-//");
+  RBSerie->setText("Series-//");
   LayoutP->addWidget(RBSerie);
 
   RBSimple = new RoRadioButton(this,"Simple");
