@@ -74,3 +74,15 @@ test:
 
 
 # DO NOT DELETE
+
+client.o: client.h ../../pigale/incl/QT/Action_def.h
+client.o: ../../pigale/incl/QT/Action.h
+server.o: server.h ../../pigale/incl/Pigale.h
+server.o: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/color.h
+server.o: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+server.o: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+server.o: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
+server.o: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+server.o: ../../pigale/incl/TAXI/Tpropio.h ../../pigale/incl/TAXI/Tstring.h
+server.o: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+server.o: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/QT/Action_def.h
