@@ -973,12 +973,14 @@ bool TopologicalGraph::TopSort(svector<tbrin> &topin, svector<tvertex> &order, b
   }
 
 bool TopologicalGraph::CheckNoC3Sep()
-  {// perequisit : G planaire
+  {// perequisit : G planaire 2connexe simple and >= 6 vertices
   if(debug())DebugPrintf("   CheckNoC3Sep");
   if (nv() < 6) return false;
-  if(!CheckPlanar() || !CheckBiconnected())
-      {DebugPrintf("Not planar or not Bicconnected");Error() = 1;
-      return false;}
+  if(!CheckPlanar() || !CheckBiconnected() || !CheckSimple())
+      {DebugPrintf("Not planar or not Bicconnected or not simple");Error() = 1;
+      return false;
+      }
+  if(debug())DebugPrintf("ExecutingCheckNoC3Sep");
   GraphContainer GC(Container());
   TopologicalGraph G0(GC);
   if(G0.VertexTriangulate() != 0){Error() = 1;return false;}
