@@ -38,11 +38,6 @@ struct Tgrid {
       delta.x()/= nx;
       delta.y()/= ny;
       }
-  Tpoint operator()(int i, int j)
-      {Tpoint res = orig;
-      res.x() += i*delta.x();
-      res.y() += j*delta.y();
-      }
 };
 
 
