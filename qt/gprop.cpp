@@ -203,7 +203,7 @@ void Graph_Properties::update(bool print)
   if(C2)C1 = true;
 
   if(P && C2 && !C3) Serie = G.CheckSerieParallel();
-  if(P  && !C3 && dmin == 2 && TestOuterPlanar(G)) Outer = true;
+  if(P  && !C3 && dmin <= 2 && TestOuterPlanar(G)) Outer = true;
   if(G.nv() == 2 && G.ne() == 1 || C1 && dmax == 2) 
       Serie = Outer = true;
 
@@ -293,7 +293,9 @@ void Graph_Properties::update(bool print)
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
-  if(getError())Tprintf("%s",(const char *)getErrorString());
+
+
+  if(getError())DebugPrintf("GP %s",(const char *)getErrorString());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;
@@ -318,4 +320,5 @@ void Graph_Properties::update(bool print)
   //int g = G.ComputeGenus();
   //if(g)Tprintf("Genus of the current map: %d",g);
   if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
+
   }
