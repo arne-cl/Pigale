@@ -67,11 +67,11 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
     ButtonBissect = new QRadioButton(ButtonGroup1,"ButtonBisect");
     ButtonBissect->setGeometry(QRect(6,oy+4*dy,dx,20)); 
-    ButtonBissect->setText("Bisect");
+    ButtonBissect->setText("Bis./Cont.");
 
     ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
     ButtonContract->setGeometry(QRect(6,oy+5*dy,dx,20)); 
-    ButtonContract->setText("Contract");
+    ButtonContract->setText("Ext Face");
 
     //****************************************************************
     gw->sizegridChanged(sizegrid);

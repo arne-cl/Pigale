@@ -135,9 +135,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
   else if(Shift && MouseAction == 3)        //move
       MouseAction = -3;                     //move colored edges 
   else if(Shift && MouseAction == 4)        //bissect
-      MouseAction = 5;                      //contract
-  else if(Shift && MouseAction == 5)        //contract
-      MouseAction = 4;                      //bissect 
+      MouseAction = -4;                     //contract
 
   if(MouseAction == 0) // color
       {NodeItem* node;
@@ -145,7 +143,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,node,edge);
       if(rtt == 0) //augment the collision zone
 	  {rtt = FindItem(p,edge);
-	  //if(rtt == 0)return;
+	  if(rtt == 0)return;
 	  } 
       if(rtt == node_rtti)
 	  {gwp->mywindow->UndoTouch(false);
@@ -159,43 +157,6 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 	  if(edge->lower) edge->SetColor(color[color_edge]);
 	  else edge->opp->SetColor(color[color_edge]);
 	  }
-#ifdef VERSION_ALPHA
-      else // define the exterior face
-	  {GeometricGraph & G = *(gwp->pGG);
-	  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
-	  Tpoint pp((double)p.x(),(double)(gwp->canvas->height()-p.y()));
-	  if(G.FindExteriorFace(pp) == 0)return;
-// 	  tedge e0 = G.FindEdge(pp);
-// 	  if(e0 == 0)return;
-// 	  tvertex v1 = G.vin[e0];	  tvertex v2 = G.vin[-e0];
-// 	  bool right = (Determinant(pp - G.vcoord[v1],G.vcoord[v2] - G.vcoord[v1]) > 0) ? true:false;
-// 	  tvertex vh = v2;
-// 	  G.ComputeGeometricCir();
-// 	  if(G.vcoord[v1].y() > G.vcoord[v2].y()
-// 	     || ((G.vcoord[v1].y() == G.vcoord[v2].y()) && (G.vcoord[v1].x() > G.vcoord[v2].x())) )
-// 	      {vh = v1;
-// 	      right  = !right;
-// 	      }
-	      
-// 	  if((right && vh == v2) || (!right && vh == v1))
-// 	      G.extbrin() = e0();
-// 	  else
-// 	      G.extbrin() = -e0();
-	  //ColorExteriorface
-	  tedge e;
-	  ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
-	  tbrin b0 = G.extbrin();
-	  tbrin b = b0;
-	  do
-	      {e = b.GetEdge();
-	      edgeitem[e]->SetColor(color[Red]);
-	      } while((b = G.cir[-b]) != b0);
-	  }
-#elif
-      else
-	  return ;
-#endif
-
       canvas()->update();
       return; 
       }
@@ -277,7 +238,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       gwp->mywindow->information();// Informations
       return;
       }
-  else if(MouseAction == 5) // Contract an edge
+  else if(MouseAction == -4) // Contract an edge
       {EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
@@ -287,6 +248,23 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       gwp->mywindow->information();// Informations
       return;
       }
+  else if(MouseAction == 5) // Define Exterior face
+	  {GeometricGraph & G = *(gwp->pGG);
+	  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+	  Tpoint pp((double)p.x(),(double)(gwp->canvas->height()-p.y()));
+	  if(G.FindExteriorFace(pp) == 0)return;
+	  //ColorExteriorface
+	  tedge e;
+	  ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
+	  tbrin b0 = G.extbrin();
+	  tbrin b = b0;
+	  do
+	      {e = b.GetEdge();
+	      edgeitem[e]->SetColor(color[Red]);
+	      } while((b = G.cir[-b]) != b0);
+	  canvas()->update();
+	  return; 	  
+	  }
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
       {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
       EdgeItem *edge;
