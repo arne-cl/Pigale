@@ -410,7 +410,7 @@ int DualHandler(int action)
       default:
 	    break;
       }
-  G.RemoveLoops();
+  {TopologicalGraph GG(GetMainGraph()); GG.RemoveLoops();}
   return 2;
   }
 int RemoveHandler(int action)
