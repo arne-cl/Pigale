@@ -18,17 +18,34 @@
 
 
 static void CalcNorm(double p,double q,double &norm,double &c,double &s);
-static int ComputeBilinearForm(double **dis,double ** Distances,int ni);
+static int ComputeBilinearForm(double **dis,int ni);
 static int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues);
 
+//! rounding precision
+const double  epsilon = 1.E-12;     
 
-const double  epsilon = 1.E-12;      //bon ave 1.E-100
+//! Isometrically embed a set of points with given distances among them in the Euclidean space \f$\mathbb{R}^n\f$.
+/*!
+   \param dis coordinates of the points (returned value)
+   \param NumberOfPoints number of points > 2
+   \param Distances distances among the points
+   \param EigenValues eigenvalues of \p dis (returned value)
+   \param project indicates if one should project the matrix of distances before putting it in diagonal form
+      (always true except when using the Laplacian)
+   \par Actions:
+    \li copies the \p Distances matrix into the \p dis matrix,
+    \li call ComputeBilinearForm() to compute the projection matrix \p dis to be put in diagonal form
+    \li compute the trace of \p dis
+    \li call symqr() to compute the spectrum of \p dis
+    \li normalise the coordinates
+    \li compute the multiplicities of the eigenvalues and print some useful information.
+   \sa ComputeBilinearForm() and symqr()
+*/
 
-
-int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenValues,bool project)
+int diag(double **dis,int NumberOfPoints,double **Distances,svector<double>& EigenValues,bool project)
   {int i,j;
 
-  int ni = nb_vertex;
+  int ni = NumberOfPoints;
   int nf = ni - 1;
   double Trace;
 
@@ -37,8 +54,8 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
       for(j = 1; j <= i; j++)
           dis[i][j] = dis[j][i] = (double)Distances[i][j];
 
-  // Compute dis, the projection matrix to be diagonalized (sum of elements in a line == 0)
-  if(project && ComputeBilinearForm(dis,Distances,ni) != 0) return 1;
+  // Compute dis, the projection matrix to be put in diagonal form (sum of elements in a line == 0)
+  if(project && ComputeBilinearForm(dis,ni) != 0) return 1;
 
   // Compute the trace
   double TraceInit = .0;
@@ -46,7 +63,7 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
   if(TraceInit < epsilon){Tprintf("Trace is null !"); /* return 2;*/}
 
   if(debug())
-      {LogPrintf("\nDiagonalisation(trace_init=%f)",TraceInit);
+      {LogPrintf("\nComputation of diagonal form(trace_init=%f)",TraceInit);
       int imax = Min(ni,20);
       LogPrintf("\nScalar products (*10*n)");
       LogPrintf("\n     *01*");
@@ -63,7 +80,7 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
       return 1;
       }
 
-  // Normalization: dis[i][j] coordonne j du sommet i (i=1,ni j=1,nf)
+  // Normalization: dis[i][j] coords j of the point i (i=1,ni j=1,nf)
   double a;
   for(j = 1; j <= nf; j++)
       {if(Abs(EigenValues[j]) < 1.E-10)
@@ -73,7 +90,7 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
 	  for (i = 1; i <= ni; i++)  dis[i][j] *= a;
 	  }
       }
-  if(debug()) // Impression des coordonnees
+  if(debug()) // print coords
       {int imax = Min(ni,20);
       LogPrintf("\nDistance");
       LogPrintf("\n     *01*");
@@ -91,8 +108,9 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
               LogPrintf("%+0.3f ",dis[i][j]);
           }
       }
-  // Calcul multiplicites
-  int *Multiplicite = new int[ni+1];
+  // Compute the multiplicities of the eigenvalues
+  //int *Multiplicite = new int[ni+1];
+  svector<int> Multiplicite(ni+1);   Multiplicite.SetName("Multiplicite"); 
   int NumEqualEigenvalues = 0;
   int NumNullEigenvalues = 0;
   int i1,i2,mul;
@@ -150,28 +168,30 @@ int diag(double **dis,int nb_vertex,double **Distances,svector<double>& EigenVal
       LogPrintf("\n");
       }
 
-  delete [] Multiplicite;
   return 0;
   }
-int ComputeBilinearForm(double **dis,double **Distances,int ni)
-// Form the distance matrix Distances, computes the bilinear form to diagonalise
+//!  Computes the bilinear form to be put in diagonal form from the distance matrix \p dis
+/*!
+  Computes the bilinear form:
+  \f[ {\rm dis}\leftarrow -\frac{1}{2}\left(I-\frac{J}{\rm ni}\right){\rm dis}\left(I-\frac{J}{\rm ni}\right) \f]
+  from the developped formula:
+  \f[ {\rm dis}_{i,j}\leftarrow -\frac{1}{2}\left( {\rm dis}_{i,j}-\frac{1}{\rm ni}\sum_{\alpha=1}^{\rm ni} {\rm dis}_{i,\alpha}
+-\frac{1}{\rm ni}\sum_{\alpha=1}^{\rm ni} {\rm dis}_{\alpha,j}
++\frac{1}{{\rm ni}^2}\sum_{\alpha=1}^{\rm ni}\sum_{\beta=1}^{\rm ni}{\rm dis}_{\alpha,\beta}\right)\f] 
+*/
+int ComputeBilinearForm(double **dis,int ni)
   {int i,j;
   double dd;
 
-  double *dj = new double[ni + 1];
-  if(dj == NULL)return 1;
-
-  // dis: matrice a diagonaliser (ni X ni)
-  for(i = 1; i <= ni; i++)dis[i][i] = (double)Distances[i][i];
-
-  // Calcul dj[i] = poids de l'element i / poids total (=ni)
+  svector<double> dj(ni + 1);
+  // compute dj[i] = weight of i / total weight (=ni)
   for(i = 1; i <= ni; i++)
       {dj[i] = .0;
       for(j = 1; j <= ni; j++) dj[i] += dis[i][j];
       dj[i] /= ni;
       }
 
-  // Calcul de dd: somme des tous les poids
+  // compute dd: sum of all the weights
   dd = 0.;
   for(i = 1;i <= ni;i++)
       dd += dj[i];
@@ -181,18 +201,18 @@ int ComputeBilinearForm(double **dis,double **Distances,int ni)
       for(j = 1; j <= ni; j++)
           dis[i][j] = -0.5 * (dis[i][j] - dj[i] - dj[j] + dd)/ni;
 
-  delete [] dj;
   return 0;
   }
 
+//! Computes the eigenvalues of the \p ni \f$ \times \f$ \p ni matrix \p dis
+
 int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues)
-// Compute the eigenvalues od the matrix dis
-  {// Définition des constantes
+  {// some  constants
   double const k0=5.0;
   double const titter=50.0;
   double const eps = 1.E-12;
 
-  // Définition des variables
+  // some variables
   double k1,k2,k,norm,max0;
   int l,l1,i,j,ll,ll1,nu,num1,nnl,nl,jj;
   double sum,sum1,p,q,c,s,temp,vmax,r;
@@ -250,7 +270,7 @@ int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues)
   e[ni-1] = dis[ni][ni-1];
   dis[ni-1][ni] = 0.0;
   dis[ni][ni-1] = 0.0;
-  if(ni != 2) // toujours le cas !!!
+  //if(ni != 2) // toujours le cas !!!
       {for(l = 1; l<= ni-2; l++)
           {ll = ni - 2 - l + 1;
           ll1 = ll + 1;
@@ -275,104 +295,105 @@ int symqr(double **dis,int ni,int nf,double& trace,svector<double>& EigenValues)
   num1 = ni - 1;
   shft = 1;
   k1 = k0;
-  // qu'as t'on fait !!
-  again :
-      for(nnl = 1; nnl <= num1; nnl++)
-          {nl = num1 - nnl + 1;
-          sum = eps * Min(Abs(d[nl]), Abs(d[nl + 1]));
-          if(Abs(e[nl]) <= sum)
-              {e[nl] = 0.0;
-              nl = nl + 1;
-              if(nl != nu) break;
-              if(num1 == 1)    // All eigen values have been computed
-                  {for(l = 1 ; l <= ni; l ++)                           //h400
-                      {// Sorting the eigenvalues
-                      vmax = -1.;
-                      for(j = 1; j <= ni; j++)
-                          {if(d[j] <= vmax) continue;
-                          vmax = d[j]; jj =j;
-                          }
-                      ik[l] = jj; EigenValues[l] = vmax; d[jj] = -1.;
-                      // e[ik[i]] = # iterations
-                      }
-                  trace = .0;
-                  for(i = 1; i <= ni; i++)                              //h422
-                      {trace = trace + EigenValues[i];
-                      for(l = 1; l <= ni; l++)
-                          d[l] = dis[i][l];
-                      for(j = 1; j <= nf ; j++)
-                          {jj = ik[j]; dis[i][j] = d[jj];}
-                      }
-                  delete [] e; delete [] d; delete [] ik;
-                  return 0;
-                  }
-              nu = num1;
-              num1 = nu - 1;
-              goto again;
-              }
-          }
-  e[nu] = e[nu] + 1.;
-  if(e[nu] > titter)
+  bool again;
+  while (true) 
+    {again=false;
+    for(nnl = 1; nnl <= num1; nnl++)
+      {nl = num1 - nnl + 1;
+      sum = eps * Min(Abs(d[nl]), Abs(d[nl + 1]));
+      if(Abs(e[nl]) <= sum)
+	{e[nl] = 0.0;
+	nl = nl + 1;
+	if(nl != nu) break;
+	if(num1 == 1)    // All eigen values have been computed
+	  {for(l = 1 ; l <= ni; l ++)                           //h400
+	    {// Sorting the eigenvalues
+	      vmax = -1.;
+	      for(j = 1; j <= ni; j++)
+		{if(d[j] <= vmax) continue;
+		vmax = d[j]; jj =j;
+		}
+	      ik[l] = jj; EigenValues[l] = vmax; d[jj] = -1.;
+	      // e[ik[i]] = # iterations
+	    }
+	  trace = .0;
+	  for(i = 1; i <= ni; i++)                              //h422
+	    {trace = trace + EigenValues[i];
+	    for(l = 1; l <= ni; l++)
+	      d[l] = dis[i][l];
+	    for(j = 1; j <= nf ; j++)
+	      {jj = ik[j]; dis[i][j] = d[jj];}
+	    }
+	  delete [] e; delete [] d; delete [] ik;
+	  return 0;
+	  }
+	nu = num1;
+	num1 = nu - 1;
+	again=true; break;
+	}
+      }
+    if (again) continue;
+    e[nu] = e[nu] + 1.;
+    if(e[nu] > titter)
       {delete [] e; delete [] d; delete [] ik;
       return 1;
       }
-
-  sum = (d[num1] - d[nu]) / 2.;
-  sum1 = sqrt(sum * sum + e[num1] * e[num1]);
-  if(sum < 0.)sum1 = - sum1;
-  k2 = d[nu] - e[num1] * e[num1] / (sum +sum1);
-  if(shft == 1)
+    
+    sum = (d[num1] - d[nu]) / 2.;
+    sum1 = sqrt(sum * sum + e[num1] * e[num1]);
+    if(sum < 0.)sum1 = - sum1;
+    k2 = d[nu] - e[num1] * e[num1] / (sum +sum1);
+    if(shft == 1)
       {
-      if(Abs(k2- k1) < (0.5 * Abs(k2)))
+	if(Abs(k2- k1) < (0.5 * Abs(k2)))
           {shft = 0;k = k2;}
-      else
+	else
           {k1 = k2; k = k0;}
       }
-  else
+    else
       k = k2;
-
-  p = d[nl] - k;
-  q =e[nl];
-  CalcNorm(p,q,norm,c,s);
-  for(i = nl;i <= num1;i++)
-      {
-      for(j = 1; j <= ni; j++)
-          {// Attention aux UNDERFLOW
+    
+    p = d[nl] - k;
+    q =e[nl];
+    CalcNorm(p,q,norm,c,s);
+    for(i = nl;i <= num1;i++)
+      {for(j = 1; j <= ni; j++)
+	{// Attention aux UNDERFLOW
           if(Abs(dis[j][i])   < epsilon)dis[j][i]   = .0;
           if(Abs(dis[j][i+1]) < epsilon)dis[j][i+1] = .0;
           temp = c * dis[j][i] + s * dis[j][i+1];
           dis[j][i+1] = -s * dis[j][i] + c * dis[j][i+1];
           dis[j][i] = temp;
-          }
+	}
       d[i] = c * d[i] * c + (2. * c * e[i] + s * d[i+1]) * s;
       d[i+1] = -s * e[i] + c * d[i+1];
       e[i] = -s * k;
       if(i != num1)
-          {if(Abs(s) > Abs(c))
-              {p = c * e[i] + s * d[i+1];
-              q = s * e[i+1];
-              e[i+1] = c * e[i+1];
-              d[i+1] = c * p / s + k;
-              r = 1.0;
-              }
-          else
-              {r = s / c;
-              d[i+1] = -s * e[i] + c * d[i+1];
-              p = d[i+1] - k;
-              e[i+1] = c * e[i+1];
-              q = e[i+1];
-              }
-          CalcNorm(p,q,norm,c,s);
-          e[i] = r * norm;
-          }
+	{if(Abs(s) > Abs(c))
+	  {p = c * e[i] + s * d[i+1];
+	  q = s * e[i+1];
+	  e[i+1] = c * e[i+1];
+	  d[i+1] = c * p / s + k;
+	  r = 1.0;
+	  }
+	else
+	  {r = s / c;
+	  d[i+1] = -s * e[i] + c * d[i+1];
+	  p = d[i+1] - k;
+	  e[i+1] = c * e[i+1];
+	  q = e[i+1];
+	  }
+	CalcNorm(p,q,norm,c,s);
+	e[i] = r * norm;
+	}
       }
-
-  temp = c * e[num1] + s * d[nu];
-  d[nu] = -s * e[num1] + c * d[nu];
-  e[num1] = temp;
-  goto again;
+    temp = c * e[num1] + s * d[nu];
+    d[nu] = -s * e[num1] + c * d[nu];
+    e[num1] = temp;
+    }
   }
 
+//! Computes \f$ {\rm norm}=\sqrt{{\rm p}^2+{\rm q}^2}, {\rm c}=\frac{\rm p}{\rm norm},{\rm s}=\frac{\rm q}{\rm norm}\f$ 
 void CalcNorm(double p, double q,double &norm, double &c, double &s)
   {double pp,qq;
 
