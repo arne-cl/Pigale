@@ -102,6 +102,19 @@ int OrientHandler(int action)
 	      }
 	  Tprintf("st=%d  (%d %d)",first(),G.vin[first](),G.vin[-first]());
 	  break;
+      case A_ORIENT_BIPOLAR_NP:
+	  first = 1;
+	  NPBipolar(G,first);
+	  if(ret != 0){Tprintf("ret=%d",ret);return -1;}
+	  G.FixOrientation();
+	  ShowOrientation() = true;
+	  if(first.GetEdge() <= G.ne())
+	      {G.ecolor(first.GetEdge()) = Red;
+	      G.ewidth(first.GetEdge()) = 2;
+	      }
+	  Tprintf("st=%d  (%d %d)",first(),G.vin[first](),G.vin[-first]());
+	  break;
+
       default:
 	    return 0;
       }
@@ -265,8 +278,8 @@ int EmbedHandler(int action,int &drawing)
 	  err = EmbedFPPRecti(G);
 	  drawing = 1;
 	  break;
-      case A_EMBED_FPP_GVISION:ret = 3;
-	  err = Vision(G);
+      case A_EMBED_GVISION:ret = 3;
+	  err = EmbedGVision(G);
 	  if(err)Tprintf("Vision err=%d",err);
 	  drawing = 2;
 	  break;
