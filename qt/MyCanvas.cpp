@@ -166,6 +166,10 @@ void GraphWidget::zoom()
   {d->editor->zoom *= 1.1;
   d->editor->load(true);
   }
+void GraphWidget::ozoom()
+  {d->editor->zoom = 1;
+  d->editor->load(true);
+  }
 void GraphWidget::uzoom()
   {d->editor->zoom /= 1.1;
   d->editor->load(true);
@@ -1299,6 +1303,7 @@ int GraphEditor::InitGrid()
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
   gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+  gwp->SizeGrid = nstep;
   if(IsGrid)gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
 
   if(NeedNormalise)Normalise();

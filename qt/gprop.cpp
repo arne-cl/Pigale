@@ -190,6 +190,8 @@ void Graph_Properties::update()
       }
   else if(G.nv() == 2 && G.ne() == 1)
       Serie = Outer = true;
+  if(C3)C2 = true;
+  if(C2)C1 = true;
 
   RBSimple->setChecked(S);
   RBPlanar->setChecked(P);
@@ -208,8 +210,6 @@ void Graph_Properties::update()
   m.sprintf("%d",G.ne());
   LE_M->setText(m);
   //Modify the enable menus
-  if(C3)C2 = true;
-  if(C2)C1 = true;
   //For slow programs or display
   bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
   bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;

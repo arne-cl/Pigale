@@ -29,6 +29,7 @@ public slots:
   void update();
   void refresh();
   void zoom();
+  void ozoom();
   void uzoom();
   void EraseColorVertices();
   void EraseColorEdges();

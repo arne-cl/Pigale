@@ -53,6 +53,7 @@ public:
   QPushButton* ButtonForceGrid;
   QPushButton* ButtonUndoGrid;
   QPushButton* ButtonZoom;
+  QPushButton* ButtonOZoom;
   QPushButton* ButtonUZoom;
   QLCDNumber* LCDNumber;
   QSlider* Slider;

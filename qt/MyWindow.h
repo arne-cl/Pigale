@@ -63,7 +63,12 @@ private slots:
   void aboutQt();
   void showLabel(int action);
   void distOption(int use);
+  void Undo();
+  void Redo();
+  void UndoClear();
+  void UndoEnable(bool enable);
 public slots:
+  void UndoSave();
   void information();
   void print();
 public:
@@ -71,7 +76,7 @@ public:
   void MessageClear();
 
 public:
-  QToolButton *left,*right,*redo;
+  QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *e;
   MyPaint *mypaint;
   QTabWidget *tabWidget;
@@ -89,7 +94,8 @@ private:
   QString InputFileName;
   QString OutputFileName;
   QString DirFile;
-  int GraphIndex1,GraphIndex2,*pGraphIndex;
+  int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
+  bool IsUndoEnable;
 };
 
 
