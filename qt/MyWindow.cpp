@@ -304,12 +304,13 @@ MyWindow::MyWindow()
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
   embed->insertItem("&Polar",                A_EMBED_POLAR);
+#ifdef VERSION_ALPHA 
   embed->insertItem(xmanIcon,"Sprin&g",A_EMBED_SPRING);
   embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
-#ifdef VERSION_ALPHA 
-  embed->insertItem("Spring PM",A_EMBED_SPRING_PM);
 #endif
-  embed->insertItem(xmanIcon,"Spring &Jacquard",A_EMBED_JACQUARD);
+  embed->insertItem(xmanIcon,"Spring (Map &Preserving)",A_EMBED_SPRING_PM);
+  embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
+  embed->insertItem(xmanIcon,"Spring Planar",A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);

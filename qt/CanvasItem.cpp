@@ -77,14 +77,17 @@ void GraphWidget::png()
   }
 void GraphWidget::Spring()
   {if(!d->is_init)return;
+  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
   d->editor->Spring();
   }
 void GraphWidget::SpringPreservingMap()
   {if(!d->is_init)return;
+  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
   d->editor->SpringPreservingMap();
   }
 void GraphWidget::SpringJacquard()
   {if(!d->is_init)return;
+  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
   d->editor->SpringJacquard();
   }
 void GraphWidget::resizeEvent(QResizeEvent* e)
