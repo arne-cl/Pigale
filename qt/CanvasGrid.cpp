@@ -237,7 +237,7 @@ void GraphEditor::UndoGrid()
       min_used_y = Min(min_used_y,G.vcoord[i].y());
       max_used_y = Max(max_used_y,G.vcoord[i].y());
       }
-  current_grid = undo_grid;
+  old_grid = current_grid = undo_grid;
   nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
   nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
   //Update the display
@@ -297,23 +297,22 @@ void GraphEditor::PrintSizeGrid()
 bool GraphEditor::InitGrid(Tgrid &g)
   {GeometricGraph & G = *(gwp->pGG);
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
+  svector<tbrin> cir0,cir1;
   double pos,prevpos;
   int npos;
   int NeedNormalise = 0;
   int i,ns,n = G.nv();
-  
-  if(G.nv() == 0)
+  int m = G.ne();
+
+  if(n == 0)
       {x_min = y_min = BORDER;
       x_max = gwp->canvas->width() -BORDER -space -sizerect;
       y_max = gwp->canvas->height() - BORDER;
       }
   xminstep = (x_max-x_min)/gwp->SizeGrid;  yminstep = (y_max-y_min)/gwp->SizeGrid;
   xepsilon = Epsilon / xminstep;  yepsilon = Epsilon / yminstep;
-  if(gwp->ForceGrid)
-      {scoord = G.vcoord;
-      }
   
-  if(G.nv() == 0)// new graph
+  if(n == 0)// new graph
       {min_used_x = x_min;	max_used_x = x_max;
       min_used_y = y_min;	max_used_y = y_max;
       xstep = xminstep; nxstep = (int)(.5 + (max_used_x - min_used_x)/xstep);
@@ -327,14 +326,14 @@ bool GraphEditor::InitGrid(Tgrid &g)
       old_grid = current_grid = g;
       return true; 
       }
-  // Instead of computing the genus, we make a copy of cir and acir and later check
-  // that they are not modified.
+
+  // Save coords and compute the geometric cir
   if(gwp->ForceGrid)
-      {
+      {scoord = G.vcoord;
+      cir0.resize(-m,+m);      
+      ComputeGeometricCir(G,cir0);
       }
-  int genus0 = -1;
-  if(gwp->ForceGrid && G.CheckConnected() && G.CheckSimple())
-      genus0 = G.ComputeGeometricCir();
+
   int *heap = new int[n+1];    coord = new double[n+1];
   // x-coordinates
   for(i = 1;i <= n;i++)coord[i] = G.vcoord[i].x();
@@ -401,37 +400,30 @@ bool GraphEditor::InitGrid(Tgrid &g)
   delete [] heap;    delete [] coord;
 
   //Check Overlapping vertices
-  bool overlap = false;
-  bool genuschanged = false;
-  if(gwp->ForceGrid && !CheckCoordNotOverlap(G)) 
-      {Tprintf("Forcegrid (%d) -> OVERLAPPING",gwp->SizeGrid);
-      overlap = true;
-      }
-  //ForceGrid == true and connected graph
-  // check that the cir has not been modified
-  int genus = genus0;
-  if(!overlap && genus0 != -1 && genus0 != (genus = G.ComputeGeometricCir())) 
-      {Tprintf("Forcegrid (%d) modified genus:%d->%d",gwp->SizeGrid,genus0,genus);
-      genuschanged = true;
-      }
-  if(gwp->ForceGrid && (overlap || genuschanged)) // Restore the cir
-      {gwp->ForceGridOk = false;      //IsGrid = false;
-      G.vcoord = scoord;
-      // reset nxstep and nystep
-      current_grid = old_grid;
-      nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
-      nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
-      int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
-      gwp->SizeGrid = nstep;
-      //Update the menu
-      if(IsGrid)
-	  {gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
-	  gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
+  bool cir_changed,overlap;
+  overlap = !CheckCoordNotOverlap(G); // in case there were overlapping
+  if(overlap)IsGrid = false;
+  if(overlap)Tprintf("Forcegrid (%d) -> OVERLAPPING",gwp->SizeGrid);
+  if(gwp->ForceGrid) 
+      {cir1.resize(-m,+m);      
+      ComputeGeometricCir(G,cir1);
+      cir_changed = (cir0 == cir1) ? false : true;
+      if(cir_changed)Tprintf("Forcegrid (%d) -> MODIFIED CIR",gwp->SizeGrid);
+      if(overlap || cir_changed) 
+	  {gwp->ForceGridOk = false;      //IsGrid = false;
+	  G.vcoord = scoord;
+	  // reset nxstep and nystep
+	  undo_grid = current_grid = old_grid;
+	  nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
+	  nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
+	  int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
+ 	  gwp->SizeGrid = nstep;
+	  gwp->RedrawGrid = false;
+	  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
+	  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+	  return false;
 	  }
-      gwp->RedrawGrid = false;
-      gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-      gwp->mywindow->mouse_actions->Slider->setValue(nstep);
-      return false;
       }
 
   //Check if the extreme points changed
@@ -446,31 +438,27 @@ bool GraphEditor::InitGrid(Tgrid &g)
       {NeedNormalise = 1;
       max_used_x = maxused_x; max_used_y = maxused_y;
       }
-
-  nxstep = (int) (.5 + (max_used_x - min_used_x)/xstep); 
+  nxstep = (int) (.5 + (max_used_x - min_used_x)/xstep);
   nystep = (int) (.5 + (max_used_y - min_used_y)/ystep); 
+
   undo_grid = old_grid;
 
   //Update the menu
-  if(IsGrid && !overlap)
+  if(IsGrid)
       {gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
       gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
+      gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
       }
   gwp->RedrawGrid = false;
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
   gwp->mywindow->mouse_actions->Slider->setValue(nstep);
   gwp->SizeGrid = nstep;
-  if(IsGrid)gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
   if(NeedNormalise)
-      {//qDebug("NeedNormalise");
-      Normalise();
-      if(IsGrid)
-	  {xstep = (max_used_x - min_used_x)/nxstep;
-	   ystep = (max_used_y - min_used_y)/nystep;
-	  }
+      {Normalise();
+      if(IsGrid){xstep = (max_used_x - min_used_x)/nxstep; ystep = (max_used_y - min_used_y)/nystep;}
       }
-  g=Tgrid(xstep,ystep,min_used_x,min_used_y);
+  g = Tgrid(xstep,ystep,min_used_x,min_used_y);
   old_grid = g;
   return true;
   }

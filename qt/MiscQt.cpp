@@ -153,3 +153,46 @@ bool CheckCoordNotOverlap(GeometricGraph & G)
   delete [] heap;delete [] xcoord;delete [] ycoord;
   return ok;
   }
+
+struct OrderedBrin
+{double angle;
+  tbrin brin;
+  OrderedBrin & operator=(const OrderedBrin &x)
+      {angle=x.angle; brin=x.brin;return *this;}
+};
+static int compare(const void *b1, const void *b2)
+  {if (((OrderedBrin *)b1)->angle > ((OrderedBrin *)b2)->angle) return -1;
+  else if (((OrderedBrin *)b1)->angle == ((OrderedBrin *)b2)->angle) return 0;
+  else return 1;
+  }
+
+void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)
+  {tvertex v;
+  tbrin b0,b,opp;
+  Tpoint p;
+  int degree;
+  
+  for(v = 1;v <=G. nv();v++)
+      {degree = G.Degree(v);
+      svector<OrderedBrin> ob(degree);
+      
+      if((b0 = G.pbrin[v]) == 0)continue;
+      // Put adjacent brins in the array.
+      int i = 0; b = b0;
+      p = G.vcoord[v];
+      do
+          {ob[i].brin = b;
+          ob[i].angle = Angle(G.vcoord[G.vin[-b]]-p);
+          b = G.cir[b]; i++;
+          }while (b != b0);
+
+      if(!i)continue;
+      qsort(ob.begin(), degree, sizeof(OrderedBrin), compare);
+
+      // rewrite cir which is COUNTERCLOCKWISE.
+      for (i = 0; i < degree - 1; i++)
+          cir[ob[i+1].brin] = ob[i].brin;
+      cir[ob[0].brin] = ob[degree - 1].brin;
+      }
+  cir[0] = 0;
+  }

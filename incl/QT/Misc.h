@@ -34,4 +34,5 @@ QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);
 bool & ShowIndex();
 bool CheckCoordNotOverlap(GeometricGraph & G);
+void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
 #endif
