@@ -156,11 +156,14 @@ void MyWindow::macroPlay()
       {macroDefColors(record);
       if(record == MacroNumActions && !MacroLooping)
 	  {gw->update();
+	  MacroExecuting = false;
 	  Executing = false;
 	  }
       if((MacroActions[record] != A_PAUSE && !menuBar()->isItemEnabled(MacroActions[record]))
 	 || (MacroActions[record] == A_PAUSE && !MacroLooping))
-	  {++record;continue;}
+	  {qDebug("No actio:%s",(const char *)getActionString(MacroActions[record]));
+	  ++record;continue;
+	  }
       if(debug())LogPrintf("macro action:%d/%d -> %d\n",record,MacroNumActions,MacroActions[record]);
       handler(MacroActions[record++]);
       if(getError()){Executing = false; MacroWait = false;break;}
