@@ -27,6 +27,7 @@
 #include <qspinbox.h>
 #include <qprinter.h>
 #include <qdir.h>
+#include <qtextcodec.h>
 
 #if QT_VERSION < 300
 #undef QTextEdit
@@ -87,6 +88,7 @@ void MyWindow::SaveSettings()
   txt << "PrinterOrientation=" << printer->orientation() << endl;
   settings.close();
   }  
+
 void MyWindow::LoadSettings()
   {// define default values
   MyWindowInitYsize = 600;
@@ -181,6 +183,7 @@ void MyWindow::LoadSettings()
       if(!ok)LogPrintf("ERROR SETTINGS:%s -> %s\n",(const char *)arg,(const char *)param);
       } 
   settings.close();
+  LogPrintf("language:-%s-\n",(const char *)QTextCodec::locale());
   }
 int GetPigaleColors()
   {

@@ -44,6 +44,7 @@ int main(int argc,char ** argv)
   // translation file for application strings
   QTranslator myapp( 0 );
   myapp.load( QString( "pigale_" ) + QTextCodec::locale(), "." );
+  //myapp.load( QString( "pigale_fr" ), "." );
   app.installTranslator( &myapp );
 
   MyWindow *mw = new MyWindow();

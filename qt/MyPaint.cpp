@@ -126,8 +126,14 @@ void DrawCurves(QPainter *p,MyPaint *paint)
        bez.setPoint(4,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(5,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(6,paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
+#ifndef _WINDOWS
        p->drawCubicBezier(bez,0);
        p->drawCubicBezier(bez,3);
+#else
+       p->drawQuadBezier(bez,0);
+       p->drawQuadBezier(bez,3);
+       //p->drawPolyline(bez,0,7);
+#endif
        //paint->DrawRect(p,Epoint1[ee],3,3,Red);
        //paint->DrawRect(p,Epoint3[ee],3,3,Red);
      }

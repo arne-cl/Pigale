@@ -20,10 +20,11 @@ int EmbedCurves(TopologicalGraph &G)
   GraphContainer &NGC = * new GraphContainer();
   TopologicalGraph NG(NGC);
   GeometricGraph NGG(NGC);
-  for (int i=1; i<=n; i++)
+  int i;
+  for (i=1; i<=n; i++)
     {NG.NewVertex();
     NGG.vcoord[i]=GG.vcoord[i];}
-  for (int i=1; i<=m; i++)
+  for (i=1; i<=m; i++)
     {Tpoint p=(GG.vcoord[G.vin[i]]+GG.vcoord[G.vin[-i]])*.5;
     Tpoint vo; vo.x()=-GG.vcoord[G.vin[i]].y()+GG.vcoord[G.vin[-i]].y();
     vo.y()=GG.vcoord[G.vin[i]].x()-GG.vcoord[G.vin[-i]].x();
@@ -33,7 +34,8 @@ int EmbedCurves(TopologicalGraph &G)
     NG.NewVertex();
     NGG.vcoord[n+2*i]=p-vo*1E-4;
     }
-  for (tedge e=1; e<=m; e++)
+  tedge e;
+  for (e=1; e<=m; e++)
     {tvertex s=G.vin[e];
     tvertex t=G.vin[-e];
     NG.NewEdge(s,tvertex(n+2*e()-1));
@@ -45,7 +47,8 @@ int EmbedCurves(TopologicalGraph &G)
   GetMyWindow()->gw->d->pGG=&NGG;
   GetMyWindow()->gw->d->editor->SpringPreservingMap(false);
   GetMyWindow()->gw->d->pGG=pGG;
-  for (tvertex v=1; v<=n; v++)
+  tvertex v;
+  for (v=1; v<=n; v++)
     vcoord[v]=NGG.vcoord[v];
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
@@ -54,13 +57,13 @@ int EmbedCurves(TopologicalGraph &G)
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);  
   Tpoint alpha,beta,tmp;
   pmax()=pmin()=NGG.vcoord[1];
-  for (tvertex v=1; v<=NG.nv(); v++)
+  for (v=1; v<=NG.nv(); v++)
     {if (NGG.vcoord[v].x()>pmax().x()) pmax().x()=NGG.vcoord[v].x();
     else if (NGG.vcoord[v].x()<pmin().x()) pmin().x()=NGG.vcoord[v].x();
     if (NGG.vcoord[v].y()>pmax().y()) pmax().y()=NGG.vcoord[v].y();
     else if (NGG.vcoord[v].y()<pmin().y()) pmin().y()=NGG.vcoord[v].y();
     }
-  for (tedge e=1; e<=m; e++)
+  for (e=1; e<=m; e++)
     { Tpoint x = NGG.vcoord[G.vin[e]];
     Tpoint y=NGG.vcoord[G.vin[-e]];
     Tpoint vec=y-x;

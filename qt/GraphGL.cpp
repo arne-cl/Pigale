@@ -25,8 +25,9 @@
 #include <qfileinfo.h>
 #include <qfiledialog.h>
 #include <qapplication.h>
+#ifndef _WINDOWS
 #include <unistd.h>
-
+#endif
 class GraphGLPrivate
 {public:
   GraphGLPrivate()
@@ -107,7 +108,10 @@ int GraphGL::update()
       d->bt_group = new QHButtonGroup(this);
       d->bt_group->setFrameShape(QFrame::NoFrame); 
       d->bt_group->setPalette(d->mywindow->LightPalette);
-      d->bt_group->setMaximumHeight(30); d->bt_group->setInsideMargin(5); 
+      d->bt_group->setMaximumHeight(30); 
+#ifndef _WINDOWS
+      d->bt_group->setInsideMargin(5); 
+#endif
       hb->addWidget(d->bt_group);
       QRadioButton* rb_x = new QRadioButton("X",d->bt_group,"x");
       QRadioButton* rb_y = new QRadioButton("Y",d->bt_group,"y");
