@@ -11,38 +11,8 @@
 
 
 #include "client.h"
-#include <QT/Action_def.h>
-#include <QT/Action.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-
-#define GCC_VERSION (__GNUC__ * 10000 \
-                              + __GNUC_MINOR__ * 100 \
-                              + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION >=  30000
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
 
 using namespace std;
-
-/* 
-In the input:
-- lines starting by '#' are treated as comments
-- lines starting by ':' are treated by the client
-- line  starting by ':!' signals the end of file
-- line  starting by ':D' signals the client to echo the comments
-- line  starting by ':d' signals the client not to echo the comments
-
-- otherwise a line contains commands  separated by ':'
-- commands may contains arguments separated by ';'
-
-When reading from the server
-- lines starting with ! are commands
-- lines starting by : are diplayed in the text window
-otherwise they are output to the terminal 
-*/
 
 Client::Client(const QString &host, Q_UINT16 port)
     :debug(false),numPng(0)
@@ -52,29 +22,21 @@ Client::Client(const QString &host, Q_UINT16 port)
   QPushButton *send = new QPushButton("Send",hb1);
   QPushButton *close = new QPushButton("Close connection",this);
   QPushButton *quit = new QPushButton("Quit",this);
-  connect( send, SIGNAL(clicked()), SLOT(sendToServer()) );
-  connect( close, SIGNAL(clicked()), SLOT(closeConnection()) );
-  connect( quit, SIGNAL(clicked()),  SLOT(stop()) );
-  connect( quit, SIGNAL(clicked()), qApp, SLOT(quit()) );
+  connect(send,SIGNAL(clicked()),SLOT(sendToServer()));
+  connect(close,SIGNAL(clicked()),SLOT(closeConnection()));
+  connect(quit,SIGNAL(clicked()),SLOT(stop()));
+  connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
   // create the socket and connect various of its signals
   socket = new QSocket( this );
   cls.setDevice(socket);
   clo.setDevice(socket);
-  connect(socket, SIGNAL(connected()),SLOT(socketConnected()) );
-  connect(socket, SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()) );
-  connect(socket, SIGNAL(readyRead()),SLOT(socketReadyRead()) );
-  connect(socket, SIGNAL(error(int)),SLOT(socketError(int)) );
-  // create mapActions
-  initMap();
+  connect(socket,SIGNAL(connected()),SLOT(socketConnected()));
+  connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
+  connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
+  connect(socket,SIGNAL(error(int)),SLOT(socketError(int)));
   // connect to the server
   infoText->append("Trying to connect to the server\n" );
   socket->connectToHost(host,port);
-  }
-void Client::initMap()
-  {// not used now: would be if ones prefers alpha commands
-  int na = (int)(sizeof(actions)/sizeof(_Action));
-  for(int i = 0;i < na;i++)
-      mActions[actions[i].name] = actions[i].num;
   }
 void Client::stop()
   {terminate();wait();
@@ -82,7 +44,7 @@ void Client::stop()
 void Client::closeConnection()
   {socket->close();
   if(socket->state() == QSocket::Closing )
-      connect( socket, SIGNAL(delayedCloseFinished()), SLOT(socketClosed()) );
+      connect(socket,SIGNAL(delayedCloseFinished()),SLOT(socketClosed()));
   else
       socketClosed();
   stop();
@@ -95,24 +57,11 @@ void Client::sendToServer()
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)return;
   //split str -> 1 command per line if not a comment
-  if(str.at(0) == '#' ||str.at(0) == '!')
-      {cls <<str << endl;return;}
+  if(str.at(0) == '#' || str.at(0) == '!')
+      {cls << str << endl;return;}
   QStringList fields = QStringList::split(ACTION_SEP,str);
   for(int i = 0; i < (int)fields.count();i++)
-      Translate(fields[i].stripWhiteSpace());
-  }
-void Client::Translate(QString str)
-  {//str = str.stripWhiteSpace();
-  if(str.isEmpty())return;
-  int pos = str.find(';');
-  QString str_action = str.left(pos);
-  int action = mActions[str_action];
-  if(!action)
-      {QString m =  QString("'%1' UNKNOWN ACTION").arg(str);
-      infoText->append(m);
-      return;
-      }
-  cls << action<<str.mid(pos)<<endl;
+      cls << fields[i].stripWhiteSpace() << endl;
   }
 void Client::socketReadyRead()
   {while(socket->canReadLine())
@@ -135,7 +84,8 @@ void Client::socketReadyRead()
 	  delete [] buff;
 	  infoText->append("got image");
 	  }
-      else if(str.at(0) != '!')
+      //else if(str.at(0) != '!')
+      else 
 	  cout << str << endl;
       }
   }
@@ -162,11 +112,10 @@ void Client::run()
 // read datas from stdin
   {QTextStream stream(stdin,IO_ReadWrite);
   QString str;
-  
+  if(socket->state() != QSocket::Connected)return;
   while(!stream.atEnd())
       {str = stream.readLine(); 
       QChar ch = str.at(0);
- 
       if(ch == ':')
 	  {QChar c = str.at(1);
 	      switch(c)

@@ -12,6 +12,7 @@
 #ifndef CLIENT_H 
 #define CLIENT_H
 
+#include <QT/Action_def.h>
 #include <qsocket.h>
 #include <qapplication.h>
 #include <qvbox.h>
@@ -23,10 +24,34 @@
 #include <qradiobutton.h>
 #include <qtextstream.h>
 #include <qfile.h>
+#include <qfileinfo.h>
 #include <qthread.h>
 #include <qmutex.h>
-#include <qmap.h>
+#define GCC_VERSION (__GNUC__ * 10000 \
+                              + __GNUC_MINOR__ * 100 \
+                              + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION >=  30000
+#include <iostream>
+#else
+#include <iostream.h>
+#endif
 
+/* 
+In the input:
+- lines starting by '#' are treated as comments
+- lines starting by ':' are treated by the client
+- line  starting by ':!' signals the end of file
+- line  starting by ':D' signals the client to echo the comments
+- line  starting by ':d' signals the client not to echo the comments
+
+- otherwise a line contains commands  separated by ':'
+- commands may contains arguments separated by ';'
+
+When reading from the server
+- lines starting with ! are commands
+- lines starting by : are diplayed in the text window
+otherwise they are output to the terminal 
+*/
 
 class Client : public QVBox, QThread
 {Q_OBJECT
@@ -57,13 +82,8 @@ private:
   QDataStream clo;
   QTextView *infoText;
   QLineEdit *inputText;
-  typedef QMap<QString, int> ActionMap;
-  ActionMap mActions;
   bool debug;
   int numPng;
-
-  void initMap();
-  void Client::Translate(QString str);
 };
 
 #endif 

@@ -1,28 +1,26 @@
  
-This is the very first implementation of a simple Client-Server program.
+This  first implementation of a simple Client-Server program.
 These two programs make use of the Qt library  but as the  client reads 
-its instructions from stdin and its results  to stdout 
-It should not be difficult for applications to communicate with the server.
+its instructions from stdin and its results  to stdout, 
+it should not be difficult for applications to communicate with the server.
+
 To experiment the program  two example files are provided (data1 and data2)
 which shows some aspects of the proposed syntax.
 
-To launch the application:
-Client or Client < data1
+The server and client use a TCP connection on port 4242.
+
+To launch the application, first launch the server:
 XServer (serves concurrently != clients)
 or pigale -server (serves one client at a time)
+then the client:
+Client or Client < data1
+If the Client does not run on the same machine as the server:
+Client toto.truc.fr < data1
 
 Two graphs  are given: graph0.txt and ex.tgf. 
 The latter one is a binary file and can only be read on x86 compatible machines.
-The server and client use a TCP connection on port 4242.
-
-The specific input of the client are:
-- lines starting with '#' are comments
-- lines starting with ':' which modify the client-server behaviour
-For example
-:D    // echo comments
-:d    // stop echoing
-:!    // end of file
-
+The commands that can be used are nearly all the ones found in QT/Action.h,
+that is all the macros plus some other ones:
 
 Commands not in found in  Pigale macros
 R_GRAPH   // load a  graph  (now on the server side)
@@ -51,8 +49,7 @@ MAX_D			// maximal degree
 COORD			// retrieve coords
 VLAB			// retrieve labels (long integers)  
 
-The commands that can be used are nearly all the ones found in QT/Action.h.
-
+All the other commands could be macros.
 To augment the graph:
 CONNECT
 BICONNECT
@@ -138,5 +135,13 @@ User defined algorithms:
 TEST_1  
 TEST_2  
 TEST_3  
+
+Some specific input of the client are:
+- lines starting with '#' are comments
+- lines starting with ':' which modify the client-server behaviour
+For example
+:D    // echo comments
+:d    // stop echoing
+:!    // end of file
 
 
