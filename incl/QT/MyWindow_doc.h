@@ -15,6 +15,16 @@ const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>
 const char * left_txt = "Opens <b>previous</b> graph from  the current <em>tgf</em> file";
 const char * redo_txt = "Reload the <b>current</b> graph from the current  opened <em>tgf</em> file";
 const char * right_txt = "Opens <b>next</b> graph of the current opened <em>tgf</em> file";
+const char * spring_txt ="This beta version of a spring embedder does not preserve planarity\nTutte Circle is usually more adapted to planar graphs\nESC to stop";
+const char *schnyder_txt ="<qt>
+<ul>
+<li> <b>Schnyder</b> triangulates the graph by adding edges.
+<li> <b>Schnyder V</b> triangulates the graph by adding vertices.
+<li>If the option <b>longest face</b> is selected, the exterior face will be the longest face.
+<li>The shape of the exterior face is defined in the options menu <b>Schnyder: Rect</b>.
+<li>The edges will be colored <b>R G B</b> if the options menu <b>Schnyder: Color Edges</b> is set.
+</ul>
+";
 const char * embed3d_txt ="<qt>
 The axis <b>X</b>,<b>Y</b>,<b>Z</b> are colored
 <b>Red</b>,<b>Green</b>,<b>Blue</b>

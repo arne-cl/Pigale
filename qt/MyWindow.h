@@ -84,6 +84,7 @@ public:
   void Message(QString s);
   void MessageClear();
   void UndoTouch(bool save=false);
+  int MyWindow::getKey();
 
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;

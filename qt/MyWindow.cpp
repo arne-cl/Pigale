@@ -253,21 +253,22 @@ MyWindow::MyWindow()
   menuBar()->insertItem("&Augment",augment);
   connect(augment,SIGNAL(activated(int)),SLOT(handler(int)));
   augment->insertItem(xmanIcon,"Make &Connected",        A_AUGMENT_CONNECT);
-  augment->setWhatsThis(101,"Make a graph 2-connected");
+  augment->setWhatsThis(A_AUGMENT_CONNECT,"Make a graph 2-connected");
   augment->insertItem(xmanIcon,"Make &2-Connected",      A_AUGMENT_BICONNECT);
-  augment->setWhatsThis(102,"Make a PLANAR graph 2-connected");
+  augment->setWhatsThis(A_AUGMENT_BICONNECT,"Make a PLANAR graph 2-connected");
   augment->insertItem(xmanIcon,"Make 2-Connected &Opt",  A_AUGMENT_BICONNECT_6);
-  augment->setWhatsThis(103,"Make a PLANAR graph 2-connected\n with a minimal degree increase");
+  augment->setWhatsThis(A_AUGMENT_BICONNECT_6
+			,"Make a PLANAR graph 2-connected\n with a minimal degree increase");
   augment->insertItem(xmanIcon,"Make 2-Connected &NP",   A_AUGMENT_BICONNECT_NP);
-  augment->setWhatsThis(104,"Make a graph 2-connected");
+  augment->setWhatsThis(A_AUGMENT_BICONNECT_NP,"Make a graph 2-connected");
   augment->insertItem(xmanIcon,"&Vertex Triangulate",    A_AUGMENT_TRIANGULATE_V);
-  augment->setWhatsThis(105,"Triangulate a PLANAR graph by adding vertices");
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_V,"Triangulate a PLANAR graph by adding vertices");
   augment->insertItem(xmanIcon,"&ZigZag Triangulate",    A_AUGMENT_TRIANGULATE_ZZ);
-  augment->setWhatsThis(106,"Triangulate a PLANAR graph by adding edges");
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_ZZ,"Triangulate a PLANAR graph by adding edges");
   augment->insertItem(xmanIcon,"T&ricon. Triangulate",   A_AUGMENT_TRIANGULATE_3C);
-  augment->setWhatsThis(107,"Optimally triangulate a PLANAR graph by adding edges");
+  augment->setWhatsThis(A_AUGMENT_TRIANGULATE_3C,"Optimally triangulate a PLANAR graph by adding edges");
   augment->insertItem(xmanIcon,"Vertex &Quadrangulate",  A_AUGMENT_QUADRANGULATE_V);
-  augment->setWhatsThis(108,"Quadrangulate a planar bipartite graph");
+  augment->setWhatsThis(A_AUGMENT_QUADRANGULATE_V,"Quadrangulate a planar bipartite graph");
   augment->insertSeparator();
   augment->insertItem("&Bisect all edges",     A_AUGMENT_BISSECT_ALL_E);
 
@@ -286,8 +287,9 @@ MyWindow::MyWindow()
   menuBar()->insertItem("E&mbed",embed);
   connect(embed,SIGNAL(activated(int)),SLOT(handler(int)));
   embed->insertItem("&FPP Fary",             A_EMBED_FPP);
-  embed->insertItem("&Schnyder",             A_EMBED_SCHNYDER_E);
-  embed->insertItem("Schnyder &V ",          A_EMBED_SCHNYDER_V);
+  embed->insertItem(xmanIcon,"&Schnyder",    A_EMBED_SCHNYDER_E);
+  embed->setWhatsThis(A_EMBED_SCHNYDER_E,schnyder_txt);
+  embed->insertItem("Schnyder &V ", A_EMBED_SCHNYDER_V);
   embed->insertSeparator();
   embed->insertItem("&Tutte"      ,          A_EMBED_TUTTE);
   embed->insertItem("Tutte &Circle",         A_EMBED_TUTTE_CIRCLE);
@@ -301,9 +303,11 @@ MyWindow::MyWindow()
   embed->insertItem("&Contact Biparti",      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
   embed->insertItem("&Polar",                A_EMBED_POLAR);
+  id = embed->insertItem(xmanIcon,"Sprin&g",gw,SLOT(Spring()));
+  embed->setWhatsThis(id,spring_txt);
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,"&Embedding in Rn",A_EMBED_3d);
-  embed->setWhatsThis(298,embed3d_txt);
+  embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
 
   QPopupMenu *dual = new QPopupMenu( this );
   menuBar()->insertItem("&Dual/Angle",dual);

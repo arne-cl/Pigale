@@ -117,6 +117,10 @@ void GraphWidget::png()
   {if(!d->is_init)return;
   d->editor->png();
   }
+void GraphWidget::Spring()
+  {if(!d->is_init)return;
+  d->editor->Spring();
+  }
 // void GraphWidget::EraseColorVertices()
 //   {if(d->mywindow->MacroLooping)return;
 //   d->mywindow->UndoSave();

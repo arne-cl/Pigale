@@ -162,6 +162,7 @@ class GraphEditor : public QCanvasView
   void ToGrid(tvertex &v);
   void ToGrid(QPoint &p);
   void Zoom(int dir);
+  void Spring();
   int FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge);
   int FindItem(QPoint &p,EdgeItem* &edge);
   int FindItem(QPoint &p,ColorItem* &coloritem);

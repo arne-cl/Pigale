@@ -34,6 +34,7 @@ public slots:
 //   void EraseColorVertices();
 //   void EraseColorEdges();
 //   void EraseThickEdges();
+  void Spring();
   void showgridChanged(bool i);
   void fitgridChanged(bool i);
   void sizegridChanged(int i);

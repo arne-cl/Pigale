@@ -24,6 +24,18 @@ static TSArray<int> MacroActions(4),MacroEwidth(4);
 static TSArray<short> MacroVcolor(4),MacroEcolor(4);
 static int MacroNumActions = 0;
 static int volatile escape = 0;
+static int volatile key = 0;
+
+void MyWindow::keyPressEvent(QKeyEvent *k)
+  {if(k->key() == Qt::Key_Escape)
+      escape = 1;
+  key = k->key();
+  }
+int MyWindow::getKey()
+  {int key0 = key;
+  key = 0;
+  return key0;
+  }
 
 void macroRecord(int action)
   {if(action > 10000)return;
@@ -91,8 +103,4 @@ void MyWindow::macroPlay()
       handler(MacroActions[record++]);
       }
   if(!MacroLooping)information();
-  }
-void MyWindow::keyPressEvent(QKeyEvent *k)
-  {if(k->key() == Qt::Key_Escape)
-      escape = 1;
   }

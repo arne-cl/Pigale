@@ -139,7 +139,6 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       MouseAction = -3;                     //move colored edges 
   else if(Shift && MouseAction == 4)        //bissect
       MouseAction = -4;                     //contract
-
   if(MouseAction == 0) // color
       {NodeItem* node;
       EdgeItem *edge;
@@ -601,6 +600,7 @@ void GraphEditor::print(QPrinter *printer)
 				  ,gwp->canvas->height()),&pp,FALSE);
       }
   }
+
 void GraphEditor::png()
   {if(index < 0)return;
   QString FileName = QFileDialog::getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
