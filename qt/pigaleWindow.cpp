@@ -84,6 +84,8 @@ static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
 static char undofile[L_tmpnam] = "_undo.tgf" ;
 void initGraphDebug();
 #endif
+void Init_IO();
+void Init_IOGraphml();
 
 int InitPigaleServer(pigaleWindow *w);
 
@@ -96,6 +98,9 @@ pigaleWindow::pigaleWindow()
     ,MacroRecording(false),MacroLooping(false)
     ,MacroExecuting(false),MacroPlay(false),Server(false)
   {int id;
+  Init_IO();
+  Init_IOGraphml();
+
   // Initialze Error
   setError();
 #ifdef _WINDOWS
@@ -132,9 +137,9 @@ pigaleWindow::pigaleWindow()
       OutputFileName = InputFileName;
       }
   }
-  InputDriver = FileIOHandler.WhoseIs((const char *)InputFileName);
+  InputDriver = IO_WhoseIs((const char *)InputFileName);
   if (InputDriver<0) InputDriver=0;
-  OutputDriver = FileIOHandler.WhoseIs((const char *)OutputFileName);
+  OutputDriver = IO_WhoseIs((const char *)OutputFileName);
   if (OutputDriver<0) OutputDriver=0;
 
   // Modify settings according to passed arguments
@@ -567,10 +572,11 @@ pigaleWindow::pigaleWindow()
   settings->insertSeparator();
   settings->insertItem(tr("&Vertex show"),popupLabel);
   popupLabel->insertItem(comboLabel);
-  comboLabel->insertItem(tr("Index"));
-  comboLabel->insertItem(tr("Label"));
   comboLabel->insertItem(tr("Nothing"));
-  int current = ShowVertex();++current;
+  comboLabel->insertItem(tr("Index"));
+  comboLabel->insertItem(tr("Text"));
+  comboLabel->insertItem(tr("Label"));
+  int current = ShowVertex();current += 3;
   comboLabel->setCurrentItem(current);showLabel(current);
   //Embed Settings
   settings->insertSeparator();
@@ -675,6 +681,7 @@ void pigaleWindow::whenReady()
   }
 void pigaleWindow::initServer()
   {ServerClientId = 0;
+  NewGraph(); 
   InitPigaleServer(this); 
   }
 void pigaleWindow::customEvent( QCustomEvent * ev)
@@ -772,85 +779,89 @@ int pigaleWindow::getActionInt(QString action_str)
   }
 void pigaleWindow::load()
   {QFileInfo fi =  QFileInfo(InputFileName);
-    QStringList formats;
-    QString filter, selfilter;
-    for (int i=0; i<FileIOHandler.n();i++)
-      { filter = tr(FileIOHandler.Name(i));
-	filter += "(*";
-	if (FileIOHandler.Ext(i)!="!") {filter += "."; filter += FileIOHandler.Ext(i);}
-	filter += ")";
-	formats += filter;
-	if (i==0) selfilter=filter;
+  QStringList formats;
+  QString filter, selfilter;
+  for (int  i = 0; i< IO_n();i++)
+      {filter = tr(IO_Name(i));
+      filter += "(*";
+      if (IO_Ext(i)!="!") {filter += "."; filter += IO_Ext(i);}
+      filter += ")";
+      formats += filter;
+      if (i==0) selfilter=filter;
       }
     formats += "All (*)";
     QString FileName = QFileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
-						    "load dialog",tr("Choose a file to open"),
-						    &selfilter);
-    setError();
+                                                    "load dialog",tr("Choose a file to open"),&selfilter);
+    //setError();
     if(!FileName.isEmpty())
-      {
-	InputFileName = FileName;
-	int i=0;
-	for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++i ) {
-	  if (selfilter==*it) break;
-	}
-	if (i==FileIOHandler.n()) // All
-	  { i = FileIOHandler.WhoseIs((const char *)FileName);
-	    if (i<0) 
-	      {QString m;
-		m.sprintf("Could not read:%s",(const char *)InputFileName);
-		statusBar()->message(m,2000);
-		LogPrintf("%s: unrecognized format\n",(const char *)InputFileName);
-		return;
-	      }	  
-	  }
-	InputDriver=i;
-	*pGraphIndex = 1;
-	int NumRecords = FileIOHandler.GetNumRecords(i,(const char *)InputFileName);
-	if(NumRecords > 1)
-          {bool ok = FALSE;
-	    QString m;
-	    m.sprintf("Select a graph (1/%d)",NumRecords);
-	    *pGraphIndex = QInputDialog::
-	      getInteger("Pigale",m,1,1,NumRecords,1,&ok,this);
-	    if(ok)load(0);
+      {InputFileName = FileName;
+      int i = 0;
+      for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++i ) 
+          {if (selfilter==*it) break;
           }
-	else load(0);
+      if (i == IO_n()) // All
+          {i = IO_WhoseIs((const char *)FileName);
+          if (i<0) 
+              {QString m;
+              m.sprintf("Could not read:%s",(const char *)InputFileName);
+              statusBar()->message(m,2000);
+              LogPrintf("%s: unrecognized format\n",(const char *)InputFileName);
+              return;
+              }	  
+          }
+      InputDriver = i;
+      *pGraphIndex = 1;
+      int NumRecords = IO_GetNumRecords(i,(const char *)InputFileName);
+      if(NumRecords > 1)
+          { bool ok = FALSE;
+          QStringList titles;
+          QString item;
+          for (int j=1; j<=NumRecords; j++)
+              {item.sprintf("%d: %s",j,(const char *)IO_Title(i,(const char *)InputFileName,j));
+              titles+=item;
+              }
+          QString res = QInputDialog::getItem("Graph Selection", "Select a record:", titles, 0, FALSE, &ok, this );
+          if ( ok ) 
+              {*pGraphIndex=res.left(res.find(':')).toInt();
+              load(0);
+              }
+          }
+      else load(0);
       }
   }
 int pigaleWindow::publicLoad(int pos)
-  {setError();
+  {QFileInfo fi(InputFileName);
   QString m;
-   QFileInfo fi(InputFileName);
    if(!fi.exists() || fi.size() == 0)
-     {//m.sprintf("file -%s- does not exist",(const char *)InputFileName);
-      //statusBar()->message(m,2000);
-      LogPrintf("%s\n",(const char *)m);
-      return -1;
-      } 
-   int i;
-   i = FileIOHandler.WhoseIs((const char *)InputFileName);
-   if (i<0) 
-     {QString m;
-       LogPrintf("%s: unrecognized format\n",(const char *)InputFileName);
+       {m = QString("file -%1- does not exist").arg(InputFileName);
+       if(!ServerBusy)statusBar()->message(m,2000);
+       LogPrintf("%s\n",(const char *)m);
        return -1;
+      } 
+   int i = IO_WhoseIs((const char *)InputFileName);
+   if(i < 0) 
+       {m = QString("%1: unrecognized format").arg(InputFileName);
+     if(!ServerBusy)statusBar()->message(m,2000);
+     LogPrintf("%s\n",(const char *)m);
+     return -1;
      }
-   InputDriver=i;
+   InputDriver = i;
    UndoClear();UndoSave();
-  int NumRecords =FileIOHandler.GetNumRecords(i,(const char *)InputFileName);
+  int NumRecords =IO_GetNumRecords(i,(const char *)InputFileName);
   *pGraphIndex = pos;
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
-  if(FileIOHandler.Read(i,GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
-      {m.sprintf("Could not read:%s",(const char *)InputFileName);
-      //statusBar()->message(m,2000);
+  if(IO_Read(i,GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
+      {m = QString("Could not read:%1").arg(InputFileName);
+      if(!ServerBusy)statusBar()->message(m,2000);
+      LogPrintf("%s\n",(const char *)m);
       return -2;
       }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   UndoSave();
-  //banner();
+  if(!ServerBusy)banner();
   information(); gw->update();
   return *pGraphIndex;
   }
@@ -859,27 +870,26 @@ int pigaleWindow::load(int pos)
   QString m;
   QFileInfo fi(InputFileName);
   if(!fi.exists() || fi.size() == 0)
-    {m.sprintf("file -%s- does not exist",(const char *)InputFileName);
-      statusBar()->message(m,2000);
+      {m = QString("file -%1- does not exist").arg(InputFileName);
+      if(!ServerBusy)statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
       return -1;
     }      
-  if (!FileIOHandler.IsMine(InputDriver,(const char *)InputFileName))
-    {
-      m.sprintf("file -%s- is not a valid %s",(const char *)InputFileName,FileIOHandler.Name(InputDriver));
-      statusBar()->message(m,2000);
-      LogPrintf("%s\n",(const char *)m);
+  if (!IO_IsMine(InputDriver,(const char *)InputFileName))
+    {m.sprintf("file -%s- is not a valid %s",(const char *)InputFileName,IO_Name(InputDriver));
+    if(!ServerBusy)statusBar()->message(m,2000);
+    LogPrintf("%s\n",(const char *)m);
       return -1;
     }
   UndoClear();UndoSave();
-  int NumRecords =FileIOHandler.GetNumRecords(InputDriver,(const char *)InputFileName);
+  int NumRecords =IO_GetNumRecords(InputDriver,(const char *)InputFileName);
   if(pos == 1)++(*pGraphIndex);
   else if(pos == -1)--(*pGraphIndex);
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
-  if(FileIOHandler.Read(InputDriver,GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
-    {m.sprintf("Could not read:%s",(const char *)InputFileName);
-      statusBar()->message(m,2000);
+  if(IO_Read(InputDriver,GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
+      {m = QString("Could not read:%1").arg(InputFileName);
+      if(!ServerBusy)statusBar()->message(m,2000);
       return -2;
     }
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName,*pGraphIndex,NumRecords);
@@ -900,50 +910,24 @@ void pigaleWindow::save()
   if(ok && !titre.isEmpty()) title() = (const char *)titre;
   else if(!ok) return;
   //G.FixOrientation();
-  if(FileIOHandler.Save(OutputDriver,G,(const char *)OutputFileName) == 1)
+  if(IO_Save(OutputDriver,G,(const char *)OutputFileName) == 1)
       {QString t;
       t.sprintf("Cannot open file:%s",(const char *)OutputFileName);
       Twait((const char *)t);
       return;
       }
-  GraphIndex2 = FileIOHandler.GetNumRecords(OutputDriver,(const char *)OutputFileName);
+  GraphIndex2 = IO_GetNumRecords(OutputDriver,(const char *)OutputFileName);
   banner();
   }
-// void pigaleWindow::save_ascii()
-//   {TopologicalGraph G(GC);
-//   Prop1<tstring> title(G.Set(),PROP_TITRE);
-//   QString titre(~title());
-//   bool ok = TRUE;
-//   titre = QInputDialog::getText("Pigale","Enter the graph name",
-//                     QLineEdit::Normal,titre, &ok, this );
-//   if(ok && !titre.isEmpty()) title() = (const char *)titre;
-//   else if(!ok)return;
-//   QFileInfo fi0 =  QFileInfo(OutputFileName);
-//   QString FileName = QFileDialog::
-//   getSaveFileName(fi0.dirPath(),"Txt Files(*.txt)",this);
-//   if(FileName.isEmpty())return; 
-//   if(QFileInfo(FileName).extension(false) != (const char *)"txt")
-//       FileName += (const char *)".txt";
-//   QString OutputAsciiFile = FileName;
-//   QFileInfo fi = QFileInfo(OutputAsciiFile);
-//   if(fi.exists())
-//       {int rep = QMessageBox::warning(this,"Pigale Editor"
-// 			    ,"This file already exixts.<br>"
-// 			    "Overwrite ?"
-// 			    ,QMessageBox::Ok 
-// 			    ,QMessageBox::Cancel);
-//       if(rep == 2)return;
-//       } 
-//   SaveGraphAscii(G,(const char *)OutputAsciiFile);
-//   }
+
 void pigaleWindow::saveAs()
   {QFileInfo fi =  QFileInfo(OutputFileName);
     QStringList formats;
     QString filter, selfilter;
-    for (int i=0; i<FileIOHandler.n();i++)
-      { filter = tr(FileIOHandler.Name(i));
+    for (int i=0; i<IO_n();i++)
+      { filter = tr(IO_Name(i));
 	filter += "(*";
-	if (FileIOHandler.Ext(i)!="!") {filter += "."; filter += FileIOHandler.Ext(i);}
+	if (IO_Ext(i)!="!") {filter += "."; filter += IO_Ext(i);}
 	filter += ")";
 	formats += filter;
 	if (i==0) selfilter=filter;
@@ -953,27 +937,23 @@ void pigaleWindow::saveAs()
 						    &selfilter);
     if(FileName.isEmpty())return;
     QString ext="";
-    int i=0;
-    for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++i ) {
+    int id=0;
+    for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++id ) {
       if (selfilter==*it) break;
     }
-    if ((QFileInfo(FileName).extension(false) != FileIOHandler.Ext(i)) && (FileIOHandler.Ext(i)!=""))
+    if ((QFileInfo(FileName).extension(false) != IO_Ext(id)) && (IO_Ext(id)!=""))
       {FileName += ".";
-	FileName += FileIOHandler.Ext(i);
+	FileName += IO_Ext(id);
       }
     OutputFileName = FileName;
-    OutputDriver = i;
+    OutputDriver = id;
     save();
   }
 void pigaleWindow::deleterecord()
-  {
-    if (FileIOHandler.Capabilities(InputDriver)&TAXI_FILE_RECORD_DEL)
-      FileIOHandler.DeleteRecord(InputDriver,(const char *)InputFileName,*pGraphIndex);
-      //if(IsFileTgf((const char *)InputFileName))
-      //DeleteTgfRecord((const char *)InputFileName,*pGraphIndex);
+  {if (IO_Capabilities(InputDriver)&TAXI_FILE_RECORD_DEL)
+      IO_DeleteRecord(InputDriver,(const char *)InputFileName,*pGraphIndex);
     else
-      //Twait("Not a tgf file");
-      {QString m=(const char *)FileIOHandler.Name(InputDriver);
+      {QString m=(const char *)IO_Name(InputDriver);
 	m += " does not allow record deletion";
 	Twait((const char *)m);
       }
@@ -1221,8 +1201,8 @@ int pigaleWindow::postHandler(QCustomEvent *ev)
   }
 void pigaleWindow::banner()
   {QString msg;  
-    int NumRecords =FileIOHandler.GetNumRecords(0,(const char *)InputFileName);
-    int NumRecordsOut =FileIOHandler.GetNumRecords(0,(const char *)OutputFileName);
+    int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName);
+    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName);
   msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
 	    ,(const char *)InputFileName
 	    ,*pGraphIndex,NumRecords
@@ -1245,10 +1225,46 @@ void pigaleWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
   }
 void pigaleWindow::showLabel(int show)
-  {//Now We can only show the index of a vertex or a long
-  int _show = ShowVertex();
-  ShowVertex() = show -1;
-  if(ShowVertex() != _show && GC.nv())gw->update();
+  {int _show = ShowVertex();
+  ShowVertex() = show -3;
+  if(ShowVertex() != _show && GC.nv())
+      {switch(tabWidget->currentPageIndex())
+          {case 0:
+              gw->update();
+              break;
+          case 1:
+              mypaint->update();
+              break;
+//           case 2:
+//               graphgl->update();
+//               break;
+//           case 3:
+//               graphsym->update();
+//               break;
+          }
+      }
+  }
+QString pigaleWindow::getVertexLabel(tvertex v)
+  {QString t;
+  int prop = ShowVertex();
+  if(prop == -3)
+       t = "";
+  else if(prop == -2)
+      t.sprintf("%2.2d",v());
+  else if(prop == -1)
+      {if(GC.Set().exist(PROP_VSLABEL) && GC.Set(tvertex()).exist(PROP_SLABEL))
+          {Prop<int> slabel(GC.Set(tvertex()),PROP_SLABEL);
+          int indexTxt = slabel[v];
+          if(indexTxt != 0)
+              {Prop1<svector <tstring *> > vslabel(GC.Set(),PROP_VSLABEL);
+              t = ~(*(vslabel()[indexTxt]));
+              }
+          }
+      }
+  else
+      t = ~GC.Set(tvertex()).Value(prop,v());
+      
+  return t;
   }
 void  pigaleWindow::distOption(int use)
   {useDistance() = use;
@@ -1311,7 +1327,7 @@ Should always be possible to restore 1
 void pigaleWindow::Undo()
   {if (UndoIndex > UndoMax) UndoSave();
   if(UndoIndex > 1)--UndoIndex;
-  if(FileIOHandler.Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
+  if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
   this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
@@ -1324,7 +1340,7 @@ void pigaleWindow::UndoSave()
   {if(!IsUndoEnable)return;
   TopologicalGraph G(GC);
   if(G.nv() == 0)return;
-  int nb = FileIOHandler.GetNumRecords(0,undofile); if (nb<0) nb=0;
+  int nb = IO_GetNumRecords(0,undofile); if (nb<0) nb=0;
   int last = UndoMax>UndoIndex ? UndoIndex : UndoMax;
   if(last < nb)
       {Tgf file;
@@ -1334,7 +1350,7 @@ void pigaleWindow::UndoSave()
           nb--;
           }
       }
-  if(FileIOHandler.Save(0,G,undofile) == 1)
+  if(IO_Save(0,G,undofile) == 1)
       {handler(A_SET_UNDO);return;}
   UndoIndex=UndoMax=++nb;
   undoL->setEnabled(true);
@@ -1342,7 +1358,7 @@ void pigaleWindow::UndoSave()
   }
 void pigaleWindow::Redo()
   {if(UndoIndex < UndoMax)++UndoIndex;
-    if(FileIOHandler.Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
+    if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
   undoR->setEnabled(UndoIndex < UndoMax);

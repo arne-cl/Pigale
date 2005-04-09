@@ -37,12 +37,13 @@ public:
   ~pigalePaint();
   int to_x(double x);   
   int to_y(double y);   
+  QString pigalePaint::getVertexLabel(tvertex v);
   void DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col);
   void DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col);
-  void DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center);
-  void DrawText(QPainter *p,double x,double y,double nx,double ny,QString &t,int color);
-  //public slots:
+  void DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center);
+  void DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int color);
   void update(int index);
+  void update();
   void print(QPrinter *printer);
   void png();
 
@@ -58,7 +59,7 @@ private:
   void keyPressEvent(QKeyEvent *k);
 
 private:
-  pigaleWindow *father;
+  pigaleWindow *mw;
   bool isHidden;
   QPrinter* printer;
   int index;

@@ -22,8 +22,8 @@
 
 SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   : G(G0), FirstBrin(fb),v_1(G.vin[fb]), v_2(G.vin[-fb]), v_n(G.vin[-G.acir[fb]]),
-   ParentB(1,G.nv(),0), ParentG(1,G.nv(),0), ParentR(1,G.nv(),0), brin_color(-G.ne(),G.ne(), Black) {
-  svector<short> UnmarkedNeighbors(1, G.nv(), short(0));
+    ParentB(1,G.nv(),(tbrin)0), ParentG(1,G.nv(),(tbrin)0), ParentR(1,G.nv(),(tbrin)0), brin_color(-G.ne(),G.ne(), Black) 
+{svector<short> UnmarkedNeighbors(1, G.nv(), short(0));
   tvertex v;
   tbrin left, right, b, bb;
   tedge e;
@@ -34,19 +34,10 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   UnmarkedNeighbors.SetName("UnmarkedNeighbors");
 
 
-  //LMCShelling  KS(G,fb);
   SWShelling  S2(G, fb);
   tbrin  LeftConnection;
-  //int nb_shelled = 0;
   int leftActive, rightActive;
-  /*     do {
-     i = S2.FindNext(left, right, LeftConnection, leftActive, rightActive);
-     cout << i << " " << G.vin[left] << " " << G.vin[-right] << " " << G.vin[LeftConnection] << endl;
-     nb_shelled +=i;
-   } while (i != 0);
-   assert (nb_shelled == G.nv() - 2);*/
 
-   //  LMCShelling  KS(G,fb);
   assert(ParentG[v_1] == 0);
   ParentG[v_1] = fb;
   assert(brin_color[fb] == Black);
@@ -160,19 +151,9 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
   }
 
   assert (CountDeltaSharpCW() == 0);
-  /*while(CountDeltaSharpCW() != 0) {
-    ForAllVertices(v,G) {
-      remove_cw_elbow(v, Red);
-      remove_cw_elbow(v, Blue);
-      remove_cw_elbow(v, Green);
-      reverse_cw_face(v);
-    }
-    }*/
-
   
   int nb_cwR = 0, nb_cwG = 0 , nb_cwB = 0;
   int nb_ccwR = 0, nb_ccwG = 0 , nb_ccwB = 0;
-
 
   ForAllVertices(v,G) {
     if(is_cw_elbow(v, Red))
@@ -191,9 +172,6 @@ SchnyderWood::SchnyderWood(Graph &G0, tbrin fb)
     if(is_ccw_elbow(v, Blue))
       nb_ccwB++;
       }
-  //  cout << "deltaCW =\t" << CountDeltaSharpCW() << "\tR = "<< nb_cwR << "\tG = "<< nb_cwG << "\tB = "<< nb_cwB <<endl;
-  //  cout <<  "deltaCCW =\t" << CountDeltaSharpCCW() <<"\tR = "<< nb_ccwR << "\tG = "<< nb_ccwG << "\tB = "<< nb_ccwB <<endl;
-
 }
 
 bool SchnyderWood::IsSimple (tedge e) const {

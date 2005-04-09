@@ -137,6 +137,7 @@ public:
   void setUserMenu(int i, const QString &txt);
   void  setShowOrientation(bool val);
   int  getResultHandler(int value = 0);
+  QString getVertexLabel(tvertex v);
 public:
   QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
   QTextEdit *messages;

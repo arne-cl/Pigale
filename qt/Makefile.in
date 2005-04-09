@@ -64,9 +64,10 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libpigaleQt_la_LIBADD =
 am__objects_1 = CanvasGrid.lo CanvasItem.lo CanvasSpring.lo \
 	ClientSocket.lo EmbedCurves.lo glcontrolwidget.lo gprop.lo \
-	GraphGL.lo GraphSym.lo Handler.lo LineEditNum.lo Macro.lo \
-	MiscQt.lo mouse_actions.lo pigaleCanvas.lo pigalePaint.lo \
-	pigaleWindow.lo Settings.lo Test.lo
+	GraphGL.lo graphml.lo graphmlparser.lo GraphSym.lo Handler.lo \
+	LineEditNum.lo Macro.lo MiscQt.lo mouse_actions.lo \
+	pigaleCanvas.lo pigalePaint.lo pigaleWindow.lo Settings.lo \
+	Test.lo
 am__objects_2 =
 am__objects_3 = $(am__objects_1) $(am__objects_2)
 am_libpigaleQt_la_OBJECTS = $(am__objects_3)
@@ -218,6 +219,8 @@ FILES = \
     glcontrolwidget.cpp \
     gprop.cpp \
     GraphGL.cpp \
+    graphml.cpp \
+    graphmlparser.cpp \
     GraphSym.cpp \
     Handler.cpp \
     LineEditNum.cpp \
@@ -231,7 +234,7 @@ FILES = \
     Test.cpp
 
 MOC_FILES = \
-   moc_ClientSocket.cpp \
+    moc_ClientSocket.cpp \
     moc_glcontrolwidget.cpp \
     moc_gprop.cpp \
     moc_GraphGL.cpp \
@@ -370,6 +373,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glcontrolwidget.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gprop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graphmlparser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_ClientSocket.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_GraphGL.Plo@am__quote@

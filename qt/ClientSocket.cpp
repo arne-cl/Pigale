@@ -45,8 +45,9 @@ void PigaleServer::newConnection(int socket)
   {if(nconnections == 0)
       {clientsocket = new ClientSocket(socket,mw,this,qApp);
       nconnections = 1;
+      mw->NewGraph(); 
       mw->postMessageClear();
-      Tprintf("Server: New connection");
+      Tprintf("Server: New connection %d",mw->ServerClientId);
       mw->ServerExecuting = true;      mw->blockInput(true);
       }
   else
@@ -59,7 +60,7 @@ void PigaleServer::newConnection(int socket)
       }
   }
 void PigaleServer::OneClientClosed()
-  {Tprintf("Server: Client disconnects");
+  {Tprintf("Server: Client disconnects %d",mw->ServerClientId);
   mw->ServerClientId = 0;
   nconnections = 0;
   mw->ServerExecuting = false;   mw->blockInput(false);
@@ -172,8 +173,8 @@ int ClientSocket::xhandler(const QString& dataAction)
   }
 uint ClientSocket::readBuffer(char  *  &buffer)
   {uint size = 0;
-  uint nb = bytesAvailable();
-  while(bytesAvailable() < 4)waitForMore(10);
+  uint nb;
+  while((nb = bytesAvailable()) < 4)waitForMore(10);
   clo >>  size;
   if(size <= 0)return 0;
   uint size0 = 0;
@@ -204,11 +205,12 @@ uint ClientSocket::readBuffer(char  *  &buffer)
   }
 int ClientSocket::GetRemoteGraph()
   {if(sdebug)cli << ":Server: receiving graph" << endl;
-  Tprintf("Receiving graph");
   char *buffer = NULL;
   uint size = readBuffer(buffer);
   if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return READ_ERROR;}
-  QString GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
+  QString GraphFileName;
+  GraphFileName.sprintf("%ctmp%cgraph%d.tmp",QDir::separator(),QDir::separator(),mw->ServerClientId);
+  Tprintf("Receiving graph ->%s",(const char *)GraphFileName);
   QFile file(GraphFileName);
   file.remove();
   file.open(IO_ReadWrite);

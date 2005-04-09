@@ -60,13 +60,12 @@ void DrawPolar(QPainter *p,pigalePaint *paint)
       dt = (int)((Etheta2[ee] - Etheta1[ee])*16*180/PI+.5); 
       p->drawArc(ox,oy,nx,ny,theta,dt);
       }
-    // Draw the vertices
   /*
-    int n = G.nv();
-  Prop<long> label(G.PV(),PROP_LABEL);
-  DrawNode(Vcoord[1],label[1],Blue);
+  // Draw the vertices
+  int n = G.nv();
+  DrawNode(Vcoord[1],1,Blue);
   for(tvertex v = 2;v <= n;v++)
-      DrawNode(Vcoord[v],label[v()],Yellow);
+      DrawNode(Vcoord[v],v,Yellow);
   */
   }
 void DrawPolyline(QPainter *p,pigalePaint *paint)
@@ -79,29 +78,21 @@ void DrawPolyline(QPainter *p,pigalePaint *paint)
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
-  int m = G.ne(); 
-  int n = G.nv(); 
   QPen pn = p->pen();pn.setWidth(2);
   QPointArray bez(4);
 
-  for (tedge ee=1; ee<=m; ee++)
-      {if (Ebend[ee] != Tpoint(-1, -1)) {
-	  paint->DrawSeg(p, Epoint1[ee], Ebend[ee],ecolor[ee]);
-	  paint->DrawSeg(p, Ebend[ee], Epoint2[ee],ecolor[ee]);
-      }
+  for (tedge ee=1; ee<= G.ne(); ee++)
+      {if (Ebend[ee] != Tpoint(-1, -1)) 
+          {paint->DrawSeg(p, Epoint1[ee], Ebend[ee],ecolor[ee]);
+          paint->DrawSeg(p, Ebend[ee], Epoint2[ee],ecolor[ee]);
+          }
       else
-	  paint->DrawSeg(p, Epoint1[ee], Epoint2[ee] , ecolor[ee]);
+          paint->DrawSeg(p, Epoint1[ee], Epoint2[ee] , ecolor[ee]);
       }
   // Draw the vertices
   p->setFont(QFont("lucida",Min((int)(.45 * Min(paint->xscale,paint->yscale) + .5),13)));
-  QString t;
-  for(tvertex v = 1;v <= n;v++) 
-      {if(ShowVertex() == -1)
-	  t.sprintf("%2.2d",v());
-      else
- 	  t.sprintf("%2.2ld",G.vlabel[v()]);
-      paint->DrawText(p,Vcoord[v],t,vcolor[v],1);
-      }
+  for(tvertex v = 1;v <= G.nv();v++)
+       paint->DrawText(p,Vcoord[v],v,vcolor[v],1);
   }
 
 void DrawCurves(QPainter *p,pigalePaint *paint)
@@ -142,14 +133,8 @@ void DrawCurves(QPainter *p,pigalePaint *paint)
       }
   // Draw the vertices
   p->setFont(QFont("lucida",Min((int)(10*Min(paint->xscale,paint->yscale) + .5),13)));
-  QString t;
   for(tvertex v = 1;v <= n;v++) 
-      {if(ShowVertex() == -1)
-	  t.sprintf("%2.2d",v());
-      else
- 	  t.sprintf("%2.2ld",G.vlabel[v()]);
-      paint->DrawText(p,vcoord[v],t,vcolor[v],1);
-      }
+      paint->DrawText(p,vcoord[v],v,vcolor[v],1);
   }
 
 void DrawTContact(QPainter *p,pigalePaint *paint)
@@ -168,14 +153,8 @@ void DrawTContact(QPainter *p,pigalePaint *paint)
       }
   // Draw text
   p->setFont(QFont("lucida",Min((int)(sizetext() * Min(paint->xscale,paint->yscale) + .5),13)));
-  QString t;
   for(v=1; v <= G.nv();v++)
-      {if(ShowVertex() == -1)
-	  t.sprintf("%2.2d",v());
-      else
- 	  t.sprintf("%2.2ld",G.vlabel[v()]);
-      paint->DrawText(p,postxt[v],t,G.vcolor[v],0);
-      }
+      paint->DrawText(p,postxt[v],v,G.vcolor[v],0);
   }
 void DrawBipContact(QPainter *p,pigalePaint *paint)
   {GeometricGraph G(paint->GCP);
@@ -192,75 +171,67 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
   pt = QPoint(paint->to_x(pmax().x()-1),paint->to_y(pmax().y()-1));
   pn.setColor(color[Grey1]); p->setPen(pn);
   p->drawLine(ps,pt);
-  QString t;
-  QRect rect;
-  QSize size;
-  int dx,dy;
-  dy = Min(12,paint->height()/(pmax().y()+1)-2);
+  int dy = Min(12,paint->height()/(pmax().y()+1)-2);
+  int dx;
   QFont font = QFont("lucida",dy);
   p->setFont(font);
-  tvertex v;
-  for(v = 1;v <= G.nv();v++)
+  for(tvertex v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.45:-.45;
       if(G.vcolor[v] == Red)
-	  {if(h1[v] != h2[v])
-	      {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
-	      pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
-	      }
-	  else
-	      {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
-	      pt  = QPoint(paint->to_x(h2[v]+delta),paint->to_y(h[v]));
-	      }
-	  }
+          {if(h1[v] != h2[v])
+              {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
+              pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
+              }
+          else
+              {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
+              pt  = QPoint(paint->to_x(h2[v]+delta),paint->to_y(h[v]));
+              }
+          }
       else
-	  {if(h1[v] != h2[v])
-	      {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
-	      pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
-	      }
-	  else
-	      {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
-	      pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
-	      } 
-	  }
+          {if(h1[v] != h2[v])
+              {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
+              pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
+              }
+          else
+              {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
+              pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
+              } 
+          }
       pn.setColor(color[G.vcolor[v]]); pn.setWidth(2);p->setPen(pn);
       p->drawLine(ps,pt);
       }
-  
   pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
-  for(v = 1;v <= G.nv();v++)
+  for(tvertex v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.9:-.9;
       if(G.vcolor[v] == Red)
-	  {if(h1[v] != h2[v])
-	      {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
-	      pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
-	      }
-	  else
-	      {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
-	      pt  = QPoint(paint->to_x(h2[v]+delta),paint->to_y(h[v]));
-	      }
-	  }
+          {if(h1[v] != h2[v])
+              {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
+              pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
+              }
+          else
+              {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
+              pt  = QPoint(paint->to_x(h2[v]+delta),paint->to_y(h[v]));
+              }
+          }
       else
-	  {if(h1[v] != h2[v])
-	      {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
-	      pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
-	      }
-	  else
-	      {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
-	      pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
-	      } 
-	  }
-
-      if(ShowVertex() == -1)
-	  t.sprintf("%2.2d",v());
-      else
-	  t.sprintf("%2.2ld",G.vlabel[v()]);
-      size = QFontMetrics(font).size(Qt::AlignCenter,t);
-      dx =size.width() + 2;   dy =size.height() + 2;
-      rect = QRect((ps.x() + pt.x() - dx)/2,(ps.y() + pt.y() - dy)/2,dx,dy);
+          {if(h1[v] != h2[v])
+              {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
+              pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
+              }
+          else
+              {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
+              pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
+              } 
+          }
+      QString t = paint->getVertexLabel(v);
+       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
+       dx =size.width() + 2;   dy =size.height() + 2;
+      QRect rect = QRect((ps.x() + pt.x() - dx)/2,(ps.y() + pt.y() - dy)/2,dx,dy);
       pb.setColor(color[G.vcolor[v]]);
       p->setBrush(pb);
       p->drawRect(rect);
       p->drawText(rect,Qt::AlignCenter,t);
+      //paint->DrawText(p,(ps.x() + pt.x() - dx)/2.,(ps.y() + pt.y() - dy)/2.,dx,dy, v,G.vcolor[v]);
       }
   }
 void DrawFPPVisibility(QPainter *p,pigalePaint *paint)
@@ -271,12 +242,7 @@ void DrawFPPVisibility(QPainter *p,pigalePaint *paint)
   Prop<int> xje(G.Set(tedge()),PROP_DRAW_INT_4);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
-  //Checking if vertices have labels
-  svector<long> *vlabel = NULL;
-  if(G.Set(tvertex()).exist(PROP_LABEL))
-      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-      vlabel = &label.vector();
-      }
+
   // Draw edges
   int h1,h2,x1,x2;
   double alpha = .5;
@@ -288,43 +254,36 @@ void DrawFPPVisibility(QPainter *p,pigalePaint *paint)
        x1 = xriv[G.vin[e]]; 
        x2 = xliv[G.vin[-e]];
       if(h1 < h2)
-	  {a.x() = b.x() = xje[e]; 
-	   a.y() = h1;  
-	   b.y() = h2 - 2*alpha;
-	  paint->DrawSeg(p,a,b,ecolor[e]);
-	  }
+          {a.x() = b.x() = xje[e]; 
+          a.y() = h1;  
+          b.y() = h2 - 2*alpha;
+          paint->DrawSeg(p,a,b,ecolor[e]);
+          }
       else if(h1 > h2)
-	  {a.x() = b.x() = xje[e];
-	   a.y() = h2;
-	   b.y() = h1 - 2*alpha;
-	  paint->DrawSeg(p,a,b,ecolor[e]);
-	  }
+          {a.x() = b.x() = xje[e];
+          a.y() = h2;
+          b.y() = h1 - 2*alpha;
+          paint->DrawSeg(p,a,b,ecolor[e]);
+          }
       else if(x1 < x2)
-	  {a.x() = x1 + beta;
-	   b.x() = x2 - beta;
-	   a.y() = b.y() = h1 -alpha;
-	  paint->DrawSeg(p,a,b,ecolor[e]);
-	  }
+          {a.x() = x1 + beta;
+          b.x() = x2 - beta;
+          a.y() = b.y() = h1 -alpha;
+          paint->DrawSeg(p,a,b,ecolor[e]);
+          }
       else if(x1 > x2)
-	  {a.x() = xriv[G.vin[-e]] + beta;  
-	   b.x() = xliv[G.vin[e]]  - beta;
-	   a.y() = b.y() = h1 -alpha;
-	   paint->DrawSeg(p,a,b,ecolor[e]);
-	  }
+          {a.x() = xriv[G.vin[-e]] + beta;  
+          b.x() = xliv[G.vin[e]]  - beta;
+          a.y() = b.y() = h1 -alpha;
+          paint->DrawSeg(p,a,b,ecolor[e]);
+          }
       }
 
   // Draw vertices
   double xt = .9*Min(2*alpha*paint->xscale,beta*paint->yscale);
-  //p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   p->setFont(QFont("lucida",Min((int)(xt + .5),13)));
-  QString t;
   for(tvertex v=1; v <= G.nv();v++) 
-      {if(ShowVertex() == -1 || !vlabel)
-	  t.sprintf("%2.2d",v());
-      else
-	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-      paint->DrawText(p,xliv[v]-beta, y[v], xriv[v]-xliv[v]+2.*beta, 2.*alpha,t,vcolor[v]);
-      }
+      paint->DrawText(p,xliv[v]-beta, y[v], xriv[v]-xliv[v]+2.*beta, 2.*alpha,v,vcolor[v]);
   }
 void DrawVisibility(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -335,24 +294,12 @@ void DrawVisibility(QPainter *p,pigalePaint *paint)
   Prop<int> y(G.Set(tvertex()),PROP_DRAW_INT_5);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
-  //Checking if vertices have labels
-  svector<long> *vlabel = NULL;
-  if(G.Set(tvertex()).exist(PROP_LABEL))
-      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-      vlabel = &label.vector();
-      }
 
   double alpha=0.35;
   p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   Tpoint a,b;
-  QString t;
   for(tvertex v=1;v<=G.nv();v++)
-      {if(ShowVertex() == -1|| !vlabel)
-	  t.sprintf("%2.2d",v());
-      else
-	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,t,vcolor[v]);
-      }
+      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,v,vcolor[v]);
   for (tedge e = 1;e <= G.ne();e++)
       {a.x() = P1[e].x(); a.y() = P1[e].y() + alpha;
       b.x() = P1[e].x();  b.y() = P2[e].y() - alpha;
@@ -370,29 +317,18 @@ void DrawGeneralVisibility(QPainter *p,pigalePaint *paint)
   Prop<int> y(G.Set(tvertex()),PROP_DRAW_INT_5);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
-  //Checking if vertices have labels
-  svector<long> *vlabel = NULL;
-  if(G.Set(tvertex()).exist(PROP_LABEL))
-      {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-      vlabel = &label.vector();
-      }
   double alpha=0.35;
   Tpoint a,b;
 
 
   p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
-  QString t;
   for(tvertex v=1;v<=G.nv();v++)
       {if(x1m[v] != x2m[v]) // always 
-	  {a.x() = x1m[v]; a.y() = y[v];
-	  b.x() = x2m[v];  b.y() = y[v];
-	  paint->DrawSeg(p,a,b,Black);
-	  }
-      if(ShowVertex() == -1|| !vlabel)
-	  t.sprintf("%2.2d",v());
-      else
-	  t.sprintf("%2.2ld",(*vlabel)[v()]);
-      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,t,vcolor[v]);
+          {a.x() = x1m[v]; a.y() = y[v];
+          b.x() = x2m[v];  b.y() = y[v];
+          paint->DrawSeg(p,a,b,Black);
+          }
+      paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,v,vcolor[v]);
       }
   for (tedge e = 1;e <= G.ne();e++)
     {a.x() = P1[e].x(); a.y() = P1[e].y();
@@ -429,7 +365,7 @@ const int border = 20;
 pigalePaint::~pigalePaint()
   { }
 pigalePaint::pigalePaint(QWidget *parent, const char *name,pigaleWindow *f):
-    QWidget(parent,name),father(f),isHidden(true)
+    QWidget(parent,name),mw(f),isHidden(true)
   {index = -1;
   setBackgroundColor(Qt::white);
   setFocusPolicy(QWidget::ClickFocus); 
@@ -450,16 +386,16 @@ void pigalePaint::png()
   {if(index < 0)return;
   qApp->processEvents();
   QString FileName;
-  if(!father->ServerExecuting)
+  if(!mw->ServerExecuting)
       {FileName = QFileDialog::
-      getSaveFileName(father->DirFilePng,"Images(*.png)",this);
+      getSaveFileName(mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")
 	  FileName += (const char *)".png";
-      father->DirFilePng = QFileInfo(FileName).dirPath(true);
+      mw->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = QString("/tmp/server%1.png").arg(father->ServerClientId);
+      FileName = QString("/tmp/server%1.png").arg(mw->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (this); 
   pixmap.save(FileName,"PNG",0);
   }
@@ -467,11 +403,13 @@ void pigalePaint::drawIt(QPainter *p)
   {if(index < 0)return;
   (*DrawFunctions[index].f)(p,this);
   }
+void pigalePaint::update()
+  {update(index);}
 void pigalePaint::update(int i)
   {setBackgroundColor(Qt::white);
   zoom = 1;
   index = i;
-  GCP = father->GC;
+  GCP = mw->GC;
   TopologicalGraph G(GCP);
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
@@ -483,11 +421,11 @@ void pigalePaint::update(int i)
   yscale0 = yscale = Wy_max/(ymax - ymin);
   ytr0 = ytr  =   - ymin*yscale +border;
 #if QT_VERSION < 300
-  father->tabWidget->changeTab(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
+  mw->tabWidget->changeTab(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
 #else
-  father->tabWidget->setTabLabel(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
+  mw->tabWidget->setTabLabel(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
 #endif
-  father->tabWidget->showPage(this);
+  mw->tabWidget->showPage(this);
   }
 void pigalePaint::paintEvent(QPaintEvent * e)
   {if(isHidden)return;
@@ -579,11 +517,14 @@ void pigalePaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
   //  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
   p->drawRect(QRect((int)(to_x(a.x()) - nx*Min(xscale,yscale)/2), (int)(to_y(a.y())- ny*Min(xscale,yscale)/2), (int)(nx*Min(xscale,yscale)), (int)(ny*Min(xscale,yscale))));
   }
-void pigalePaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
+QString pigalePaint::getVertexLabel(tvertex v)
+  {return mw->getVertexLabel(v);}
+void pigalePaint::DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center)
 // draw text centered at a, with a surrounding rectangle
 // center=1 center
 // center=0 horizontal
-  {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
+  {QString t = mw->getVertexLabel(v);
+  QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
   double nx = size.width() + 4; double ny = size.height();
   QRect rect;
@@ -598,7 +539,7 @@ void pigalePaint::DrawText(QPainter *p,Tpoint &a,QString &t,int col,int center)
   p->drawRect(rect);
   if(ny >= 6){ pn.setWidth(1);p->setPen(pn);p->drawText(rect,Qt::AlignCenter,t);}
   }
-void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QString &t,int col)
+void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int col)
 // draw centered text in rectangle left at x,y of size: nx,ny
   {QPen pn = p->pen();pn.setColor(color[Black]);
   nx *= xscale;  ny *= yscale;
@@ -608,5 +549,6 @@ void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,QSt
   pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   pn.setWidth(1);p->setPen(pn);
+  QString t = mw->getVertexLabel(v);
   p->drawText(rect,Qt::AlignCenter,t);
   }

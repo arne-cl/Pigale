@@ -45,7 +45,7 @@ private:
   void resizeGL(int w,int h);
   void drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size);
   void drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor &col);
-  void drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size);
+  void drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size);
   void drawText(void * font,const char *txt);
 private:
   GraphGLPrivate *glp;

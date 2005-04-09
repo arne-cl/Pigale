@@ -8,6 +8,8 @@ FILES = \
     glcontrolwidget.cpp \
     gprop.cpp \
     GraphGL.cpp \
+    graphml.cpp \
+    graphmlparser.cpp \
     GraphSym.cpp \
     Handler.cpp \
     LineEditNum.cpp \
@@ -21,7 +23,7 @@ FILES = \
     Test.cpp
 
 MOC_FILES= \
-   moc_ClientSocket.cpp \
+    moc_ClientSocket.cpp \
     moc_glcontrolwidget.cpp \
     moc_gprop.cpp \
     moc_GraphGL.cpp \

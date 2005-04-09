@@ -74,6 +74,8 @@
 #define PROP_NLOOPS           (30)   //!< \c int no loops
 #define PROP_MN               (31)   //!< \c int #meta vertices
 #define PROP_MM               (32)   //!< \c int #meta edges
+#define PROP_VSLABEL          (33)   //!< \c svector<tstring *> numerical label to string label for vertices
+#define PROP_ESLABEL          (34)   //!< \c svector<tstring *> numerical label to string label for edges
 #define PROP_POINT_MIN       (PROP_DRAWING+1)    //!< \c Tpoint
 #define PROP_POINT_MAX       (PROP_DRAWING+2)    //!< \c Tpoint
 #define PROP_RNEMBED         (PROP_DRAWING+3)    //!< \c RnEmbeddingPtr
@@ -91,6 +93,7 @@
 #define PROP_BIRTH            (11)   //!< \c long  Start of validity
 #define PROP_DEATH            (12)   //!< \c long  End of validity
 #define PROP_VALUE            (13)   //!< \c double A value
+#define PROP_SLABEL           (15)   //!< \c int   String label index
 
 //@}
 /** @name Property numbers for V.

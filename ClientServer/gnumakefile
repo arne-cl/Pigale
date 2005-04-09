@@ -13,6 +13,7 @@ UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt
 #include paths
 IFLAGS =  -I$(MQTDIR)/include 
 IFLAGS += -I$(PIGALEPATH)/incl
+DFLAGS = -I$(PIGALEPATH)/incl
 #awk 
 AWK=awk
 ####################### END EDITING #########################
@@ -64,7 +65,7 @@ md:
 	@if ! test -d .obj ; then mkdir .obj ; fi
 
 depend:
-	@makedepend -o.$(OPT) -f gnumakefile $(IFLAGS)  -Y $(FILES) 2> /dev/null
+	@makedepend -o.$(OPT) -f gnumakefile $(DFLAGS)  -Y client.cpp 2> /dev/null
 
 nodepend:
 	@makedepend -o.$(OPT) -f gnumakefile  -Y  2> /dev/null
@@ -73,3 +74,7 @@ nodepend:
 
 .PHONY: md all
 # DO NOT DELETE
+
+client.opt: client.h ../../pigale/incl/config.h
+client.opt: ../../pigale/incl/QT/clientEvent.h
+client.opt: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/TAXI/Tbase.h

@@ -65,4 +65,48 @@ struct TypeHandler<tstring>
         }
 };
 
+template <>
+struct TypeHandler<svector<tstring *> >
+{
+  static void Import(svector<tstring *>& obj, const _svector *v)
+  {
+    int s,f;
+    char *ptr=(char *)(v->begin());
+    memcpy((void *)&s,ptr,sizeof(int));ptr+=sizeof(int);
+    memcpy((void *)&f,ptr,sizeof(int));ptr+=sizeof(int);
+    obj.resize(s,f-1);
+    for (int i=s; i<f; i++)
+      { if (*ptr++=='\0') obj[i]=(tstring *)0;
+	else {
+	  obj[i]=new tstring;
+	  *obj[i] = (char *)ptr;
+	  ptr += obj[i]->length()+1;
+	}
+      }
+  }
+  static _svector *Export(const void *pobj)
+  {
+    const svector<tstring *> & v = *(const svector<tstring *> *)pobj;
+    int l = 0;
+    int s=v.starti();
+    int f=v.stopi();
+    for (int i=s; i<f; i++)
+      if (v[i]!=(tstring *)0) l+=v[i]->length()+2;
+      else l+=1;
+    svector<char> *w = new svector<char>(l+2*sizeof(int));
+    char *ptr=(char *)(w->begin());
+    memcpy(ptr, (void *)&s,sizeof(int));ptr+=sizeof(int);
+    memcpy(ptr, (void *)&f,sizeof(int));ptr+=sizeof(int);
+    for (int i=s; i<f; i++)
+      { if (v[i]==(tstring *)0) *ptr++='\0'; 
+	else 
+	  {*ptr++='\"';
+	    int len=v[i]->length()+1;
+	    memcpy(ptr, (void *)~(*v[i]),len); ptr+=len;
+	  }
+      }
+    return w;
+  }
+};
+
 #endif

@@ -434,20 +434,11 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   {GeometricGraph & G = *(gwp->pGG);
   int x = (int) G.vcoord[v].x();
   int y =  gwp->canvas->height() - (int) G.vcoord[v].y();
-  QString t;
-  int prop = ShowVertex();
-  if(prop == -1 || !G.Set(tvertex()).exist(prop))
-      t.sprintf("%2.2d",v());
-  else if(prop == 0) //label
-      {Prop<long> label(G.Set(tvertex()),prop);
-      t.sprintf("%2.2ld",label[v()]);
-      }
-  else //case 1
-      t = " ";
+  QString t = gwp->mywindow->getVertexLabel(v);
   QFont font = QFont("lucida",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 6;  int dy =size.height() + 2;
-  if(prop == 1){dx = 8; dy = 8;}
+  if(t.length() == 0){dx = 8; dy = 8;}
   QRect rect = QRect(x-dx/2,y-dy/2,dx,dy);
   QColor col = color[G.vcolor[v]];
   tp->setWidth(1);tp->setColor(Qt::black); 

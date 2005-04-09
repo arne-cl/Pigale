@@ -81,12 +81,6 @@ $(DLIB):$(OBJECTS)
 
 $(P) :md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
-
-Client:client.h client.cpp
-	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
-	$(MMOC) client.h -o moc_client.cpp
-	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
-	$(CC)  $(CFLAGS) -o Client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
 	
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
@@ -248,6 +242,29 @@ GraphGL.opt: mouse_actions.h ../../pigale/incl/QT/GLWindow.h
 GraphGL.opt: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/pigaleQcolors.h
 GraphGL.opt: ../../pigale/incl/TAXI/netcut.h ../../pigale/incl/TAXI/embedrn.h
 GraphGL.opt: ../../pigale/incl/config.h
+graphml.opt: ../../pigale/incl/QT/graphml.h ../../pigale/incl/TAXI/graphs.h
+graphml.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graph.h
+graphml.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
+graphml.opt: ../../pigale/incl/TAXI/Tsvector.h
+graphml.opt: ../../pigale/incl/TAXI/Tdebug.h ../../pigale/incl/TAXI/Errors.h
+graphml.opt: ../../pigale/incl/TAXI/Tpropio.h
+graphml.opt: ../../pigale/incl/TAXI/Tstring.h
+graphml.opt: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
+graphml.opt: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/config.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tpoint.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tbase.h
+graphmlparser.opt: ../../pigale/incl/QT/graphml.h
+graphmlparser.opt: ../../pigale/incl/TAXI/graphs.h
+graphmlparser.opt: ../../pigale/incl/TAXI/graph.h
+graphmlparser.opt: ../../pigale/incl/TAXI/elmt.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tprop.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tsvector.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tdebug.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Errors.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tpropio.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tstring.h
+graphmlparser.opt: ../../pigale/incl/TAXI/propdef.h
+graphmlparser.opt: ../../pigale/incl/TAXI/Tfile.h
 GraphSym.opt: pigaleWindow.h ../../pigale/incl/Pigale.h
 GraphSym.opt: ../../pigale/incl/TAXI/Tbase.h
 GraphSym.opt: ../../pigale/incl/TAXI/Tmessage.h

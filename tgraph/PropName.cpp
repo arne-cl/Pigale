@@ -154,6 +154,10 @@ struct _PropName {
      desc[0+(31)]="#meta vertices";
      name[0+(32)]="PROP_MM";
      desc[0+(32)]="#meta edges";
+     name[0+(33)]="PROP_VSLABEL";
+     desc[0+(33)]="> numerical label to string label for vertices";
+     name[0+(34)]="PROP_ESLABEL";
+     desc[0+(34)]="> numerical label to string label for edges";
      name[0+(PROP_DRAWING+1)]="PROP_POINT_MIN";
      name[0+(PROP_DRAWING+2)]="PROP_POINT_MAX";
      name[0+(PROP_DRAWING+3)]="PROP_RNEMBED";
@@ -217,6 +221,12 @@ struct _PropName {
      desc[512+(13)]="A value";
      name[768+(13)]="PROP_VALUE";
      desc[768+(13)]="A value";
+     name[256+(15)]="PROP_SLABEL";
+     desc[256+(15)]="String label index";
+     name[512+(15)]="PROP_SLABEL";
+     desc[512+(15)]="String label index";
+     name[768+(15)]="PROP_SLABEL";
+     desc[768+(15)]="String label index";
      name[256+(3)]="PROP_INITIALV";
      desc[256+(3)]="Initial Numbering";
      name[256+(4)]="PROP_NEW";

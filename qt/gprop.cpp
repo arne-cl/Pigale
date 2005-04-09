@@ -162,12 +162,7 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
 #endif
   
   int nloops = G.RemoveLoops();
-  if(nloops)
-      {QString t;
-      t.sprintf("Graph had %d loops",nloops);
-      setError(-1,(const char *)t);
-      Twait((const char *)t);
-      }
+  if(print && nloops)Tprintf("Graph had %d loops",nloops);
   S = G.CheckSimple();
   P = G.CheckPlanar();
   bool SMALL = (G.nv() < 3) ? true : false;

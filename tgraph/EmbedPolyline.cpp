@@ -23,7 +23,7 @@
 #include <TAXI/color.h>
 #include <TAXI/SchPack.h>
 
-// in DrawPolyline.cpp
+// in pigalePaint.cpp
 extern void DrawPolyline(TopologicalGraph &G);
 
 
@@ -44,20 +44,15 @@ void compute_parents(GeometricGraph &G, short TreeColor, tbrin RootBrin,
           b = -b;
           }
       else               // Descente
-          {
-	    b = -b;
-          }
+          b = -b;
       }
   }
 
-
-
-
 static void compute_coords(GeometricGraph &G, short TreeColor1, short TreeColor2, tbrin RootBrin,  svector<tbrin> &Father0, svector<tbrin> &Father1, svector<tbrin> &Father2, svector<short> &ecolor, svector<int> &x, svector<int> &y, svector<Tpoint> &Ebend)
   {
-  svector<int> marked(1,G.ne(),0);
-  svector<int> Descendants(1,G.nv(),1);
-  marked.SetName("marked");
+  svector<int> marked(1,G.ne(),0); marked.SetName("marked");
+  svector<int> Descendants(1,G.nv(),1); Descendants.SetName("Descendants");
+  
   tbrin b;
   tvertex u, f0, f1, f2;
   tvertex v0, v1, v2; // roots of T0,T1,T2
@@ -84,23 +79,23 @@ static void compute_coords(GeometricGraph &G, short TreeColor1, short TreeColor2
           }while (ecolor[b.GetEdge()] != TreeColor1 && !marked[b.GetEdge()]);
       if (b == RootBrin1) break;
       if (!marked[b.GetEdge()])     // Montee dans l'arbre
-	{marked[b.GetEdge()] = 1;
+          {marked[b.GetEdge()] = 1;
           b = -b;
           }
       else               // Descente
-	{u = G.vin[b];
-	f0 =G.vin[Father0[u]];
-	f1 =G.vin[Father1[u]];
-	f2 =G.vin[Father2[u]];
-	if (f0 != 0) y[u] = Max(y[u],y[f0]+1);
-	             y[u] = Max(y[u],Min(Lmax1[u],Lmax2[u])+1);
-	if (f2 != 0) y[f2] = Max(y[f2], y[u]);
-	if (f1 != 0) y[f1] = Max(y[f1], y[u]);
-	if (f2 != 0) y[f2] = Max(y[f2], Lmax1[u]+1);
-	if (f1 != 0) y[f1] = Max(y[f1], Lmax2[u]+1);
+          {u = G.vin[b];
+          f0 =G.vin[Father0[u]];
+          f1 =G.vin[Father1[u]];
+          f2 =G.vin[Father2[u]];
+          if (f0 != 0) y[u] = Max(y[u],y[f0]+1);
+          y[u] = Max(y[u],Min(Lmax1[u],Lmax2[u])+1);
+          if (f2 != 0) y[f2] = Max(y[f2], y[u]);
+          if (f1 != 0) y[f1] = Max(y[f1], y[u]);
+          if (f2 != 0) y[f2] = Max(y[f2], Lmax1[u]+1);
+          if (f1 != 0) y[f1] = Max(y[f1], Lmax2[u]+1);
 	
-	if (f1 != 0)     Lmax1[f1] = Max(Lmax1[f1], y[u]);
-	if (f2 != 0)     Lmax2[f2] = Max(Lmax2[f2], y[u]);
+          if (f1 != 0)     Lmax1[f1] = Max(Lmax1[f1], y[u]);
+          if (f2 != 0)     Lmax2[f2] = Max(Lmax2[f2], y[u]);
           b = -b;
           }
       }
@@ -121,49 +116,43 @@ static void compute_coords(GeometricGraph &G, short TreeColor1, short TreeColor2
           b = -b;
           }
       else               // Descente
-	{u = G.vin[b];
-	f0 =G.vin[Father0[u]];
-	f1 =G.vin[Father1[u]];
-	f2 =G.vin[Father2[u]];
-	if (Descendants[u] == 1) {
-	      x[u] = current_x;
-	      XL[u] = current_x;
-	      XR[u] = current_x;
-	      current_x++;
-	  }
-	  else {
-	    if (y[u] == Lmax2[u])
-	      x[u] = XR[u];
-	    else
-	      x[u] = XL[u];
-	  }
-	  if (f0 != 0) {
-	    XR[f0]=XR[u];
-	    if (XL[f0] == -1) {
-	      XL[f0] = XL[u];
-	    }
-	    Ebend[b.GetEdge()] = Tpoint(x[u],y[f0]+1);
-	  }
-	  if (f1 != 0 && x[u] != XR[u]) 
-	    Ebend[Father1[u].GetEdge()] = Tpoint(XR[u],y[u]);
-	  if (f2 != 0 && x[u] != XL[u]) 
-	    Ebend[Father2[u].GetEdge()] = Tpoint(XL[u],y[u]);
+          {u = G.vin[b];
+          f0 =G.vin[Father0[u]];
+          f1 =G.vin[Father1[u]];
+          f2 =G.vin[Father2[u]];
+          if (Descendants[u] == 1) 
+              {x[u] = current_x;
+              XL[u] = current_x;
+              XR[u] = current_x;
+              current_x++;
+              }
+          else 
+              {if (y[u] == Lmax2[u])
+                  x[u] = XR[u];
+              else
+                  x[u] = XL[u];
+              }
+          if (f0 != 0) 
+              {XR[f0]=XR[u];
+              if (XL[f0] == -1)   XL[f0] = XL[u];
+              Ebend[b.GetEdge()] = Tpoint(x[u],y[f0]+1);
+              }
+          if (f1 != 0 && x[u] != XR[u]) 
+              Ebend[Father1[u].GetEdge()] = Tpoint(XR[u],y[u]);
+          if (f2 != 0 && x[u] != XL[u]) 
+              Ebend[Father2[u].GetEdge()] = Tpoint(XL[u],y[u]);
           Descendants[f0] += Descendants[u];
           b = -b;
-	}
+          }
       }
   x[v1] = current_x;
   Ebend[RootBrin2.GetEdge()] = Tpoint(x[v1], y[v0]+1);
   }
-
-
-
 // Compute the Number of leaves in the tree of color TreeColor
 static int nb_leaves(GeometricGraph &G, short TreeColor, tbrin RootBrin,
 		     svector<short> &ecolor)
-  {svector<int> marked(1,G.ne(),0);
-  marked.SetName("marked");
-  svector<bool> is_leaf(1,G.nv(),true);
+  {svector<int> marked(1,G.ne(),0);  marked.SetName("marked");
+  svector<bool> is_leaf(1,G.nv(),true);  is_leaf.SetName("is_leaf");
   tbrin b = RootBrin;
   int root_distance = 0;
   int nb_leaves = 0;
@@ -179,22 +168,15 @@ static int nb_leaves(GeometricGraph &G, short TreeColor, tbrin RootBrin,
           b = -b;
           }
       else               // Descente
-          { 
-	  if (is_leaf[G.vin[b]])
-	    nb_leaves ++;
-	  root_distance--;
+          {if (is_leaf[G.vin[b]])
+              nb_leaves ++;
+          root_distance--;
           is_leaf[G.vin[-b]] = false;
           b = -b;
           }
       }
   return nb_leaves;
   }
-
-
-
-
-
-
 int EmbedPolyline(TopologicalGraph &G)
   {if(G.FindPlanarMap() != 0){Tprintf("Not Planar Graph");return -1;}
   if(G.nv() < 3 || G.ne() < 2)return -1;
@@ -211,30 +193,22 @@ int EmbedPolyline(TopologicalGraph &G)
       {FirstBrin = G.extbrin();FirstBrin = -G.acir[FirstBrin];}
 
   if(!MaxPlanar && G.ZigZagTriangulate())return -2;
-
   svector<short> ecolor(1, G.ne());
   SchnyderDecomp(G,FirstBrin,ecolor);
-
   GeometricGraph G0(G);
   
   //Compute trees 
   tedge ee;
   Prop<Tpoint> Ebend(G.Set(tedge()),PROP_DRAW_POINT_3);
   
-  
-  svector<tbrin> FatherB(1,G.nv(),0);
-  svector<tbrin> FatherG(1,G.nv(),0);
-  svector<tbrin> FatherR(1,G.nv(),0);
+  svector<tbrin> FatherB(1,G.nv(),(tbrin)0);           FatherB.SetName("FatherB");
+  svector<tbrin> FatherG(1,G.nv(),(tbrin)0);           FatherG.SetName("FatherG");
+  svector<tbrin> FatherR(1,G.nv(),(tbrin)0);           FatherR.SetName("FatherR");
   svector<int> x(1,G.nv(),0), y(1,G.nv(),0);
   x.clear(); y.clear();
-  FatherB.SetName("FatherB");
-  FatherG.SetName("FatherG");
-  FatherR.SetName("FatherR");
   compute_parents(G0, Blue, -FirstBrin, FatherB, ecolor);
   compute_parents(G0, Red, FirstBrin, FatherR, ecolor);
   compute_parents(G0, Green, -G0.acir[FirstBrin], FatherG, ecolor);
-  
-
     // Compute the number of leaves of each tree
     int nb_leavesB, nb_leavesR, nb_leavesG;
     nb_leavesB = nb_leaves(G0, Blue, -FirstBrin, ecolor);
@@ -249,7 +223,6 @@ int EmbedPolyline(TopologicalGraph &G)
       compute_coords(G0, Green, Red, G0.acir[FirstBrin], FatherR, FatherG, FatherB, ecolor, x, y, Ebend);
     else 
       compute_coords(G0, Blue, Green, G0.acir[-G0.acir[FirstBrin]], FatherG, FatherB, FatherR, ecolor, x, y, Ebend);
-
   // computes extremities of vertices
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
@@ -272,13 +245,14 @@ int EmbedPolyline(TopologicalGraph &G)
     Epoint1[ee] = Vcoord[G.vin[ee]];
     Epoint2[ee] = Vcoord[G.vin[-ee]];
   }
-
-
   // delete the edges added by Connexity and Triangulation
   for(tedge e = G.ne();e > OldNumEdge;e--) G.DeleteEdge(e);
   G.extbrin() = FirstBrin;
   return 0;
   }
+
+
+
 
 
 

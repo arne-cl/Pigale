@@ -583,4 +583,8 @@ void Fill(svector<T>& v, const T& x)
   for (T* p = v.begin(); p != v.end(); p++)
     *p = x;
 }
+
+template <class T>
+T_STD  ostream & operator<<(T_STD  ostream & out, const svector<T *> &X)
+{ for (int i=X.starti(); i<X.stopi(); i++) if (X[i]==(T *)0) out<<"(null) "; else out<<X[i]<<""; return out;}
 #endif

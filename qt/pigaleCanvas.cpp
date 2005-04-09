@@ -123,6 +123,15 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,node,edge);
       if(rtt == 0)rtt = FindItem(p,edge);//augment the collision zone
       if(rtt == node_rtti)
+	if (G.Set().exist(PROP_VSLABEL) && G.Set(tvertex()).exist(PROP_SLABEL))
+	  {QString tt;
+	    Prop1<svector<tstring *> >vslabel(G.Set(),PROP_VSLABEL);
+	    Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
+	    if (vslabel()[slabel[node->v]]==(tstring *)0) tt="(null)";
+	    else tt=~(*(vslabel()[slabel[node->v]]));
+	    t.sprintf("vertex:%d Label:%ld (%s)",(node->v)(),G.vlabel[node->v],(const char *)tt);
+	  }
+	else
           t.sprintf("vertex:%d Label:%ld",(node->v)(),G.vlabel[node->v]);
       else if(rtt == edge_rtti)
           {double d = Distance(G.vcoord[G.vin[edge->e]],G.vcoord[G.vin[-(edge->e)]])+.5;
@@ -588,6 +597,7 @@ void GraphEditor::load(bool initgrid)
    Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
   nodeitem.SetName("nodeitem");edgeitem.SetName("edgeitem");
   //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
+      
 
   for(tvertex v = 1;v <= G.nv();v++)
       nodeitem[v] =  CreateNodeItem(v,gwp);

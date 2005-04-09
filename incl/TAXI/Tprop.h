@@ -18,6 +18,7 @@
  */
 
 #include <TAXI/Tbase.h>
+#include <sstream>
 
 /**********
  * Prop<T> : Propriete
@@ -121,6 +122,7 @@ class vProp
     public:
       virtual int size_elmt() const = 0; //!< size of element
       virtual void affiche(T_STD  ostream& out,const _svector *v) const =0; 
+      virtual tstring tostr(const _svector *v, int i) const = 0;
       
       //!< prints the element (debugging purpose)
       /*!< \param out output stream
@@ -376,6 +378,15 @@ class PSet
         copy(X);
         return *this;
         }
+    //! get the value of an element as a string
+
+    tstring Value(int PNum, int index, int *rc=0)
+    { if (!exist(PNum)) {if (rc!=(int *)0) *rc=-1; return "";}
+      if (!defined(PNum)) {if (rc!=(int *)0) *rc=-2; return "";}
+      if (rc!=(int *)0) *rc=0;
+      return vtab[PNum]->tostr(tab[PNum],index);
+    }
+
     //! printing function (debugging purpose)
   
     void affiche(T_STD  ostream & out=T_STD  cout) const
@@ -404,6 +415,11 @@ class vP : public vProp
     public :
       int size_elmt() const { return sizeof(T);}
       vProp * dup() const {return new vP<T>;}
+      tstring tostr(const _svector *v, int i) const
+      { ostringstream out;
+	out << (const T &)(*(svector<T> *)v)[i];
+	return tstring(out.str().c_str());
+      }
       
     void affiche(T_STD  ostream &out, const _svector *p) const
      	{if (p->origin()==(void *)0)

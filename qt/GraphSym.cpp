@@ -129,8 +129,7 @@ void Rotate(GeometricGraph &G,int rotate)
           }
       }
   else if(rotate == 12) 
-      {
-       double cosinus = cos(theta_12*2*PI);
+      {double cosinus = cos(theta_12*2*PI);
        double sinus   = sin(theta_12*2.*PI);
        double x,y;
        
@@ -141,8 +140,7 @@ void Rotate(GeometricGraph &G,int rotate)
            }
        }
      else if(rotate == 21)
-         {
-         double cosinus = cos((theta_12*2+.5)*PI);
+         {double cosinus = cos((theta_12*2+.5)*PI);
          double sinus   = sin((theta_12*2.+.5)*PI);
          double x,y;
          for(int i = 1;i <= G.nv();i++)
@@ -678,18 +676,18 @@ class GraphSymPrivate
   bool OtherCoords;
   bool SymLabel;
   QCheckBox *bt_sym,*bt_opt,*bt_fact;
-  pigaleWindow *mywindow;
+  pigaleWindow *mw;
   GeometricGraph *pGG;
   GraphContainer *pGC; 
   SymWindow  *editor;
 };
 //*****************************************************
 
-GraphSym::GraphSym(QWidget *parent,const char *name,pigaleWindow *mywindow)
+GraphSym::GraphSym(QWidget *parent,const char *name,pigaleWindow *mw)
     : QWidget( parent, name )
   {d = new GraphSymPrivate;
   d->pGC = new GraphContainer;
-  d->mywindow = mywindow;
+  d->mw = mw;
   }
 GraphSym::~GraphSym()
   {delete d->pGG;delete d->pGC; delete d;}
@@ -720,9 +718,9 @@ int GraphSym::update()
       {delete d->pGG;
       delete [] xcoord;delete [] ycoord;delete [] zcoord;
       }
-  d->bt_fact->setPalette(d->mywindow->LightPalette);
-  d->bt_opt->setPalette(d->mywindow->LightPalette);
-  d->bt_sym->setPalette(d->mywindow->LightPalette);
+  d->bt_fact->setPalette(d->mw->LightPalette);
+  d->bt_opt->setPalette(d->mw->LightPalette);
+  d->bt_sym->setPalette(d->mw->LightPalette);
 
   d->Factorial = false; d->SymLabel = true;
   d->Optimal = false;  d->OtherCoords = false;
@@ -730,8 +728,7 @@ int GraphSym::update()
   d->bt_opt->setChecked(d->Optimal);
   d->bt_sym->setChecked(d->SymLabel);
   //Copy the graph
-  *(d->pGC) = d->mywindow->GC;
-  //d->pGG = new GeometricGraph(d->mywindow->GC);
+  *(d->pGC) = d->mw->GC;
   d->pGG = new GeometricGraph(*(d->pGC));
   d->editor->start = 1;d->editor->start0 = 1;
   GeometricGraph & G = *(d->pGG);
@@ -748,11 +745,11 @@ int GraphSym::update()
   if(Rotation)Tprintf("Probable Rotation (1-2) of order:%d",Rotation);
   if(Rotation_23)Tprintf("Probable Rotation (2-3) of order:%d",Rotation_23);
 
-  d->mywindow->tabWidget->showPage(this);
+  d->mw->tabWidget->showPage(this);
 #if QT_VERSION < 300
-  d->mywindow->tabWidget->changeTab(this,"Symetrie");
+  d->mw->tabWidget->changeTab(this,"Symetrie");
 #else
-  d->mywindow->tabWidget->setTabLabel(this,"Symetrie");
+  d->mw->tabWidget->setTabLabel(this,"Symetrie");
 #endif
   d->editor->FindSym();
   if(!d->editor->sym)Tprintf("No symetrie found");  
@@ -765,16 +762,16 @@ void GraphSym::print(QPrinter *printer)
 void GraphSym::png()
   {qApp->processEvents();
   QString FileName;
-  if(!d->mywindow->ServerExecuting)
+  if(!d->mw->ServerExecuting)
       {FileName = QFileDialog::
-      getSaveFileName(d->mywindow->DirFilePng,"Images(*.png)",this);
+      getSaveFileName(d->mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")
 	  FileName += (const char *)".png";
-      d->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      d->mw->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = QString("/tmp/server%1.png").arg(d->mywindow->ServerClientId);
+      FileName = QString("/tmp/server%1.png").arg(d->mw->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (d->editor); 
   pixmap.save(FileName,"PNG");
   }
@@ -804,8 +801,6 @@ void GraphSym::Next()
 SymWindow::SymWindow(GraphSymPrivate *g,QWidget * parent,const char * name)
     : QWidget( parent, name ),gsp(g),is_init(false),isHidden(true)
  {}
-SymWindow::~SymWindow()
- {} 
 void SymWindow::showEvent(QShowEvent*)
   {isHidden = false;}
 void SymWindow::hideEvent(QHideEvent*)
@@ -930,7 +925,6 @@ void SymWindow::update(QPainter *p)
   QPoint ps,pt;
   QString t;
   QFont font;
-  //Normalise();
   if(gsp->Factorial)//draw axes with labels
       {pn.setColor(color[Grey2]);pn.setWidth(3); p->setPen(pn);
       ps = QPoint(0,this->height()-(int)ytr); pt = QPoint(this->width(),this->height()-(int)ytr);
@@ -962,11 +956,9 @@ void SymWindow::update(QPainter *p)
   Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   for(tvertex v = 1; v <= G.nv();v++)
       {if(gsp->SymLabel)
-	  t.sprintf("%2.2d",(int)symlabel(v));
-      else if(ShowVertex() == -1)
-	  t.sprintf("%2.2d",v());
+          t.sprintf("%2.2d",(int)symlabel(v));
       else
-	  t.sprintf("%2.2ld",G.vlabel[v()]); 
+          t = gsp->mw->getVertexLabel(v);
       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
       int dx =size.width() + 6;  int dy =size.height() + 2;
       int x = (int) xcoord[v()];

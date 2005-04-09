@@ -61,7 +61,7 @@ class GraphGLPrivate
   QCheckBox* bt_color;
   QSlider *Slider;
   QHButtonGroup* bt_group;
-  pigaleWindow *mywindow;
+  pigaleWindow *mw;
   RnEmbedding *pSG;
   GraphContainer *pGC;
   GraphGL  *GL;
@@ -71,18 +71,17 @@ class GraphGLPrivate
 };
 
 //*****************************************************
-GraphGL::GraphGL(QWidget *parent,const char *name,pigaleWindow *mywindow)
+GraphGL::GraphGL(QWidget *parent,const char *name,pigaleWindow *mw)
     : QWidget( parent, name )
   {d = new GraphGLPrivate;
-  d->mywindow = mywindow;
+  d->mw = mw;
   d->GL = this;
   d->delay = -1;
   d->rX = d->rY = false;
   d->rZ = true;
   }
 GraphGL::~GraphGL()
-{//delete d->pGG; 
-  delete d;}
+{ delete d;}
 void GraphGL::png()
   {if(!d->is_init)return;
   d->editor->png();
@@ -114,7 +113,7 @@ int GraphGL::update()
 
       d->bt_group = new QHButtonGroup(this);
       d->bt_group->setFrameShape(QFrame::NoFrame); 
-      d->bt_group->setPalette(d->mywindow->LightPalette);
+      d->bt_group->setPalette(d->mw->LightPalette);
       d->bt_group->setMaximumHeight(30); 
 #ifndef _WINDOWS
       d->bt_group->setInsideMargin(5); 
@@ -147,30 +146,30 @@ int GraphGL::update()
   else
       {delete d->pSG; delete d->pGC; d->pSG=0; d->pGC=0;}
 
-  this->setPalette(d->mywindow->LightPalette);
-  d->Slider->setPalette(d->mywindow->LightPalette);
-  d->bt_group->setPalette(d->mywindow->LightPalette);
+  this->setPalette(d->mw->LightPalette);
+  d->Slider->setPalette(d->mw->LightPalette);
+  d->bt_group->setPalette(d->mw->LightPalette);
 
   //Steal the embedding
-  if (!d->mywindow->GC.Set().exist(PROP_RNEMBED)) return -1;
-  {Prop1<RnEmbeddingPtr> embedp(d->mywindow->GC.Set(),PROP_RNEMBED);
+  if (!d->mw->GC.Set().exist(PROP_RNEMBED)) return -1;
+  {Prop1<RnEmbeddingPtr> embedp(d->mw->GC.Set(),PROP_RNEMBED);
   if (embedp().ptr==0) return -1;
   if (d->pSG!=0)
     delete d->pSG;
   d->pSG=embedp().ptr;
   embedp().ptr=0; // to avoid the delete
   }
-  d->mywindow->GC.Set().erase(PROP_RNEMBED);
-  GraphContainer &GC= *new GraphContainer(d->mywindow->GC);
+  d->mw->GC.Set().erase(PROP_RNEMBED);
+  GraphContainer &GC= *new GraphContainer(d->mw->GC);
   d->pGC=&GC;
   //int res=ComputeFactEmbed();
   //if (res!=0) return res;
   d->bt_facet->setEnabled(d->embed().facets);
-  d->mywindow->tabWidget->showPage(this);
+  d->mw->tabWidget->showPage(this);
 #if QT_VERSION < 300
-  d->mywindow->tabWidget->changeTab(this,"3-d Embedding");
+  d->mw->tabWidget->changeTab(this,"3-d Embedding");
 #else
-  d->mywindow->tabWidget->setTabLabel(this,"3-d Embedding");
+  d->mw->tabWidget->setTabLabel(this,"3-d Embedding");
 #endif
   spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
   spin_X->setMaxValue(d->embed().dmax);  spin_Y->setMaxValue(d->embed().dmax);  spin_Z->setMaxValue(d->embed().dmax);
@@ -238,16 +237,16 @@ void GLWindow::png()
   {qApp->processEvents();
   QPixmap pixmap = QPixmap::grabWindow(this->winId());
   QString FileName;
-  if(!glp->mywindow->ServerExecuting)
+  if(!glp->mw->ServerExecuting)
       {FileName = QFileDialog::
-      getSaveFileName(glp->mywindow->DirFilePng,"Images(*.png)",this);
+      getSaveFileName(glp->mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")
 	  FileName += (const char *)".png";
-      glp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      glp->mw->DirFilePng = QFileInfo(FileName).dirPath(true);
       }
   else
-      FileName = QString("/tmp/server%1.png").arg(glp->mywindow->ServerClientId);
+      FileName = QString("/tmp/server%1.png").arg(glp->mw->ServerClientId);
   
   pixmap.save(FileName,"PNG");
   }
@@ -311,21 +310,16 @@ GLuint GLWindow::load(bool init)
   drawCube(.0,.0,.0, .5*ds);
   if(glp->bt_color->isChecked())
       for(tvertex  v = 1;v <= G.nv();v++)
-	  drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds
-		   ,color[G.vcolor[v]]);
+          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds,color[G.vcolor[v]]);
   else
       for(tvertex  v = 1;v <= G.nv();v++)
-	  drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
+          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
   
   if(glp->bt_label->isChecked())
-      { glLineWidth(1.0);
+      {glLineWidth(1.0);
       for(tvertex  v = 1;v <= G.nv();v++)
-	  {if(ShowVertex() == -1)
-	      drawInt(v(),(GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
-	  else
-	      drawInt((int)G.vlabel[v],(GLfloat)embed.rx(v),(GLfloat)embed.ry(v),
-		      (GLfloat)embed.rz(v),ds);
-	  }
+          drawLabel(v,(GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
+	  
       }
 
  glLineWidth(1.0);
@@ -401,8 +395,8 @@ void GLWindow::showEvent(QShowEvent*)
       //as now we may load a graph while this window is active
       // we have to reset the speed
 //       glp->idelay = 2;
-//       glp->mywindow->mouse_actions->LCDNumber->display(glp->idelay);
-//       glp->mywindow->mouse_actions->Slider->setValue(glp->idelay);
+//       glp->mw->mouse_actions->LCDNumber->display(glp->idelay);
+//       glp->mw->mouse_actions->Slider->setValue(glp->idelay);
       }
   }
 QSize GLWindow::sizeHint() const
@@ -518,9 +512,9 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor 
   glEnd();
   }
 #ifdef HAVE_LIBGLUT
-void GLWindow::drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
-  {QString t;
-  t.sprintf("%2.2d",vlabel);
+void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
+  {QString t =  glp->mw->getVertexLabel(v);
+  if(t.isEmpty())return;
   int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t));
   qglColor(red);
   glPushMatrix();
@@ -603,6 +597,6 @@ void GLWindow::drawText(void * font,const char *txt)
       glutStrokeCharacter(font,txt[i]);
   }
 #else
-void GLWindow::drawInt(int vlabel,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
+void GLWindow::drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {}
 #endif

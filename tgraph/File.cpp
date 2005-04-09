@@ -21,6 +21,22 @@
 #include  <TAXI/color.h>
 #include  <TAXI/Tmessage.h>
 
+static Taxi_FileIOHandler *FileIOHandler=0;
+int IO_WhoseIs(tstring fname) {return FileIOHandler->WhoseIs(fname);}
+int IO_IsMine(int d, tstring fname) {return  FileIOHandler->IsMine(d,fname);}
+int IO_Save(int d, GraphAccess& G,tstring fname) {return  FileIOHandler->Save(d,G,fname);}
+int IO_Read(int d, GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex) 
+{return  FileIOHandler->Read(d,G,fname,NumRecords,GraphIndex);}
+int IO_Read(int d, GraphContainer& G,tstring fname) {return  FileIOHandler->Read(d,G,fname);}
+int IO_GetNumRecords(int d, tstring fname) {return  FileIOHandler->GetNumRecords(d,fname);}
+int IO_DeleteRecord(int d, tstring fname,int index) {return  FileIOHandler->DeleteRecord(d,fname,index);}
+int IO_Capabilities(int d) {return  FileIOHandler->Capabilities(d);}
+const char *IO_Name(int d) {return  FileIOHandler->Name(d);}
+const char *IO_Ext(int d) {return  FileIOHandler->Ext(d);}
+tstring IO_Title(int d, tstring fname, int index) {return  FileIOHandler->Title(d,fname,index);}
+int IO_n() {return  FileIOHandler->n();}
+
+
 // tags for TGF file format
 #define  TAG_NAME                  512
 #define  TAG_N                          513
@@ -95,9 +111,9 @@ int GetTgfNumRecords(tstring fname)
   }
 int ReadGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
   {
-    int d=FileIOHandler.WhoseIs(fname);
+    int d=IO_WhoseIs(fname);
     if (d<0) return d;
-    return FileIOHandler.Read(d,G,fname,NumRecords,GraphIndex);
+    return IO_Read(d,G,fname,NumRecords,GraphIndex);
     
 // if(IsFileTgf(~fname))
 //       return ReadTgfGraph(G,fname,NumRecords,GraphIndex);
@@ -236,6 +252,37 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   return 0;
   }
 
+tstring ReadTgfGraphTitle(tstring fname,int index)
+  {if(!IsFileTgf(~fname))return 1;
+  Tgf file;
+
+  if(file.open(~fname, Tgf::old) == 0)return 2;
+  if ((index > file.RecordsNumber()) || (index <= 0)) return "";
+  file.SetRecord(index);
+
+  short version;
+  if(!file.FieldRead(TAG_VERSION,version))version = 0;
+  if(version >= 1)
+    {
+      PSet1 Gen;
+      ReadTGF(Gen,file,0);
+      Prop1<tstring> title(Gen,PROP_TITRE);
+      return title();
+    }
+  else
+    { int Titlesize = file.GetTagLength(TAG_NAME);
+      tstring title="No Name";
+      if(Titlesize)
+	{char *tmp = new char[Titlesize +1];
+	  file.FieldRead(TAG_NAME,tmp);
+	  tmp[Titlesize] = 0;
+	  title=tmp;
+	  delete [] tmp;
+	}
+      return title;
+    }
+  }
+
 int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   {if(filename == "")return 1;
   Tgf file;
@@ -304,6 +351,36 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   file.FieldWrite(TAG_VCOLOR,(char *)&vcolor[1],n * sizeof(short));
   return 0;
   }
+tstring ReadAsciiGraphTitle(tstring filename)
+  { 
+  ifstream stream(~filename,ios::binary);
+  if(!stream)return -1;
+  char titre[80];
+  int i,ch;
+
+  // Lecture du header (1 ligne)
+  for(i = 0;i < 80;i++)
+      {ch = stream.get();
+      if(ch == EOF)
+          return 1;
+      else if(ch == 10 || ch == 13)
+          break;
+      }
+  // Lecture du titre
+  for(i = 0;i < 80;i++)
+      {ch = stream.get();
+      if(ch == EOF)
+          return 1;
+      else if(ch == 10 || ch == 13)
+          break;
+      else
+          titre[i] = (char)ch;
+      }
+  titre[i] = (char) 0;
+  return tstring(titre);
+  }
+
+
 int ReadGraphAscii(GraphContainer& G,tstring filename)
   { // Lecture d'une liste d'aretes
   ifstream stream(~filename,ios::binary);
@@ -398,7 +475,13 @@ int SaveGraphAscii(GraphAccess& G,tstring filename)
   return 0;
   }
 
+void Init_IO() {
+  if (FileIOHandler==(Taxi_FileIOHandler *)0)
+    {FileIOHandler = new Taxi_FileIOHandler;
+       Taxi_FileIO::reg(new Taxi_FileIO_Tgf,0);
+       Taxi_FileIO::reg(new Taxi_FileIO_ASCII,1);
+    }
+}
 
-
-
+void Taxi_FileIO::reg(Taxi_FileIO *p,int where) {Init_IO(); FileIOHandler->add(p,where);}
 

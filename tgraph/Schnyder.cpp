@@ -165,7 +165,6 @@ void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
 //   G is simple, maximal planar.
 //   "cir" is a planar embedding.
   {SchnyderPacking SP(G,brin);
-
   // color all the edges RED.
   tedge e;
   ForAllEdges(e, G) ecolor[e] = Red;
@@ -179,7 +178,6 @@ void SchnyderDecomp(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
       ecolor[left_brin.GetEdge()] = Blue;
       ecolor[right_brin.GetEdge()] = Green;
       }
-
   // color three exterior edges Grey1,Grey2,Black.
   GeometricGraph G0(G);
   ecolor[brin.GetEdge()] = Grey1;

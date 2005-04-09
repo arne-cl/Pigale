@@ -40,21 +40,13 @@
 #include <qsettings.h>
 #endif
 
+#ifdef _WINDOWS
+#undef PACKAGE_PATH
+#define PACKAGE_PATH "c:\\Program Files\\Pigale"
+#endif
+
 #if QT_VERSION < 300
-   // Save colors
-//   QFile settings("settings.txt");
-//   if(settings.open(IO_ReadWrite)) 
-//       {QTextStream txt(&settings);
-//       int r,g,b;
-//       txt << "colors" << endl;
-//       for(int i = 0;i <= 3; i++)
-// 	  {QColor col = QColor(QColorDialog::customColor(i));
-// 	  col.rgb(&r,&g,&b); 
-// 	  txt << i <<" "<< r <<" " << g <<" " << b << endl; 
-// 	  }
-//       settings.close();
-//       }
-  
+
 void pigaleWindow::SaveSettings()
   {QFile settings("settings.txt");
   if(!settings.open(IO_WriteOnly))return; 
@@ -199,6 +191,7 @@ void pigaleWindow:: SaveSettings()
   setting.writeEntry("/pigale/geometry height",this->height());
   setting.writeEntry("/pigale/debug enable",debug());
   setting.writeEntry("/pigale/arrow enable",ShowArrow());
+  setting.writeEntry("/pigale/orientation enable",ShowOrientation());
   setting.writeEntry("/pigale/randomSeed enable",randomSeed());
   setting.writeEntry("/pigale/randomSeed seed",(int)randomSetSeed());
   setting.writeEntry("/pigale/undo enable",IsUndoEnable);
@@ -263,6 +256,7 @@ void pigaleWindow::LoadSettings()
   pigaleWindowInitXsize = setting.readNumEntry("/pigale/geometry width",800);
   debug() = setting.readBoolEntry("/pigale/debug enable",false);
   ShowArrow() = setting.readBoolEntry("/pigale/arrow enable",true);
+  ShowOrientation() = setting.readBoolEntry("/pigale/orientation enable",true);
   randomSeed() = setting.readBoolEntry("/pigale/randomSeed enable",false);
   randomSetSeed() = (long) setting.readNumEntry("/pigale/randomSeed seed",1);
   IsUndoEnable = setting.readBoolEntry("/pigale/undo enable",true);
@@ -290,10 +284,8 @@ void pigaleWindow::LoadSettings()
   //DirFile 
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
-  InputFileName = setting.readEntry("/pigale/TgfFile input"
-				    ,QString("../tgf")//,QString("!_!")
-				    + QDir::separator()
-				    + QString("a.tgf"));
+  InputFileName = setting.readEntry("/pigale/TgfFile input",
+                                    QString(QString(PACKAGE_PATH)+ QDir::separator() + "tgf"+QDir::separator()+ "a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
   DirFileDoc = setting.readEntry("/pigale/Documentation dir",QString(PACKAGE_PATH)+QDir::separator()+"Doc");
   // Font

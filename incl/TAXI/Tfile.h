@@ -22,11 +22,15 @@
 #define TAXI_FILE_RECORD        (TAXI_FILE_RECORD_NUM | TAXI_FILE_RECORD_DEL)
 #define TAXI_FILE_FULL          (TAXI_FILE_MINI | TAXI_FILE_RECORD)
 
+class Taxi_FileIO;
+
 class Taxi_FileIO {
  public:
-  virtual int IsMine(tstring fname)=0;
-  virtual int Save(GraphAccess& G,tstring fname)=0;
-  virtual int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)=0;
+  static void reg(Taxi_FileIO *,int where=-1);
+  virtual int IsMine(tstring fname) {return 0;}
+  virtual int Save(GraphAccess& G,tstring fname) {return -1;}
+  virtual int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex) {return -1;}
+  virtual tstring Title(tstring fname, int index) {return "No title";};
   virtual int GetNumRecords(tstring fname) {return 1;}
   virtual int DeleteRecord(tstring fname,int index) {return -1;}
   virtual int Capabilities(void) { return 0;}
@@ -46,48 +50,19 @@ int GetTgfNumRecords(tstring fname);
 int ReadGeometricGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex);
 int ReadGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex);
 int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex);
-
-class Taxi_FileIO_Tgf : public Taxi_FileIO
-{
- public:
-  int IsMine(tstring fname) {return IsFileTgf(~fname);}
-  int Save(GraphAccess& G,tstring fname) {return SaveGraphTgf(G,fname);}
-  int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex) 
-    {return ReadTgfGraph(G,fname,NumRecords,GraphIndex);}
-  int GetNumRecords(tstring fname) {return GetTgfNumRecords(fname);}
-  int DeleteRecord(tstring fname,int index) {return DeleteTgfRecord(fname,index);}
-  int Capabilities(void) { return TAXI_FILE_FULL;}
-  const char *Name(void) {return "Tgf file";}
-  const char *Ext(void) {return "tgf";}
-};
-static  Taxi_FileIO_Tgf FileIO_Tgf;
-
-class Taxi_FileIO_ASCII : public Taxi_FileIO
-{
- public:
-  int IsMine(tstring fname) {return IsFileAscii(~fname);}
-  int Save(GraphAccess& G,tstring fname) {return SaveGraphAscii(G,fname);}
-  int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
-  {NumRecords=1; GraphIndex=1; return ReadGraphAscii(G,fname);}
-  //int GetNumRecords(tstring fname) {return 1;}
-  //int DeleteRecord(tstring fname,int index) {return -1;}
-  int Capabilities(void) { return TAXI_FILE_MINI;}
-  const char *Name(void) {return "Ascii file";}
-  const char *Ext(void) {return "txt";}
-};
-
-static Taxi_FileIO_ASCII FileIO_ASCII;
+tstring ReadTgfGraphTitle(tstring fname,int index);
+tstring ReadAsciiGraphTitle(tstring fname);
 
 class Taxi_FileIOHandler {
   svector <Taxi_FileIO *> drivers;
  public:
 
-  void add(Taxi_FileIO &driver, int where=-1) 
+  void add(Taxi_FileIO *driver, int where) 
   { int n=(where==-1)?drivers.n():where; drivers.resize(0,drivers.n()); 
       for (int i=drivers.n()-1; i>n; i--) drivers[i]=drivers[i-1];
-      drivers[n]=&driver;
+      drivers[n]=driver;
     }
-  Taxi_FileIOHandler() {add(FileIO_Tgf); add(FileIO_ASCII);}
+  Taxi_FileIOHandler() {}
   ~Taxi_FileIOHandler() {}
   int WhoseIs(tstring fname) 
     { for (int i=0; i<drivers.n();i++)
@@ -104,9 +79,53 @@ class Taxi_FileIOHandler {
   int Capabilities(int d) {return drivers[d]->Capabilities();}
   const char *Name(int d) {return drivers[d]->Name();}
   const char *Ext(int d) {return drivers[d]->Ext();}
+  tstring Title(int d, tstring fname, int index=1) {return drivers[d]->Title(fname,index);};
   int n() {return drivers.n();}
 };
-static Taxi_FileIOHandler FileIOHandler;
 
+
+class Taxi_FileIO_Tgf : public Taxi_FileIO
+{
+ public:
+  int IsMine(tstring fname) {return IsFileTgf(~fname);}
+  int Save(GraphAccess& G,tstring fname) {return SaveGraphTgf(G,fname);}
+  int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex) 
+    {return ReadTgfGraph(G,fname,NumRecords,GraphIndex);}
+  tstring Title(tstring fname, int index) {return ReadTgfGraphTitle(fname,index);};
+  int GetNumRecords(tstring fname) {return GetTgfNumRecords(fname);}
+  int DeleteRecord(tstring fname,int index) {return DeleteTgfRecord(fname,index);}
+  int Capabilities(void) { return TAXI_FILE_FULL;}
+  const char *Name(void) {return "Tgf file";}
+  const char *Ext(void) {return "tgf";}
+};
+
+class Taxi_FileIO_ASCII : public Taxi_FileIO
+{
+ public:
+  int IsMine(tstring fname) {return IsFileAscii(~fname);}
+  int Save(GraphAccess& G,tstring fname) {return SaveGraphAscii(G,fname);}
+  int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex)
+  {NumRecords=1; GraphIndex=1; return ReadGraphAscii(G,fname);}
+  //int GetNumRecords(tstring fname) {return 1;}
+  //int DeleteRecord(tstring fname,int index) {return -1;}
+  tstring Title(tstring fname, int index) {return ReadAsciiGraphTitle(fname);};
+  int Capabilities(void) { return TAXI_FILE_MINI;}
+  const char *Name(void) {return "Ascii file";}
+  const char *Ext(void) {return "txt";}
+};
+
+int IO_WhoseIs(tstring fname);
+int IO_IsMine(int d, tstring fname);
+int IO_Save(int d, GraphAccess& G,tstring fname);
+int IO_Read(int d, GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex);
+int IO_Read(int d, GraphContainer& G,tstring fname);
+int IO_GetNumRecords(int d, tstring fname);
+int IO_DeleteRecord(int d, tstring fname,int index=1);
+int IO_Capabilities(int d);
+const char *IO_Name(int d);
+const char *IO_Ext(int d);
+tstring IO_Title(int d, tstring fname, int index=1);
+int IO_n();
+void Init_IO();
 #endif
 

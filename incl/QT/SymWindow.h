@@ -53,7 +53,7 @@ class SymWindow : public QWidget
 
 public:
   SymWindow(GraphSymPrivate *g,QWidget * parent = 0,const char * name = 0);
-  ~SymWindow();
+  ~SymWindow(){};
   void initialize();
   void FindSym();
   void DrawSym();
@@ -67,7 +67,6 @@ private:
   void Normalise();
   void update(QPainter *p);
 
-  //QSize sizeHint() const;
 public:
   int sym;
   int start,start0;
