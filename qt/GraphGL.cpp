@@ -516,6 +516,7 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {QString t =  glp->mw->getVertexLabel(v);
   if(t.isEmpty())return;
   int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t));
+  if(t.length() == 1)len *= 2;
   qglColor(red);
   glPushMatrix();
   glPushMatrix();

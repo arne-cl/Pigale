@@ -779,15 +779,18 @@ int pigaleWindow::getActionInt(QString action_str)
   }
 void pigaleWindow::load()
   {QFileInfo fi =  QFileInfo(InputFileName);
+  QString extension = fi.extension(false);
   QStringList formats;
   QString filter, selfilter;
+  selfilter = "All (*)";
   for (int  i = 0; i< IO_n();i++)
-      {filter = tr(IO_Name(i));
+      {filter = IO_Name(i);
       filter += "(*";
-      if (IO_Ext(i)!="!") {filter += "."; filter += IO_Ext(i);}
+      if (IO_Ext(i) != "!") {filter += "."; filter += IO_Ext(i);}
       filter += ")";
       formats += filter;
-      if (i==0) selfilter=filter;
+      //if (i==0) selfilter=filter;
+      if(filter.contains(extension))selfilter=filter;
       }
     formats += "All (*)";
     QString FileName = QFileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
@@ -1235,12 +1238,6 @@ void pigaleWindow::showLabel(int show)
           case 1:
               mypaint->update();
               break;
-//           case 2:
-//               graphgl->update();
-//               break;
-//           case 3:
-//               graphsym->update();
-//               break;
           }
       }
   }
@@ -1260,10 +1257,20 @@ QString pigaleWindow::getVertexLabel(tvertex v)
               t = ~(*(vslabel()[indexTxt]));
               }
           }
+//       else
+//            t = ~GC.Set(tvertex()).Value(0,v());
+//            t.sprintf("%2.2d",v());
       }
+//   else if(prop == 0)// to get a better format for labels
+//       {if(GC.Set(tvertex()).exist(PROP_LABEL))
+//           {Prop<long> label(GC.Set(tvertex()),PROP_LABEL);
+//           t.sprintf("%2.2ld",label[v()]);
+//           }
+//       else
+//            t.sprintf("%2.2d",v());
+//       }
   else
       t = ~GC.Set(tvertex()).Value(prop,v());
-      
   return t;
   }
 void  pigaleWindow::distOption(int use)

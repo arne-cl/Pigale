@@ -416,7 +416,10 @@ public:
   _svector(a, b, sizeof(T), (const void*) &value) {}
   svector(int n): _svector(0, n-1, sizeof(T)) {}
   svector(const svector& v): _svector(v) {}
-    svector(int a, int b,const T *p): _svector(a,b,sizeof(T)) {memcpy(me().begin(),p,me().getsize());}
+  svector(int a, int b,const T *p): _svector(a,b,sizeof(T)) 
+      {if(p == 0)myabort();
+      memcpy(me().begin(),p,me().getsize());
+      }
   ~svector() {}
 
   svector& operator=(const svector& v) {me() = v; return *this;}

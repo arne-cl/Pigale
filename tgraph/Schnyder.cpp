@@ -35,7 +35,7 @@ bool & SchnyderColor()
 static void CountParents(GeometricGraph &G, short TreeColor, tbrin RootBrin,
                          svector<tvertex> &Father,svector<int> &Descendants,
                          svector<short> &ecolor)
-  {svector<int> marked(1,G.ne(),0);
+  {svector<int> marked(1,G.ne(),(int)0);
   marked.SetName("marked");
   tbrin b = RootBrin;
   int root_distance = 0;
@@ -74,12 +74,12 @@ void CalcXYZ(TopologicalGraph &G, tbrin brin,svector<short> &ecolor,
 svector<int> &x, svector<int>&y, svector<int> &z)
   {GeometricGraph G0(G);
 
-  svector<tvertex> FatherB(1,G.nv(),0);
-  svector<int> DescendantsB(1,G.nv(),1);
-  svector<tvertex> FatherG(1,G.nv(),0);
-  svector<int> DescendantsG(1,G.nv(),1);
-  svector<tvertex> FatherR(1,G.nv(),0);
-  svector<int> DescendantsR(1,G.nv(),1);
+  svector<tvertex> FatherB(1,G.nv(),(tvertex)0);
+  svector<int> DescendantsB(1,G.nv(),(int)1);
+  svector<tvertex> FatherG(1,G.nv(),(tvertex)0);
+  svector<int> DescendantsG(1,G.nv(),(int)1);
+  svector<tvertex> FatherR(1,G.nv(),(tvertex)0);
+  svector<int> DescendantsR(1,G.nv(),(int)1);
   x.clear(); y.clear(); z.clear();
   FatherB.SetName("FatherB");
   FatherG.SetName("FatherG");
@@ -115,7 +115,7 @@ svector<int> &x, svector<int>&y, svector<int> &z)
 static void CalcXY(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
   {GeometricGraph G0(G);
 
-  svector<int> x(1,G.nv(),0), y(1,G.nv(),0), z(1,G.nv(),0);
+  svector<int> x(1,G.nv(),(int)0), y(1,G.nv(),(int)0), z(1,G.nv(),(int)0);
   x.SetName("x");
   y.SetName("y");
   z.SetName("z");
@@ -373,7 +373,7 @@ int Embed3dSchnyder(TopologicalGraph &G0)
       }
 
   //
-  svector<int> x(1,G0.nv(),0), y(1,G0.nv(),0), z(1,G0.nv(),0);
+  svector<int> x(1,G0.nv(),(int)0), y(1,G0.nv(),(int)0), z(1,G0.nv(),(int)0);
   svector<short> eecolor(1,G0.ne());
   SchnyderDecomp(G0,FirstBrin,eecolor);
   CalcXYZ(G0,FirstBrin,eecolor,x,y,z);
