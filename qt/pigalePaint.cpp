@@ -157,7 +157,8 @@ void DrawTContact(QPainter *p,pigalePaint *paint)
       paint->DrawText(p,postxt[v],v,G.vcolor[v],0);
   }
 void DrawBipContact(QPainter *p,pigalePaint *paint)
-  {GeometricGraph G(paint->GCP);
+  {GraphContainer GC = paint->GCP;
+  GeometricGraph G(paint->GCP);
   Prop<int> h(G.Set(tvertex()),PROP_DRAW_INT_1);
   Prop<int> h1(G.Set(tvertex()),PROP_DRAW_INT_2);
   Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3);
@@ -223,7 +224,8 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
               pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
               } 
           }
-      QString t = paint->getVertexLabel(v);
+      QString t = getVertexLabel(GC,v);
+      
        QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
        dx =size.width() + 2;   dy =size.height() + 2;
       QRect rect = QRect((ps.x() + pt.x() - dx)/2,(ps.y() + pt.y() - dy)/2,dx,dy);
@@ -517,13 +519,11 @@ void pigalePaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
   //  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
   p->drawRect(QRect((int)(to_x(a.x()) - nx*Min(xscale,yscale)/2), (int)(to_y(a.y())- ny*Min(xscale,yscale)/2), (int)(nx*Min(xscale,yscale)), (int)(ny*Min(xscale,yscale))));
   }
-QString pigalePaint::getVertexLabel(tvertex v)
-  {return mw->getVertexLabel(v);}
 void pigalePaint::DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center)
 // draw text centered at a, with a surrounding rectangle
 // center=1 center
 // center=0 horizontal
-  {QString t = mw->getVertexLabel(v);
+  {QString t =  getVertexLabel(mw->GC,v);
   QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
   double nx = size.width() + 4; double ny = size.height();
@@ -549,6 +549,6 @@ void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,tve
   pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   pn.setWidth(1);p->setPen(pn);
-  QString t = mw->getVertexLabel(v);
+  QString t = getVertexLabel(mw->GC,v);
   p->drawText(rect,Qt::AlignCenter,t);
   }

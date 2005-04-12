@@ -434,7 +434,7 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   {GeometricGraph & G = *(gwp->pGG);
   int x = (int) G.vcoord[v].x();
   int y =  gwp->canvas->height() - (int) G.vcoord[v].y();
-  QString t = gwp->mywindow->getVertexLabel(v);
+  QString t = getVertexLabel(G.Container(),v);
   QFont font = QFont("lucida",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 6;  int dy =size.height() + 2;

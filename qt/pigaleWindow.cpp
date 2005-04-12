@@ -1241,38 +1241,6 @@ void pigaleWindow::showLabel(int show)
           }
       }
   }
-QString pigaleWindow::getVertexLabel(tvertex v)
-  {QString t;
-  int prop = ShowVertex();
-  if(prop == -3)
-       t = "";
-  else if(prop == -2)
-      t.sprintf("%2.2d",v());
-  else if(prop == -1)
-      {if(GC.Set().exist(PROP_VSLABEL) && GC.Set(tvertex()).exist(PROP_SLABEL))
-          {Prop<int> slabel(GC.Set(tvertex()),PROP_SLABEL);
-          int indexTxt = slabel[v];
-          if(indexTxt != 0)
-              {Prop1<svector <tstring *> > vslabel(GC.Set(),PROP_VSLABEL);
-              t = ~(*(vslabel()[indexTxt]));
-              }
-          }
-//       else
-//            t = ~GC.Set(tvertex()).Value(0,v());
-//            t.sprintf("%2.2d",v());
-      }
-//   else if(prop == 0)// to get a better format for labels
-//       {if(GC.Set(tvertex()).exist(PROP_LABEL))
-//           {Prop<long> label(GC.Set(tvertex()),PROP_LABEL);
-//           t.sprintf("%2.2ld",label[v()]);
-//           }
-//       else
-//            t.sprintf("%2.2d",v());
-//       }
-  else
-      t = ~GC.Set(tvertex()).Value(prop,v());
-  return t;
-  }
 void  pigaleWindow::distOption(int use)
   {useDistance() = use;
   }

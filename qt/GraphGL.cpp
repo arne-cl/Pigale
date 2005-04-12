@@ -513,7 +513,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor 
   }
 #ifdef HAVE_LIBGLUT
 void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
-  {QString t =  glp->mw->getVertexLabel(v);
+  {QString t =  getVertexLabel(glp->GC(),v);
   if(t.isEmpty())return;
   int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t));
   if(t.length() == 1)len *= 2;

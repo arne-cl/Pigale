@@ -958,7 +958,7 @@ void SymWindow::update(QPainter *p)
       {if(gsp->SymLabel)
           t.sprintf("%2.2d",(int)symlabel(v));
       else
-          t = gsp->mw->getVertexLabel(v);
+          t = getVertexLabel(G.Container(),v);
       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
       int dx =size.width() + 6;  int dy =size.height() + 2;
       int x = (int) xcoord[v()];

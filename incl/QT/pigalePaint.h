@@ -37,7 +37,6 @@ public:
   ~pigalePaint();
   int to_x(double x);   
   int to_y(double y);   
-  QString pigalePaint::getVertexLabel(tvertex v);
   void DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col);
   void DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col);
   void DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center);

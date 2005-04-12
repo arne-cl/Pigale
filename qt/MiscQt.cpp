@@ -43,6 +43,7 @@ void DefineGraphContainer(GraphContainer *GC0)
 GraphContainer& GetMainGraph()
   {return *gC;}
 
+
 QString  getErrorString()
   {QString m;
   if(getErrorMsg() &&  strlen(getErrorMsg()))
@@ -60,9 +61,30 @@ bool & ShowArrow()
   return showarrow;
   }
 int & ShowVertex()
-// -1:index 0:label
+// -3:nothing -2:index else:prop
   {static int _show = 0; 
   return _show;
+  }
+QString getVertexLabel(GraphContainer &GC,tvertex v)
+  {QString t;
+  int prop = ShowVertex();
+  if(prop == -3)
+       t = "";
+  else if(prop == -2)
+      t.sprintf("%2.2d",v());
+  else if(prop == -1)
+      {if(GC.Set().exist(PROP_VSLABEL) && GC.Set(tvertex()).exist(PROP_SLABEL))
+          {Prop<int> slabel(GC.Set(tvertex()),PROP_SLABEL);
+          int indexTxt = slabel[v];
+          if(indexTxt != 0)
+              {Prop1<svector <tstring *> > vslabel(GC.Set(),PROP_VSLABEL);
+              t = ~(*(vslabel()[indexTxt]));
+              }
+          }
+      }
+  else
+      t = ~GC.Set(tvertex()).Value(prop,v());
+  return t;
   }
 QColor OppCol(QColor & col)
   {int hue,sat,val;
