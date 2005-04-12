@@ -1,6 +1,6 @@
- 
-
-08/04/2005: Now sgml format is supported.
+14/04/2005: The client can  transfer the current server graph in TGF, SGML or ASCII format..
+08/04/2005: Text vertex labels for vertices can be displayed for all drawings.
+08/04/2005: Now sgml format is partiallysupported.
 04/04/2005: Now the first line of an ascii graph file must be:"PIG:0" (without ").	
 -------------------------------------------------------------------------------------
 29/03/2005: Corrected a bug in Embedding in Rn (if an edge had a color index > 16).
