@@ -276,8 +276,6 @@ EmbedCCD.opt: ../../pigale/incl/TAXI/Tpoint.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/SchnyderWood.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/IntList.h ../../pigale/incl/TAXI/color.h
 EmbedCCD.opt: ../../pigale/incl/TAXI/Tstack.h ../../pigale/incl/TAXI/Tarray.h
-EmbedCCD.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
-EmbedCCD.opt: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/graphs.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
 EmbedFPP.opt: ../../pigale/incl/TAXI/Tprop.h

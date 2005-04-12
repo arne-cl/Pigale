@@ -28,6 +28,7 @@ PNG
 RC_GRAPH;graph.txt
 VISION
 PNG
+
 #create a graph
 N_GRAPH
 #create 5 vertices
@@ -48,7 +49,7 @@ N:M
 PLAN:
 TUTTE_CIRCLE
 SPRING_PM
-PNG
+RS_SAVE_GRAPH;g.graphml;
 # and close the file
 :!
  

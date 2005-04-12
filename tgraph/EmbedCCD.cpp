@@ -15,7 +15,6 @@
 #include <TAXI/Tprop.h>
 #include <TAXI/SchnyderWood.h>
 #include <TAXI/Tstack.h>
-#include "Pigale.h"
 
 #define CONE 0
 #define HOR_LEFT 1

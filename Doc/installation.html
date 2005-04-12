@@ -31,7 +31,8 @@
 	  </FONT>
 </td>
 <td>
-<!-- 
+<!-- for sourceforge 
+
 <A href="http://sourceforge.net"> 
 <IMG src="http://sourceforge.net/sflogo.php?group_id=50880&type=5" width="210" height="62" border="0" alt="SourceForge Logo"></A>
 </td>
@@ -51,7 +52,7 @@ for sourceforge -->
       The editor is based on the <b>Qt</b> toolkit and uses 
       the <b>OpenGL</b> libraries for the 3-dimensional drawings.
       <br>
-      <b>g++</b> and <b>Mesa3D</b> are availaible under the <b>GNU</b> license.
+      <b>g++</b> and <b>Mesa3D</b> are available under the <b>GNU</b> license.
       <br>
       <b>Qt</b> is free under <b>Unix</b> with a  <b>GPL</b> license, and there exists
        a <b>non-commercial</b> license under <b>Windows</b>.	      
@@ -59,42 +60,64 @@ for sourceforge -->
     </p>
     <ul>
       <li><b>g++</b> compiler: g++-2.96 or g++-3.xx
-	<a href="http://www.gnu.org/software/gcc/gcc.html">(GCC home page)</a>
+	<a href="http://www.gnu.org/software/gcc/gcc.html">(GCC home page)</a></li>
       <li><b>Qt</b>library: 3.0 (at least 2.3.1), with openGL support 
-	<a href="http://www.trolltech.com">(Qt home page)</a>
+	<a href="http://www.trolltech.com">(Qt home page)</a></li>
 
       <li><b>OpenGL</b> : Mesa3D-3.4. 
-	<a href="http://www.Mesa3D.org">(Mesa 3D home page)</a>
+	<a href="http://www.Mesa3D.org">(Mesa 3D home page)</a></li>
 
       <li> <b>glut</b> libraries
-         <a href= "http://www.opengl.org/developers/documentation/glut/"> 
-          (OpenGl)</a>
+         <a href= "http://www.opengl.org/resources/libraries/glut.html"> 
+          (OpenGl)</a></li>
 
       <li><b>Doxygen</b> (Documentation tool). 
-	<a href="http://www.stack.nl/~dimitri/doxygen/index.html">(Doxygen home page)</a>
+	<a href="http://www.stack.nl/~dimitri/doxygen/index.html">(Doxygen home page)</a></li>
     </ul>
 
 
 <h2 class="c1"><b>Linux</b></h2>
-
     <p>  
     The Mesa 3D libraries are included in XFree86 version 4, but sometimes the glut library 
     is not.<br>
     The QT libraries are included in all Linux distributions providing
-    access to <b>KDE</b>. <br>
-    Doxygen is only needed if you want to create the online
+    access to KDE. <br>
+    Doxygen is only needed if you want to create the on line
     documentation.
     </p>
+<h3 class="c1"><b>Using configure</b></h3>
+Pigale uses GNU autoconfig for compilation and installation.
+<ul>
+      <li> Run the configure script: <tt><b>./configure [options]</b></tt>
+	<ul>
+	  <li>By default, the prefix for installation is /usr/local/pigale.</li>
+	  <li>If you don't have a write permission, you must provide  another directory where 
+	    you have a write permission: <br><tt><b>./configure --prefix=/home/a_directory</b></tt>.</li>
+	  <li>Usually the location of the installation of Qt is defined by the environment variable <b>QTDIR</b>.</li>
+	  <li>For more options run: <tt><b>./configure --help</b></tt> <br>
+	  These options, in particular, let you enable a debug mode, 
+	    let you precise the locations of the Qt libraries, etc.</li>
+	</ul>
+      </li>
+      <li> Next run the following command:
+	<br><tt><b>make install</b></tt>
+    </ul>
+    The programs are installed in $prefix/bin, the libraries in $prefix/lib and some documentation in $prefix/Doc.
+    <br>
+    If automakefile complains, you may try to execute:<br>
+    <tt><b>aclocal && automake && autoconf</b></tt><br>
+    before running <tt><b>./configure</b></tt>
 
-    <p>The files <tt>pigale/GNUMakefile</tt>,<tt>pigale/tgraph/GNUMakefile</tt> ,
-     <tt>pigale/ClientServer/GNUMakefile</tt> and
-      <tt>pigale/qt/GNUmakefile</tt> might need to be edited for particular
+<h3 class="c1"><b>Using make</b></h3>
+    <p>The files <tt>pigale/gnumakefile</tt>, <tt>pigale/tgraph/gnumakefile</tt> ,<tt>pigale/ClientServer/gnumakefile</tt>
+     and
+      <tt>pigale/qt/gnumakefile</tt> might need to be edited for particular
       goals (level of optimization, location of
       files, etc.).
     </p>
 
-    <p>The command <b>make</b> (GNU make) creates the libraries in <tt>pigale/lib</tt>
-      and the executable programs in <tt>pigale/qt</tt> and <tt>pigale/ClientServer</tt>.
+    <p>The command <b>make -f gnumakefile</b>  creates the libraries in <tt>pigale/lib</tt>
+      and the executable programs in <tt>pigale/qt</tt> and  <tt>pigale/ClienServer</tt> .
     </p>
     <p>
       If you don't have root permission, you can create static versions of <b>Pigale</b>
@@ -103,39 +126,26 @@ for sourceforge -->
     </p>
     <ul>
       <li>If the variable <tt>OPT</tt> is set to dbg (debugging mode) the
-	resulting program is named <b>pigale_dbg</b>.
-      
+	resulting programs is named <b>pigale_dbg</b>.
+      </li>
       <li>If the variable <tt>OPT</tt> is set to opt (optimize mode) the
-	resulting program is named <b>pigale</b>.
-      
+	resulting programs is named <b>pigale</b>.
+      </li>
     </ul>
-    
-
-    <p>
-       The client/server programs are created with <b>Client</b> and <b>Server</b> names.
-    </p>
-
-    <p>If you only need the tgraph library, you must first copy
-    <tt>dummy.cpp</tt> into <tt>tgraph</tt>, then, in the repertory
-    <tt>tgraph</tt>, type <b>make</b>.
-    </p>
     
    <p>This program has also been compiled under different UNIX
       systems, using the gcc compilers.		
    </p>		
 
 <h2 class="c1"> <b>Windows</b></h2>
-    <p> It works with the following:
+    <p> Pigale has been compiled  with the following:
     </p> 
       <ul>
-      <li> <b>Microsoft</b> compiler,
-      <li> <b>non-commercial Qt</b> toolkit,
-      <li> <b>OpenGL</b> libraries included in Windows,
-      <li> <b>glut</b> libraries.
+      <li> <b>Microsoft</b> compiler,</li>
+      <li> <b> Qt-3.3</b> toolkit,</li>
+      <li> <b>OpenGL</b> libraries included in Windows,</li>
+      <li> <b>glut</b> libraries.</li>
       </ul>
-    <p>  
-    To run the program, you need to install  glut32.dll and qt-mt230nc.dll 
-    (or the qt dll corresponding to your license).
     </p>
 
     <hr>
@@ -147,7 +157,7 @@ for sourceforge -->
          Patrice Ossona de Mendez</a></address></td>
       </tr></table>
     <hr><!-- hhmts start -->
-Last modified: Mon Mar 24 10:18:51 CET 2003
+Last modified: Sat Apr  9 19:03:08 CEST 2005
 <!-- hhmts end -->
 </body>
 

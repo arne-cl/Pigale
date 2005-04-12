@@ -196,7 +196,7 @@ void Client::socketReadyRead()
       str = str.stripWhiteSpace();
       if(str.at(0) == ':')
           writeToClient(str.mid(1));
-      else if(str == "!PNG")// receiving a png image
+      else if(str.contains("!PNG"))// receiving a png image
           {QString *txt  =  new QString("GET_PNG");
           stack.push(txt);
           ChangeActionsToDo(1);
@@ -210,6 +210,26 @@ void Client::socketReadyRead()
           file.close();
           delete [] buffer;
           if(debug())writeToClient(QString("GOT:%1").arg(PngFile));
+          ChangeActionsToDo(-1);
+          }
+      else if(str.contains("!GRAPH"))// receiving a graph
+          {QString *txt  =  new QString("GET_GRAPH");
+          stack.push(txt);
+          ChangeActionsToDo(1);
+          char * buffer = NULL;
+          uint size = readBuffer(buffer);
+          if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
+          int pos = str.find(PARAM_SEP);
+          QString graphFile = str.mid(pos+1);
+          QFile file(graphFile);  
+          QFileInfo fi = QFileInfo(graphFile);
+          if(fi.exists())file.remove();
+          file.open(IO_ReadWrite);
+          QDataStream stream(&file);
+          stream.writeRawBytes(buffer,size);
+          file.close();
+          delete [] buffer;
+          if(debug())writeToClient(QString("GOT:%1").arg(graphFile));
           ChangeActionsToDo(-1);
           }
       else if(str == "!!")// server ha finished everything

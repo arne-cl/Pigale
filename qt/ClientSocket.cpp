@@ -124,7 +124,7 @@ int ClientSocket::xhandler(const QString& dataAction)
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
-  Tprintf("%s",(const char *)dataAction);
+  Tprintf("%s ",(const char *)dataAction);
  // call the right handler
   if(action == 0)
       setError( UNKNOWN_COMMAND,"unknown command");
@@ -141,15 +141,19 @@ int ClientSocket::xhandler(const QString& dataAction)
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
   else if(action > A_TRANS && action < A_TRANS_END)
-      {if(action == A_TRANS_PNG) // send a png
+      {if(action == A_TRANS_SEND_PNG) // send a png
           Png();
-      else if(action == A_TRANS_GRAPH_GET) // get a graph
+      else if(action == A_TRANS_GET_CGRAPH) // get a graph form client
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
           indexRemoteGraph = 1;
           bool ok =true;
           if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
           if(!ok)setError(WRONG_PARAMETERS,"Wrong parameters");
           else   GetRemoteGraph();
+          }
+      else  if(action == A_TRANS_SEND_GRAPH_SAVE) // send client the saved graph
+          {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+          sendSaveGraph( fields[0]);
           }
       }
   else if(action == SERVER_DEBUG)
@@ -208,7 +212,7 @@ int ClientSocket::GetRemoteGraph()
   char *buffer = NULL;
   uint size = readBuffer(buffer);
   if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return READ_ERROR;}
-  QString GraphFileName;
+  QString  GraphFileName;
   GraphFileName.sprintf("%ctmp%cgraph%d.tmp",QDir::separator(),QDir::separator(),mw->ServerClientId);
   Tprintf("Receiving graph ->%s",(const char *)GraphFileName);
   QFile file(GraphFileName);
@@ -233,16 +237,36 @@ int ClientSocket::ReadRemoteGraph(QString &dataParam)
   if(mw->publicLoad(num) < 0)setError(READ_ERROR,"coud not read file");
   return 0;
   }
-
+int ClientSocket::sendSaveGraph(const QString &FileName)
+  {QString graphFileName = QString("%1tmp%2%3").arg(QDir::separator()).arg(QDir::separator()).arg(FileName);
+  mw->publicSave(graphFileName);
+  QFileInfo fi = QFileInfo(graphFileName);
+  uint size = fi.size();
+  if(size == 0)
+      {setError(-1,"no graph file");return -1;}
+  else if(sdebug)
+      cli << ":SENDING:" << FileName << endl;
+  QFile file(graphFileName);
+  file.open(IO_ReadWrite);
+  QDataStream stream(&file);
+  char *buff = new char[size];
+  stream.readRawBytes(buff,size); 
+  cli <<"!GRAPH;"<<FileName << endl;
+  clo.writeBytes(buff,size);
+  delete [] buff;
+  file.remove();
+  return 0;
+  }
 int ClientSocket::Png()
   {mw->png();
-  QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
+  QString PngFileName =  QString("%1tmp%2server%3.png").arg(QDir::separator()).arg(QDir::separator()).arg(mw->ServerClientId);
   QFileInfo fi = QFileInfo(PngFileName);
-  if(PngFileName.isEmpty())
+  uint size = fi.size();
+  if(size == 0)
       {setError(-1,"no png file");return -1;}
   else if(sdebug)
       cli << ":SENDING:" << PngFileName << endl;
-  uint size = fi.size();
+  
   QFile file(PngFileName);
   file.open(IO_ReadWrite);
   QDataStream stream(&file);

@@ -80,7 +80,7 @@ private slots:
   void previous();
   void reload();
   void next();
-  void save();
+  int save(bool askTitle = false);
   //void save_ascii();
   void saveAs();
   void deleterecord();
@@ -134,6 +134,7 @@ public:
   QString getActionString(int action);
   int getActionInt(QString action_str);
   int publicLoad(int pos);
+  int publicSave(QString filename);
   void setUserMenu(int i, const QString &txt);
   void  setShowOrientation(bool val);
   int  getResultHandler(int value = 0);

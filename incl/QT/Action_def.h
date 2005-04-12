@@ -182,12 +182,13 @@
 #define A_INPUT_READ_GRAPH     (A_INPUT+1)    //  RS_GRAPH 
 #define A_INPUT_NEW_GRAPH      (A_INPUT+2)    //  N_GRAPH
 #define A_INPUT_NEW_VERTEX     (A_INPUT+3)    //  N_V
-#define A_INPUT_NEW_EDGE       (A_INPUT+4)    //  N_E
-#define A_INPUT_END            (A_INPUT+99)    
+#define A_INPUT_NEW_EDGE         (A_INPUT+4)    //  N_E
+#define A_INPUT_END                       (A_INPUT+99)    
 
-#define A_TRANS                (A_SERVER+200)  
-#define A_TRANS_PNG            (A_TRANS+1)    // PNG  
-#define A_TRANS_GRAPH_GET      (A_TRANS+2)    // RC_GRAPH  
+#define A_TRANS                                            (A_SERVER+200)  
+#define A_TRANS_SEND_PNG                     (A_TRANS+1)    // PNG  
+#define A_TRANS_GET_CGRAPH                (A_TRANS+2)    // RC_GRAPH  
+#define A_TRANS_SEND_GRAPH_SAVE   (A_TRANS+3)    // RS_SAVE_GRAPH  
 #define A_TRANS_END            (A_TRANS+99)  
 
 #define SERVER_DEBUG           (A_SERVER+999)  // S_DEBUG  

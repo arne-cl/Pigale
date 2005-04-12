@@ -903,26 +903,45 @@ int pigaleWindow::load(int pos)
   information(); gw->update();
   return *pGraphIndex;
   }
-void pigaleWindow::save()
+int pigaleWindow::save(bool askTitle)
   {TopologicalGraph G(GC);
-  Prop1<tstring> title(G.Set(),PROP_TITRE);
-  QString titre(~title());
-  bool ok = TRUE;
-  titre = QInputDialog::getText("Pigale","Enter the graph name",
-                    QLineEdit::Normal,titre, &ok, this );
-  if(ok && !titre.isEmpty()) title() = (const char *)titre;
-  else if(!ok) return;
-  //G.FixOrientation();
+  if(askTitle)
+      {Prop1<tstring> title(G.Set(),PROP_TITRE);
+      QString titre(~title());
+      bool ok = TRUE;
+      titre = QInputDialog::getText("Pigale","Enter the graph name",
+                                    QLineEdit::Normal,titre, &ok, this );
+      if(ok && !titre.isEmpty()) title() = (const char *)titre;
+      else if(!ok) return -1;
+      }
   if(IO_Save(OutputDriver,G,(const char *)OutputFileName) == 1)
-      {QString t;
-      t.sprintf("Cannot open file:%s",(const char *)OutputFileName);
-      Twait((const char *)t);
-      return;
+      {setError(-1,QString("Cannot open file:%1").arg(OutputFileName));
+      return -1;
       }
   GraphIndex2 = IO_GetNumRecords(OutputDriver,(const char *)OutputFileName);
   banner();
+  return 0;
   }
-
+int pigaleWindow::publicSave(QString FileName)
+  {TopologicalGraph G(GC);
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  title() = "G";
+  QFileInfo fi =  QFileInfo(FileName);
+  QString fileExt =  fi.extension(false);
+  if(fileExt.length() < 3){setError(-1,"UNKNOWN EXTENSION");return -1;}
+  int driver = -1;
+  QString extName;
+  for (int i=0; i<IO_n();i++)
+      {extName = IO_Ext(i);
+      if(fileExt.contains(extName))driver = i;
+      }
+  if(driver == -1)
+      {setError(-1,"UNKNOWN DRIVER");return -1;}
+  OutputFileName = FileName;
+  OutputDriver = driver;
+  save();
+  return 0;
+  }
 void pigaleWindow::saveAs()
   {QFileInfo fi =  QFileInfo(OutputFileName);
     QStringList formats;

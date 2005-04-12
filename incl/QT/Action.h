@@ -110,6 +110,7 @@ static _Action actions[]={
 {"N_E",(A_INPUT+4)},
 {"PNG",(A_TRANS+1)},
 {"RC_GRAPH",(A_TRANS+2)},
+{"RS_SAVE_GRAPH",(A_TRANS+3)},
 {"S_DEBUG",(A_SERVER+999)},
 {"UNKNOWN_COMMAND",(A_ERRORS-1)},
 {"WRONG_PARAMETERS",(A_ERRORS-2)},
