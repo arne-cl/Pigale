@@ -1,6 +1,8 @@
 all: libtgraph  libqt client
-
-libtgraph : tgraph/*.cpp
+md:depend
+	@if ! test -d lib ; then mkdir lib ; fi
+	
+libtgraph : md tgraph/*.cpp
 	cd tgraph ;make -f gnumakefile -e
 
 libqt : qt/*.cpp
