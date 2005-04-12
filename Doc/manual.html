@@ -33,7 +33,7 @@ sourceforge  -->
 <li> <A HREF="manual.html#GE">Using the Editor</A></li>
 <li> <A HREF="manual.html#zoom">Zoom</A></li>
 <li> <A HREF="manual.html#macro">Using Macros</A></li>
-<li> <A HREF="manual.html#tgf">Input files:TGF, SGML and ASCII formats</A></li>
+<li> <A HREF="manual.html#tgf">Input files:TGF, GRAPHML and ASCII formats</A></li>
 <li> <A HREF="manual.html#gen">Generating graphs</A></li>
 <li> <A HREF="manual.html#3d">Embedding a graph  in space</A></li>
 </ul>
@@ -296,13 +296,13 @@ If the option <b> Erase multiple edges</b> is on, we erase multiple edges
 after the generation process, therefore we do not maintain the degree property.
 <br><A HREF="manual.html#home"><em>top</em></A>
 
-<HR><H2> <A NAME="tgf">T</A>gf, sgml and ASCII files </H2> 
+<HR><H2> <A NAME="tgf">T</A>gf, GRAPHML and ASCII files </H2> 
 We use a general proprietary format <b>TGF</b>.<br> 
 A TGF file contains records, here corresponding to graphs.
 Each record consisting of a variable number of fields.<br>
 One of its main advantage is that we can write and read any complex data structure.
 But it is dependent of the processor type (Low or High indian etc).<br><br>
-We partially implemented  the <b>sgml</b> file format (cf. http://graphml.graphdrawing.org/),
+We partially implemented  the <b>GRAPHML</b> file format (cf. http://graphml.graphdrawing.org/),
 which is now the only way to add text labels to the vertices<br><br>
 We use a very simple <b>ASCII</b> file structure to store graphs. <br>
 For example, the following file defines a graph called <tt>Triangle</tt> 
