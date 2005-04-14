@@ -42,6 +42,27 @@ td.c2   {color: #000000;
 	font-size: 180%;
 	font-weight: bolder;
 	}
+table.opt{color: #000000;
+	background-color: #60a060;
+	border-color : #40b040;
+	color : #0000ff;
+	width: 50%;
+	padding: 0px;
+	}
+table.opt1{color: #000000;
+	background-color: #60a060;
+	border-color : #40b040;
+	color : #0000ff;
+	width: 90%;
+	padding: 0px;
+	}			
+td.opt  {color: #AA0000;
+	background-color: #d0f0d0;
+	font-family: Helvetica;
+	font-size: 100%;
+	font-weight: bolder;
+	text-align : center;
+	}		
 h2.c2  {color: #000000;
 	background-color: #d0f0d0;
 	font-family: Helvetica;

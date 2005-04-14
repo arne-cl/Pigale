@@ -44,18 +44,18 @@ CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = ./.obj
 
 
-all : Client
+all : client
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
 
 
-Client:client.h client.cpp md $(VPATH) 
+client:md client.h client.cpp  
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
 	$(MMOC) client.h -o moc_client.cpp
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
-	$(CC)  $(CFLAGS) -o Client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
+	$(CC)  $(CFLAGS) -o client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
 
 
 clean:

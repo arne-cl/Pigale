@@ -88,9 +88,9 @@
 #define  A_GENERATE_P_3R_3C         (A_GENERATE+11)     // GEN_PLANAR_3R_3C
 #define  A_GENERATE_P_3R_D4C        (A_GENERATE+12)     // GEN_PLANAR_3R_D4C
 #define  A_GENERATE_P_4R_C          (A_GENERATE+13)     // GEN_PLANAR_4R_C 
-#define  A_GENERATE_P_4R_2C         (A_GENERATE+14)     // GEN_PLANAR_4R_3C
-#define  A_GENERATE_P_4R_3C         (A_GENERATE+15)     // GEN_PLANAR_4R_BIP
-#define  A_GENERATE_P_4R_BIP        (A_GENERATE+16)     // GEN_PLANAR_P_BIP 
+#define  A_GENERATE_P_4R_2C         (A_GENERATE+14)     // GEN_PLANAR_4R_2C
+#define  A_GENERATE_P_4R_3C         (A_GENERATE+15)     // GEN_PLANAR_4R_3C
+#define  A_GENERATE_P_4R_BIP        (A_GENERATE+16)     // GEN_PLANAR_4R_BIP 
 #define  A_GENERATE_P_BIP           (A_GENERATE+17)     // GEN_PLANAR_BIP
 #define  A_GENERATE_P_BIP_2C        (A_GENERATE+18)     // GEN_PLANAR_BIP_2C
 #define  A_GENERATE_P_BIP_3C        (A_GENERATE+19)     // GEN_PLANAR_BIP_3C

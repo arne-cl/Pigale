@@ -68,7 +68,7 @@ void PigaleServer::OneClientClosed()
 
 //ClientSocket: thread reading and writing on a socket
 ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
-    QSocket(parent,name),sdebug(0),getRemoteGraph(false),mw(p)
+    QSocket(parent,name),sdebug(0),mw(p)
   {connect(this,SIGNAL(readyRead()),SLOT(readClient()));
   connect(this,SIGNAL(connectionClosed()),SLOT(deleteLater()));
   connect(this,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
@@ -76,7 +76,6 @@ ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject
   setSocket(sock);
   cli.setDevice(this);
   clo.setDevice(this);
-  line = 1;
   start();
   mw->ServerClientId = prId = sock;
   cli << ":Server Ready"<<endl;
@@ -100,7 +99,6 @@ void ClientSocket::readClient()
 void ClientSocket::run()
   {while (canReadLine())
       {QString str = cli.readLine();
-      if(++line == 10000)line = 0;
       if(str.at(0) == '#')
           {cli << "!" << str << endl;
           }
@@ -119,7 +117,7 @@ void ClientSocket::customEvent( QCustomEvent * e )
     }
   }
 
-int ClientSocket::xhandler(const QString& dataAction)
+void ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
@@ -141,19 +139,24 @@ int ClientSocket::xhandler(const QString& dataAction)
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
       }
   else if(action > A_TRANS && action < A_TRANS_END)
-      {if(action == A_TRANS_SEND_PNG) // send a png
+      {if(action == A_TRANS_SEND_PNG) 
+          // send a png
           Png();
-      else if(action == A_TRANS_GET_CGRAPH) // get a graph form client
+      else if(action == A_TRANS_GET_CGRAPH) 
+          // get a graph form client and read a record
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-          indexRemoteGraph = 1;
+          int index = 1;
           bool ok =true;
-          if(fields.count() > 1)indexRemoteGraph = fields[1].toInt(&ok);
+          if(fields.count() > 1)index = fields[1].toInt(&ok);
           if(!ok)setError(WRONG_PARAMETERS,"Wrong parameters");
-          else   GetRemoteGraph();
+          else   readClientGraph(index);
           }
-      else  if(action == A_TRANS_SEND_GRAPH_SAVE) // send client the saved graph
+      else  if(action == A_TRANS_SEND_GRAPH_SAVE) 
+          // save the graph and send it to the client
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-          sendSaveGraph( fields[0]);
+          if(fields.count() > 1)
+              setError(WRONG_PARAMETERS,"Wrong parameters");
+          else sendSaveGraph( fields[0]);
           }
       }
   else if(action == SERVER_DEBUG)
@@ -161,19 +164,16 @@ int ClientSocket::xhandler(const QString& dataAction)
   else
       setError( UNKNOWN_COMMAND,"unknown command");
 
-  int err = 0;
   if(getError())
-      {err = getError();
-      if(strlen(getErrorMsg()))
+      {if(strlen(getErrorMsg()))
           cli << ":ERROR "<< getErrorMsg() <<endl;
       else
-          {cli <<":ERROR '"<<mw->getActionString(action)<<"' -> " << mw->getActionString(err)<<endl;
+          {cli <<":ERROR UNKNOWN '"<<mw->getActionString(action)<<endl;
           cli <<": " <<dataAction<< endl;
           }
       }
 
   cli << "!" << endl;
-  return err; 
   }
 uint ClientSocket::readBuffer(char  *  &buffer)
   {uint size = 0;
@@ -207,11 +207,11 @@ uint ClientSocket::readBuffer(char  *  &buffer)
       }
   return size;
   }
-int ClientSocket::GetRemoteGraph()
+void ClientSocket::readClientGraph(int indexRemoteGraph)
   {if(sdebug)cli << ":Server: receiving graph" << endl;
   char *buffer = NULL;
   uint size = readBuffer(buffer);
-  if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return READ_ERROR;}
+  if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return;}
   QString  GraphFileName;
   GraphFileName.sprintf("%ctmp%cgraph%d.tmp",QDir::separator(),QDir::separator(),mw->ServerClientId);
   Tprintf("Receiving graph ->%s",(const char *)GraphFileName);
@@ -225,25 +225,23 @@ int ClientSocket::GetRemoteGraph()
   if(sdebug)cli << QString(":GOT %1:%2 bytes").arg(GraphFileName).arg(size) << endl;
   mw->InputFileName = GraphFileName;
   if(mw->publicLoad(indexRemoteGraph) < 0)setError(READ_ERROR,"could not read file");
-  return 0;
   }
-int ClientSocket::ReadRemoteGraph(QString &dataParam)
+void ClientSocket::readServerGraph(QString &dataParam)
   {// Read a graph on the server side
   QStringList fields = QStringList::split(PARAM_SEP,dataParam);
   int num = 1;
   bool ok;
   if(fields.count() > 1)num = fields[1].toInt(&ok);
-  if(!ok)return WRONG_PARAMETERS;
+  if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
   if(mw->publicLoad(num) < 0)setError(READ_ERROR,"coud not read file");
-  return 0;
   }
-int ClientSocket::sendSaveGraph(const QString &FileName)
+void ClientSocket::sendSaveGraph(const QString &FileName)
   {QString graphFileName = QString("%1tmp%2%3").arg(QDir::separator()).arg(QDir::separator()).arg(FileName);
   mw->publicSave(graphFileName);
   QFileInfo fi = QFileInfo(graphFileName);
   uint size = fi.size();
   if(size == 0)
-      {setError(-1,"no graph file");return -1;}
+      {setError(-1,"no graph file");return;}
   else if(sdebug)
       cli << ":SENDING:" << FileName << endl;
   QFile file(graphFileName);
@@ -255,15 +253,14 @@ int ClientSocket::sendSaveGraph(const QString &FileName)
   clo.writeBytes(buff,size);
   delete [] buff;
   file.remove();
-  return 0;
   }
-int ClientSocket::Png()
+void ClientSocket::Png()
   {mw->png();
   QString PngFileName =  QString("%1tmp%2server%3.png").arg(QDir::separator()).arg(QDir::separator()).arg(mw->ServerClientId);
   QFileInfo fi = QFileInfo(PngFileName);
   uint size = fi.size();
   if(size == 0)
-      {setError(-1,"no png file");return -1;}
+      {setError(-1,"no png file");return ;}
   else if(sdebug)
       cli << ":SENDING:" << PngFileName << endl;
   
@@ -276,22 +273,20 @@ int ClientSocket::Png()
   clo.writeBytes(buff,size);
   delete [] buff;
   file.remove();
-  return 0;
   }
-
-int ClientSocket::handlerInput(int action,const QString& dataParam)
+void ClientSocket::handlerInput(int action,const QString& dataParam)
   {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
   QString msg;
   int nfield = (int)fields.count();
   bool ok;
   switch(action)
       {case A_INPUT_READ_GRAPH:
-          {if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
+          {if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
            mw->InputFileName = fields[0];
            int num = 1;
            if(nfield > 1)num = fields[1].toInt(&ok);
-           if(!ok)return WRONG_PARAMETERS;
-           if(mw->publicLoad(num) < 0){setError(READ_ERROR,"read error");return READ_ERROR;}
+           if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
+           if(mw->publicLoad(num) < 0){setError(READ_ERROR,"read error");return;}
            }
            break;
       case  A_INPUT_NEW_GRAPH:
@@ -301,7 +296,7 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
           {int n = 1;
           if(nfield > 0)
               {n = fields[0].toInt(&ok);
-              if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
+              if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
               }
           TopologicalGraph G(mw->GC);
           for(int i = 0;i < n;i++)G.NewVertex();
@@ -317,25 +312,24 @@ int ClientSocket::handlerInput(int action,const QString& dataParam)
           }
           break;
       case A_INPUT_NEW_EDGE:
-          {if(nfield < 2){setError(WRONG_PARAMETERS,"need 2 vertices");return WRONG_PARAMETERS;}
+          {if(nfield < 2){setError(WRONG_PARAMETERS,"need 2 vertices");return;}
           int v1 = fields[0].toInt(&ok);
-          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
+          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
           int v2 = fields[1].toInt(&ok);
-          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
+          if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
           TopologicalGraph G(mw->GC);
           if(v1 > G.nv() || v2 > G.nv() || v1 == v2)
-              {setError(WRONG_PARAMETERS,"Wrong parameters");return WRONG_PARAMETERS;}
+              {setError(WRONG_PARAMETERS,"Wrong parameters");return;}
           G.NewEdge((tvertex)v1,(tvertex)v2);
           mw->gw->update();
           }
           break;
       default:
-          setError( UNKNOWN_COMMAND,"unknown command");return  UNKNOWN_COMMAND;
+          setError( UNKNOWN_COMMAND,"unknown command");
           break;
       }
-  return 0;
   }
-int ClientSocket::handlerInfo(int action)
+void ClientSocket::handlerInfo(int action)
   {TopologicalGraph G(mw->GC);
   mw->graph_properties->updateMenu(false);
   mw->information();
@@ -388,7 +382,8 @@ int ClientSocket::handlerInfo(int action)
           cli << inf->DegreeMax() << endl;
           break;
       case A_INFO_COORD:
-          {if(!G.Set(tvertex()).exist(PROP_COORD)) return PROP_NOT_DEFINED;
+          {if(!G.Set(tvertex()).exist(PROP_COORD)) 
+              {setError(WRONG_PARAMETERS,"NO COORDS");return;}
           Prop<Tpoint> coord(G.Set(tvertex()),PROP_COORD);
           cli << endl;
           for(tvertex v = 1;v <= G.nv();v++)
@@ -396,7 +391,8 @@ int ClientSocket::handlerInfo(int action)
           }
           break;
       case A_INFO_VLABEL:
-          {if(!G.Set(tvertex()).exist(PROP_LABEL)) return PROP_NOT_DEFINED;
+          {if(!G.Set(tvertex()).exist(PROP_LABEL))
+              {setError(WRONG_PARAMETERS,"NO LABEL");return;}
           Prop<long> label(G.Set(tvertex()),PROP_LABEL);
           cli << endl;
           for(tvertex v = 1;v <= G.nv();v++)
@@ -407,5 +403,4 @@ int ClientSocket::handlerInfo(int action)
           setError( UNKNOWN_COMMAND,"unknown command");
           break;
       }
-  return 0;
   }

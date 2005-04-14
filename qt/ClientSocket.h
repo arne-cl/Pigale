@@ -54,25 +54,21 @@ private slots:
   void writeServer(const QString&  msg);
 
 private: 
-  int xhandler(const QString& data);
+  void xhandler(const QString& data);
   void run();
   void sendServerId();
-  int Png();
-  int sendSaveGraph(const QString &FileName);
-  int ReadRemoteGraph(QString &dataParam);
-  int GetRemoteGraph();
-  int handlerInfo(int action);
-  int handlerInput(int action,const QString& data);
+  void Png();
+  void  sendSaveGraph(const QString &FileName);
+  void readServerGraph(QString &dataParam);
+  void readClientGraph(int indexRemoteGraph);
+  void handlerInfo(int action);
+  void handlerInput(int action,const QString& data);
   uint readBuffer(char  *  &buff);
-  int line;
   int prId;
   int sdebug;
-  bool getRemoteGraph;
-  int indexRemoteGraph;
   QTextStream cli;
   QDataStream clo;
   pigaleWindow *mw; 
-  QMutex mutexA;
 };
 
 class PigaleServer : public QServerSocket

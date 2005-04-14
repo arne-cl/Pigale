@@ -86,7 +86,7 @@ public:
 
 private:
   int sendToServerGraph(QString &str);
-  uint readBuffer(char  *  &buff);
+  uint readBuffer(char *  &buff);
   QMutex mutex;
   QTextStream cls;
   QDataStream clo;
@@ -97,7 +97,7 @@ private:
 
 public:
   bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
-  void debug(bool b) {mutex.lock(); dbg=b; mutex.unlock();}
+  void debug(bool b);
 };
 
 

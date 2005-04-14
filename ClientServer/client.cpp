@@ -54,6 +54,13 @@ int Client::ChangeActionsToDo(int delta)
       writeToClient(QString("%1").arg(*stack.top()));
   return i;
   }
+void Client:: debug(bool b) 
+  {mutex.lock(); dbg=b; mutex.unlock();
+  if(b)
+      {QString str = "S_DEBUG";
+      sendToServer(str);
+      }
+  }
 void Client::socketConnected()
   {infoText->append("Connected to server");
   ActionsToDo = 1; // wait server answers
@@ -110,7 +117,6 @@ void Client::sendToServer()
   sendToServer(str);
   inputText->setText("");
   }
-
 void Client::sendToServer(QString &str)
   {if(socket->state() != QSocket::Connected)
       {writeToClient(QString("state:%1").arg(socket->state()));return;}
@@ -135,7 +141,6 @@ void Client::sendToServer(QString &str)
           }
       }
   }
-
 int Client::sendToServerGraph(QString &data)
   {QStringList fields = QStringList::split(PARAM_SEP,data);
   if(fields.count() < 2){writeToClient("MISSING ARGUMENT");return -1;}
