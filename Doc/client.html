@@ -52,7 +52,7 @@ The server should be allowed to write on /tmp or \tmp on Windows (CREATE it, if 
 To launch the client/server application, first launch the server:<br>
 <tt>pigale -server</tt> (serves one client at a time)<br>
 then the client:<br>
-<tt>client</tt> or<tt> client &lt data</tt><br>
+<tt> client &lt data</tt><br> or a pipe <tt>cat data | client</tt>  (under Windows:  <tt>type data | client</tt>).
 If the Client does not run on the same machine as the server:<br>
 <tt>client www.computer.com &lt data  </tt>
 </p>
@@ -250,7 +250,7 @@ Below is a screenshot of the client running the previous file.<br>
 </center>
 
    <hr><!-- hhmts start -->
-Last modified: Thu Apr 14 16:35:14 CEST 2005
+Last modified: Thu Apr 14 21:03:54 CEST 2005
 <!-- hhmts end -->
 </body>
 

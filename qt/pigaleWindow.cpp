@@ -27,43 +27,17 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/clientEvent.h>
 
-#include <qmenudata.h> 
-#include <qmenubar.h>
 #include <qstatusbar.h>
-#include <qtoolbar.h>
-#include <qtoolbutton.h>
-#include <qpixmap.h>
-#include <qfiledialog.h>
-#include <qinputdialog.h> 
 #include <qfontdialog.h> 
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qapplication.h>
-#include <qlineedit.h>
-#include <qtabwidget.h>
-#include <qtabbar.h>
-#include <qwhatsthis.h>
 #include <qmessagebox.h>
-#include <qlabel.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qbuttongroup.h>
-#include <qpalette.h>
-#include <qcolordialog.h> 
-#include <qprinter.h> 
 #include <qprogressbar.h>
-#include <qrect.h> 
 
 
 int Test(GraphContainer &GC,int action,int & drawing);
 int InitPigaleServer(pigaleWindow *w);
 
 
-pigaleWindow::~pigaleWindow()
-  {delete printer;
-  pigaleThread.terminate();pigaleThread.wait();
-  }
+
 void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
   ServerClientId = 0;
@@ -165,12 +139,10 @@ QString pigaleWindow::getActionString(int action)
 int pigaleWindow::getActionInt(QString action_str)
   {return mapActionsInt[action_str];
   }
-
 void pigaleWindow::information()
   {if(!getError() && !MacroExecuting && !ServerExecuting)postMessageClear();
   graph_properties->update(!MacroExecuting && !ServerExecuting);
   }
-
 void pigaleWindow::settingsHandler(int action)
   {if(action == A_SET_COLOR)
       {SetPigaleColors(); return;}
@@ -395,7 +367,6 @@ void pigaleWindow::banner()
 	    ,UndoIndex,UndoMax);
   bannerEvent *e = new bannerEvent(msg);
   QApplication::postEvent(this,e);
-  //statusBar()->message(m);
   }
 void pigaleWindow::about()
   {QMessageBox::about(this,tr("Pigale Editor"), 
@@ -432,13 +403,13 @@ void  pigaleWindow::setShowOrientation(bool val)
 void pigaleWindow::print()
   {switch(tabWidget->currentPageIndex())
       {case 0:
-          gw->print(this->printer);
+          gw->print(printer);
           break;
       case 1:
-          mypaint->print(this->printer);
+          mypaint->print(printer);
           break;
       case 3:
-          graphsym->print(this->printer);
+          graphsym->print(printer);
           break;
       default:
           break;

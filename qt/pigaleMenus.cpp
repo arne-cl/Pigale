@@ -85,28 +85,27 @@ pigaleWindow::pigaleWindow()
     ,MacroRecording(false),MacroLooping(false)
     ,MacroExecuting(false),MacroPlay(false),Server(false)
   {int id;
-  Init_IO();
-  Init_IOGraphml();
-
   // Initialze Error
   setError();
 #ifdef _WINDOWS
    initGraphDebug();// as the compiler does not initialize static ...
 #endif
-   
+  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
+  DebugPrintf("Init seed:%ld",randomSetSeed());
+
   // Export some data
   DefineGraphContainer(&GC);
   DefinepigaleWindow(this);
   pigaleThread.mw = this;
   // Create the actions map
   mapActionsInit();
-
-
   // Create a tgf file with no records
   UndoInit();
-
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
+  // Initialize input/output drivers
+  Init_IO();
+  Init_IOGraphml();
   // Load settings, input and output filenames
 #if QT_VERSION >= 300
   QSettings setting;
@@ -121,21 +120,18 @@ pigaleWindow::pigaleWindow()
       OutputFileName = InputFileName;
       }
   }
+  // Load inpu/output drivers
   InputDriver = IO_WhoseIs((const char *)InputFileName);
   if (InputDriver<0) InputDriver=0;
   OutputDriver = IO_WhoseIs((const char *)OutputFileName);
   if (OutputDriver<0) OutputDriver=0;
-
   // Modify settings according to passed arguments
    ParseArguments();
-
   // Init random generator
   randomInitSeed();
-
   // Define some colors
   LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
-
   // Create a printer
   printer = new QPrinter;
 #if QT_VERSION >= 300 || _WINDOWS
@@ -613,19 +609,16 @@ pigaleWindow::pigaleWindow()
   progressBar->hide();
 
   mainWidget->setFocus(); 
-  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
-  
-  DebugPrintf("Init seed:%ld",randomSetSeed());
   
 #if QT_VERSION >= 300 || _WINDOWS
   //Check for documentation repertory
   QFileInfo fdoc = QFileInfo(DirFileDoc);
   if(!fdoc.exists() || !fdoc.isDir())
       {int rep = QMessageBox::warning(this,"Pigale Editor"
-				      ,tr("I cannot find the repertory <b>Doc<br>"
-					  "Load manually ?")
-				      ,QMessageBox::Ok
-				      ,QMessageBox::Cancel);
+                                      ,tr("I cannot find the repertory <b>Doc<br>"
+                                          "Load manually ?")
+                                      ,QMessageBox::Ok
+                                      ,QMessageBox::Cancel);
       if(rep == 1)
           {DirFileDoc = QFileDialog::
           getExistingDirectory(".",this,"find", tr("Choose the documentation directory <em>Doc</em>"),TRUE);
@@ -653,4 +646,7 @@ pigaleWindow::pigaleWindow()
   gw->update();
   if(!Server)load(0);
   }
-
+pigaleWindow::~pigaleWindow()
+  {delete printer;
+  pigaleThread.terminate();pigaleThread.wait();
+  }
