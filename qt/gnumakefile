@@ -348,6 +348,51 @@ pigaleCanvas.opt: ../../pigale/incl/QT/Misc.h
 pigaleCanvas.opt: ../../pigale/incl/QT/pigaleCanvas.h
 pigaleCanvas.opt: ../../pigale/incl/QT/grid.h
 pigaleCanvas.opt: ../../pigale/incl/QT/GraphWidgetPrivate.h
+pigaleFile.opt: ../../pigale/incl/config.h pigaleWindow.h
+pigaleFile.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tmessage.h
+pigaleFile.opt: ../../pigale/incl/TAXI/graphs.h
+pigaleFile.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tprop.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tsvector.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tdebug.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Errors.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tpropio.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tstring.h
+pigaleFile.opt: ../../pigale/incl/TAXI/propdef.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tpoint.h
+pigaleFile.opt: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+pigaleFile.opt: ../../pigale/incl/TAXI/random.h GraphWidget.h
+pigaleFile.opt: ../../pigale/incl/TAXI/Tgf.h ../../pigale/incl/QT/Misc.h
+pigaleMenus.opt: ../../pigale/incl/config.h pigaleWindow.h
+pigaleMenus.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tmessage.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/graphs.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tprop.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tsvector.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tdebug.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Errors.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tpropio.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tstring.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/propdef.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tpoint.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/color.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/Tfile.h
+pigaleMenus.opt: ../../pigale/incl/TAXI/random.h ../../pigale/incl/TAXI/Tgf.h
+pigaleMenus.opt: GraphWidget.h GraphGL.h GraphSym.h mouse_actions.h gprop.h
+pigaleMenus.opt: ../../pigale/incl/QT/Action_def.h LineEditNum.h
+pigaleMenus.opt: ../../pigale/incl/QT/pigaleWindow_doc.h
+pigaleMenus.opt: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
+pigaleMenus.opt: ../../pigale/incl/QT/pigalePaint.h
+pigaleMenus.opt: ../../pigale/incl/QT/pigaleCanvas.h
+pigaleMenus.opt: ../../pigale/incl/QT/grid.h
+pigaleMenus.opt: ../../pigale/incl/QT/clientEvent.h icones/fileopen.xpm
+pigaleMenus.opt: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
+pigaleMenus.opt: icones/info.xpm icones/sleft.xpm icones/sright.xpm
+pigaleMenus.opt: icones/sreload.xpm icones/help.xpm icones/xman.xpm
+pigaleMenus.opt: icones/sleftarrow.xpm icones/srightarrow.xpm
+pigaleMenus.opt: icones/sfilesave.xpm icones/macroplay.xpm icones/film.xpm
 pigalePaint.opt: pigaleWindow.h ../../pigale/incl/Pigale.h
 pigalePaint.opt: ../../pigale/incl/TAXI/Tbase.h
 pigalePaint.opt: ../../pigale/incl/TAXI/Tmessage.h
@@ -367,6 +412,23 @@ pigalePaint.opt: ../../pigale/incl/TAXI/random.h
 pigalePaint.opt: ../../pigale/incl/QT/pigalePaint.h
 pigalePaint.opt: ../../pigale/incl/QT/pigaleQcolors.h
 pigalePaint.opt: ../../pigale/incl/QT/Misc.h
+pigaleUndo.opt: ../../pigale/incl/config.h pigaleWindow.h
+pigaleUndo.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tmessage.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/graphs.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/graph.h ../../pigale/incl/TAXI/elmt.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tprop.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tsvector.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tdebug.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Errors.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tpropio.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tstring.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/propdef.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tpoint.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/random.h GraphWidget.h
+pigaleUndo.opt: ../../pigale/incl/TAXI/Tgf.h
+pigaleUndo.opt: ../../pigale/incl/QT/Action_def.h
 pigaleWindow.opt: ../../pigale/incl/config.h pigaleWindow.h
 pigaleWindow.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
 pigaleWindow.opt: ../../pigale/incl/TAXI/Tmessage.h
@@ -387,18 +449,12 @@ pigaleWindow.opt: ../../pigale/incl/TAXI/random.h
 pigaleWindow.opt: ../../pigale/incl/TAXI/Tgf.h GraphWidget.h GraphGL.h
 pigaleWindow.opt: GraphSym.h mouse_actions.h gprop.h
 pigaleWindow.opt: ../../pigale/incl/QT/Action_def.h LineEditNum.h
-pigaleWindow.opt: ../../pigale/incl/QT/pigaleWindow_doc.h
 pigaleWindow.opt: ../../pigale/incl/QT/Misc.h ../../pigale/incl/QT/Handler.h
 pigaleWindow.opt: ../../pigale/incl/QT/Action.h
 pigaleWindow.opt: ../../pigale/incl/QT/pigalePaint.h
 pigaleWindow.opt: ../../pigale/incl/QT/pigaleCanvas.h
 pigaleWindow.opt: ../../pigale/incl/QT/grid.h
-pigaleWindow.opt: ../../pigale/incl/QT/clientEvent.h icones/fileopen.xpm
-pigaleWindow.opt: icones/filenew.xpm icones/fileprint.xpm icones/filesave.xpm
-pigaleWindow.opt: icones/info.xpm icones/sleft.xpm icones/sright.xpm
-pigaleWindow.opt: icones/sreload.xpm icones/help.xpm icones/xman.xpm
-pigaleWindow.opt: icones/sleftarrow.xpm icones/srightarrow.xpm
-pigaleWindow.opt: icones/sfilesave.xpm icones/macroplay.xpm icones/film.xpm
+pigaleWindow.opt: ../../pigale/incl/QT/clientEvent.h
 Settings.opt: ../../pigale/incl/config.h pigaleWindow.h
 Settings.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tbase.h
 Settings.opt: ../../pigale/incl/TAXI/Tmessage.h

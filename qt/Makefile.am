@@ -17,7 +17,10 @@ FILES = \
     MiscQt.cpp \
     mouse_actions.cpp \
     pigaleCanvas.cpp \
+    pigaleFile.cpp \
+    pigaleMenus.cpp \
     pigalePaint.cpp \
+    pigaleUndo.cpp \
     pigaleWindow.cpp \
     Settings.cpp \
     Test.cpp

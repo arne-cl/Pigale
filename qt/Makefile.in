@@ -66,8 +66,8 @@ am__objects_1 = CanvasGrid.lo CanvasItem.lo CanvasSpring.lo \
 	ClientSocket.lo EmbedCurves.lo glcontrolwidget.lo gprop.lo \
 	GraphGL.lo graphml.lo graphmlparser.lo GraphSym.lo Handler.lo \
 	LineEditNum.lo Macro.lo MiscQt.lo mouse_actions.lo \
-	pigaleCanvas.lo pigalePaint.lo pigaleWindow.lo Settings.lo \
-	Test.lo
+	pigaleCanvas.lo pigaleFile.lo pigaleMenus.lo pigalePaint.lo \
+	pigaleUndo.lo pigaleWindow.lo Settings.lo Test.lo
 am__objects_2 =
 am__objects_3 = $(am__objects_1) $(am__objects_2)
 am_libpigaleQt_la_OBJECTS = $(am__objects_3)
@@ -228,7 +228,10 @@ FILES = \
     MiscQt.cpp \
     mouse_actions.cpp \
     pigaleCanvas.cpp \
+    pigaleFile.cpp \
+    pigaleMenus.cpp \
     pigalePaint.cpp \
+    pigaleUndo.cpp \
     pigaleWindow.cpp \
     Settings.cpp \
     Test.cpp
@@ -387,7 +390,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/moc_pigaleWindow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mouse_actions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigaleCanvas.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigaleFile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigaleMenus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigalePaint.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigaleUndo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pigaleWindow.Plo@am__quote@
 
 .cpp.o:

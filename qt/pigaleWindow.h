@@ -109,7 +109,7 @@ private:
   void ParseArguments(); 
   void Message(QString s);
   int postHandler(QCustomEvent *ev);
-  //int  getResultHandler(int value = 0);
+  void UndoInit();
 public slots:
   void banner();
   void timerWait();
