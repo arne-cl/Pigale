@@ -14,6 +14,12 @@
 
 using namespace std;
 
+QString  universalFileName(QString const & fileName)
+  {QString filename = fileName;
+  filename.replace('/', QDir::separator());
+  return filename;
+  }
+
 //class Client : public QVBox
 Client::Client(const QString &host, Q_UINT16 port)
     :ActionsToDo(0),dbg(false),numPng(0)
@@ -144,7 +150,8 @@ void Client::sendToServer(QString &str)
 int Client::sendToServerGraph(QString &data)
   {QStringList fields = QStringList::split(PARAM_SEP,data);
   if(fields.count() < 2){writeToClient("MISSING ARGUMENT");return -1;}
-  QString GraphFileName = fields[1].stripWhiteSpace();
+  QString FileName = fields[1].stripWhiteSpace();
+  QString GraphFileName = universalFileName(FileName);
   QFileInfo fi = QFileInfo(GraphFileName);
   if(GraphFileName.isEmpty() || !fi.isFile() || !fi.size())
       {writeToClient(QString("NO FILE:%1").arg(GraphFileName));

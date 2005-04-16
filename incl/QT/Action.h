@@ -118,4 +118,4 @@ static _Action actions[]={
 {"ACTION_NOT_APPLICABLE",(A_ERRORS-4)},
 {"ACTION_NOT_INT",(A_ERRORS-5)},
 {"READ_ERROR",(A_ERRORS-6)},
-{"NO_ACION",0}};
+{"NO_ACTION",0}};

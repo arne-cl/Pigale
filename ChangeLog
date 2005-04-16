@@ -1,30 +1,30 @@
-14/04/2005: The client can  transfer the current server graph in TGF, GRAPHML or ASCII format..
-08/04/2005: Text vertex labels for vertices can be displayed for all drawings.
-08/04/2005: Now sgml format is partiallysupported.
-04/04/2005: Now the first line of an ascii graph file must be:"PIG:0" (without ").	
+14/04/2005: the client can receive the current server graph in TGF, GRAPHML or ASCII format.
+08/04/2005: text labels for vertices can be displayed for all drawings.
+08/04/2005: graphml format is partially supported.
+04/04/2005: the first line of an ASCII graph file MUST be:"PIG:0" (without ").	
 -------------------------------------------------------------------------------------
-29/03/2005: Corrected a bug in Embedding in Rn (if an edge had a color index > 16).
-29/03/2005: Improved client-server.
-16/03/2005: Added in the file menu an option to start the server.
-11/03/2005: Now the zoom keeps the graph on a grid if any.
-09/03/2005: Corrected a bug that could occur while saving a tgf file.
-05/03/2005: Schnyder orientation was not displaying the orientation.	
-05/03/2005: Now Pigale uses a second thread for non graphic functions.
-25/02/2005: In all windows, the mouse wheel and the keyboard up, down and home are used to zoom.
-20/02/2005: Oriented edges can be drawn with an arrow
-18/02/2005: There were some bugs in the editor when reversing the orientation of an edge.
-18/02/2005: The vision algorithm does not anymore compute a biporlar orientation if the graph is already biporlarly oriented.
-11/02/2005: So now, triangulate by adding vertices and quandrangulate a graph by adding vertices work properly.
-11/02/2005: Added an algoritm to make a graph biconnected by adding vertices:
+29/03/2005: corrected a bug in Embedding in Rn (if an edge had a color index > 16).
+29/03/2005: improved client-server.
+16/03/2005: added in the file menu an option to start the server.
+11/03/2005: now the zoom keeps the graph on a grid if any.
+09/03/2005: corrected a bug that could occur while saving a tgf file.
+05/03/2005: schnyder orientation was not displaying the orientation.	
+05/03/2005: now Pigale uses a second thread for non graphic functions.
+25/02/2005: in all windows, the mouse wheel and the keyboard up, down and home are used to zoom.
+20/02/2005: oriented edges can be drawn with an arrow
+18/02/2005: there were some bugs in the editor when reversing the orientation of an edge.
+18/02/2005: the vision algorithm does not anymore compute a biporlar orientation if the graph is already biporlarly oriented.
+11/02/2005: so now, triangulate by adding vertices and quadrangle a graph by adding vertices work properly.
+11/02/2005: added an algorithm to make a graph biconnected by adding vertices:
 		int TopologicalGraph::NpBiconnectVertex()
-11/02/2005: Added an algoritm to make a graph connected by adding vertices:
+11/02/2005: added an algorithm to make a graph connected by adding vertices:
 		int TopologicalGraph::MakeConnectedVertex().
-10/02/2005: Improved ClientServer programs.
-04/02/2005: Dual graphs  and angle graphs are only computed for connected planar graphs.
-04/02/2005: Corrected a bug occurring while drawing a not connected bipartite graph by contact of segments.
-14/01/2005: Corrected a bug occurring while forcing the computation of the map of a tree.
-14/01/2005: Added an algorithm to color connected components:
+10/02/2005: improved ClientServer programs.
+04/02/2005: dual graphs  and angle graphs are only computed for connected planar graphs.
+04/02/2005: corrected a bug occurring while drawing a not connected bipartite graph by contact of segments.
+14/01/2005: corrected a bug occurring while forcing the computation of the map of a tree.
+14/01/2005: added an algorithm to color connected components:
 		int TopologicalGraph::ColorConnectedComponents().
-14/01/2005: Now the partition algorithm recolor the vertices between 1 and 16 (previously 0-15) and the colors  names are diplayed in the message window.
+14/01/2005: now the partition algorithm recolor the vertices between 1 and 16 (previously 0-15) and the colors  names are displayed in the message window.
  
 	

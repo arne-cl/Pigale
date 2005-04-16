@@ -4,4 +4,4 @@ BEGIN {
     }
 $1=="#define" { if(NF==5)  print "{\"" $5 "\"," $3 "},"} 
 
-END { print "{\"NO_ACION\",0}};"}
+END { print "{\"NO_ACTION\",0}};"}

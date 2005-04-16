@@ -199,7 +199,7 @@ tbrin SchnyderWood::GetParentBr(tvertex v, short c) const {
   case Green :
     return ParentG[v];
   default : 
-    setError();
+    setError(-1);
     return 0;
   }
 }
@@ -228,7 +228,7 @@ tvertex SchnyderWood::GetRoot(short c) const {
   case Green :
     return v_2;
   default : 
-    setError();
+    setError(-1);
     return 0;
   }
 }
@@ -262,7 +262,7 @@ bool SchnyderWood::remove_cw_elbow (tvertex v, short c) {
     ParentB[G.vin[b2]] = -b1;
     break;
   default : 
-    setError();
+    setError(-1);
     return 0;
   }
   brin_color[-b1] = brin_color[b2];
@@ -294,7 +294,7 @@ bool SchnyderWood::is_cw_elbow(tvertex v, short c) const {
       return false;
     break;
   default : 
-    setError();
+    setError(-1);
     return false;
   }
   return true;
@@ -322,7 +322,7 @@ bool SchnyderWood::remove_ccw_elbow (tvertex v, short c) {
     ParentR[G.vin[b2]] = -b1;
     break;
   default : 
-    setError();
+    setError(-1);
     return false;
   }
   brin_color[-b1] = brin_color[b2];
@@ -356,7 +356,7 @@ bool SchnyderWood::is_ccw_elbow(tvertex v, short c)  const {
       return false;
     break;
   default : 
-    setError();
+    setError(-1);
     return false;
   }
   return true;
@@ -584,7 +584,7 @@ bool SchnyderWood::cw_merge (tvertex v, short c) {
     ParentG[v] = b2;
     break;
   default : 
-    setError();
+    setError(-1);
     return false;
   }
   return true;
@@ -609,7 +609,7 @@ bool SchnyderWood::ccw_merge (tvertex v, short c) {
     ParentG[v] = b2;
     break;
   default : 
-    setError();
+    setError(-1);
     return false;
   }
   return true;
@@ -628,7 +628,7 @@ void SchnyderWood::CyclicColors(short c, short &c_left, short &c_right) const {
     c_left = Blue; c_right = Red;
     break;
   default : 
-    setError();
+    setError(-1);
   }
 }
 tvertex SchnyderWood::GetFirstChild( tvertex v, short c)  const {

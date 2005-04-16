@@ -31,6 +31,7 @@
 #include <qfileinfo.h>
 #include <qstring.h>
 #include <qmessagebox.h>
+#include <qdir.h> 
 
 static GraphContainer* gC;
 static pigaleWindow* mw;
@@ -42,8 +43,11 @@ void DefineGraphContainer(GraphContainer *GC0)
   {gC = GC0;}
 GraphContainer& GetMainGraph()
   {return *gC;}
-
-
+QString  universalFileName(QString const & fileName)
+  {QString filename = fileName;
+  filename.replace('/', QDir::separator());
+  return filename;
+  }
 QString  getErrorString()
   {QString m;
   if(getErrorMsg() &&  strlen(getErrorMsg()))

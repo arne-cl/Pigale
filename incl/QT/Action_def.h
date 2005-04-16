@@ -10,7 +10,7 @@
 *****************************************************************************/
 
 #ifndef  ACTIONS_H_INCLUDED
-#define  ACTIONS_H_INCLUDED 
+#define  ACTIONS_H_INCLUDED  
 
 // The header Action.h is automatically generated from this file
 // The comments defines the macronames which should not include whitespaces

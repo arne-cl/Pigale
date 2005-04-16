@@ -75,6 +75,7 @@
 
 void Init_IOGraphml();
 void UndoErase();
+void  initGraphDebug();
 
 pigaleWindow::pigaleWindow()
     :QMainWindow(0,"_Pigale",WDestructiveClose )

@@ -12,7 +12,7 @@ nodist_client_SOURCES =moc_client.cpp
 client_SOURCES = client.cpp client.h
 client_LDFLAGS=@LDFLAGS@
 
-EXTRA_DIST=Clientdata.txt ex.tgf symm.tgf graph.txt gnumakefile 
+EXTRA_DIST=Clientdata.txt  gnumakefile 
 
 OPT=@OPTIM@
 DEFS=-DQT_THREAD_SUPPORT  -DQT 

@@ -21,10 +21,10 @@
 #include <QT/pigalePaint.h>
 #include <QT/pigaleCanvas.h> 
 #include <QT/clientEvent.h> 
-
 #include <qmenubar.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+
 
 int InitPigaleServer(pigaleWindow *w)
   {PigaleServer  *server = new PigaleServer(w,qApp);
@@ -125,7 +125,7 @@ void ClientSocket::xhandler(const QString& dataAction)
   Tprintf("%s ",(const char *)dataAction);
  // call the right handler
   if(action == 0)
-      setError( UNKNOWN_COMMAND,"unknown command");
+      ;
   else if(action > A_INFO && action < A_INFO_END)
       handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
@@ -163,16 +163,10 @@ void ClientSocket::xhandler(const QString& dataAction)
       sdebug = 1;
   else
       setError( UNKNOWN_COMMAND,"unknown command");
-
+  
   if(getError())
-      {if(strlen(getErrorMsg()))
-          cli << ":ERROR "<< getErrorMsg() <<endl;
-      else
-          {cli <<":ERROR UNKNOWN '"<<mw->getActionString(action)<<endl;
-          cli <<": " <<dataAction<< endl;
-          }
-      }
-
+      cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
+  setError();
   cli << "!" << endl;
   }
 uint ClientSocket::readBuffer(char  *  &buffer)
@@ -213,7 +207,8 @@ void ClientSocket::readClientGraph(int indexRemoteGraph)
   uint size = readBuffer(buffer);
   if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return;}
   QString  GraphFileName;
-  GraphFileName.sprintf("%ctmp%cgraph%d.tmp",QDir::separator(),QDir::separator(),mw->ServerClientId);
+  GraphFileName.sprintf("/tmp/graph%d.tmp",mw->ServerClientId);
+  GraphFileName = universalFileName(GraphFileName);
   Tprintf("Receiving graph ->%s",(const char *)GraphFileName);
   QFile file(GraphFileName);
   file.remove();
@@ -236,7 +231,8 @@ void ClientSocket::readServerGraph(QString &dataParam)
   if(mw->publicLoad(num) < 0)setError(READ_ERROR,"coud not read file");
   }
 void ClientSocket::sendSaveGraph(const QString &FileName)
-  {QString graphFileName = QString("%1tmp%2%3").arg(QDir::separator()).arg(QDir::separator()).arg(FileName);
+  {QString graphFileName = QString("/tmp/%1").arg(FileName);
+ graphFileName = universalFileName(graphFileName);
   mw->publicSave(graphFileName);
   QFileInfo fi = QFileInfo(graphFileName);
   uint size = fi.size();
@@ -256,7 +252,8 @@ void ClientSocket::sendSaveGraph(const QString &FileName)
   }
 void ClientSocket::Png()
   {mw->png();
-  QString PngFileName =  QString("%1tmp%2server%3.png").arg(QDir::separator()).arg(QDir::separator()).arg(mw->ServerClientId);
+  QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
+  PngFileName = universalFileName(PngFileName);
   QFileInfo fi = QFileInfo(PngFileName);
   uint size = fi.size();
   if(size == 0)
@@ -282,7 +279,7 @@ void ClientSocket::handlerInput(int action,const QString& dataParam)
   switch(action)
       {case A_INPUT_READ_GRAPH:
           {if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
-           mw->InputFileName = fields[0];
+          mw->InputFileName = universalFileName(fields[0]);
            int num = 1;
            if(nfield > 1)num = fields[1].toInt(&ok);
            if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}

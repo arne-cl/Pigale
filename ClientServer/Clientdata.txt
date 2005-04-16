@@ -1,7 +1,7 @@
 # debug mode
 :D
-# ask to transfer a tgf file from the client and read the first graph
-RC_GRAPH;symm.tgf;1
+# ask to transfer a graphml file from the client
+RC_GRAPH;../tgf/sym.graphml
 GVISION
 # asks to create and transfer to the client a png file
 PNG
@@ -10,20 +10,17 @@ PNG
 SYMETRIE
 PNG
 
-# read another tgf file and load the second graph
-RC_GRAPH;ex.tgf;1
+# read another tgf file and load the first graph
+RC_GRAPH;../tgf/a.tgf;1
 # get the number of vertices and edges
 N:M
 # ask for a spring embedder
-SPRING_PM
-PNG
-FPP_RECTI
-PNG
-EMBED-3d
-PNG
+SPRING_PMPNG
+FPP_RECTI:PNG
+EMBED-3d:PNG
 
 #read an ascii file containing a graph
-RC_GRAPH;graph.txt
+RC_GRAPH;../tgf/graph.txt
 VISION
 PNG
 
@@ -45,8 +42,7 @@ N_E;3;5
 N:M
 #graph planar:
 PLAN:
-TUTTE_CIRCLE
-SPRING_PM
+TUTTE_CIRCLE:SPRING_PM:PNG
 RS_SAVE_GRAPH;g.graphml;
 # and close the file
 :!

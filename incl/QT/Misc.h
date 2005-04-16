@@ -24,6 +24,7 @@ void DrawGraph(void);
 void DrawGraph(Graph &G);
 GraphContainer& GetMainGraph();
 int GraphInformation();
+QString universalFileName(QString const & fileName);
 QString  getErrorString();
 void Normalise();
 void Normalise(GeometricGraph &G); 
