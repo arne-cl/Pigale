@@ -18,6 +18,7 @@
 #include <qmenubar.h>
 #include <QT/Action_def.h>
 #include <TAXI/Tsvector.h>
+#include <TAXI/graph.h>
 
 class QVBoxLayout; 
 class QHBoxLayout; 
@@ -46,7 +47,7 @@ public:
 		    const char* name = 0,WFlags fl = 0 );
   ~Graph_Properties();
  
-  void update(bool print = true);
+  void update(GraphContainer & GC,bool print = true);
   void updateMenu(bool val){_updateMenu = val;}
   bool Simple(){return S;}
   bool Planar(){return P;}

@@ -80,7 +80,7 @@ private slots:
   void previous();
   void reload();
   void next();
-  int save(bool askTitle = false);
+  int save(bool askTitle = true);
   //void save_ascii();
   void saveAs();
   void deleterecord();
@@ -110,6 +110,7 @@ private:
   void Message(QString s);
   int postHandler(QCustomEvent *ev);
   void UndoInit();
+  void initMenuTest();
 public slots:
   void banner();
   void timerWait();

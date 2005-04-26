@@ -178,7 +178,7 @@ t current tanslation of v0
   {GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
-  pigaleWindow *mw = GetpigaleWindow();
+  pigaleWindow *mw = gwp->mywindow;
   if(!draw) // called by thread
       {progressEvent *event = new progressEvent(1,G.nv());
       QApplication::postEvent(mw,event); 

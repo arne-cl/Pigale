@@ -103,7 +103,7 @@ void AllowAllMenus(QMenuBar *menubar)
   }
 /*
 void macroDefColors(int record)
-  {GeometricGraph G(GetMainGraph());
+  {GeometricGraph G(GC);
   G.ecolor.definit(MacroEcolor[record]); 
   G.vcolor.definit(MacroVcolor[record]); 
   G.ewidth.definit(MacroEwidth[record]);
@@ -140,7 +140,7 @@ void pigaleWindow::macroRecord(int action)
   MacroActions(++MacroNumActions) = action;
   QString str_action = getActionString(action);
   Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action);
-//   GeometricGraph G(GetMainGraph());
+//   GeometricGraph G(GC);
 //   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
 //   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
 //   int width;   G.ewidth.getinit(width);MacroEwidth(MacroNumActions) = width;

@@ -35,7 +35,7 @@ static char undofile[L_tmpnam] = "_undo.tgf" ;
 void pigaleWindow::UndoInit()
   {Tgf undo_tgf;
   undo_tgf.open(undofile,Tgf::create);
-  DebugPrintf("Debug Messages\nUndoFile:%s",undofile);
+  LogPrintf("Undo File:%s\n",undofile);
   }
 void pigaleWindow::Undo()
   {if (UndoIndex > UndoMax) UndoSave();

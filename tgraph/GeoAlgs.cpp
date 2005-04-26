@@ -33,8 +33,7 @@ int compare(const void *b1, const void *b2)
   else return 1;
   }
 void GeometricGraph::init()
-  {
-  ecolor.SetName("ecolor");ewidth.SetName("ewidth");elabel.SetName("elabel");
+  {ecolor.SetName("ecolor");ewidth.SetName("ewidth");elabel.SetName("elabel");
   vcolor.SetName("vcolor");vlabel.SetName("vlabel");vcoord.SetName("vcoord");
 
   if(!nv()) maxvlabel=0;
@@ -117,6 +116,36 @@ int GeometricGraph::ComputeGeometricCir()
   if(genus == 0)extbrin() = FindExteriorFace();
   else Set().erase(PROP_PLANARMAP);
   return genus;
+  }
+void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)
+  {tvertex v;
+  tbrin b0,b,opp;
+  Tpoint p;
+  int degree;
+  
+  for(v = 1;v <=G. nv();v++)
+      {degree = G.Degree(v);
+      svector<OrderedBrin> ob(degree);
+      
+      if((b0 = G.pbrin[v]) == 0)continue;
+      // Put adjacent brins in the array.
+      int i = 0; b = b0;
+      p = G.vcoord[v];
+      do
+          {ob[i].brin = b;
+          ob[i].angle = Angle(G.vcoord[G.vin[-b]]-p);
+          b = G.cir[b]; i++;
+          }while (b != b0);
+
+      if(!i)continue;
+      qsort(ob.begin(), degree, sizeof(OrderedBrin), compare);
+
+      // rewrite cir which is COUNTERCLOCKWISE.
+      for (i = 0; i < degree - 1; i++)
+          cir[ob[i+1].brin] = ob[i].brin;
+      cir[ob[0].brin] = ob[degree - 1].brin;
+      }
+  cir[0] = 0;
   }
 tbrin GeometricGraph::FindExteriorFace()
   {//find leftmost vertex with edges
@@ -445,7 +474,6 @@ int GeometricGraph::Tutte()
   M.clear();
   a.clear();
   
-  
   ForAllVerticesOfG(v)
       {if (marked[v]) 
           {M[v()-1][v()-1]= 1.; a[v()-1]=vcoord[v].x();}
@@ -462,5 +490,68 @@ int GeometricGraph::Tutte()
   y = Inv * a;
   ForAllVerticesOfG(v) vcoord[v] = Tpoint(x[v()-1], y[v()-1]);
   return 1;
+  }
+
+void ColorPoles(GeometricGraph &G)
+  {for(tvertex v = 1; v <= G.nv();v++)
+      {int Out = G.OutDegree(v);
+      int In = G.InDegree(v);
+      if(In == 0 && Out == 0)G.vcolor[v] = Pink;
+      else if(In == 0)G.vcolor[v] = Green;
+      else if(Out == 0)G.vcolor[v] = Red;
+      else G.vcolor[v] = Yellow;
+      }
+  }
+
+//  CheckCoordNotOverlap
+void HeapSort(int (*f)(int a,int b),int first,int nelements,int *heap);
+
+static bool Equal(double x, double y);
+static bool Less(double x, double y);
+static int Cmp(int i,int j);
+static double Epsilon = 2.;
+static double *xcoord, *ycoord;
+
+bool Equal(double x, double y)
+  {if(fabs(x-y) <= Epsilon)return true;
+  return false;
+  }
+bool Less(double x, double y)
+  {if(!Equal(x,y) && x < y)return true;
+  return false;
+  }
+int Cmp(int i,int j)
+  {double ax = xcoord[i];
+  double ay = ycoord[i];
+  double bx = xcoord[j];
+  double by = ycoord[j];
+  if(Less(ax,bx))return 1;
+  if(Equal(ax,bx) && Less(ay,by))return 1;
+  return 0;
+  }
+bool CheckCoordNotOverlap(GeometricGraph & G)
+  {bool ok = true;
+  int n = G.nv();
+  int *heap = new int[n+1];xcoord = new double[n+1];ycoord = new double[n+1];
+  int i;
+  for(i = 1;i <= n;i++)
+      {xcoord[i] = G.vcoord[i].x();
+      ycoord[i] = G.vcoord[i].y();
+      }
+  HeapSort (Cmp,1,n,heap);
+  double pos,prevpos;
+  prevpos = G.vcoord[heap[0] + 1].x();
+  int i0 = 0;
+  for(i = 1;i < n;i++)
+      {pos = G.vcoord[heap[i] + 1].x();
+      if(Equal(pos,prevpos) &&  G.vcoord[heap[i] + 1].y() == G.vcoord[heap[i0] + 1].y())
+          {ok = false;   
+          break;
+          }
+      prevpos = pos;
+      i0 = i;
+      }
+  delete [] heap;delete [] xcoord;delete [] ycoord;
+  return ok;
   }
 

@@ -18,11 +18,10 @@ static int Test1(GraphContainer &GC,int &drawing);
 static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 
-void initMenuTest()
-  {pigaleWindow *mw =  GetpigaleWindow();
-  mw->setUserMenu(1,"TestPlanar x1000");
-  mw->setUserMenu(2,"TestPlanar2 x1000");
-  mw->setUserMenu(3,"Properties");
+void pigaleWindow:: initMenuTest()
+  {setUserMenu(1,"TestPlanar x1000");
+  setUserMenu(2,"TestPlanar2 x1000");
+  setUserMenu(3,"Properties");
   }
 int Test(GraphContainer &GC,int action,int &drawing)
   {if(action == 1)return Test1(GC,drawing);

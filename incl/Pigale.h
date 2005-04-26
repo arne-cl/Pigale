@@ -21,8 +21,10 @@
 int NPBipolar(TopologicalGraph &G, tbrin bst);
 int EmbedGVision(TopologicalGraph &G);
 int TestOuterPlanar(TopologicalGraph &G);
-//in MiscQt.cpp
-QString getVertexLabel(GraphContainer &GC,tvertex v);
+void ColorPoles(GeometricGraph &G);
+bool CheckCoordNotOverlap(GeometricGraph & G);
+void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
+
 // Drawings
 bool & SchnyderRect();
 bool & SchnyderLongestFace();

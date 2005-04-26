@@ -11,17 +11,20 @@
 
 #ifndef HANDLER_H
 #define HANDLER_H_
+
+#include <Pigale.h> 
+
 bool & SchnyderRect();
 bool & SchnyderLongestFace();
 bool & SchnyderColor();
-int EmbedHandler(int action,int &drawing); 
-int OrientHandler(int action); 
-int AlgoHandler(int action); 
-int DualHandler(int action); 
-int RemoveHandler(int action); 
-int AugmentHandler(int action); 
-int AlgoHandler(int action,int nn); 
-int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen);
+int EmbedHandler(GraphContainer &GC,int action,int &drawing); 
+int OrientHandler(GraphContainer &GC,int action); 
+int AlgoHandler(GraphContainer &GC,int action); 
+int DualHandler(GraphContainer &GC,int action); 
+int RemoveHandler(GraphContainer &GC,int action); 
+int AugmentHandler(GraphContainer &GC,int action); 
+int AlgoHandler(GraphContainer &GC,int action,int nn); 
+int GenerateHandler(GraphContainer &GC,int action,int n1_gen,int n2_gen,int m_gen);
 // in Generate.cpp
 bool & EraseMultipleEdges();
 #endif

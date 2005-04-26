@@ -86,22 +86,19 @@ pigaleWindow::pigaleWindow()
     ,MacroRecording(false),MacroLooping(false)
     ,MacroExecuting(false),MacroPlay(false),Server(false)
   {int id;
-  // Initialze Error
+  // Initialize Error
   setError();
 #ifdef _WINDOWS
    initGraphDebug();// as the compiler does not initialize static ...
 #endif
-  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
-  DebugPrintf("Init seed:%ld",randomSetSeed());
 
   // Export some data
-  DefineGraphContainer(&GC);
+  //DefineGraphContainer(&GC);
   DefinepigaleWindow(this);
   pigaleThread.mw = this;
   // Create the actions map
   mapActionsInit();
-  // Create a tgf file with no records
-  UndoInit();
+
   // Atexit: Erase undo_tgf_XXXXXX
   atexit(UndoErase);
   // Initialize input/output drivers
@@ -644,6 +641,9 @@ pigaleWindow::pigaleWindow()
       }
 #endif  
   initMenuTest();
+  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
+  UndoInit();// Create a tgf file with no records
+  LogPrintf("Init seed:%ld\n",randomSetSeed());
   gw->update();
   if(!Server)load(0);
   }

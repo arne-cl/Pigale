@@ -24,8 +24,8 @@
 // 4 3d drawing
 // 5 symetrie
 
-int OrientHandler(int action)
-  {GeometricGraph G(GetMainGraph());
+int OrientHandler(GraphContainer &GC,int action)
+  {GeometricGraph G(GC);
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
   int ret = 2;
   int i = 0;
@@ -98,8 +98,8 @@ int OrientHandler(int action)
       }
   return ret;
   }
-int AlgoHandler(int action,int nn)
-  {GeometricGraph G(GetMainGraph());
+int AlgoHandler(GraphContainer &GC,int action,int nn)
+  {GeometricGraph G(GC);
   int ret = 0;
   int i;
   tedge e; tvertex v;
@@ -219,8 +219,8 @@ int AlgoHandler(int action,int nn)
   if(ret)return -1;
   return 1;
   }
-int EmbedHandler(int action,int &drawing)
-  {TopologicalGraph G(GetMainGraph());
+int EmbedHandler(GraphContainer &GC,int action,int &drawing)
+  {TopologicalGraph G(GC);
   GeometricGraph G0(G);
   int ret;
   int err = 0;
@@ -304,8 +304,8 @@ int EmbedHandler(int action,int &drawing)
   if(err)return -1;
   return ret;
   }
-int AugmentHandler(int action)
-  {GeometricGraph  G(GetMainGraph());
+int AugmentHandler(GraphContainer &GC,int action)
+  {GeometricGraph  G(GC);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
   int ret = 0;
   int i;
@@ -375,8 +375,8 @@ int AugmentHandler(int action)
   if(ret)return -1;
   return 2;
   }
-int DualHandler(int action)
-  {GeometricGraph G(GetMainGraph());
+int DualHandler(GraphContainer &GC,int action)
+  {GeometricGraph G(GC);
   GraphContainer *pGC;
   switch(action)
       {case A_GRAPH_DUAL:
@@ -406,12 +406,12 @@ int DualHandler(int action)
       default:
           break;
       }
-  {TopologicalGraph GG(GetMainGraph()); GG.RemoveLoops();}
+  {TopologicalGraph GG(GC); GG.RemoveLoops();}
   return 2;
   }
-int RemoveHandler(int action)
-  {TopologicalGraph G(GetMainGraph());
-  GeometricGraph GG(GetMainGraph());
+int RemoveHandler(GraphContainer &GC,int action)
+  {TopologicalGraph G(GC);
+  GeometricGraph GG(GC);
   int n;
   tvertex v;
   tedge e;
@@ -448,7 +448,7 @@ int RemoveHandler(int action)
       }
   return 20;
   }
-int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
+int GenerateHandler(GraphContainer &GCC,int action,int n1_gen,int n2_gen,int m_gen)
   {GraphContainer *GC=(GraphContainer *)0;
   switch(action)
       {case  A_GENERATE_GRID:
@@ -513,8 +513,8 @@ int GenerateHandler(int action,int n1_gen,int n2_gen,int m_gen)
           return 0;
       }
   if(GC)
-      {GetMainGraph().Tswap(*GC);
-      GeometricGraph GG(GetMainGraph());
+      {GCC.Tswap(*GC);
+      GeometricGraph GG(GCC);
       }
   else {setError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}
   delete GC;

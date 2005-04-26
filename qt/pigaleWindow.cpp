@@ -141,7 +141,7 @@ int pigaleWindow::getActionInt(QString action_str)
   }
 void pigaleWindow::information()
   {if(!getError() && !MacroExecuting && !ServerExecuting)postMessageClear();
-  graph_properties->update(!MacroExecuting && !ServerExecuting);
+  graph_properties->update(GC,!MacroExecuting && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
   {if(action == A_SET_COLOR)
@@ -215,25 +215,25 @@ void PigaleThread::run()
   int saveType = 0;
   int drawingType = 0;
   if(action < A_AUGMENT_END)
-      ret = AugmentHandler(action);
+      ret = AugmentHandler(mw->GC,action);
   else if(action < A_EMBED_END)
-      ret = EmbedHandler(action,drawingType);
+      ret = EmbedHandler(mw->GC,action,drawingType);
   else if(action < A_GRAPH_END)
-      {ret = DualHandler(action); 
+      {ret = DualHandler(mw->GC,action); 
       saveType = 1;
       }
   else if(action < A_REMOVE_END)
-      {ret = RemoveHandler(action);
+      {ret = RemoveHandler(mw->GC,action);
       saveType = 2;
       }
   else if(action < A_GENERATE_END)
-      {ret = GenerateHandler(action,N1,N2,M);
+      {ret = GenerateHandler(mw->GC,action,N1,N2,M);
       saveType = 1;
       }
   else if(action < A_ALGO_END)
-      ret = AlgoHandler(action,N);
+      ret = AlgoHandler(mw->GC,action,N);
   else if(action < A_ORIENT_END)
-      {ret = OrientHandler(action);
+      {ret = OrientHandler(mw->GC,action);
       ShowOrientation() = true;
       }
 //   else if(action < A_TEST_END)

@@ -218,11 +218,11 @@ glcontrolwidget.opt: ../../pigale/incl/TAXI/Tbase.h glcontrolwidget.h
 gprop.opt: gprop.h ../../pigale/incl/QT/Action_def.h
 gprop.opt: ../../pigale/incl/TAXI/Tsvector.h ../../pigale/incl/TAXI/Tbase.h
 gprop.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tdebug.h
-gprop.opt: ../../pigale/incl/TAXI/Errors.h pigaleWindow.h
-gprop.opt: ../../pigale/incl/Pigale.h ../../pigale/incl/TAXI/Tmessage.h
-gprop.opt: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
+gprop.opt: ../../pigale/incl/TAXI/Errors.h ../../pigale/incl/TAXI/graph.h
 gprop.opt: ../../pigale/incl/TAXI/Tprop.h ../../pigale/incl/TAXI/Tpropio.h
 gprop.opt: ../../pigale/incl/TAXI/Tstring.h ../../pigale/incl/TAXI/propdef.h
+gprop.opt: pigaleWindow.h ../../pigale/incl/Pigale.h
+gprop.opt: ../../pigale/incl/TAXI/Tmessage.h ../../pigale/incl/TAXI/graphs.h
 gprop.opt: ../../pigale/incl/TAXI/Tpoint.h ../../pigale/incl/TAXI/color.h
 gprop.opt: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
 gprop.opt: ../../pigale/incl/QT/Misc.h
@@ -279,8 +279,7 @@ GraphSym.opt: ../../pigale/incl/TAXI/Tfile.h ../../pigale/incl/TAXI/random.h
 GraphSym.opt: GraphSym.h ../../pigale/incl/QT/SymWindow.h
 GraphSym.opt: ../../pigale/incl/QT/pigaleQcolors.h
 GraphSym.opt: ../../pigale/incl/QT/Misc.h
-Handler.opt: ../../pigale/incl/QT/Handler.h ../../pigale/incl/QT/Action_def.h
-Handler.opt: pigaleWindow.h ../../pigale/incl/Pigale.h
+Handler.opt: ../../pigale/incl/QT/Handler.h ../../pigale/incl/Pigale.h
 Handler.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h
 Handler.opt: ../../pigale/incl/TAXI/graphs.h ../../pigale/incl/TAXI/graph.h
 Handler.opt: ../../pigale/incl/TAXI/elmt.h ../../pigale/incl/TAXI/Tprop.h
@@ -290,7 +289,9 @@ Handler.opt: ../../pigale/incl/TAXI/Tpropio.h
 Handler.opt: ../../pigale/incl/TAXI/Tstring.h
 Handler.opt: ../../pigale/incl/TAXI/propdef.h ../../pigale/incl/TAXI/Tpoint.h
 Handler.opt: ../../pigale/incl/TAXI/color.h ../../pigale/incl/TAXI/Tfile.h
-Handler.opt: ../../pigale/incl/TAXI/random.h ../../pigale/incl/QT/Misc.h
+Handler.opt: ../../pigale/incl/TAXI/random.h
+Handler.opt: ../../pigale/incl/QT/Action_def.h pigaleWindow.h
+Handler.opt: ../../pigale/incl/QT/Misc.h
 LineEditNum.opt: LineEditNum.h
 Macro.opt: pigaleWindow.h ../../pigale/incl/Pigale.h
 Macro.opt: ../../pigale/incl/TAXI/Tbase.h ../../pigale/incl/TAXI/Tmessage.h

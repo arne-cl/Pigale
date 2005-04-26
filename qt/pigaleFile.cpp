@@ -184,7 +184,7 @@ int pigaleWindow::publicSave(QString FileName)
       {setError(-1,"UNKNOWN DRIVER");return -1;}
   OutputFileName = FileName;
   OutputDriver = driver;
-  save();
+  save(false);
   return 0;
   }
 void pigaleWindow::saveAs()
@@ -237,7 +237,7 @@ void pigaleWindow::NewGraph()
   {setError();
   statusBar()->message("New graph");
   UndoClear();UndoSave();
-  Graph G(GetMainGraph());
+  Graph G(GC);
   G.StrictReset();
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   if(debug())DebugPrintf("**** New graph");

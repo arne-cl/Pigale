@@ -146,13 +146,13 @@ void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
 Graph_Properties::~Graph_Properties()
   { }
 void Graph_Properties::MaxNSlowChanged(int i)
-  {MaxNSlow = i;//if(GetMainGraph().nv())update();
+  {MaxNSlow = i;
   }
 void Graph_Properties::MaxNDisplayChanged(int i)
-  {MaxNDisplay = i;//if(GetMainGraph().nv())update();
+  {MaxNDisplay = i;
   }
-void Graph_Properties::update(bool print)
-  {GeometricGraph G(GetMainGraph());
+void Graph_Properties::update(GraphContainer & GC,bool print)
+  {GeometricGraph G(GC);
   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
       setError(-1,"vin[0] or cir[0] or acir[0] != 0");

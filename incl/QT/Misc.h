@@ -15,15 +15,12 @@
 #include <qstring.h> 
 
 // in Misc.cpp 
-void DefineGraphContainer(GraphContainer *GC);
+QString getVertexLabel(GraphContainer &GC,tvertex v);
 void DefinepigaleWindow(pigaleWindow *father);
-void DefinepigalePaintWindow(pigalePaint *p);
 pigaleWindow* GetpigaleWindow();
-pigalePaint* GetpigalePaintWindow();
 void DrawGraph(void);
 void DrawGraph(Graph &G);
-GraphContainer& GetMainGraph();
-int GraphInformation();
+//int GraphInformation();
 QString universalFileName(QString const & fileName);
 QString  getErrorString();
 void Normalise();
@@ -37,9 +34,5 @@ int & ShowVertex();
 QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);
 bool & ShowIndex();
-void ColorPoles(GeometricGraph &G);
-bool CheckCoordNotOverlap(GeometricGraph & G);
-void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
-//in Test.cpp
-void  initMenuTest();
+
 #endif
