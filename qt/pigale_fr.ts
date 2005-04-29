@@ -180,7 +180,7 @@
     </message>
     <message>
         <source>Save Asc&amp;ii</source>
-        <translation>Sauver Asc&amp;ii</translation>
+        <translation type="obsolete">Sauver Asc&amp;ii</translation>
     </message>
     <message>
         <source>&amp;Delete current record</source>
@@ -886,6 +886,26 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>&amp;Init server</source>
         <translation>&amp;Démarrer le serveur</translation>
+    </message>
+    <message>
+        <source>Choose a file to open</source>
+        <translation>Choisir un fichier</translation>
+    </message>
+    <message>
+        <source>Choose a filename to save under</source>
+        <translation>Choisir un fichier pour sauver le graphe</translation>
+    </message>
+    <message>
+        <source>&amp;Unorient all edges</source>
+        <translation>Désorienter les arêtes (&amp;U)</translation>
+    </message>
+    <message>
+        <source>BFS Orientation</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation>Texte</translation>
     </message>
 </context>
 </TS>
