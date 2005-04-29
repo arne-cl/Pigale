@@ -17,7 +17,7 @@ DFLAGS = -I$(PIGALEPATH)/incl
 #awk 
 AWK=awk
 ####################### END EDITING #########################
-PIGALEPATH=../../pigale
+PIGALEPATH=..
 NVERSION=BETA
 # P = name of output program
 
@@ -28,14 +28,14 @@ MMOC=$(MQTDIR)/bin/moc
 .SUFFIXES:.cpp .o .obj .opt .dbg
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC) $(CPU)
-CFLAGSopt +=  -Wall -Wstrict-prototypes -Wpointer-arith -Werror  -pipe
+CFLAGSopt +=  -Wall -Wpointer-arith -Werror  -pipe
 CFLAGSopt +=  -fomit-frame-pointer 
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
 CFLAGSopt +=  -DQT_THREAD_SUPPORT 
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
-CFLAGSdbg +=  -Wstrict-prototypes -Wpointer-arith -Werror -pipe
+CFLAGSdbg +=  -Wpointer-arith -Werror -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 CFLAGSdbg +=  -DQT_THREAD_SUPPORT 
@@ -44,14 +44,14 @@ CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = ./.obj
 
 
-all : client
+all : md client
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
 
 
-client:md client.h client.cpp  
+client: client.h client.cpp  
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
 	$(MMOC) client.h -o moc_client.cpp
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
@@ -61,7 +61,7 @@ client:md client.h client.cpp
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
 
-md: 
+md: depend
 	@if ! test -d .obj ; then mkdir .obj ; fi
 
 depend:
@@ -75,6 +75,5 @@ nodepend:
 .PHONY: md all
 # DO NOT DELETE
 
-client.dbg: client.h ../../pigale/incl/config.h
-client.dbg: ../../pigale/incl/QT/clientEvent.h
-client.dbg: ../../pigale/incl/QT/Action_def.h ../../pigale/incl/TAXI/Tbase.h
+client.opt: client.h ../incl/config.h ../incl/QT/clientEvent.h
+client.opt: ../incl/QT/Action_def.h ../incl/TAXI/Tbase.h

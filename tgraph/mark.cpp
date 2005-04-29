@@ -86,7 +86,7 @@ void MarkPaths(TopologicalGraph &G,
       f[v]=dists[v]-distt[v];
   --f[s];
   ++f[t];
-  Prop<bool> Oriented(G.Set(tedge()),PROP_ORIENTED);
+  Prop<bool> Oriented(G.Set(tedge()),PROP_ORIENTED,true);
   for (tbrin b=1; b<=m; b++) // outgoing brins -> (v,w)
       {v=G.vin[b];
       w=G.vin[-b];

@@ -184,7 +184,7 @@ int EmbedContactBip(GeometricGraph &G)
   int  n_origin = G.nv();
   int m_origin = G.ne();
   svector<bool> save_oriented(0,G.ne());
-  Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,0);
+  Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,false);
   save_oriented.Tswap(oriented);
   if(DecompMaxBip(G,FirstBrin))
       {save_oriented.Tswap(oriented);G.RestoreOrientation();return 1;}

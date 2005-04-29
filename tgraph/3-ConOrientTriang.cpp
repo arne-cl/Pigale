@@ -35,7 +35,7 @@ int TopologicalGraph::Tricon3orient()
   int OrgM = ne();
   tbrin b = extbrin();
   if(KantTriangulateAndThreeOrient(*this,b)) return -1;
-  Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED,1);
+  Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED,true);
   tedge e;
   for(e = ne();e > OrgM;e--) DeleteEdge(e); 
   for(e = 1;e <= ne();e++) eoriented[e] = true;

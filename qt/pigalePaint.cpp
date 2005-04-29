@@ -319,6 +319,7 @@ void DrawGeneralVisibility(QPainter *p,pigalePaint *paint)
   Prop<int> y(G.Set(tvertex()),PROP_DRAW_INT_5);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH,1);
   double alpha=0.35;
   Tpoint a,b;
 
@@ -337,7 +338,7 @@ void DrawGeneralVisibility(QPainter *p,pigalePaint *paint)
     if (a.x()>=x1[G.vin[e]] && a.x()<=x2[G.vin[e]]) a.y()+=alpha;
     b.x() = P1[e].x();  b.y() = P2[e].y();
     if (b.x()>=x1[G.vin[-e]] && b.x()<=x2[G.vin[-e]]) b.y()-=alpha;
-    paint->DrawSeg(p,a,b,ecolor[e]);
+    paint->DrawSeg(p,a,b,ecolor[e],ewidth[e]);
     }
   }
 
@@ -502,11 +503,11 @@ int pigalePaint::to_x(double x)
 int pigalePaint::to_y(double y)
   {return (int)(this->height() - y*yscale -ytr + .5);
   }
-void pigalePaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col)
+void pigalePaint::DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col,int width)
   {QPen pn = p->pen();
   QPoint ps = QPoint(to_x(a.x()),to_y(a.y()));
   QPoint pt = QPoint(to_x(b.x()),to_y(b.y()));
-  pn.setColor(color[bound(col,1,16)]); pn.setWidth(1);
+  pn.setColor(color[bound(col,1,16)]); pn.setWidth(width);
   p->setPen(pn);
   p->drawLine(ps,pt);
   }

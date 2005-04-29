@@ -298,7 +298,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       return; 	  
       }
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
-      {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+    {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
       Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); 
       Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
       gwp->mywindow->setShowOrientation(true);
@@ -604,7 +604,7 @@ void GraphEditor::load(bool initgrid)
   for(tedge e = 1;e <= G.ne();e++)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
 
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
 //   Prop<long> elabel(G.Set(tedge()),PROP_LABEL);  elabel.definit(0);
 //   Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL); vlabel.definit(0);
   CreateColorItems(gwp,color_node,color_edge);

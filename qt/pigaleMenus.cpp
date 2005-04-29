@@ -388,6 +388,7 @@ pigaleWindow::pigaleWindow()
   menuBar()->insertItem(tr("&Orient"),orient);
   connect(orient,SIGNAL(activated(int)),SLOT(handler(int)));
   orient->insertItem(tr("&Orient all edges"),     A_ORIENT_E);
+  orient->insertItem(tr("&Unorient all edges"),     A_ORIENT_NOE);
   orient->insertItem(tr("&Color Poles"),          A_ORIENT_SHOW);
   orient->insertItem(tr("&ReOrient color edges"), A_REORIENT_COLOR);
   orient->insertItem(tr("&Inf Orientation"),      A_ORIENT_INF);
@@ -396,6 +397,8 @@ pigaleWindow::pigaleWindow()
   orient->insertItem(tr("Planar &Schnyder"),      A_ORIENT_SCHNYDER);
   orient->insertItem(tr("B&ipolarOrient Planar"), A_ORIENT_BIPOLAR);
   orient->insertItem(tr("BipolarOrient"),         A_ORIENT_BIPOLAR_NP);
+  orient->insertItem(tr("BFS Orientation"),       A_ORIENT_BFS);
+
 
   QPopupMenu *generate      = new QPopupMenu( this );
   QPopupMenu *popupCubic    = new QPopupMenu(this);

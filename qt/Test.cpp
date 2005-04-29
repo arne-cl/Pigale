@@ -19,7 +19,7 @@ static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 
 void pigaleWindow:: initMenuTest()
-  {setUserMenu(1,"TestPlanar x1000");
+  {setUserMenu(1,"BFS drawing");
   setUserMenu(2,"TestPlanar2 x1000");
   setUserMenu(3,"Properties");
   }
@@ -34,12 +34,29 @@ int Test2(GraphContainer &GC,int &drawing)
        G.TestPlanar2();
    return 0;
   }
+void BFSOrientTree(TopologicalGraph &G, tvertex v0);
+int Vision(TopologicalGraph &xG,int morg);
+
 int Test1(GraphContainer &GC,int &drawing)
-  {GeometricGraph GG(GC);
-  for (int i=1; i<=1000; i++)
-      GG.TestPlanar();
-  drawing = 0;
-  return 0;
+  {TopologicalGraph G(GC);
+    int morg=G.ne();
+    if(!G.CheckConnected())G.MakeConnected();
+    BFSOrientTree(G,tvertex(1));
+    Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH,1);
+    Prop<bool> istree(G.Set(tedge()),PROP_ISTREE);
+    for (tedge e=1; e<=morg; e++)
+      if (istree[e]) ewidth[e]++;
+    G.RestoreOrientation(); 
+    GeometricGraph GG(G);
+    ColorPoles(GG);
+    tvertex t = G.NewVertex();
+    for (tvertex v=1; v<G.nv(); v++)
+      if (G.OutDegree(v)==0) G.NewEdge(v,t);
+    Vision(G,morg);  
+    G.DeleteVertex(t);
+    while (G.ne()>morg) G.DeleteEdge(G.ne());
+    drawing=2;
+  return 3;
   }
 int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.

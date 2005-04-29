@@ -23,7 +23,7 @@ lowest sommet le plus bas a partir duquel on oriente une chaine
 
 int TopologicalGraph::PseudoBipolarPlan(tbrin& st_brin,int &NumberOfSinks)
   {if(debug())DebugPrintf("Executing PseudoBipolar");
-  Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED); eoriented.SetName("PseudoB:eoriented");
+    Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED,true); eoriented.SetName("PseudoB:eoriented");
   RemoveLoops();
   int m_origin = ne();
   MakeConnected();
@@ -107,7 +107,7 @@ int TopologicalGraph::BipolarPlan(tbrin FirstBrin)
   for (v = vin[FirstBrin]; v!=0; v=stlink[v])
       num[v]=i++;
   
-  Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED);
+  Prop<bool> eoriented(Set(tedge()),PROP_ORIENTED,true);
   for (tedge e = 1;e <= ne(); e++)
       {if(num[vin[e.firsttbrin()]] > num[vin[e.secondtbrin()]])
           ReverseEdge(e);

@@ -331,7 +331,7 @@ int ArrowItem::rtti() const
 //**********************************************************************************
 EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   {GeometricGraph & G = *(g->pGG);
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   tvertex v0 = G.vin[e];  tvertex v1 = G.vin[-e];
   int h = g->canvas->height();
   int x0 = (int)G.vcoord[v0].x();  int y0 =  (int)G.vcoord[v0].y();
@@ -395,7 +395,7 @@ int EdgeItem::rtti() const
   }
 void EdgeItem::SetColor(QColor c)
   {GeometricGraph & G = *(gwp->pGG);
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   tp->setColor(c);tp->setWidth(G.ewidth[e]);
   setPen(*tp);
   if(lower)
@@ -409,7 +409,7 @@ void EdgeItem::SetColor(QColor c)
 
 void EdgeItem::SetColors(QColor c1, QColor c2)
   {GeometricGraph & G = *(gwp->pGG);
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   tp->setColor(c1);tp->setWidth(G.ewidth[e]);
   setPen(*tp);
   if(lower)

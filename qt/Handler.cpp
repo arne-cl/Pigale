@@ -13,6 +13,7 @@
 #include <QT/Action_def.h>
 #include "pigaleWindow.h" 
 #include <QT/Misc.h>
+void BFSOrientTree(TopologicalGraph &G, tvertex v0);
 
 // Those handlers return:
 // -1 if error
@@ -33,9 +34,15 @@ int OrientHandler(GraphContainer &GC,int action)
   tbrin first;
   switch(action)
       {case  A_ORIENT_E:
-          {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,true);
+          {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
           eoriented.definit(true);
           for(e=1;e <= G.ne();e++)eoriented[e] = true;
+          }
+          ret = 1;
+          break;
+      case  A_ORIENT_NOE:
+          {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED);
+	    eoriented.definit(false); eoriented.clear();
           }
           ret = 1;
           break;
@@ -93,6 +100,10 @@ int OrientHandler(GraphContainer &GC,int action)
               }
           Tprintf("st=%d  (%d %d)",first(),G.vin[first](),G.vin[-first]());
           break;
+      case A_ORIENT_BFS:
+	BFSOrientTree(G,tvertex(1));
+	G.RestoreOrientation();
+	break;
       default:
           return 0;
       }

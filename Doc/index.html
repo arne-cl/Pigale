@@ -55,89 +55,89 @@ for sourceforge -->
 
     <UL>
       <LI><A HREF="installation.html">Installation</A>
-      <LI><A HREF="http://pigale.sourceforge.net/doc/index.html" >Online library documentation</A>
+      <LI><A HREF="http://pigale.sourceforge.net/doc/index.html" >On-line library documentation</A>
       <LI><A HREF="images.html" >Screen shots</A>
       <LI><A HREF="manual.html" >Short manual</A>
       <LI><A HREF="client.html">Client/Server</A>
+      <li><a href="bibliography.html">Bibliography</a></li>
     </UL>
-    <P>
+    <p>
       It is built over a new graph data structure optimizing
       topological operations on static graphs.<br> 
-      The <a href="http://graphml.graphdrawing.org/">graphml</a> input-output file format is partially implemented.
-      <br>
-      The library includes the following new algorithms based
-      on recent theoretical researches of our site.
-    <UL type="disc">
-      <LI>General Algorithms:
-	<UL type="circle">
-	  <LI>a planarity test and an embedding computation algorithm using
-	    Fraysseix-Rosenstiehl left-right algorithm.
-	  <LI>a linear time algorithm to locate a Kuratowski subdivision or a
-	    cotree critical partial subgraph in a non planar graph,
-	  <LI>a linear time 3-connexity test for planar graphs,
-	  <LI>a linear time recognition algorithm for subdivisions of
-	    3-connected planar graphs,
-	  <LI>a linear time 4-connexity test for maximal planar graphs,
-	  <LI>a linear time optimal triangulation algorithm for 3-connected
-	    planar graphs,
-	  <LI>a fast Depth-First Search algorithm,
-	  <LI>fast bipolar and regular orientation algorithms for planar graphs,
-	  <LI>a linear time algorithm for biconnecting planar graphs while
-	    preserving the embedding, which increases the degrees by at most 6
-	    (optimal),
-	  <LI>a linear time triangulation algorithm for 3-connected planar
-	    graphs increasing the degrees by at most 6 (optimal),
-	  <LI>a partitioner algorithm based on factorial analysis.
-	</UL>
-      <LI>Drawing Algorithms:
-	<UL type="circle">
-	  <LI>optimized Fary drawing algorithms relying on new planar
-	    augmentation algorithms, i.e.:
-	    <UL type="square">
-	      <LI>Schnyder algorithm using our triangulation algorithms,
-	      <LI>Schnyder algorithm using a vertex triangulation,
-	      <LI>Tutte barycentric representation of 3-connected graphs,
-	      <LI>A Fary representation derived from the Tutte algorithm,
-<!--
-	      <LI>Fary representation based on a barycentric placement of
-		the vertices relative to their ancestors in a Schnyder
-		decomposition.
--->
-	    </UL>
-	  <LI>an algorithm to represent 2-connected planar bipartite graphs
-	    by drawing two forests on two pages,
-	  <LI>an algorithm to represent 2-connected planar bipartite graphs
-	    as the incidence graph of horizontal and vertical segments,
-<!--	  <LI>an interactive path alignment algorithm for 3-connected
-	    planar graphs.
--->
-	    <LI>An algorithm to represent a graph in R<sup><small>3</small></sup>, as projections
-	    of different embeddings of the graph in R<sup><small>n-1</small></sup>.
-	</UL>
-      <LI>Experimental Algorithms:
-	<UL type="circle">
-	  <LI>an heuristic to detect symmetries,
-	  <LI>an heuristic to find a maximal planar partial graph of a non
-	    planar graph.
-	</UL>
-    </UL>
-    We are also adding some algorithms developped in other 
-    research centers, as for example,
-    the random planar maps generators of Gilles Schaeffer 
-    or the random outer planar maps generator of Nicolas Bonichon.
-
-    <P> The editor is based on the <b>Qt library</b> and uses the <b>OpenGL library</b> 
-        for graph representations in  R<sup><small>3</small></sup>.<br>
-        Some main features of this editor are:
-	<UL type="circle">
-	  <LI> constrained drawing on a grid,
-	  <LI> infinite number of UNDO'S,
-	  <LI> macro capabilities,
-	  <LI> configurability.		
-	</UL>
-    <P> We also provide a  <A HREF="client.html">Client/Server</A>which allows, among other things,
-       to easily interface Pigale with other programs (using a pipe.
-
+      The <a href="http://graphml.graphdrawing.org/">graphml</a> input-output file format is partially implemented.<br>
+     We also provide a  <A HREF="client.html">Client/Server</A> which allows, among other things,
+       to easily interface Pigale with other programs (using a pipe).<br>
+      The library includes the following new algorithms based on recent  theoretical researches of our site. 
+    </p>
+    <ul type="disc">
+      <li>General Algorithms:
+	<ul type="circle">
+	  <li>a planarity test and an embedding computation algorithm using
+	    Fraysseix-Rosenstiehl left-right algorithm [3,5,6]  <br>(probably the fastest planarity test [27]), </li>
+	  <li>a linear time algorithm to locate a Kuratowski subdivision or
+	    a cotree critical partial subgraph in a non planar graph [4,21,24], </li>
+	  <li>a linear time 3-connexity test for planar graphs [19,20], </li>
+	  <li>a linear time recognition algorithm for subdivisions of 3-connected planar graphs ([19]), </li>
+	  <li>a linear time 4-connexity test for maximal planar graphs [19], </li>
+	  <li>a fast Depth-First Search algorithm (unpublished), </li>
+	  <li>fast bipolar and regular orientation algorithms for planar graphs [16], </li>
+	  <li>a linear time optimal triangulation algorithm for 3-connected planar 
+	    graphs increasing the degrees by at most 6 [15], </li>
+	  <li>a partitioner algorithm based on factorial analysis [13]. </li>
+	</ul>
+      </li>
+      <li>Drawing Algorithms:
+	<ul type="circle">
+	  <li>optimized Fary drawing algorithms [8-11] relying on new planar augmentation algorithms [15], i.e.:
+	    <ul type="square">
+	      <li>Fraysseix, Pach Pollack  algorithm, </li>
+	      <li>Schnyder algorithm using our triangulation algorithms, </li>
+	      <li>Schnyder algorithm using a vertex triangulation, </li>
+	      <li>Tutte barycentric representation of 3-connected graphs, </li>
+	      <li>A Fary representation derived from the Tutte algorithm,</li>
+	      <li>A spring embedder which preserves the map,&nbsp; (unpublished).</li>
+	    </ul>
+	  </li>
+	  <li> visibility representation of planar graphs [7],</li>
+	  <li>a drawing of planar graphs using B&eacute;ziers curves 
+	    (based on a spring embedder, unpublished),<br> </li>
+	  <li>an algorithm to represent 2-connected planar bipartite graphs
+	    as the incidence graph of horizontal and vertical segments [12,16],</li>
+	  <li> an algorithm to represent planar graphs by contacts of <b>T</b> [14],</li>
+	  <li>An algorithm to represent a graph in R<sup><small>3</small></sup>,
+	    as projections of different embeddings of the graph in R<sup><small>n-1</small></sup> [13].
+	  </li>
+	</ul>
+      </li>
+      <li>Experimental Algorithms:
+	<ul type="circle">
+	  <li>an heuristic to detect symmetries [18], </li>
+	  <li>an heuristic to find a maximal planar partial graph of a non planar graph (unpublished). </li>
+	</ul>
+      </li>
+    </ul>
+    We are also adding some algorithms developed in other research centers:<br>
+    <ul>
+      <li>Gilles Schaeffer:</li>
+    <ul>
+      <li>random planar maps generators [17],</li>
+    </ul>
+    <li>Nicolas Bonichon:</li>
+    <ul>
+      <li>random outer planar maps generators [25],</li>
+      <li>drawing of planar graphs on the grid using polylines [22],</li>
+      <li>convex drawing of 3-connected planar graphs on the grid [26].</li>
+    </ul>
+  </ul>
+    <p> The editor is based on the <b>Qt library</b> and uses the <b>OpenGLlibrary</b> for graph representations 
+      in R<sup><small>3</small></sup>.<br>
+      Some main features of this editor are: </p>
+    <ul type="circle">
+      <li> constrained drawing on a grid, </li>
+      <li> unbound number of undoes, </li>
+      <li> macro capabilities, </li>
+      <li> reconfigurability. </li>
+    </ul>
     <br>
     <hr>
     <table>
@@ -148,7 +148,7 @@ for sourceforge -->
          Patrice Ossona de Mendez</a></address></td>
       </tr></table>
 <!-- hhmts start -->
-Last modified: Thu Apr 14 21:06:07 CEST 2005
+Last modified: Wed Apr 20 19:16:23 CEST 2005
 <!-- hhmts end -->
   </BODY>
 </HTML>

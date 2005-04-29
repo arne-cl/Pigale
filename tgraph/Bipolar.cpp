@@ -276,7 +276,7 @@ int NPBipolar(TopologicalGraph &G, tbrin bst)
  svector<bool> reoriented(1,DG.ne()); reoriented.SetName("Bipolar reorientation"); reoriented.clear();
  svector<bool> mark(1,DG.nv()); mark.SetName("Bipolar:mark"); mark.clear();
  Prop<bool> ireor(G.Set(tedge()),PROP_REORIENTED); ireor.clear();
- Prop<bool> ior(G.Set(tedge()),PROP_ORIENTED);
+ Prop<bool> ior(G.Set(tedge()),PROP_ORIENTED,true);
 
  for (tbrin b=1; b<=G.ne(); b++)
    {tedge ee=DG.ib(b).GetEdge();

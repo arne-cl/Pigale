@@ -90,7 +90,7 @@ int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
           if (x2m[v]<xe) x2m[v]=xe;
           }
       if (G.vin[e.secondtbrin()]==orig[e.secondtbrin()])
-          {
+	{
           v=G.vin[e.secondtbrin()];
           if (x1[v]>xe) x1[v]=xe;
           if (x2[v]<xe) x2[v]=xe;
@@ -101,6 +101,13 @@ int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
           if (x1m[v]>xe) x1m[v]=xe;
           if (x2m[v]<xe) x2m[v]=xe;
           }
+      if (G.vin[e.secondtbrin()]==14 || orig[e.secondtbrin()]==14)
+	{DebugPrintf("b:%d, vin: %d orig:%d x=%d -> x1=%d, x2=%d",
+		     e.secondtbrin()(), G.vin[e.secondtbrin()](),
+		     orig[e.secondtbrin()](),
+		     xe,x1[14],x2[14]
+		     );
+	}
       }
   // For isolated vertices
   for (v=1; v <= n;v++)
@@ -334,19 +341,22 @@ int Vision(TopologicalGraph &xG,int morg)
       // référence : e
       e=(G.acir[b0]).GetEdge();
       b=b0;
-      while (b.out())
-	{if (!stadded || b!=bst)
+      if (e<=morg)
+	{while (b.out())
+	  {if ((!stadded || b!=bst) && b<=morg)
               MP->insert(b.GetEdge()(),e(),1);
-          b=G.cir[-b];
+	    b=G.cir[-b];
           }
-      while (b.GetEdge()!=e)
-          { MP->insert(e(),b.GetEdge()(),0);
-          b=G.cir[-b];
-          }
+	  while (b.GetEdge()!=e)
+	    { if (e<=morg) MP->insert(e(),b.GetEdge()(),0);
+	      b=G.cir[-b];
+	    }
+	}
       }
   MP->solve(x);
   delete &Fpbrin;
   delete MP;
+
   
 //   for (tedge e=G.ne(); e>morg; e--)
 //     {
@@ -377,7 +387,7 @@ int Vision(TopologicalGraph &xG,int morg)
     offset[i+1]=CR.solve(channel)+offset[i];
     }
   for (v=1; v<=n; v++)
-    y[v]=offset[y[v]]+channel[v];
+    y[v]=offset[y[v]+1]-channel[v];
 
   // Sort parallel edges and change x
 
@@ -387,6 +397,162 @@ int Vision(TopologicalGraph &xG,int morg)
 
   maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
   maxyval=y[t];
+
+
+  // NEW 27/04/2005
+
+  // Recompute cir
+
+  svector<tedge> first_x(0,maxxval); first_x.clear();
+  svector<tedge> next_x(0,m); next_x.clear();
+  for (e=1; e<=m; e++)
+    { int xe=x[e];
+      next_x[e]=first_x[xe];
+      first_x[xe]=e;
+    }
+  G.pbrin.clear();
+  
+  // Incoming
+  for (int xe=0;xe<=maxxval; xe++)
+    { e = first_x[xe];
+      while (e!=0)
+	{ b = e.secondtbrin();
+	  v=G.vin[b];
+	  //G.vin[b]=v;
+	  if (G.pbrin[v]==0) 
+	    {G.pbrin[v]=G.cir[b]=G.acir[b]=b;}
+	  else 
+	    {G.cir[b]=G.pbrin[v]; G.acir[b]=G.acir[G.pbrin[v]];
+	      G.acir[G.cir[b]]=b; G.cir[G.acir[b]]=b;
+	    }
+	  e=next_x[e];
+	}
+    }
+  // Outgoing
+  for (int xe=maxxval;xe>=0; xe--)
+    { e = first_x[xe];
+      while (e!=0)
+	{ b = e.firsttbrin();
+	  v=G.vin[b];
+	  if (G.pbrin[v]==0) 
+	    {G.pbrin[v]=G.cir[b]=G.acir[b]=b;}
+	  else 
+	    {G.cir[b]=G.pbrin[v]; G.acir[b]=G.acir[G.pbrin[v]];
+	      G.acir[G.cir[b]]=b; G.cir[G.acir[b]]=b;
+	    }
+	  e=next_x[e];
+	}
+    }
+  if (!G.DebugCir()) myabort();
+
+  for (b0=1; b0<=morg;b0++)
+    { 
+      if (x2[orig[-b0]]<=x[b0]) continue;
+      b=G.acir[b0];
+      tbrin bb=0;
+      while (1)
+	{ if (b<0 || b==b0) break;
+	  if (b<=morg && (x[b]>x2[orig[-b0]] || x[b]<x[b0])) break;
+	  if (b<=morg && y[orig[-b0]]<=y[orig[-b]]) bb=b;
+	  b=G.acir[b];
+	}
+      if (bb==0) continue;
+      // Make a room
+      int xe=x[bb];
+      for (tedge f=1; f<=m; f++)
+	if (x[f]>xe) x[f]++;
+      for (v=1; v<=n; v++)
+	{ if (x1[v]>xe) x1[v]++;
+	  if (x2[v]>xe) x2[v]++;
+	}
+      x[b0]=xe+1;
+      G.acir[G.cir[b0]]=G.acir[b0]; G.cir[G.acir[b0]]=G.cir[b0];
+      G.cir[b0]=bb; G.acir[b0]=G.acir[bb]; 
+      G.cir[G.acir[b0]]=G.acir[G.cir[b0]]=b0;
+      Prop<short> ecolor(xG.Set(tedge()),PROP_COLOR);
+      ecolor[b0]=Red;
+    }
+  if (!G.DebugCir()) myabort();
+  maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
+
+
+  // Recompute cir
+
+  first_x.resize(0,maxxval);
+  first_x.clear();
+  next_x.clear();
+  for (e=1; e<=m; e++)
+    { int xe=x[e];
+      next_x[e]=first_x[xe];
+      first_x[xe]=e;
+    }
+  G.pbrin.clear();
+  
+  // Incoming
+  for (int xe=0;xe<=maxxval; xe++)
+    { e = first_x[xe];
+      while (e!=0)
+	{ b = e.secondtbrin();
+	  v=G.vin[b];
+	  //G.vin[b]=v;
+	  if (G.pbrin[v]==0) 
+	    {G.pbrin[v]=G.cir[b]=G.acir[b]=b;}
+	  else 
+	    {G.cir[b]=G.pbrin[v]; G.acir[b]=G.acir[G.pbrin[v]];
+	      G.acir[G.cir[b]]=b; G.cir[G.acir[b]]=b;
+	    }
+	  e=next_x[e];
+	}
+    }
+  // Outgoing
+  for (int xe=maxxval;xe>=0; xe--)
+    { e = first_x[xe];
+      while (e!=0)
+	{ b = e.firsttbrin();
+	  v=G.vin[b];
+	  if (G.pbrin[v]==0) 
+	    {G.pbrin[v]=G.cir[b]=G.acir[b]=b;}
+	  else 
+	    {G.cir[b]=G.pbrin[v]; G.acir[b]=G.acir[G.pbrin[v]];
+	      G.acir[G.cir[b]]=b; G.cir[G.acir[b]]=b;
+	    }
+	  e=next_x[e];
+	}
+    }
+  if (!G.DebugCir()) myabort();
+
+  for (b0=1; b0<=morg;b0++)
+    { 
+      if (x1[orig[-b0]]>=x[b0]) continue;
+      b=G.cir[b0];
+      tbrin bb=0;
+      while (1)
+	{ if (b<0 || b==b0) break;
+	  if (b<=morg && (x[b]<x1[orig[-b0]] || x[b]>x[b0])) break;
+	  if (b<=morg && y[orig[-b0]]<=y[orig[-b]]) bb=b;
+	  b=G.cir[b];
+	}
+      if (bb==0) continue;
+      // Make a room
+      int xe=x[bb];
+      for (tedge f=1; f<=m; f++)
+	if (x[f]>=xe) x[f]++;
+      for (v=1; v<=n; v++)
+	{ if (x1[v]>=xe) x1[v]++;
+	  if (x2[v]>=xe) x2[v]++;
+	}
+      x[b0]=xe;
+      G.acir[G.cir[b0]]=G.acir[b0]; G.cir[G.acir[b0]]=G.cir[b0];
+      G.acir[b0]=bb; G.cir[b0]=G.cir[bb]; 
+      G.cir[G.acir[b0]]=G.acir[G.cir[b0]]=b0;
+      Prop<short> ecolor(xG.Set(tedge()),PROP_COLOR);
+      ecolor[b0]=Red;
+    }
+  if (!G.DebugCir()) myabort();
+  maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
+
+
+  // END NEW 27/04/2005
 
   Prop1<int> maxx(xG.Set(),PROP_DRAW_INT_1);
   Prop1<int> maxy(xG.Set(),PROP_DRAW_INT_2);

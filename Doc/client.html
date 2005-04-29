@@ -25,7 +25,7 @@
 &nbsp; &nbsp; <a href="http://www.ehess.fr/centres/cams/person/pom/">
 P. Ossona de Mendez</a> </font>
       </td>
-	  <!-- for sourceforge 
+	  <!-- for sourceforge
 	  <td>
 	  <A href="http://sourceforge.net"> 
 	  <IMG src="http://sourceforge.net/sflogo.php?group_id=50880&type=5" width="210" height="62" 
@@ -52,12 +52,14 @@ The server should be allowed to write on /tmp or \tmp on Windows (CREATE it, if 
 To launch the client/server application, first launch the server:<br>
 <tt>pigale -server</tt> (serves one client at a time)<br>
 then the client:<br>
-<tt> client &lt data</tt><br> or a pipe <tt>cat data | client</tt>  (under Windows:  <tt>type data | client</tt>).
+<tt> client &lt data</tt><br> 
+or a pipe <br>
+<tt>cat data | client</tt>  (under Windows:  <tt>type data | client</tt>).<br>
 If the Client does not run on the same machine as the server:<br>
 <tt>client www.computer.com &lt data  </tt>
 </p>
 <p>
-An example file <b>Clientdata.txt</b>  and two graphs are provided.
+An example file <b>Clientdata.txt</b>  and three graphs are provided.
 If you run <br>
 <tt>./client &lt Clientdata.txt </tt> <br>
 you should receive 8 png files and a graphml file containing the last graph created. 
@@ -70,18 +72,19 @@ that is all the Pigale macros plus some specific ones:
 
 <table class="opt1">
 <caption>Specific commands</caption>
-<tr><td >Command      	</td><td>argument</td><td> comment</td></tr> 
+<tr><td >Command      	</td><td>Argument</td><td> </td></tr> 
 <tr><td class="opt">RS_GRAPH      	</td><td>graph filename</td><td> load a  graph  (on the server side)</td></tr> 
 <tr><td class="opt">RC_GRAPH      	</td><td>graph filename</td><td> load a  graph  (from the client side)</td></tr> 
-<tr><td class="opt">N_GRAPH	 </td><td></td><td> creates an emty graph</td></tr> 
+<tr><td class="opt">N_GRAPH	 </td><td></td><td> creates an empty graph</td></tr> 
 <tr><td class="opt">N_V	     	</td><td>number of vertices</td><td> create n vertices</td></tr> 
 <tr><td class="opt">N_E	     	</td><td>pair of vertices</td><td> create an edge  </td></tr> 
 <tr><td class="opt">PNG          	</td><td></td><td> get a png image of the current drawing</td></tr> 
-<tr><td class="opt">RS_SAVE_GRAPH	</td><td>graph filename with extension</td><td> ask the server to save the current graph and send it to the client</td></tr> 
+<tr><td class="opt">RS_SAVE_GRAPH	</td><td>graph filename with extension</td><td> ask the server to save the current 
+            graph and send it to the client (the file format is determined by the extension)</td></tr> 
 </table>
 <br>
-<table class="opt">
-<caption>Information</caption>
+<table class="opt1">
+<caption>Informations</caption>
       <tr><td class="opt">N                                             </td><td> number of vertices</td></tr> 
         <tr><td class="opt">M                                           </td><td> number of edges</td></tr> 
         <tr><td class="opt">SIMPLE		</td><td> simple graph</td></tr> 
@@ -89,10 +92,10 @@ that is all the Pigale macros plus some specific ones:
         <tr><td class="opt">OPLAN		</td><td> outer planar</td></tr> 
         <tr><td class="opt">SR			</td><td> serie-parallel</td></tr> 
         <tr><td class="opt">MPLAN		</td><td> triangulated planar graph</td></tr> 
-        <tr><td class="opt">BI			</td><td> Bipartite graph</td></tr> 
-        <tr><td class="opt">MBI			</td><td> Max planar Bipartite graph</td></tr> 
-        <tr><td class="opt">REG			</td><td> Regular</td></tr> 
-        <tr><td class="opt">C1			</td><td> Connected</td></tr> 
+        <tr><td class="opt">BI			</td><td> bipartite graph</td></tr> 
+        <tr><td class="opt">MBI			</td><td> max planar bipartite graph</td></tr> 
+        <tr><td class="opt">REG			</td><td> regular</td></tr> 
+        <tr><td class="opt">C1			</td><td> connected</td></tr> 
         <tr><td class="opt">C2			</td><td> 2-Connected</td></tr> 	
         <tr><td class="opt">OPT			</td><td> 3-Connected</td></tr> 
         <tr><td class="opt">MIN_D		</td><td> minimal degree</td></tr> 
@@ -103,11 +106,11 @@ that is all the Pigale macros plus some specific ones:
 <br>
 All the other commands are the standart Pigale macros.
 <br><br>
-<table class="opt">
+<table class="opt1">
 <caption>Generators</caption>
 <tr><td class="opt">GEN_GRID  </td>                                    <td>grid</td></tr>
 <tr><td class="opt">GEN_COMPLETE </td>                        <td>complete graph</td></tr> 
-<tr><td class="opt">GEN_COMPLETE_BIP</td>                 <td>complete bipatite graph</td></tr>  
+<tr><td class="opt">GEN_COMPLETE_BIP</td>                 <td>complete bipartite graph</td></tr>  
 <tr><td class="opt">GEN_RANDOM </td>                             <td>planar or not</td></tr>     
 <tr><td class="opt">GEN_PLANAR</td>                               <td>planar</td></tr>     
 <tr><td class="opt">GEN_PLANAR_2C</td>                        <td>planar 2-connected</td></tr>    
@@ -126,24 +129,26 @@ All the other commands are the standart Pigale macros.
 <tr><td class="opt">GEN_P_OUTER_NM</td>                        <td> outerplanar</td></tr>    
 </table>
 <br>
-<table class="opt">
+<table class="opt1">
 <caption>Duality and Angle graphs</caption>
-<tr><td class="opt">DUAL </td></tr> 
-<tr><td class="opt">DUAL_G </td></tr> 
-<tr><td class="opt">ANGLE </td></tr> 
-<tr><td class="opt">ANGLE_G </td></tr> 
+<tr><td class="opt">DUAL </td><td></td> </tr> 
+<tr><td class="opt">DUAL_G </td><td> without the exterior vertex</td> </tr> 
+<tr><td class="opt">ANGLE </td><td></td> </tr> 
+<tr><td class="opt">ANGLE_G </td><td>without the exterior face</td> </tr> 
 </table>
 <br>
-<table class="opt">
-<caption>Augmentation</caption>
-<tr><td class="opt">CONNECT</td></tr>
-<tr><td class="opt">BICONNECT</td></tr>
-<tr><td class="opt">BICONNECT_NP</td></tr>
-<tr><td class="opt">TRIANGULATE_V</td></tr>
-<tr><td class="opt">TRIANGULATE_ZZ</td></tr>
-<tr><td class="opt">TRIANGULATE_3C</td></tr>
-<tr><td class="opt">QUADRANGULATE_V</td></tr>
-<tr><td class="opt">BISSECT_ALL_E</td></tr>
+<table class="opt1">
+<caption>Augmentation algorithms</caption>
+<tr><td class="opt">CONNECT</td>                    <td> add edges</td> </tr>
+<tr><td class="opt">CONNECT_V</td>                <td>  add vertices</td> </tr>
+<tr><td class="opt">BICONNECT</td>                <td>biconnect a planar graph adding edges</td>  </tr>
+<tr><td class="opt">BICONNECT_NP</td>          <td>biconnect adding edges</td> </tr>
+<tr><td class="opt">BICONNECT_NP_V</td>      <td>biconnect adding vertices</td> </tr>
+<tr><td class="opt">TRIANGULATE_ZZ</td>          <td>triangulate adding edges</td> </tr>
+<tr><td class="opt">TRIANGULATE_V</td>         <td>triangulate adding vertices</td> </tr>
+<tr><td class="opt">TRIANGULATE_3C</td>         <td>triangulate a 3-connected planar graph adding edges</td> </tr>
+<tr><td class="opt">QUADRANGULATE_V</td>     <td>quadrangle a bipartite  graph, adding vertices</td> </tr>
+<tr><td class="opt">BISSECT_ALL_E</td>              <td>bisect all edges </td> </tr>
 </table>
 <br>
 <table class="opt">
@@ -156,43 +161,46 @@ All the other commands are the standart Pigale macros.
 <br>
 
 
-<table class="opt">
-<caption>Drawing</caption>
-<tr><td class="opt">SCHNYDER_E</td></tr>
-<tr><td class="opt">SCHNYDER_V</td></tr>
-<tr><td class="opt">FPP_FARY</td></tr>
-<tr><td class="opt">TUTTE_CIRCLE </td></tr>
-<tr><td class="opt">TUTTE </td></tr>
-<tr><td class="opt">SPRING </td></tr>
-<tr><td class="opt">SPRING_PM </td></tr>
-<tr><td class="opt">JACQUARD </td></tr>
-<tr><td class="opt">VISION </td></tr>
-<tr><td class="opt">CONTATC_BIPARTI </td></tr>
-<tr><td class="opt">POLAR</td></tr>
-<tr><td class="opt">FPP_RECTI</td></tr> 
-<tr><td class="opt">GVISION </td></tr>
-<tr><td class="opt">T_CONTACT </td></tr>
-<tr><td class="opt">EMBED-3d </td></tr>
+<table class="opt1">
+<caption>Drawings</caption>
+<tr><td class="opt">SCHNYDER_E</td><td>Schnyder algorithm: the graph is first made maximal by adding edges</td> </tr>
+<tr><td class="opt">SCHNYDER_V</td><td>Schnyder algorithm: the graph is first made maximal by adding vertices</td> </tr>
+<tr><td class="opt">FPP_FARY</td><td>Fraysseix, Pach, Pollack algorithm</td> </tr>
+<tr><td class="opt">POLYLINE</td><td>Bonichon's algorithm  (3-connected planar graph)</td> </tr>
+<tr><td class="opt">CCD</td><td>Convex drawing  (3-connected planar graph)</td> </tr>
+<tr><td class="opt">CD</td><td>Optimal convex drawing by Bonichon</td> </tr>
+<tr><td class="opt">TUTTE_CIRCLE </td><td>some edges are added before using Tutte's barycentric representation</td> </tr>
+<tr><td class="opt">TUTTE </td><td>Tutte's barycentric representation</td> </tr>
+<tr><td class="opt">SPRING_PM </td><td>spring embedder preserving the map</td> </tr>
+<tr><td class="opt">JACQUARD </td><td>spring embedder for planar graphs (Jacquard)</td> </tr>
+<tr><td class="opt">CURVES</td><td>spring embedder using curves</td> </tr>
+<tr><td class="opt">VISION </td><td>visibility algorithm for planar graphs</td> </tr>
+<tr><td class="opt">CONTATC_BIPARTI </td><td>representation of planar bipartite graphs by contact of segments</td> </tr>
+<tr><td class="opt">FPP_RECTI</td><td>kind of visibility representation based on FPP_FARY</td> </tr> 
+<tr><td class="opt">GVISION </td><td>visibility algorithm generalized to non-planar graphs</td> </tr>
+<tr><td class="opt">T_CONTACT </td><td>representation of a planar graph by contact of <b>T</b></td> </tr>
+<tr><td class="opt">EMBED-3d </td><td>3<sup><small>d</small></sup>  representations</td> </tr>
+<tr><td class="opt">EMBED-3d_SCHNYDER </td><td>representation on S<sup><small>2</small></sup> of a planar graph</td> </tr>
 </table>
 <br>
-<table class="opt">
+<table class="opt1">
 <caption>Algorithms</caption>
-<tr><td class="opt">KURATOWSKI </td></tr>   
-<tr><td class="opt">COTREE_CRITICAL</td></tr>    
-<tr><td class="opt">NPSET</td></tr>    
-<tr><td class="opt">FIND_MAX_PLANAR</td></tr>    
-<tr><td class="opt">RESET_COLORS </td></tr>   
-<tr><td class="opt">NETCUT </td></tr>   
-<tr><td class="opt">USE_GEOMETRIC_CIR</td></tr>    
-<tr><td class="opt">USE_LRALGO_CIR</td></tr>    
-<tr><td class="opt">SYMETRIE</td></tr>    
-<tr><td class="opt">COLOR_BIPARTI</td></tr>    
-<tr><td class="opt">COLOR_EXT_FACE</td></tr>    
-<tr><td class="opt">COLOR_NON_CRITIC</td></tr>    
+<tr><td class="opt">KURATOWSKI </td><td>extract a Kuratowski subdivision of a non-planar graph</td></tr>   
+<tr><td class="opt">COTREE_CRITICAL</td><td>extract a cotree critical subgraph of  a non-planar graph</td></tr>   
+ <tr><td class="opt">COLOR_NON_CRITIC</td><td>color non-critical cotree edges of  a non-planar graph </td></tr>    
+<tr><td class="opt">NPSET</td><td></td></tr>    
+<tr><td class="opt">FIND_MAX_PLANAR</td><td>heuristic to find a maximal planar subgraph in a non-planar graph</td></tr>    
+<tr><td class="opt">NETCUT </td><td>partition a graph in a prescribe number of classes</td></tr>   
+<tr><td class="opt">SYMETRIE</td><td>heuristic to detect a symetrie in a graph</td></tr>    
+<tr><td class="opt">USE_GEOMETRIC_CIR</td><td></td></tr>    
+<tr><td class="opt">USE_LRALGO_CIR</td><td></td></tr>    
+<tr><td class="opt">COLOR_BIPARTI</td><td></td></tr>    
+<tr><td class="opt">COLOR_EXT_FACE</td><td></td></tr>    
+<tr><td class="opt">RESET_COLORS </td><td></td></tr>  
 </table>
 <br>
 <table class="opt">
-<caption>Orientation</caption>
+<caption>Orientation algorithms</caption>
 <tr><td class="opt">ORIENT_EDGES </td></tr>   
 <tr><td class="opt">ORIENT_INF</td></tr>    
 <tr><td class="opt">ORIENT_TRICON</td></tr>    
@@ -203,7 +211,7 @@ All the other commands are the standart Pigale macros.
 </table>
 <br>
 <table class="opt">
-<caption>User defined</caption>
+<caption>User defined algorithms</caption>
 <tr><td class="opt">TEST_1</td></tr>    
 <tr><td class="opt">TEST_2 </td></tr>   
 <tr><td class="opt">TEST_3 </td></tr>   
@@ -219,12 +227,15 @@ For example, the line<br>
 
 Lines starting with <b>#</b> or <b>;</b> have a special meaning:<br>
 - lines starting with '#' are comments<br>
-- lines starting with ':'  modifies the client-server behaviour:
+- lines starting with ':'  modifies the client-server behavior:
 <ul>
 <li>:D    debugging mode</li>
-<li>:!      signals the end of file and disconnects frrom the server</li>
+<li>:!      signals the end of file and disconnects from the server</li>
 </ul>
 
+<p>
+Whether under Linux or Windows, use <b>/</b> and not <b>\</b> inside path names.
+</p>
 In <b>debugging mode</b> all the commands (including comments)  are echoed by the client 
 and then by the server (prepended by a <b>!</b>) when the command has been fully processed.<br>
 <h2>An example</h2>
@@ -232,8 +243,8 @@ and then by the server (prepended by a <b>!</b>) when the command has been fully
 <tt>
 # debug mode
 <br>:D
-<br># ask to transfer the  file symm.tgf  from the client and read the first graph
-<br>RC_GRAPH;symm.tgf;1
+<br># ask to transfer the  file sym.graphml  from the client
+<br>RC_GRAPH;../tgf/sym.graphml
 <br># ask the general visibility drawing
 <br>GVISION
 <br># asks to create and transfer to the client a png file
@@ -242,15 +253,15 @@ and then by the server (prepended by a <b>!</b>) when the command has been fully
 <br>:!
 </tt>
 
-<h3>Ouput</h3>
-Below is a screenshot of the client running the previous file.<br>
+<h3>Output</h3>
+Below is a screen-shot of the client running the previous file.<br>
 
 <center>
     <IMG SRC="./icones/client.png" HSPACE=60 VSPACE=50 BORDER=1   ALT="client">
 </center>
 
    <hr><!-- hhmts start -->
-Last modified: Thu Apr 14 21:03:54 CEST 2005
+Last modified: Sat Apr 16 15:02:46 CEST 2005
 <!-- hhmts end -->
 </body>
 

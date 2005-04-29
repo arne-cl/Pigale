@@ -259,7 +259,7 @@ pigale_SOURCES = main.cpp
 pigale_LDADD = -L$(prefix)/lib -ltgraph -lpigaleQt
 pigale_DEPENDENCIES = tgraph pigale_fr.qm 
 data_DATA = pigale_fr.qm qt_fr.qm
-EXTRA_DIST = pigale_fr.ts pigale.pro qt_fr.ts gnumakefile
+EXTRA_DIST = pigale_fr.ts pigale.pro qt_fr.ts gnumakefile Action.awk
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -274,9 +274,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  qt/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  qt/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  qt/Makefile
+	  $(AUTOMAKE) --gnu  qt/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
