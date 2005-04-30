@@ -36,8 +36,6 @@
 int Test(GraphContainer &GC,int action,int & drawing);
 int InitPigaleServer(pigaleWindow *w);
 
-
-
 void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
   ServerClientId = 0;
@@ -106,7 +104,6 @@ void pigaleWindow::customEvent( QCustomEvent * ev)
 void pigaleWindow::postMessage(const QString &msg)
   {textEvent *e = new textEvent(msg);
   QApplication::postEvent(this,e);
-  //qApp->processEvents();  would block the application
   }
 void pigaleWindow::postMessageClear()
   {QCustomEvent *e = new QCustomEvent(CLEARTEXT_EVENT);
@@ -206,7 +203,11 @@ void PigaleThread:: run(int _action,int  _N,int _N1,int _N2,int _M,int _delay)
   N2 = _N2;
   M = _M;
   delay = _delay;
+#if QT_VERSION > 0x030300
   start (QThread::HighPriority);
+#else
+  start();
+#endif
   }
 void PigaleThread::run()
   {if(!action)return;
@@ -278,7 +279,8 @@ int pigaleWindow::handler(int action)
       }
   else if(action < A_GENERATE_END)
       {UndoClear();UndoSave();
-      pigaleThread.run(action,0,spin_N1->value(),spin_N2->value(),spin_M->value());
+      pigaleThread.run(action,0,Gen_N1,Gen_N2,Gen_M);
+      //pigaleThread.run(action,0,spin_N1->value(),spin_N2->value(),spin_M->value());
       }
   else if(action < A_ALGO_END)
       pigaleThread.run(action,spin_N->value());
@@ -355,92 +357,7 @@ int pigaleWindow::postHandler(QCustomEvent *ev)
       }
   return ret;
   }
-void pigaleWindow::banner()
-  {QString msg;  
-    int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName);
-    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName);
-  msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
-	    ,(const char *)InputFileName
-	    ,*pGraphIndex,NumRecords
-	    ,(const char *)OutputFileName
-	    ,NumRecordsOut
-	    ,UndoIndex,UndoMax);
-  bannerEvent *e = new bannerEvent(msg);
-  QApplication::postEvent(this,e);
-  }
-void pigaleWindow::about()
-  {QMessageBox::about(this,tr("Pigale Editor"), 
-                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+PACKAGE_VERSION+")"
-                      "<br><b>Copyright (C) 2001</b>"
-                      +"<br>Hubert de Fraysseix"
-	    +"<br>Patrice Ossona de Mendez "
-	    +"<br> See <em>license.html</em>");
-  }
-void pigaleWindow::aboutQt()
-  {QMessageBox::aboutQt(this,"Qt Toolkit");
-  }
-void pigaleWindow::showLabel(int show)
-  {int _show = ShowVertex();
-  ShowVertex() = show -3;
-  if(ShowVertex() != _show && GC.nv())
-      {switch(tabWidget->currentPageIndex())
-          {case 0:
-              gw->update();
-              break;
-          case 1:
-              mypaint->update();
-              break;
-          }
-      }
-  }
-void  pigaleWindow::distOption(int use)
-  {useDistance() = use;
-  }
-void  pigaleWindow::setShowOrientation(bool val)
-  {ShowOrientation() = val;
-  menuBar()->setItemChecked(A_SET_ORIENT,val);
-  }
-void pigaleWindow::print()
-  {switch(tabWidget->currentPageIndex())
-      {case 0:
-          gw->print(printer);
-          break;
-      case 1:
-          mypaint->print(printer);
-          break;
-      case 3:
-          graphsym->print(printer);
-          break;
-      default:
-          break;
-      }
-  }
-void pigaleWindow::png()
-  {switch(tabWidget->currentPageIndex())
-      {case 0:
-          gw->png();
-          break;
-      case 1:
-          mypaint->png();
-          break;
-      case 2:
-          graphgl->png();
-          break;
-      case 3:
-          graphsym->png();
-          break;
-      default:
-          break;
-      }
-  }
-void pigaleWindow::SetPigaleFont()
- {bool ok;
-  QFont font = QFontDialog::getFont( &ok, this->font(), this );
-  if(!ok)return;
-  QApplication::setFont(font,true);
- }
-void  pigaleWindow::setUserMenu(int i, const QString &txt)
- {userMenu->changeItem ( A_TEST+i,txt);
- }
+
+
 
 

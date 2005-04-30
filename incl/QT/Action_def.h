@@ -193,6 +193,12 @@
 #define A_TRANS_SEND_GRAPH_SAVE   (A_TRANS+3)    // RS_SAVE_GRAPH  
 #define A_TRANS_END            (A_TRANS+99)  
 
+#define A_SET_GEN                                       (A_SERVER+300)
+#define A_SET_GEN_N1                                (A_SET_GEN+1)    // GEN_N1  
+#define A_SET_GEN_N2                                (A_SET_GEN+2)    // GEN_N2
+#define A_SET_GEN_M                                  (A_SET_GEN+3)    // GEN_M  
+#define A_SET_GEN_END                             (A_SET_GEN+99)
+
 #define SERVER_DEBUG           (A_SERVER+999)  // S_DEBUG  
 
 // server message errors

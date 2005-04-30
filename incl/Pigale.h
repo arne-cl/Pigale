@@ -24,6 +24,7 @@ int TestOuterPlanar(TopologicalGraph &G);
 void ColorPoles(GeometricGraph &G);
 bool CheckCoordNotOverlap(GeometricGraph & G);
 void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
+void BFSOrientTree(TopologicalGraph &G, tvertex v0);
 
 // Drawings
 bool & SchnyderRect();
@@ -37,7 +38,8 @@ int EmbedTutteCircle(TopologicalGraph &G);
 int FindNPSet(TopologicalGraph &);
 int split(Graph &G0,int &NumberOfClasses);
 int EmbedVision(TopologicalGraph &G);
-int Vision(TopologicalGraph &G);
+//int Vision(TopologicalGraph &G);
+int Vision(TopologicalGraph &xG,int morg);
 int EmbedContactBip(GeometricGraph &G);
 int DecompMaxBip(TopologicalGraph &G);
 int Polar(TopologicalGraph &G);

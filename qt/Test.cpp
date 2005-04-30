@@ -11,7 +11,8 @@ using namespace std;
 #endif
 
 // Allowed return values of Test 
-//-1:Error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 
+// -1:error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
+// 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
 
 inline double abs(double x) {if(x>=0) return x; else return -x;}
 static int Test1(GraphContainer &GC,int &drawing);
@@ -34,9 +35,6 @@ int Test2(GraphContainer &GC,int &drawing)
        G.TestPlanar2();
    return 0;
   }
-void BFSOrientTree(TopologicalGraph &G, tvertex v0);
-int Vision(TopologicalGraph &xG,int morg);
-
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
     int morg=G.ne();

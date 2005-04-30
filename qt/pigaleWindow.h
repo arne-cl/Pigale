@@ -102,6 +102,9 @@ private slots:
   void keyPressEvent(QKeyEvent *k);
   void settingsHandler(int action);
   void initServer();
+  void spinN1Changed(int val);
+  void spinN2Changed(int val);
+  void spinMChanged(int val);
 private:
   void mapActionsInit();
   int  macroLoad(QString FileName);
@@ -161,6 +164,7 @@ public:
   bool ServerBusy;
   int ServerClientId;
   QTime timer;
+  int Gen_N1,Gen_N2,Gen_M;
 private:
   PigaleThread pigaleThread;
   QToolBar *tb;
@@ -177,7 +181,7 @@ private:
   int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
   // settings
   QString DirFileDoc;
-  int Gen_N1,Gen_N2,Gen_M;
+ 
   int pigaleWindowInitYsize,pigaleWindowInitXsize;
   int macroRepeat,macroMul;
   int MaxNS,MaxND;

@@ -455,6 +455,9 @@ pigaleWindow::pigaleWindow()
   generate->insertItem(spin_N1);
   generate->insertItem(spin_N2);
   generate->insertItem(spin_M);
+  connect(spin_N1,SIGNAL(valueChanged(int)),SLOT(spinN1Changed(int)));
+  connect(spin_N2,SIGNAL(valueChanged(int)),SLOT(spinN2Changed(int)));
+  connect(spin_M,SIGNAL(valueChanged(int)),SLOT(spinMChanged(int)));
   seedEdit =  new QLineEdit(popupSeed,"seedEdit");
   seedEdit->setText(QString("%1").arg(randomSetSeed()));
   generate->insertItem(tr("Seed"),popupSeed);
@@ -643,6 +646,8 @@ pigaleWindow::pigaleWindow()
       browser->setSource("manual.html");
       }
 #endif  
+  qApp->processEvents();
+  // widgets are constructed
   initMenuTest();
   if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
   UndoInit();// Create a tgf file with no records
@@ -653,4 +658,98 @@ pigaleWindow::pigaleWindow()
 pigaleWindow::~pigaleWindow()
   {delete printer;
   pigaleThread.terminate();pigaleThread.wait();
+  }
+void  pigaleWindow::setUserMenu(int i, const QString &txt)
+ {userMenu->changeItem ( A_TEST+i,txt);
+ }
+void pigaleWindow::spinN1Changed(int val)
+  {Gen_N1 = val;}
+void pigaleWindow::spinN2Changed(int val)
+  {Gen_N2 = val;}
+void pigaleWindow::spinMChanged(int val)
+  {Gen_M = val;}
+void  pigaleWindow::distOption(int use)
+  {useDistance() = use;
+  }
+void  pigaleWindow::setShowOrientation(bool val)
+  {ShowOrientation() = val;
+  menuBar()->setItemChecked(A_SET_ORIENT,val);
+  }
+void pigaleWindow::SetPigaleFont()
+ {bool ok;
+  QFont font = QFontDialog::getFont( &ok, this->font(), this );
+  if(!ok)return;
+  QApplication::setFont(font,true);
+ }
+void pigaleWindow::showLabel(int show)
+  {int _show = ShowVertex();
+  ShowVertex() = show -3;
+  if(ShowVertex() != _show && GC.nv())
+      {switch(tabWidget->currentPageIndex())
+          {case 0:
+              gw->update();
+              break;
+          case 1:
+              mypaint->update();
+              break;
+          }
+      }
+  }
+
+void pigaleWindow::banner()
+  {QString msg;  
+    int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName);
+    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName);
+  msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
+	    ,(const char *)InputFileName
+	    ,*pGraphIndex,NumRecords
+	    ,(const char *)OutputFileName
+	    ,NumRecordsOut
+	    ,UndoIndex,UndoMax);
+  bannerEvent *e = new bannerEvent(msg);
+  QApplication::postEvent(this,e);
+  }
+void pigaleWindow::about()
+  {QMessageBox::about(this,tr("Pigale Editor"), 
+                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+PACKAGE_VERSION+")"
+                      "<br><b>Copyright (C) 2001</b>"
+                      +"<br>Hubert de Fraysseix"
+	    +"<br>Patrice Ossona de Mendez "
+	    +"<br> See <em>license.html</em>");
+  }
+void pigaleWindow::aboutQt()
+  {QMessageBox::aboutQt(this,"Qt Toolkit");
+  }
+void pigaleWindow::print()
+  {switch(tabWidget->currentPageIndex())
+      {case 0:
+          gw->print(printer);
+          break;
+      case 1:
+          mypaint->print(printer);
+          break;
+      case 3:
+          graphsym->print(printer);
+          break;
+      default:
+          break;
+      }
+  }
+void pigaleWindow::png()
+  {switch(tabWidget->currentPageIndex())
+      {case 0:
+          gw->png();
+          break;
+      case 1:
+          mypaint->png();
+          break;
+      case 2:
+          graphgl->png();
+          break;
+      case 3:
+          graphsym->png();
+          break;
+      default:
+          break;
+      }
   }

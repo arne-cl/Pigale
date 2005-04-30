@@ -44,6 +44,11 @@ N:M
 PLAN:
 TUTTE_CIRCLE:SPRING_PM:PNG
 RS_SAVE_GRAPH;g.graphml;
+
+#generate a graph
+GEN_M;50
+GEN_PLANAR_4R_3C
+N:M
 # and close the file
 :!
  

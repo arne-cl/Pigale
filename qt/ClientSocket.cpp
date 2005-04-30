@@ -159,6 +159,34 @@ void ClientSocket::xhandler(const QString& dataAction)
           else sendSaveGraph( fields[0]);
           }
       }
+  else if(action > A_SET_GEN && action < A_SET_GEN_END)
+      {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+      if(fields.count() < 1)
+          {setError(WRONG_PARAMETERS,"Missing  parameter");
+          cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
+          setError();
+          cli << "!" << endl;
+          return;
+          }
+      bool ok =true;
+      int value  = fields[0].toInt(&ok);
+      if(!ok)setError(WRONG_PARAMETERS,"Wrong parameters");
+      else
+          switch(action)
+              {case A_SET_GEN_N1:
+                  mw->Gen_N1 = value;
+                  break;
+              case A_SET_GEN_N2:
+                  mw->Gen_N2 = value;
+                  break;
+              case A_SET_GEN_M:
+                  mw->Gen_M = value;
+                  break;
+              default:
+                  setError( UNKNOWN_COMMAND,"unknown command");
+                  break;
+              }
+      }
   else if(action == SERVER_DEBUG)
       sdebug = 1;
   else
