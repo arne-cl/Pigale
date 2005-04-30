@@ -69,6 +69,7 @@ list:
 	
 md:depend
 	@if ! test -d .obj ; then mkdir .obj ; fi
+	@if ! test -d ../lib ; then mkdir ../lib ; fi	
 test:
 	@echo OBJ=$(OBJ)
 	@echo OBJECTS=$(OBJECTS)
