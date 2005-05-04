@@ -18,9 +18,8 @@
 int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   {if(debug())DebugPrintf("Executing Graph:GDFSRenum");
   Prop<tbrin> iel (PE(),PROP_LABEL);
-  // Prop IsTree provisoire - commenté
-  //Prop<bool> IsTree(Set(tedge()),PROP_ISTREE); IsTree.SetName("IsTree");
-  //IsTree.clear();
+  Prop<bool> IsTree(Set(tedge()),PROP_ISTREE_LR); IsTree.SetName("IsTree");
+  IsTree.clear();
   tvertex v;
   tbrin b0=cir[0];
   int n = nv();
@@ -56,7 +55,7 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
       else                    // arbre bas ?
           {if (w==0) break;
           iel[y]=b;
-          //IsTree[b.GetEdge()] = true;
+          IsTree[b.GetEdge()] = true;
           b.cross();
           tb[w]=b;
           nvin[y.firsttbrin()]=dfsnum[v];

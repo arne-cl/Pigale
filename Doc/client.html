@@ -25,13 +25,13 @@
 &nbsp; &nbsp; <a href="http://www.ehess.fr/centres/cams/person/pom/">
 P. Ossona de Mendez</a> </font>
       </td>
-	  <!-- for sourceforge
+	  <!-- for sourceforge-->
 	  <td>
 	  <A href="http://sourceforge.net"> 
 	  <IMG src="http://sourceforge.net/sflogo.php?group_id=50880&type=5" width="210" height="62" 
 	  border="0" alt="SourceForge Logo"></A>
 	</td>
-	  for sourceforge -->
+	  <!-- for sourceforge -->
 	</tr>
       </tbody>
     </table>
@@ -103,30 +103,36 @@ that is all the Pigale macros plus some specific ones:
         <tr><td class="opt">COORD		</td><td> retrieve coords</td></tr> 
         <tr><td class="opt">VLAB			</td><td> retrieve labels (long integers) </td></tr>  
 </table>
+<table class="opt1">
+<caption>Generators settings</caption>
+      <tr><td class="opt">GEN_N1                                             </td><td> number of vertices</td><td>an integer</td></tr> 
+      <tr><td class="opt"> GEN_N2                                           </td><td> number of vertices</td><td>an integer</td></tr> 
+      <tr><td class="opt">GEN_M  		</td><td> number of edges</td><td>an integer</td></tr> 
+</table>
 <br>
 All the other commands are the standart Pigale macros.
 <br><br>
 <table class="opt1">
 <caption>Generators</caption>
-<tr><td class="opt">GEN_GRID  </td>                                    <td>grid</td></tr>
-<tr><td class="opt">GEN_COMPLETE </td>                        <td>complete graph</td></tr> 
-<tr><td class="opt">GEN_COMPLETE_BIP</td>                 <td>complete bipartite graph</td></tr>  
-<tr><td class="opt">GEN_RANDOM </td>                             <td>planar or not</td></tr>     
-<tr><td class="opt">GEN_PLANAR</td>                               <td>planar</td></tr>     
-<tr><td class="opt">GEN_PLANAR_2C</td>                        <td>planar 2-connected</td></tr>    
-<tr><td class="opt">GEN_PLANAR_3C</td>                        <td>planar 3-connected</td></tr>    
-<tr><td class="opt">GEN_PLANAR_3R_2C</td>                  <td>planar 3-regular 2-connected</td></tr>    
-<tr><td class="opt">GEN_PLANAR_3R_3C</td>                  <td>planar 3-regular 3-connected</td></tr>    
-<tr><td class="opt">GEN_PLANAR_3R_D4C</td>               <td>planar 3-regular 3-connected without 4-separator</td></tr>    
-<tr><td class="opt">GEN_PLANAR_4R_C </td>                   <td>planar 4-regular connected</td></tr>   
-<tr><td class="opt">GEN_PLANAR_4R_2C </td>                  <td>planar 4-regular 2-connected</td></tr>   
-<tr><td class="opt">GEN_PLANAR_4R_3C </td>                  <td>planar 4-regular 3-connected</td></tr>   
-<tr><td class="opt">GEN_PLANAR_4R_BIP </td>                 <td>planar 4-regular bipartite</td></tr>   
-<tr><td class="opt">GEN_PLANAR_BIP</td>                        <td>planar bipartite</td></tr>    
-<tr><td class="opt">GEN_PLANAR_BIP_2C</td>                  <td>planar  2-connected bipartite</td></tr>    
-<tr><td class="opt">GEN_PLANAR_BIP_3C</td>                   <td>planar  3-connected bipartite</td></tr>    
-<tr><td class="opt">GEN_P_OUTER_N</td>                           <td>maximal outerplanar</td></tr>    
-<tr><td class="opt">GEN_P_OUTER_NM</td>                        <td> outerplanar</td></tr>    
+<tr><td class="opt">GEN_GRID  </td>                                    <td>grid</td><td>GEN_N1, GEN_N2</td></tr>
+<tr><td class="opt">GEN_COMPLETE </td>                        <td>complete graph</td><td>GEN_N1</td></tr> 
+<tr><td class="opt">GEN_COMPLETE_BIP</td>                 <td>complete bipartite graph</td><td>GEN_N1, GEN_N2</td></tr>  
+<tr><td class="opt">GEN_RANDOM </td>                             <td>planar or not</td><td>GEN_N1 GEN_M</td></tr>     
+<tr><td class="opt">GEN_PLANAR</td>                               <td>planar</td><td>GEN_M</td></tr>     
+<tr><td class="opt">GEN_PLANAR_2C</td>                        <td>planar 2-connected</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_3C</td>                        <td>planar 3-connected</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_3R_2C</td>                  <td>planar 3-regular 2-connected</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_3R_3C</td>                  <td>planar 3-regular 3-connected</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_3R_D4C</td>               <td>planar 3-regular 3-connected without 4-separator</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_4R_C </td>                   <td>planar 4-regular connected</td><td>GEN_M</td></tr>   
+<tr><td class="opt">GEN_PLANAR_4R_2C </td>                  <td>planar 4-regular 2-connected</td><td>GEN_M</td></tr>   
+<tr><td class="opt">GEN_PLANAR_4R_3C </td>                  <td>planar 4-regular 3-connected</td><td>GEN_M</td></tr>   
+<tr><td class="opt">GEN_PLANAR_4R_BIP </td>                 <td>planar 4-regular bipartite</td><td>GEN_M</td></tr>   
+<tr><td class="opt">GEN_PLANAR_BIP</td>                        <td>planar bipartite</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_BIP_2C</td>                  <td>planar  2-connected bipartite</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_PLANAR_BIP_3C</td>                   <td>planar  3-connected bipartite</td><td>GEN_M</td></tr>    
+<tr><td class="opt">GEN_P_OUTER_N</td>                           <td>maximal outerplanar</td><td>GEN_N1</td></tr>    
+<tr><td class="opt">GEN_P_OUTER_NM</td>                        <td> outerplanar</td><td>GEN_N1, GEN_M</td></tr>    
 </table>
 <br>
 <table class="opt1">
@@ -261,7 +267,7 @@ Below is a screen-shot of the client running the previous file.<br>
 </center>
 
    <hr><!-- hhmts start -->
-Last modified: Sat Apr 16 15:02:46 CEST 2005
+Last modified: Sat Apr 30 14:38:52 CEST 2005
 <!-- hhmts end -->
 </body>
 

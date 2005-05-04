@@ -102,10 +102,11 @@ Pigale uses GNU autoconfig for compilation and installation.
       <li> Next run the following command:
 	<br><tt><b>make install</b></tt>
     </ul>
-    The programs are installed in $prefix/bin, the libraries in $prefix/lib and some documentation in $prefix/Doc.
+    The programs are installed in $prefix/bin, the libraries in $prefix/lib and some documentation in $prefix/Doc.<br>
+    You may have to delete first the old libraries  in $prefix/lib before running make.
     <br>
     If automakefile complains, you may try to execute:<br>
-    <tt><b>aclocal && automake && autoconf</b></tt><br>
+    <tt><b>aclocal && automake -ac && autoconf</b></tt><br>
     before running <tt><b>./configure</b></tt>
 
 <h3 class="c1"><b>Using make</b></h3>
@@ -156,7 +157,7 @@ Pigale uses GNU autoconfig for compilation and installation.
          Patrice Ossona de Mendez</a></address></td>
       </tr></table>
     <hr><!-- hhmts start -->
-Last modified: Thu Apr 14 14:39:47 CEST 2005
+Last modified: Sat Apr 30 16:15:56 CEST 2005
 <!-- hhmts end -->
 </body>
 

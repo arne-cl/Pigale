@@ -46,6 +46,7 @@
 #define  A_EMBED_CURVES             (A_EMBED+10)        // CURVES  
 #define  A_EMBED_CCD                (A_EMBED+11)        // CCD
 #define  A_EMBED_CD                 (A_EMBED+12)        // CD
+#define  A_EMBED_POLREC           (A_EMBED+13)        // POLREC
 #define  A_EMBED_VISION             (A_EMBED+50)        // VISION
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTATC_BIPARTI 
 #define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 

@@ -61,8 +61,8 @@ libtgraph_la_LIBADD =
 am_libtgraph_la_OBJECTS = 3-ConOrientTriang.lo 3-ConShelling1.lo \
 	3-ConShelling2.lo Barycenter.lo BFS.lo Biconnect.lo Bipolar.lo \
 	BipPlanarize.lo CotreeCritical.lo Debug.lo DFS.lo DFSGraph.lo \
-	DFSMap.lo Diagonalise.lo Embed2Pages.lo EmbedFPP.lo \
-	EmbedCCD.lo EmbedPolyline.lo EmbedTutteCircle.lo \
+	DFSMap.lo Diagonalise.lo Embed2Pages.lo EmbedPolrec.lo \
+	EmbedFPP.lo EmbedCCD.lo EmbedPolyline.lo EmbedTutteCircle.lo \
 	EmbedVision.lo FastTwit.lo File.lo Generate.lo GeoAlgs.lo \
 	Graph.lo HeapSort.lo k-InfOrient.lo LR-Algo.lo LR-Map.lo \
 	mark.lo MaxPlanar.lo more.lo netcut.lo NewPolar.lo \
@@ -213,6 +213,7 @@ libtgraph_la_SOURCES = \
     DFSMap.cpp\
     Diagonalise.cpp\
     Embed2Pages.cpp\
+    EmbedPolrec.cpp\
     EmbedFPP.cpp\
     EmbedCCD.cpp\
     EmbedPolyline.cpp\
@@ -341,6 +342,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Embed2Pages.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedCCD.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedFPP.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedPolrec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedPolyline.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedTutteCircle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EmbedVision.Plo@am__quote@

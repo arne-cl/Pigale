@@ -24,6 +24,7 @@ static _Action actions[]={
 {"CURVES",(A_EMBED+10)},
 {"CCD",(A_EMBED+11)},
 {"CD",(A_EMBED+12)},
+{"POLREC",(A_EMBED+13)},
 {"VISION",(A_EMBED+50)},
 {"CONTATC_BIPARTI",(A_EMBED+51)},
 {"POLAR",(A_EMBED+52)},

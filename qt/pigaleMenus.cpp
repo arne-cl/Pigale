@@ -327,6 +327,7 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
   embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
+  embed->insertItem(tr("Double &Occurrence"),           A_EMBED_POLREC );
   embed->insertItem(tr("&Visibility"),           A_EMBED_VISION );
   embed->insertItem(tr("FPP Visi&bility"),       A_EMBED_FPP_RECTI);
   embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);

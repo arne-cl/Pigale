@@ -41,7 +41,7 @@ public:
   void DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col);
   void DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center);
   void DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int color);
-  void update(int index);
+  void update(int index,bool NewDrawing = true);
   void update();
   void print(QPrinter *printer);
   void png();

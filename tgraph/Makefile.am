@@ -14,6 +14,7 @@ libtgraph_la_SOURCES= \
     DFSMap.cpp\
     Diagonalise.cpp\
     Embed2Pages.cpp\
+    EmbedPolrec.cpp\
     EmbedFPP.cpp\
     EmbedCCD.cpp\
     EmbedPolyline.cpp\

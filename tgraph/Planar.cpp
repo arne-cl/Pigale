@@ -235,11 +235,10 @@ int TopologicalGraph::Planarity()
       {for(tedge e = m; e() > m_origin;--e)
           DeleteEdge(e);
       }
-    
+  Prop1<int> maptype(Set(),PROP_MAPTYPE);
+  maptype() = PROP_MAPTYPE_LRALGO;
   if(ret)
-      {Prop1<int> maptype(Set(),PROP_MAPTYPE);
-      maptype() = PROP_MAPTYPE_LRALGO;
-      Prop1<int> isplanar(Set(),PROP_PLANAR);
+      {Prop1<int> isplanar(Set(),PROP_PLANAR);
       Prop1<int> planarmap(Set(),PROP_PLANARMAP);
       }
   if(debug())DebugPrintf("    END Planarity");

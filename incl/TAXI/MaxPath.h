@@ -44,12 +44,12 @@ class MaxPath
      }
 
    int insert(int iv1, int iv2, int len)
-     {if(!iv1)return(m);
+      {//if(!iv1)return(m);
      ++m;
 #ifdef TDEBUG
-     if(iv1 < 0 || iv2 < 0)
-       { DPRINTF(("negative constraint\n")); myabort();}
-     if(iv1 > n_max || iv2 > n_max || m > m_max)
+     if(iv1 <= 0 || iv2 <= 0 ||iv1 > n_max || iv2 > n_max )
+       { DPRINTF(("constraint between out of range value\n")); myabort();}
+     if(m > m_max)
        {DPRINTF(("too many constraints\n")); myabort();}
 #endif
      length[m] = len;
@@ -82,10 +82,7 @@ en resolvant les contraintes
                 }
             if(!top_link)break;
             iv = vin[-top_link];
-
-            potentiel[iv] = Max(potentiel[iv],
-                                potentiel[vin[top_link]] + length[top_link]);
-
+            potentiel[iv] = Max(potentiel[iv],potentiel[vin[top_link]] + length[top_link]);
             top_link = link[top_link];
             }
         }

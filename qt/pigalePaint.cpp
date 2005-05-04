@@ -15,6 +15,56 @@
 #include <QT/Misc.h>
 #include <qpaintdevicemetrics.h> 
 
+void DrawPolrec(QPainter *p,pigalePaint *paint)
+  {TopologicalGraph G(paint->GCP);
+  Prop<Tpoint> p1(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> p2(G.Set(tvertex()),PROP_DRAW_POINT_2);
+  Prop<double> x1(G.Set(tedge()),PROP_DRAW_DBLE_1 );
+  Prop<double> x2(G.Set(tedge()),PROP_DRAW_DBLE_2 );
+  Prop<double> y1(G.Set(tedge()),PROP_DRAW_DBLE_3 );
+  Prop<double> y2(G.Set(tedge()),PROP_DRAW_DBLE_4);
+  Prop<double> y(G.Set(tedge()),PROP_DRAW_DBLE_5);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+  Prop<bool> isTree(G.Set(tedge()),PROP_ISTREE); 
+  Prop<long> elabel(G.Set(tedge()),PROP_LABEL); 
+  
+  // draw vertices
+  for(tvertex v = 1;v <= G.nv();v++)
+      {double dx = (p2[v].x() - p1[v].x()) ;   
+      double x = p1[v].x() ;     
+      double y = p1[v].y(); 
+      paint->DrawText(p,x,y, dx,1.,v,vcolor[v]);
+      }
+  // draw edges
+  Tpoint e1,e2,e3,e4;
+#ifdef TDEBUG
+  bool drawTextEdges = G.ne() < 100;
+#endif
+   for(tedge e = 1;e <= G.ne();e++)
+       {if(isTree[e])
+           {e1 = Tpoint(x1[e],y1[e]);
+           e2 = Tpoint(x1[e],y2[e]);
+           paint->DrawSeg(p,e1,e2,ecolor[e]);
+           }
+       else // cotree edges   (x1,y1) -> (x1,y) -> (x2,y) -> (x2,y2)
+           {e1 = Tpoint(x1[e],y1[e]);
+           e2 = Tpoint(x1[e],y[e]);
+           e3 = Tpoint(x2[e],y[e]);
+           e4 = Tpoint(x2[e],y2[e]);
+           paint->DrawSeg(p,e1,e2,ecolor[e]);
+           paint->DrawSeg(p,e2,e3,ecolor[e]);
+           paint->DrawSeg(p,e3,e4,ecolor[e]);
+#ifdef TDEBUG
+           if(drawTextEdges)
+               {QString label=QString("%1").arg(elabel[e]);
+               // text is drawn at  position of lower edge occu
+               paint->drawText(paint->to_x(x1[e]),paint->to_y(y[e]),label);
+               }
+#endif
+           }
+       }
+  }
 void DrawPolar(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
@@ -361,6 +411,7 @@ static DrawThing DrawFunctions[] =
     {DrawTContact,QT_TRANSLATE_NOOP("pigalePaint","T Contact")}, 
     {DrawPolyline,QT_TRANSLATE_NOOP("pigalePaint", "Polyline")},
     {DrawCurves,QT_TRANSLATE_NOOP("pigalePaint", "Curves")},
+    {DrawPolrec,QT_TRANSLATE_NOOP("pigalePaint", "Polrec")},
     {0,QT_TRANSLATE_NOOP("pigalePaint","default ")}  
     };
 const int border = 20;
@@ -407,12 +458,13 @@ void pigalePaint::drawIt(QPainter *p)
   (*DrawFunctions[index].f)(p,this);
   }
 void pigalePaint::update()
-  {update(index);}
-void pigalePaint::update(int i)
+  {update(index,false);}
+void pigalePaint::update(int i,bool newDrawing)
   {setBackgroundColor(Qt::white);
   zoom = 1;
   index = i;
-  GCP = mw->GC;
+  if(newDrawing) // copy the graph
+      GCP = mw->GC;
   TopologicalGraph G(GCP);
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
@@ -524,7 +576,7 @@ void pigalePaint::DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center)
 // draw text centered at a, with a surrounding rectangle
 // center=1 center
 // center=0 horizontal
-  {QString t =  getVertexLabel(mw->GC,v);
+  {QString t =  getVertexLabel(GCP,v);
   QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
   double nx = size.width() + 4; double ny = size.height();
@@ -550,6 +602,6 @@ void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,tve
   pn.setWidth(1);p->setPen(pn);
   p->drawRect(rect);
   pn.setWidth(1);p->setPen(pn);
-  QString t = getVertexLabel(mw->GC,v);
+  QString t = getVertexLabel(GCP,v);
   p->drawText(rect,Qt::AlignCenter,t);
   }

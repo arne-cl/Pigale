@@ -41,7 +41,7 @@
 #define PROP_DRAW_INT_4       (PROP_DRAWING+24)   //!< \c int
 #define PROP_DRAW_INT_5       (PROP_DRAWING+25)   //!< \c int
 #define PROP_DRAW_INT_6       (PROP_DRAWING+26)   //!< \c int
-#define PROP_CANVAS          (128)               //!< Start of CanvasProperties
+#define PROP_NOTSAVED          (128)               //!< Start of not SavedProperties
 #define PROP_RESERVED         (200)               //!< \c anything Reserved for applications 
 #define PROP_TMP              (255)               //!< \c anything Temporary property
 //@}
@@ -120,9 +120,9 @@
 #define PROP_HYPEREDGE        (29)   //!< \c bool    vertex is an hyperedge
 #define PROP_NLOOPS           (30)   //!< \c int     # of attached loops
 #define PROP_COORD3          (PROP_DRAWING+31)   //!< \c Tpoint3 Coord for Embed3d
-#define PROP_EIGEN           (PROP_DRAWING+32)   //!< \c double eigenvalues for Embed3d
-#define PROP_CANVAS_ITEM     (PROP_CANVAS+1)     //!< \c void * NodeItem
-#define PROP_CANVAS_COORD    (PROP_CANVAS+2)     //!< \c Tpoint   Copy Coord for editor
+#define PROP_EIGEN           (PROP_NOTSAVED+32)   //!< \c double eigenvalues for Embed3d
+#define PROP_CANVAS_ITEM     (PROP_NOTSAVED+1)     //!< \c void * NodeItem
+#define PROP_CANVAS_COORD    (PROP_NOTSAVED+2)     //!< \c Tpoint   Copy Coord for editor
 
 //@}
 /** @name Property numbers for E.
@@ -137,7 +137,8 @@
 #define PROP_REORIENTED       (18)   //!< \c bool    orientation should be reversed
 #define PROP_ISTREE           (19)   //!< \c bool    edge belongs to the tree
 #define PROP_MULTIPLICITY     (20)   //!< \c int     edge multiplicity
-#define PROP_CANVAS_ITEM     (PROP_CANVAS+1)     //!< \c void * EdgeItem
+#define PROP_CANVAS_ITEM     (PROP_NOTSAVED+1)     //!< \c void * EdgeItem
+#define PROP_ISTREE_LR           (PROP_NOTSAVED+2)   //!< \c bool    edge belongs to the tree of the LR-algorithm
 //@}
 /** @name Property numbers for B.
   */
