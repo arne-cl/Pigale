@@ -178,13 +178,15 @@ static int nb_leaves(GeometricGraph &G, short TreeColor, tbrin RootBrin,
   return nb_leaves;
   }
 int EmbedPolyline(TopologicalGraph &G)
-  {if(G.FindPlanarMap() != 0){Tprintf("Not Planar Graph");return -1;}
-  if(G.nv() < 3 || G.ne() < 2)return -1;
-  if (!G.TestPlanar()) return -1;
-  tbrin FirstBrin = 1;
+  {if(G.nv() < 3 || G.ne() < 2)return -1;
   int OldNumEdge = G.ne();
   G.MakeConnected();
-  if(!G.CheckPlanar())return -1;
+  if(!G.FindPlanarMap() )
+      {Tprintf("Not Planar Graph");
+      for(tedge e = G.ne(); e > OldNumEdge; e--) G.DeleteEdge(e);
+      return -1;
+      }
+ tbrin FirstBrin = 1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   if(!FirstBrin && !MaxPlanar)

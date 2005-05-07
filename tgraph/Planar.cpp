@@ -57,106 +57,6 @@ int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
       }
   return p;
   }
-/*
-int Graph::TestPlanar()//BUG in PrepDFS if not connected
-  {if(debug())DebugPrintf("Executing Graph:TestPlanar");
-  int m = ne();
-  int n = nv(); 
-  if (m < 9)
-      {Prop1<int> isplanar(Set(),PROP_PLANAR);return  1;}
-  svector<tvertex> nvin(-m,m);
-  svector<tvertex> &low = *new svector<tvertex>(0,n);
-  svector<tbrin> &cir = *new svector<tbrin>(-m,m);
-
-  PrepDFS(cir);
-  if(!GDFS(cir,nvin)) // not connected ...
-      {delete &low;delete &cir;
-      return -1;
-      }
-  delete &cir;
-    
-  if(m - n < 3)
-      {delete &low;
-      Prop1<int> isplanar(Set(),PROP_PLANAR);
-      return 1;
-      }
-  else if(m > 3*n-6 && (m - NumberOfParallelEdges(n,m,nvin)) > 3*n-6)
-      {delete &low;
-      return 0;
-      }
-          
-  _Bicon Bicon(n);
-  int ret = bicon(n,m,nvin,Bicon,low);
-  if(ret) Prop1<int> isbicon(Set(),PROP_BICONNECTED);
-
-  _LrSort LrSort(n,m);
-  LralgoSort(n,m,nvin,Bicon,low,LrSort);
-  delete &low;
-  _Hist Hist(n,m);
-  ret  = lralgo(n,m,nvin,Bicon,LrSort,Hist,true);
-  if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
-  return ret;
-  }
-int Graph::Planarity()//BUG in PrepDFS if not connected
-  {if(debug())DebugPrintf("Executing Graph:Planarity");
-  int m = ne();
-  int n = nv();
-  if(!m)return 1;
-  svector<tvertex> nvin(-m,m);
-  svector<tvertex> &low = *new svector<tvertex>(0,n);
-  svector<tbrin> cir(-m,m);
-
-  PrepDFS(cir);
-  if(!GDFSRenum(cir,nvin)) // not connected
-      {delete &low;return -1;}
-  nvin.swap(vin);
-  _Bicon Bicon(nv());
-  int ret = bicon(n,m,vin,Bicon,low);
-  if(ret) Prop1<int> isbicon(Set(),PROP_BICONNECTED);
-  _LrSort LrSort(n,m);
-  LralgoSort(n,m,vin,Bicon,low,LrSort);
-  delete &low;
-
-  _Hist Hist(n,m);
-  ret = lralgo(n,m,vin,Bicon,LrSort,Hist);
-  Embed Embedder(*this,Bicon,LrSort,Hist);
-  Embedder();
-  nvin.swap(vin);
-  Prop<tbrin> Gcir(PB(),PROP_CIR);
-  Prop<long> ivl(PV(),PROP_LABEL);
-  Prop<long> iel(PE(),PROP_LABEL);
-  tbrin b;
-  for (b = 1; b <= ne(); b++)
-      { tbrin b2 = Gcir[b];
-      if (b2<0) cir[iel[b]] = -iel[-b2];
-      else cir[iel[b]] = iel[b2];
-      b2 = Gcir[-b];
-      if (b2<0) cir[-iel[b]] = -iel[-b2];
-      else cir[-iel[b]] = iel[b2];
-      }
-  Prop1<tbrin> extbrin(PG(), PROP_EXTBRIN);
-  extbrin() = iel[extbrin()];//test if extbrin <0
-  cir[0]=0;
-  Prop<tbrin> acir(PB(),PROP_ACIR);
-  for (b = -ne(); b<= ne(); b++)
-      acir[cir[b]] = b;
-  cir.swap(Gcir);
-  Prop<tbrin> pbrin(PV(),PROP_PBRIN);
-  b = iel[1];
-  pbrin[vin[b]] = b;
-  for(tvertex v = 2;v <= nv();v++)
-      {b = (tbrin)-iel[v-1];
-      pbrin[vin[b]] = b;
-      }
-  if(ret)
-      {Prop1<int> maptype(Set(),PROP_MAPTYPE);
-      maptype() = PROP_MAPTYPE_LRALGO;
-      Prop1<int> isplanar(Set(),PROP_PLANAR);
-      Prop1<int> planarmap(Set(),PROP_PLANARMAP);
-      }
-  return ret;
-  }
-*/
 int TopologicalGraph::Planarity()
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::Planarity");
@@ -197,7 +97,6 @@ int TopologicalGraph::Planarity()
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
   nvin.Tswap(vin);
-  // Prop<tbrin> Gcir(PB(),PROP_CIR);
   Prop<long> ivl(PV(),PROP_LABEL);
   Prop<long> iel(PE(),PROP_LABEL);
   tbrin b;
@@ -228,19 +127,19 @@ int TopologicalGraph::Planarity()
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
-	  {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
+          {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
       }
 
   if(m != m_origin)
-      {for(tedge e = m; e() > m_origin;--e)
-          DeleteEdge(e);
-      }
+      for(tedge e = m; e() > m_origin;--e) DeleteEdge(e);
+
   Prop1<int> maptype(Set(),PROP_MAPTYPE);
   maptype() = PROP_MAPTYPE_LRALGO;
   if(ret)
       {Prop1<int> isplanar(Set(),PROP_PLANAR);
-      Prop1<int> planarmap(Set(),PROP_PLANARMAP);
+      planarMap() = 1;
       }
+  else  planarMap() = -1;
   if(debug())DebugPrintf("    END Planarity");
   return ret;
   }
@@ -276,6 +175,7 @@ int TopologicalGraph::TestPlanar()
   _FastHist Hist(m);
   int ret = fastlralgo(n,m,nvin,Bicon,LrSort,Hist);
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
+  else planarMap() = -1;
   if(debug())DebugPrintf("END TopologicalGraph:TestPlanar");
   return ret;
   }
@@ -303,6 +203,7 @@ int TopologicalGraph::TestPlanar2()
       return  0;
   int ret = DG.TestPlanar();
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
+  else planarMap() = -1;
   if(debug())DebugPrintf("END:TestPlanar2 -> %d (1-planar)",ret);
   return ret;
   }

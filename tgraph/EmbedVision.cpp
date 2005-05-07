@@ -97,23 +97,22 @@ bool CheckBipolarlyOriented(TopologicalGraph &G,tvertex &s,tvertex &t,bool &stCo
   return true;
   }
 int EmbedVision(TopologicalGraph &G)
-  {if(G.FindPlanarMap() != 0){Tprintf("Not Planar Graph");return -1;}
-  int morg = G.ne();
-  bool alreadyBipolarOriented = false;
- bool stConnected = false; 
+  {int morg = G.ne();
   if(!G.CheckConnected())G.MakeConnected();
+  if(!G.FindPlanarMap())
+      {Tprintf("Not Planar Graph");
+      for(tedge e = G.ne(); e > morg; e--) G.DeleteEdge(e);
+      return -1;
+      }
   if(!G.CheckBiconnected())G.Biconnect();
+  bool alreadyBipolarOriented = false;
+  bool stConnected = false; 
    tvertex s,t;
    tbrin bs,bt;
    bool already2Connected = (morg == G.ne());
    if(already2Connected && (alreadyBipolarOriented = CheckBipolarlyOriented(G,s,t,stConnected,bs,true)) == true)
       {if(stConnected)Tprintf("Using original orientation (s,t are connected)");
       else Tprintf("Using original orientation (s,t are not connected)");
-//       if(!stConnected)
-//           {G.NewEdge(s,t);
-//           bs = (tbrin)G.ne();      
-//           G.CheckPlanar();
-//           }
       bt = -bs;
       }
   else

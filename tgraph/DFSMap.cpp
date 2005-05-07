@@ -31,8 +31,9 @@ int DFSLow::Planarity()
       {Prop1<int> maptype(Set(),PROP_MAPTYPE);
       maptype() = PROP_MAPTYPE_LRALGO;
       Prop1<int> isplanar(Set(),PROP_PLANAR);
-      Prop1<int> planarmap(Set(),PROP_PLANARMAP);
+      //planarMap() = 1;
       }
+  //else planarMap() = -1;
   return ret;
   }
         

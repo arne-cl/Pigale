@@ -179,7 +179,7 @@ void CalcTotalOrder(GeometricGraph &G, const tbrin FirstBrin)
 
 int EmbedContactBip(GeometricGraph &G)
   {if(!G.CheckBipartite())return 4;
-  if(G.FindPlanarMap())return  3;
+  if(!G.FindPlanarMap())return  3;
   tbrin FirstBrin;
   int  n_origin = G.nv();
   int m_origin = G.ne();

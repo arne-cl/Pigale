@@ -113,8 +113,8 @@ int GeometricGraph::ComputeGeometricCir()
   int genus = ComputeGenus();
   Prop1<int> maptype(Set(),PROP_MAPTYPE);
   maptype() = PROP_MAPTYPE_GEOMETRIC;
-  if(genus == 0)extbrin() = FindExteriorFace();
-  else Set().erase(PROP_PLANARMAP);
+  if(genus == 0){planarMap() = 1; extbrin() = FindExteriorFace();}
+  else planarMap() = -genus;
   return genus;
   }
 void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)
@@ -190,7 +190,7 @@ tbrin  GeometricGraph::FindExteriorFace(Tpoint& pp)
   return b;
   }
 int GeometricGraph::ColorExteriorface()
-  {if(FindPlanarMap())
+  {if(!FindPlanarMap())
       {DebugPrintf("Exterior face of non planar graph");return -1;}
   short ecol;  ecolor.getinit(ecol);
   int width; ewidth.getinit(width);

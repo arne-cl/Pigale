@@ -531,7 +531,7 @@ static bool brinOrderOk(GeometricGraph &G,tbrin b)
 ** meme face dans le graphe de référence
 */
 GraphContainer * TopologicalGraph::CrossingEdgesGraph()
-  {if(FindPlanarMap() !=0)
+  {if(!FindPlanarMap() )
       {DebugPrintf("Error Computing the CEG:no planar map");
       return (GraphContainer *)0;
       }
@@ -716,7 +716,7 @@ static double potEdge(tvertex const &v, tbrin const &brin, tk &k, GeometricGraph
 
 
 GraphContainer * TopologicalGraph::Vis_a_vis_Graph()
-  {if(FindPlanarMap() !=0)
+  {if(!FindPlanarMap())
       {DebugPrintf("Error Computing the adj:no planar map");
       return (GraphContainer *)0;
       }
@@ -973,11 +973,7 @@ int GraphEditor::SpringJacquard()
   int n_red;
   GeometricGraph & G = *(gwp->pGG);
   if(G.ComputeGeometricCir() == 0)
-      {G.extbrin() = G.FindExteriorFace();
-      Prop1<int> map(G.Set(),PROP_PLANARMAP);
-      Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
-      maptype() = PROP_MAPTYPE_GEOMETRIC;
-      }
+      G.extbrin() = G.FindExteriorFace();
   else
       {Tprintf("NOT A PLANAR EMBEDDING");return -1;}
   DoNormalise = true;

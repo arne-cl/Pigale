@@ -60,29 +60,31 @@ class Graph : public GraphAccess
 class TopologicalGraph : public Graph
 {
 public :
-	 int ConstructedCir;
-	 int ConstructedPbrin;
-	 Prop<tbrin> cir;
-	 Prop<tbrin> acir;
-	 Prop<tbrin> pbrin;
-	 Prop1<tbrin> extbrin;
-	 int genus;
+  int ConstructedCir;
+  int ConstructedPbrin;
+  Prop<tbrin> cir;
+  Prop<tbrin> acir;
+  Prop<tbrin> pbrin;
+  Prop1<tbrin> extbrin;
+  Prop1<int>  planarMap;
+  int genus;
 
-    void init();
-    void keep()
-        { 
-        Set(tbrin()).Keep(PROP_CIR);
-        Set(tbrin()).Keep(PROP_ACIR);
-        Set(tvertex()).Keep(PROP_PBRIN);
-        Set().Keep(PROP_EXTBRIN);
-        if (Set().exist(PROP_HYPERGRAPH))
-            { Set().Keep(PROP_BIPARTITE);
-            Set().Keep(PROP_HYPERGRAPH);
-            Set().Keep(PROP_NV);
-            Set().Keep(PROP_NE);
-            Set(tvertex()).Keep(PROP_HYPEREDGE);
-            }
-        }
+  void init();
+  void keep()
+      { 
+      Set(tbrin()).Keep(PROP_CIR);
+      Set(tbrin()).Keep(PROP_ACIR);
+      Set(tvertex()).Keep(PROP_PBRIN);
+      Set().Keep(PROP_EXTBRIN);
+      Set().Keep(PROP_PLANARMAP);
+      if (Set().exist(PROP_HYPERGRAPH))
+          { Set().Keep(PROP_BIPARTITE);
+          Set().Keep(PROP_HYPERGRAPH);
+          Set().Keep(PROP_NV);
+          Set().Keep(PROP_NE);
+          Set(tvertex()).Keep(PROP_HYPEREDGE);
+          }
+      }
     void keepr()
         { keep();
         me().keepr();
@@ -99,6 +101,7 @@ public :
         cir(G.PB(),PROP_CIR),
         acir(G.PB(),PROP_ACIR),pbrin(G.PV(),PROP_PBRIN),
         extbrin(G.Set(),PROP_EXTBRIN,1),
+        planarMap(G.Set(),PROP_PLANARMAP,0),
         genus(-1)
         {keep();}
     TopologicalGraph(GraphContainer &G) : 
@@ -108,6 +111,7 @@ public :
         cir(G.PB(),PROP_CIR),
         acir(G.PB(),PROP_ACIR),pbrin(G.PV(),PROP_PBRIN),
         extbrin(G.Set(),PROP_EXTBRIN,1),
+        planarMap(G.Set(),PROP_PLANARMAP,0),
         genus(-1)
         {if (ConstructedCir || ConstructedPbrin)
             init();
@@ -120,12 +124,13 @@ public :
         cir(G.PB(),PROP_CIR),
         acir(G.PB(),PROP_ACIR),pbrin(G.PV(),PROP_PBRIN),
         extbrin(G.Set(),PROP_EXTBRIN,1),
+        planarMap(G.Set(),PROP_PLANARMAP,0),
         genus(-1)
         {if (ConstructedCir||ConstructedPbrin)
             init();
         keep();
         }
-	 ~TopologicalGraph() {}
+     ~TopologicalGraph() {}
      void StrictReset() {keeponly(); reset();}
      Graph & me() {return *this;}
      const Graph & me() const {return *this;}
@@ -212,10 +217,10 @@ public :
     int BFS(svector<int> &comp);
     int MakeConnected(bool mark_roots=false);
     int MakeConnectedVertex();
-    int FindPlanarMap();
+    bool FindPlanarMap();
     bool CheckPlanar() // Graph must be connected
-       {if(FindPlanarMap()) return false;
-       return true;
+       {if(FindPlanarMap()) return true;
+       return false;
        }
     void ZigZag(tbrin start);
     int ZigZagTriangulate();

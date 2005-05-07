@@ -16,38 +16,34 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
 
-int TopologicalGraph::FindPlanarMap()
-  {bool Connect= CheckConnected();
-  if(ne() <= 2){Prop1<int> map(Set(),PROP_PLANARMAP);return 0;}
-  if(Set().exist(PROP_PLANARMAP)) 
-      {if(debug())DebugPrintf("  exist PROP_PLANARMAP");
-      return 0;
+bool TopologicalGraph::FindPlanarMap()
+  {if(planarMap() < 0){DebugPrintf("  EXIST planarMap < 0");return false;}
+  bool Connect= CheckConnected();
+
+  if(planarMap() == 1) 
+      {if(debug())DebugPrintf("  EXIST planarMap = 1");
+      return true;
       }
   if(Connect && ComputeGenus() == 0)
       {if(debug())DebugPrintf("Good Genus");
-      Prop1<int> map(Set(),PROP_PLANARMAP);return 0;
+      planarMap() = 1;return true;
       }
-   if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
-       {GeometricGraph GG(*this);
-       if(debug())DebugPrintf("Executing geometric cir");
-       svector<tbrin> cir0,acir0;
-       cir0 = cir; acir0 = acir;
-       if(GG.ComputeGeometricCir() == 0)
-	   {if(debug())DebugPrintf("Using geometric map");
-	   return 0;
-	   }
-       cir.vector() = cir0; acir.vector() = acir0; 
-       }
-
+  if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
+      {GeometricGraph GG(*this);
+      if(debug())DebugPrintf("Executing geometric cir");
+      svector<tbrin> cir0,acir0;
+      cir0 = cir; acir0 = acir;
+      if(GG.ComputeGeometricCir() == 0)
+          {if(debug())DebugPrintf("Using geometric map");
+          planarMap() = 1;return true;
+          }
+      cir.vector() = cir0; acir.vector() = acir0; 
+      }
   if(debug())DebugPrintf("FindPlanarMap:LRALGO");
-  if(Planarity() == 1)
-      {Prop1<int> map(Set(),PROP_PLANARMAP);
-      Prop1<int> maptype(Set(),PROP_MAPTYPE);
-      maptype() = PROP_MAPTYPE_LRALGO;
-      return 0;
-      }
-
-  return 1;
+  int ret = Planarity();
+  if(ret  == 1){planarMap() = 1; return true;}
+  else planarMap() = -1;
+  return false;
   }
 bool TopologicalGraph::CheckBiconnected()
   {if(debug())DebugPrintf("   CheckBionnected");
@@ -693,79 +689,6 @@ tedge TopologicalGraph::IdentifyEdge(tvertex &v1,tvertex &v2)
   while((b = cir[b]) != b0);
   return e;
   }
-/*
-int TopologicalGraph::VertexQuadrangulate() 
-// Precondition: simple plane 2-connected  bipartite graph
-// if the graph is not 2-connected => multiple edges
-  {if(FindPlanarMap() !=0 || !CheckBiconnected())
-      return 4;
-  if(debug())DebugPrintf("VertexQuadrangulate");
-  Simplify();
-  svector<tbrin> & Fpbrin = ComputeFpbrin();
-  tvertex v,v0;
-  tbrin nb,b0,b;
-  int len;
-  v0 = nv();
-  int m0 = ne();
-  for (int  i=1; i <= Fpbrin.n(); i++)
-      {b = b0 = Fpbrin[i];
-      len = FaceWalkLength(b0);
-      if(len % 2)return 1;
-      if(len ==  2)return 2;
-      if(len == 4)continue;
-      // Creating a new vertex and an edge incident to it
-      v = NewVertex();
-      incsize(tedge()); nb = ne();
-      // New edge  before b0 
-      acir[nb] = acir[b0]; acir[b0] = cir[acir[nb]] = nb; cir[nb] = b0;
-      vin[nb] = vin[b0];
-      nb = -nb;
-      vin[nb] = v; pbrin[v] = nb; cir[nb] = nb; acir[nb] = nb;
-      // Quadrangulate the face
-      b0 = -nb;       // to eend the face properly
-      // New edge before  nb,before b
-      while((b = cir[-cir[-b]]) != b0)
-          {incsize(tedge());
-          tbrin bb = ne();
-          acir[bb]  = acir[nb]; acir[nb] = cir[acir[bb]] = bb; cir[bb] = nb;
-          acir[-bb] = acir[b]; acir[b] = cir[acir[-bb]] = -bb; cir[-bb] = b;
-          vin[bb] = vin[nb];    vin[-bb] = vin[b];
-          nb = bb;    // for next insertion
-          }
-      }
-
-  delete &Fpbrin;
-  if(ne() != 2*nv() - 4)
-      {for(v = nv(); v > v0;v--)
-          DeleteVertex(v);
-      return 3;    
-      }
-
-  if(Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
-      {Prop<Tpoint> vcoord(Set(tvertex()),PROP_COORD);
-      int deg; 
-      tvertex w;
-      for(v = v0 + 1;v <= nv();v++)
-          {Tpoint p(.0,.0);
-          deg = 0;
-          Forall_adj_brins_of_G(b,v)
-              {w = vin[-b]; ++deg;
-              p += vcoord[w];
-              }
-          vcoord[v] = p/(double)deg;
-          }
-      }
-  if(Set(tvertex()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
-      for(int i = v0() + 1;i <= nv();i++)vlabel[i] = i;
-      }
-  if(Set(tedge()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> elabel(Set(tedge()),PROP_LABEL);
-      for(int i  = m0 + 1;i <= ne();i++)elabel[i] = i;
-      }
-  return 0;
-  }
-*/
 int TopologicalGraph::VertexQuadrangulate()
   {if(debug())DebugPrintf("VertexQuadrangulate");
   if(!CheckSimple())return -1;
@@ -946,7 +869,6 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
   ns=nt=0;
   svector<int> din(1,nv());             din.SetName("Acyclic:din");
   svector<tvertex> stack(1,nv());       stack.SetName("Acyclic:stack");
-  vin.SetName("Acyclic:vin");
   int num=0;
   tbrin b,b0;
   tvertex v;
@@ -966,14 +888,16 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
       {bool sink=true; 
       v=stack[stackpos--];
       b0 = b = pbrin[v];
+
+      //if(vin[b] != v)qDebug("ERROR v=%d vin=%d",v(),b());
       do 
           {if (b>0)
-	    {sink=false;
-	    if (--din[vin[-b]]==0) 
-              {stack[++stackpos]=vin[-b];
-              ++num;
+              {sink=false;
+              if (--din[vin[-b]]==0) 
+                  {stack[++stackpos]=vin[-b];
+                  ++num;
+                  }
               }
-	    }
           b = cir[b];
           } while(b!=b0);
       if (sink) nt++;
@@ -1131,78 +1055,13 @@ bool TopologicalGraph::CheckNoC3Sep()
   delete &DGC;
   return res;
   }
-
-/*
- bool TopologicalGraph::CheckTriconnected()
-    {//prerequisit : G plane
-    if(Set().exist(PROP_TRICONNECTED))return true;
-    if(debug())DebugPrintf("   CheckTriconnected");
-    if (nv() < 4 || ne() < nv()) return false;
-    if(!CheckConnected())return false;
-
-    int dmin,dmax;
-    MinMaxDegree(dmin,dmax);
-    if(dmin < 3)return false;
-
-    GraphContainer *pAGC;
-    GraphContainer *pDAGC=0;
-    int nsinks;
-    bool res;
-    svector<bool> save_oriented(0,ne());
-    Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
-    save_oriented.swap(oriented);
-    tbrin first = 1;
-    if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-        {Error() = 1;return false;}  
-    // If only 1 sink and vin[-1] is a sink  => G is biconnected
-    if (nsinks > 1)
-        {save_oriented.swap(oriented); RestoreOrientation(); return false;}
-    // Check that vin[-1] is a sink
-    tbrin b = -1;
-    bool sink = true;
-    do
-        if(b() > 0){sink = false;break;}
-        while((b = cir[b]) != -1);
-    if(!sink)
-        {save_oriented.swap(oriented); RestoreOrientation(); return false;}
-
-    // G is plane and biconnected
-    Prop1<int> isbicon(Set(),PROP_BICONNECTED);
-    {pAGC = AngleGraph();
-    TopologicalGraph AG(*pAGC);
-    // Erase the 4 vertices corresponding to edge 1
-    Prop<bool> erase(AG.Set(tvertex()),PROP_TMP);
-    erase.clear();
-    tbrin b=1;
-    tvertex v;
-    erase[AG.vin[1]]=true;
-    erase[AG.vin[2]]=true;
-    erase[AG.vin[-1]]=true;
-    erase[AG.vin[-2]]=true;
-    for (v=AG.nv(); v>0; v--)
-        if (erase[v]) AG.DeleteVertex(v);
-    AG.RemoveIsolatedVertices();
-    if(AG.CheckConnected() && AG.FindPlanarMap() == 0)
-        {GraphContainer *pDAGC = AG.DualGraph();
-        TopologicalGraph DAG(*pDAGC);
-        res = DAG.CheckAcyclic();
-        }
-    else
-        res = false;
-    }
-    delete pAGC;  delete pDAGC;
-    save_oriented.swap(oriented); RestoreOrientation();
-    if(res)Prop1<int> istricon(Set(),PROP_TRICONNECTED);
-    return res;
-    }
-*/
-
 bool TopologicalGraph::CheckSubdivTriconnected()
   {//prerequisit : G plane
   if(debug())DebugPrintf("   CheckSubDivTriconnected");
   if(Set().exist(PROP_TRICONNECTED))return true;
   if (nv() < 4 || ne() <= nv()) return false;
   if(!CheckConnected())return false;
+  if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing SubDivTriconnected");
   GraphContainer *pAGC;
   GraphContainer *pDAGC=0;
@@ -1213,7 +1072,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
   save_oriented.Tswap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(-1);save_oriented.Tswap(oriented);RestoreOrientation();return false;}  
+      {setError(-1,"PseudoBipolar");save_oriented.Tswap(oriented);RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if (nsinks > 1)
       {save_oriented.Tswap(oriented);RestoreOrientation(); return false;}
@@ -1231,18 +1090,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
   Prop1<int> isbicon(Set(),PROP_BICONNECTED);
   {pAGC = AngleGraph();
   TopologicalGraph AG(*pAGC);
-  //-> error car pas de raison que AG soit 3-connected
-  // correction provisoire
-  /*
-  tedge e;
-  int m0 = AG.ne();
-  int m1 = m0 + ne();
-  for (e = 1;e <= ne();e++)
-  	AG.NewEdge(vin[e],vin[-e]);    
-  AG.FindPlanarMap();
-  for (e = m1; e > m0;e--)
-  	AG.DeleteEdge(e);
-  */
+
   // Erase  original vertices of degree two
   Prop<bool> OriginalVertex(AG.Set(tvertex()),PROP_MARK);
   tvertex v;
@@ -1266,7 +1114,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
           }while((b = AG.cir[-b]) != b0);
       if(SumInDegrees == 4)break;      
       }
-  if(i > Fpbrin.n()){Tprintf("Error SubdivTriconencted");setError(A_ERRORS_SUBDIVTRICON);i=1;}
+  if(i > Fpbrin.n()){Tprintf("Error SubdivTriconencted");setError(A_ERRORS_SUBDIVTRICON,"subdiv3con");i=1;}
   b0 = Fpbrin[i];
   delete &Fpbrin;
     
@@ -1390,12 +1238,12 @@ struct _tricon_angle
 };
 
 bool TopologicalGraph::CheckTriconnected()
-  {//prerequisit : G plane
-  if(debug())DebugPrintf("   CheckTriconnected");
+// if not planar returns false
+  {if(debug())DebugPrintf("   CheckTriconnected");
   if(Set().exist(PROP_TRICONNECTED))return true;
   if(!CheckConnected())return false;
-  if(debug())DebugPrintf("Executing CheckTriconnected");
   if (nv()<=3 || ne()<=nv()+2) return false;
+  if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing CheckTriconnected");
   int nsinks;
   svector<bool> save_oriented(0,ne());
@@ -1426,13 +1274,14 @@ bool TopologicalGraph::CheckTriconnected()
     
   if(res)Prop1<int> istricon(Set(),PROP_TRICONNECTED);
   save_oriented.Tswap(oriented); RestoreOrientation();
+  if(debug())DebugPrintf("END CheckTriconnected");
   return res;
   }
 
 bool TopologicalGraph::CheckSerieParallel()
   {//prerequisit : G  planaire
+  if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing CheckSerieParallel");
-    
   svector<bool> save_oriented(0,ne()); save_oriented.SetName("SerieP:save_oriented");
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
   oriented.SetName("Serie //:Orient");
@@ -1460,22 +1309,29 @@ bool TopologicalGraph::CheckSerieParallel()
   GraphContainer &DGC = *AngleGraph();
   {TopologicalGraph DG(DGC);
   int ns,nt;
+  if(debug())DebugPrintf("Executing CheckSerieParallel:CheckAcyclic");
   res = DG.CheckAcyclic(ns,nt);
   }
 
   delete &DGC;
   save_oriented.Tswap(oriented); RestoreOrientation();
   if(debug())DebugPrintf("END CheckSerieParallel");
-
   return res;
   }
 
 GraphContainer * TopologicalGraph::AngleGraph()
-  {if(!CheckConnected() || !CheckPlanar())return (GraphContainer *)0;
+  { if(debug())DebugPrintf("Executing AngleGraph");
+  if(!CheckConnected() || !FindPlanarMap())
+      {DebugPrintf("Could not compute angle graph");
+      setError(-1,"Could not compute angle graph");
+      return (GraphContainer *)0;
+      }
+ 
   int m = ne();
   int n = nv();
-  int nn = m + 2; //No exterior face
+  int nn = m + 2; // No exterior face
   int mm = 2*m; //   - LenExtFace;
+  if(debug())DebugPrintf("AngleGraph: n:%d m:%d",nn,mm);
   GraphContainer & Angle = *new GraphContainer;
   Angle.setsize(nn,mm);
   Prop1<tstring> title(Set(),PROP_TITRE);
@@ -1483,24 +1339,22 @@ GraphContainer * TopologicalGraph::AngleGraph()
   titleD() = "A-" + title();
   Prop1<tbrin> dextbrin(Angle.Set(),PROP_EXTBRIN);
   dextbrin()=1;
-  
-
   tvertex u,v;
   tbrin b,bb;
-  Prop<tvertex> dvin(Angle.PB(),PROP_VIN);
+  Prop<tvertex> dvin(Angle.PB(),PROP_VIN); dvin.SetName("angle:vin");
   dvin[0]=0;
-  Prop<tbrin> dcir(Angle.PB(),PROP_CIR);
-  Prop<tbrin> dacir(Angle.PB(),PROP_ACIR);
+  Prop<tbrin> dcir(Angle.PB(),PROP_CIR);dcir.SetName("angle:cir");
+  Prop<tbrin> dacir(Angle.PB(),PROP_ACIR);dacir.SetName("angle:cir");
   dcir[0]=0;
-  Prop<tbrin> dpbrin(Angle.PV(),PROP_PBRIN);
+  Prop<tbrin> dpbrin(Angle.PV(),PROP_PBRIN);dpbrin.SetName("angle:pbrin");
   dpbrin[0]=0;
   Prop<bool> OriginalVertex(Angle.Set(tvertex()),PROP_MARK);
   OriginalVertex.clear();
   for(v = 1;v <= n;v++) OriginalVertex[v] = true;
-  svector<int> mark(-m,m);  mark.clear();   mark.SetName("Mark");
+  svector<int> mark(-m,m);  mark.clear();   mark.SetName("Mark");mark.SetName("angle:mark");
   tvertex nf = n;
   tedge newe;
-  svector<int> dnum(-m,m);
+  svector<int> dnum(-m,m); dnum.SetName("angle:dnum");
   
   // renum brins (including orientation for Angle graph)
   for (b=-m; b<0 ; b++)
@@ -1516,7 +1370,6 @@ GraphContainer * TopologicalGraph::AngleGraph()
          dnum[b]=-2*b();
               
   // cir and vin around original vertices
-  
   for (b=-m; b<=m; b++)
       {
       dcir[dnum[b]]=dnum[cir[b]];
@@ -1527,10 +1380,8 @@ GraphContainer * TopologicalGraph::AngleGraph()
       dpbrin[v]=dnum[pbrin[v]];
       
   // cir, vin and pbrin around the faces
-      
  mark[0] = 1;
   tbrin newb;
-  
   for (b = -m; b <= m; b++)
       {if(mark[b]) continue;
       bb = b;
@@ -1544,17 +1395,18 @@ GraphContainer * TopologicalGraph::AngleGraph()
           } while (bb!=b);
       }
   for (b=-mm; b<=mm; b++) dacir[dcir[b]]=b;
-  
- 
+  if(debug())DebugPrintf("END Computing Angle Graph");
   return &Angle;
   }
  
 GraphContainer * TopologicalGraph::DualGraph()
-  {RemoveIsolatedVertices();
+  {if(debug())DebugPrintf("Executing DualGraph");
+  RemoveIsolatedVertices();
   int m = ne();
   int n = nv();
-  if(!CheckConnected() || !CheckPlanar())
+  if(!CheckConnected() || !FindPlanarMap())
       {DebugPrintf("Error Computing the dual:no planar map");
+      setError(-1,"Could not compute angle graph");
       return (GraphContainer *)0;
       }
   GraphContainer & Dual = *new GraphContainer;
@@ -1565,7 +1417,7 @@ GraphContainer * TopologicalGraph::DualGraph()
 
   tvertex u,v;
   tbrin b,bb;
-  Prop<tvertex> dvin(Dual.PB(),PROP_VIN);    dvin.clear();
+  Prop<tvertex> dvin(Dual.PB(),PROP_VIN);    dvin.clear(); dvin.SetName("dual:dvin");
   tvertex nf = 0;
   for (b = -m; b <= m; b++)
       {if(dvin[b]() || !b()) continue;
@@ -1584,6 +1436,7 @@ GraphContainer * TopologicalGraph::DualGraph()
       DebugPrintf("Error Computing the dual: nf != m-n+2 %d!=%d",nf(),m-n+2);
       delete &Dual;return (GraphContainer *)0;
       }
+  if(debug())DebugPrintf("END DualGraph");
   return &Dual;
   }
 
@@ -1595,8 +1448,8 @@ GraphContainer * TopologicalGraph::DualGraph()
 
 void SortCir(TopologicalGraph &G, svector<tbrin> &ncir, svector<tbrin>
 	     &npbrin, svector<int> &colore, int ncolore)
-{
-    // Color sort of cir -> ncir
+  {if(debug())DebugPrintf("Executing SortCir");
+  // Color sort of cir -> ncir
   tvertex v,w;
   tbrin b,b0,bb;
   int ec;
@@ -1622,22 +1475,22 @@ void SortCir(TopologicalGraph &G, svector<tbrin> &ncir, svector<tbrin>
       b=ncir[b];
       v=G.vin[b];
       if (v!=w)
-	{ // Interval from b0 to bb to insert at w
-        if (npbrin[w]!=0)
-	  {ncir[bb]=ncir[npbrin[w]];
-	  ncir[npbrin[w]]=b0;
-	  }
-	else
-	  ncir[bb]=b0;
-	npbrin[w]=bb;
-        b0=b;
-	}
+          { // Interval from b0 to bb to insert at w
+          if (npbrin[w]!=0)
+              {ncir[bb]=ncir[npbrin[w]];
+              ncir[npbrin[w]]=b0;
+              }
+          else
+              ncir[bb]=b0;
+          npbrin[w]=bb;
+          b0=b;
+          }
       } while (v!=0);
     }
   // readjust npbrin
   for (v=1; v<=n; v++)
     npbrin[v]=ncir[npbrin[v]];
-}
+  }
 void ConnectToRoot(TopologicalGraph &G, tvertex root)
   {if(debug())DebugPrintf("   ConnecteToRoot %d",root());
   if(G.Set().exist(PROP_CONNECTED))return;

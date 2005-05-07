@@ -38,9 +38,7 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
       }
   // draw edges
   Tpoint e1,e2,e3,e4;
-#ifdef TDEBUG
   bool drawTextEdges = G.ne() < 100;
-#endif
    for(tedge e = 1;e <= G.ne();e++)
        {if(isTree[e])
            {e1 = Tpoint(x1[e],y1[e]);
@@ -55,13 +53,11 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
            paint->DrawSeg(p,e1,e2,ecolor[e]);
            paint->DrawSeg(p,e2,e3,ecolor[e]);
            paint->DrawSeg(p,e3,e4,ecolor[e]);
-#ifdef TDEBUG
            if(drawTextEdges)
                {QString label=QString("%1").arg(elabel[e]);
                // text is drawn at  position of lower edge occu
                paint->drawText(paint->to_x(x1[e]),paint->to_y(y[e]),label);
                }
-#endif
            }
        }
   }

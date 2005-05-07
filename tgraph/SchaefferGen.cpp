@@ -2715,6 +2715,16 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   title() = t;
   title() += seed_txt;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
+  Prop<tbrin> cir(GC.Set(tbrin()),PROP_CIR); cir[0]=0;
+  Prop<tbrin> acir(GC.Set(tbrin()),PROP_ACIR); acir[0]=0;
+  Prop<tbrin> pb(GC.Set(tvertex()),PROP_PBRIN); pb.clear();
+  cir.SetName("cir"); 
+  acir.SetName("acir"); 
+  vin.SetName("vin");
+  pb.SetName("pbrin"); 
+  Prop1<int> maptype(GC.Set(),PROP_MAPTYPE);
+  maptype() = PROP_MAPTYPE_ARBITRARY;
+  Prop1<tbrin> extbrin(GC.Set(),PROP_EXTBRIN); extbrin()=1;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
   Prop<long> vlabel(GC.PV(),PROP_LABEL);
   Prop<long> elabel(GC.PE(),PROP_LABEL);
@@ -2734,15 +2744,19 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   Cur1 = Vtx->root; 
   while(Cur1 != Vtx->root->prev)
       {if(Cur1->label > 0)
-	  {b++;
+	  {b=Cur1->label;
 	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
+	  cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
+	  cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
 	  }
       Cur1 = Cur1->next; 
       }
 
   if(Cur1->label > 0)
-      {b++;
+    {b=Cur1->label;
       vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
+      cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
+      cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
       }
 
   while(Vtx->next != NULL)
@@ -2750,16 +2764,22 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       Cur1 = Vtx->root; 
       while(Cur1 != Vtx->root->prev)
 	  {if(Cur1->label > 0)
-	      {b++;
+	      {b=Cur1->label;
 	      vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
+	      cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
+	      cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
 	      }
 	  Cur1 = Cur1->next; 
 	  }
       if(Cur1->label > 0) 
-	  {b++;
+	{b=Cur1->label;
 	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
+	  cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
+	  cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
 	  }
       }
+  for (b=-m; b<=m; b++)
+    if ((b!=0) && (pb[vin[b]]==0)) pb[vin[b]]=b;
   pmFreeMap(&Map);
   TopologicalGraph TG(GC);
   int erased  = 0;
@@ -2769,6 +2789,9 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   else if(loops)
       erased = TG.RemoveLoops();
   randomEnd();
+  int g = TG.ComputeGenus();
+  if (g) setError(-1,"Bad genus for random map (Schaeffer)");
+  else TG.planarMap() = 1;
   if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
   return &GC;
   }

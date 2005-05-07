@@ -252,8 +252,8 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
       e0=G0.NewEdge(G.vin[b],orig[-b]);
       ecolor[e0]=Cyan;
 #ifdef TDEBUG
-      DrawGraph(G0);
-      Twait("next");
+//       DrawGraph(G0);
+//       Twait("next");
 #endif
       if (!G0.TestPlanar())
           { ntry++;
@@ -264,8 +264,8 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
                   { G.MoveBrin(-b,uplist[j]);
                   ecolor[e0]=Green;
 #ifdef TDEBUG
-                  DrawGraph(G0);
-                  Twait("Ok");
+//                   DrawGraph(G0);
+//                   Twait("Ok");
 #endif
                   nsucc++; 
                   break;
@@ -280,8 +280,8 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
 		{ G.MoveBrin(b,downlist[j]);
 		ecolor[e0]=Blue;
 #ifdef TDEBUG
-		DrawGraph(G0);
-		Twait("Ok");
+// 		DrawGraph(G0);
+// 		Twait("Ok");
 #endif
 		nsucc++;
 		break;
@@ -291,8 +291,8 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
 	      {          G0.MoveBrin(e0.firsttbrin(),orig[b]);
 		ecolor[e0]=Red;
 #ifdef TDEBUG
-		DrawGraph(G0);
-		Twait("bad");
+// 		DrawGraph(G0);
+// 		Twait("bad");
 #endif
 	      }
 	    }
@@ -387,12 +387,12 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
       {b=eorder[i].firsttbrin();
       e0=G0.NewEdge(G.vin[b],orig[-b]);
 #ifdef TDEBUG
-      if (debug())
-          {
-          ecolor[e0]=Cyan;
-          DrawGraph(G0);
-          Twait("next");
-          }
+//       if (debug())
+//           {
+//           ecolor[e0]=Cyan;
+//           DrawGraph(G0);
+//           Twait("next");
+//           }
 #endif
       if (!G0.TestPlanar())
           { ntry++;
@@ -401,12 +401,12 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
               if (G0.TestPlanar())
                   { G.MoveBrin(-b,order[j]);
 #ifdef TDEBUG
-                  if (debug())
-                      {
-                      ecolor[e0]=Green;
-                      DrawGraph(G0);
-                      Twait("Ok");
-                      }
+//                   if (debug())
+//                       {
+//                       ecolor[e0]=Green;
+//                       DrawGraph(G0);
+//                       Twait("Ok");
+//                       }
 #endif
                   nsucc++; 
                   break;
@@ -416,12 +416,12 @@ int BipPlanarize(TopologicalGraph &G, svector<tbrin>
               {
               G0.MoveBrin(e0.firsttbrin(),orig[b]);
 #ifdef TDEBUG
-              if (debug())
-                  {
-                  ecolor[e0]=Red;
-                  DrawGraph(G0);
-                  Twait("bad");
-                  }
+//               if (debug())
+//                   {
+//                   ecolor[e0]=Red;
+//                   DrawGraph(G0);
+//                   Twait("bad");
+//                   }
 #endif
               }
           }

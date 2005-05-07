@@ -35,12 +35,10 @@ bool  Graph::CheckBiconnected()
   int ret=bicon(n,m,nvin,Bicon,low);
   if(ret)
       {Prop1<int> isbicon(Set(),PROP_BICONNECTED);return true;}
-  
   return false;
   }
 
 //TOPOLOGICALGRAPH
-
 void  TopologicalGraph::init()
   {cir.SetName("cir"); acir.SetName("acir"); vin.SetName("vin");
   pbrin.SetName("pbrin"); 	
@@ -74,7 +72,7 @@ tedge TopologicalGraph::NewEdge(const tbrin &ref1,const  tbrin &ref2)
   acir[-b] = acir[b2];   acir [b2] = cir[acir[-b]] = -b;  cir[-b]  = b2;
   vin[b] = vin[b1];    vin[-b] = vin[b2];
   Set().erase(PROP_SIMPLE);
-  Set().erase(PROP_PLANARMAP);
+  if(planarMap() > 0) planarMap() = 0;
   Set().erase(PROP_PLANAR);
   Set().erase(PROP_SYM);
   if (Set().exist(PROP_HYPERGRAPH))
@@ -86,7 +84,6 @@ tedge TopologicalGraph::NewEdge(const tbrin &ref1,const  tbrin &ref2)
       }
   else
       Set().erase(PROP_BIPARTITE);
-
   return ne();
   }
 tvertex TopologicalGraph::ContractEdge(const tedge &e)
@@ -135,7 +132,6 @@ tvertex TopologicalGraph::ContractEdge(const tedge &e)
   Set().erase(PROP_HYPERGRAPH);
   return v;
   }
-
 tvertex TopologicalGraph::BissectEdge(const tedge &e)
   {//the edge e becomes the one corresponding to first tbrin
   tedge e1 = e;
@@ -185,7 +181,7 @@ tedge TopologicalGraph::NewEdge(const tvertex &vv1,const tvertex &vv2,tedge e0)
   InsertBrin(v1,b);
   InsertBrin(v2,-b);
   Set().erase(PROP_SIMPLE);
-  Set().erase(PROP_PLANARMAP);
+  planarMap() = 0;
   Set().erase(PROP_PLANAR);
   Set().erase(PROP_SYM);
   if (Set().exist(PROP_HYPERGRAPH))
@@ -213,13 +209,13 @@ void TopologicalGraph::DeleteEdge(const tedge &e)
   Set().erase(PROP_TRICONNECTED);
   Set().erase(PROP_FOURCONNECTED);
   Set().erase(PROP_SYM);
+  if(planarMap() < 0)planarMap() = 0;
   }
 void TopologicalGraph::MoveBrin(const tbrin &b, const tvertex &to)
   { UnlinkBrin(b);
   InsertBrin(to,b);
   Set().erase(PROP_SIMPLE);
-  Set().erase(PROP_PLANARMAP);
-  Set().erase(PROP_PLANAR);
+   planarMap() = 0;
   Set().erase(PROP_CONNECTED);
   Set().erase(PROP_BICONNECTED);
   Set().erase(PROP_TRICONNECTED);
@@ -237,7 +233,6 @@ void TopologicalGraph::MoveBrin(const tbrin &b, const tvertex &to)
   }
 void TopologicalGraph::PrivateReverseEdge(const tedge &e)
   {tbrin b = e.firsttbrin();
-
   if (cir[b]!=b) {cir[acir[b]]=-b; acir[cir[b]]=-b;}
   if (cir[-b]!=-b) {cir[acir[-b]]=b; acir[cir[-b]]=b;}
   tbrin cir_b=cir[b];
@@ -246,7 +241,6 @@ void TopologicalGraph::PrivateReverseEdge(const tedge &e)
   acir[b] = (acir[-b]==-b)? b : acir[-b];
   cir[-b] = (tbrin)((cir_b()==b())? -b() : cir_b());
   acir[-b] = (tbrin)((acir_b()==b())? -b() : acir_b());
-
   tvertex vin_b=vin[b];
   vin[b]=vin[-b];
   vin[-b]=vin_b;
@@ -254,7 +248,6 @@ void TopologicalGraph::PrivateReverseEdge(const tedge &e)
   pbrin[vin[b]]=b;
   if (extbrin().GetEdge()==e) extbrin()=-extbrin();
   }
-
 void TopologicalGraph::SwitchOrientations()
   {Prop<bool> reoriented(Set(tedge()),PROP_REORIENTED); 
   for (tedge e=1; e<=ne();e++)
@@ -264,7 +257,6 @@ void TopologicalGraph::SwitchOrientations()
 void TopologicalGraph::ReverseEdge(const tedge &e)
   {PrivateReverseEdge(e);
   Prop<bool> reoriented(Set(tedge()),PROP_REORIENTED,false);
-  //reoriented[e]^=true;
   reoriented[e] = reoriented[e] ? false : true;
   }
 void TopologicalGraph::FixOrientation()
@@ -301,7 +293,6 @@ void TopologicalGraph::DeleteVertex(const tvertex &v)
   Set().erase(PROP_BICONNECTED);
   Set().erase(PROP_TRICONNECTED);
   Set().erase(PROP_FOURCONNECTED);
-  Set().erase(PROP_SYM);
   }
 void TopologicalGraph::SwapEdge(const tedge &e)
   {// on ne recalcule que pour ne
@@ -364,8 +355,7 @@ void TopologicalGraph::InsertBrin(const tvertex &v,const tbrin &b)
       }
   }
 void TopologicalGraph::MoveBrinToFirst(const tbrin &b)
-{
-  tvertex v=vin[b];
+{tvertex v=vin[b];
   tbrin b0=pbrin[v];
   if (b==b0)
     return;
@@ -473,22 +463,22 @@ bool TopologicalGraph::DebugCir()
       tbrin b0 = pbrin[v];
       tbrin b = b0;
       do 
-	  {if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
-	  if(!acir.InRange(cir[b]())){DebugPrintf("DC acir not in range b=%d",b());return false;}
-	  if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d",vin[b](),v());return false;}
-	  if(vin[-b]==v){DebugPrintf("DC %d is a loop at v=%d",b(),v());return false;}
-	  if(acir[cir[b]]!=b)
-	      {DebugPrintf("DC at v=%d b=%d cir=%d acir[cir]=%d",v(),b(),cir[b](),acir[cir[b]]());
-	      b = b0;
-	      DebugPrintf("DC Around v=%d",v());
-	      do
-		  {DebugPrintf("    %d cir:%d acir:%d",b(),cir[b](),acir[b]());
-		  }while((b = cir[b])!=b0);  
-	      return false;
-	      }
-	  b = cir[b];
-	  i++;
-	  }while (b!=b0);
+          {if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
+          if(!acir.InRange(cir[b]())){DebugPrintf("DC acir not in range b=%d",b());return false;}
+          if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d",vin[b](),v());return false;}
+          if(vin[-b]==v){DebugPrintf("DC %d is a loop at v=%d",b(),v());return false;}
+          if(acir[cir[b]]!=b)
+              {DebugPrintf("DC at v=%d b=%d cir=%d acir[cir]=%d",v(),b(),cir[b](),acir[cir[b]]());
+              b = b0;
+              DebugPrintf("DC Around v=%d",v());
+              do
+                  {DebugPrintf("    %d cir:%d acir:%d",b(),cir[b](),acir[b]());
+                  }while((b = cir[b])!=b0);  
+              return false;
+              }
+          b = cir[b];
+          i++;
+          }while (b!=b0);
       }
   if(i != 2*ne()) 
      {DebugPrintf("Did not reached some brins: m=%d, sums of the degrees=%d",ne(),i);
