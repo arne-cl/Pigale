@@ -1,7 +1,7 @@
 #include <Pigale.h>
 #include <TAXI/MaxPath.h>
 
-class DosGraph : public TopologicalGraph
+class DoccGraph : public TopologicalGraph
 {public:
   svector<tbrin> iel,dos;
   svector<tedge> suc;
@@ -13,17 +13,20 @@ class DosGraph : public TopologicalGraph
 
  private:
   void init();
-  int makeDos(tbrin b0);
+
 
  public:
-  DosGraph(GraphAccess &G,int _morg,tbrin b0) : TopologicalGraph(G),hmax(0),morg(_morg),ok(true)
+  DoccGraph(GraphAccess &G,int _morg) : TopologicalGraph(G),hmax(0),morg(_morg),ok(true)
       {init();
-      if(makeDos(b0) != 0)ok = false;
+      //if(makeDosLR(b0) != 0)ok = false;
+      //if(makeDos(b0) != 0)ok = false;
       }
-  ~DosGraph(){}
+  ~DoccGraph(){}
+  int makeDos(tbrin b0);
+  int makeDosLR(tbrin b0);
   void htreePR();
   int  orderPR(tbrin ee, tbrin es);
-  tbrin  maxedgePR(tedge e);
+  tbrin  rightBrinPR(tedge e);
   void pushPR();
   bool  stronger_constraintPR(tedge js, tedge sucje);
   void push2PR();
@@ -31,7 +34,7 @@ class DosGraph : public TopologicalGraph
   void  lrverPR();
   int drawPR();
 };
-void DosGraph::init()
+void DoccGraph::init()
   {int m = ne(); int n = nv();
   nvin.resize(-m,m); nvin.SetName("DosG:nvin");
   iel.resize(-m,m); iel.SetName("DosG:iel");
@@ -39,13 +42,128 @@ void DosGraph::init()
   dos.resize(1,2*m);  dos.SetName("DosG:dos");
  dosInv.resize(-m,m);  dosInv.SetName("DosG:dosInv");
  dosx.resize(1,2*m);  dosx.SetName("DosG:dosx"); 
-  suc.resize(-n+1,m);  suc.SetName("DosG:suc");  suc.clear();
-  foc.resize(n,m);  foc.SetName("DosG:foc");  foc.clear();
-  hauteur.resize(0,m+1);  hauteur.SetName("DosG:hauteur"); hauteur.clear();
+  suc.resize(-n+1,m);  suc.SetName("DosG:suc");  
+  foc.resize(n,m);  foc.SetName("DosG:foc"); 
+  hauteur.resize(0,m+1);  hauteur.SetName("DosG:hauteur");
   lver.resize(1,n);  lver.SetName("DosG:lver");lver.clear();
   rver.resize(1,n);  rver.SetName("DosG:rver");
   }
-int DosGraph::makeDos(tbrin b0)
+int DoccGraph::makeDosLR(tbrin b0)
+  {Prop<bool> isTree(Set(tedge()),PROP_ISTREE_LR);
+#ifdef TDEBUG
+  Prop<short> ecolor(Set(tedge()),PROP_COLOR);
+  Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
+  Prop<long> elabel(Set(tedge()),PROP_LABEL);
+  Prop<int> ewidth(Set(tedge()),PROP_WIDTH);
+  for(tedge a =1; a <= ne();a++) 
+      {ecolor[a] = Black;
+      if(isTree(a))ewidth[a] = 3;
+      else ewidth[a] = 1;
+      }
+#endif
+  
+  b0 = 1;
+  svector<int> dfsnum(1,nv()); dfsnum.SetName("dfsnum");
+
+ // Renum the vertices as they are discovered
+  dfsnum.clear();
+  tvertex v = vin[b0];
+  int num = 1;
+  dfsnum[v] = 1;  ivl[1] = v; 
+  tbrin b = b0;
+  do
+      {tedge je = b.GetEdge();
+      tvertex w=vin[-b];
+      if(!isTree(je))
+          ;
+      else if (dfsnum[w] )  // Backtraking on tree
+          {b.cross();  v = w;
+          }
+      else  // Climbing on  tree
+          {dfsnum[w] = ++num;  ivl[num] = w;
+          b.cross(); v = w;
+          }
+      b = acir[b];
+      } while(b != b0);
+ 
+#ifdef TDEBUG
+  for(tvertex v = 1; v <= nv();v++)
+      vlabel[v] = (long) dfsnum[v];
+ #endif
+
+  // Relabel thes edges and compute Dos
+  svector<bool> visited(1,nv()); visited.SetName("visited");
+  svector<tbrin> nel(-ne(),ne());  nel.SetName("nel");
+  iel[0] = nel[0] = 0;
+  nvin[0]=0;
+  int occ = 0;
+  tbrin y = 1; 
+  tbrin z = nv();
+  nel.clear();
+ visited.clear();
+ visited[v] = true;
+ b = b0;
+  do
+      {tedge je = b.GetEdge();
+      tvertex w=vin[-b];
+      if(!isTree(je))  
+          {if (nel[b] != 0)                                                                                                    // cotree -> 2 occ
+              dos[++occ] = nel[b];
+          else                                                                                                                   // cotree -> 1 occ
+              {if (dfsnum[v] < dfsnum[w]) // lower cotree
+                  {iel[z] = b;                             nel[b] = z;
+                  iel[-z] = -b ;                           nel[-b] = -z;
+                  nvin[z] = dfsnum[v]; nvin[-z] = dfsnum[w]; 
+                  }
+              else // upper cotree
+                  {iel[-z] = b ;                           nel[b] = -z;
+                  iel[z] = -b;                             nel[-b] = z;
+                  nvin[z] = dfsnum[w]; nvin[-z] = dfsnum[v]; 
+                  }
+              dos[++occ] = nel[b];
+              z++;
+              }
+          }
+      else if (visited[w])                                                                                                      // tree 2 occ
+          {dos[++occ] = nel[b];
+          b.cross();
+          v = w;
+          }
+      else                                                                                                                             // tree 1 occ
+          {iel[y]=b;                 nel[b] = y; 
+           iel[-y] = -b;             nel[-b] = -y;  
+          dos[++occ] = nel[b];
+          nvin[y]=dfsnum[v];  nvin[-y] = dfsnum[w] ;
+          visited[w] = true;
+          b.cross();
+          y ++; 
+          v = w;
+#ifdef TDEBUG
+          ecolor[b.GetEdge()] = Red;
+#endif
+          }
+      b = acir[b];
+      } while(b != b0);
+
+#ifdef TDEBUG
+  // elabel < 0 <=> 1 occ up cotree
+  for(tedge je = 1; je <= ne();je++)
+      elabel[je] = (long) nel[je].GetEdge()();
+      
+  for(tedge je = 1; je <= ne();je++)
+      if(nvin[je] > nvin[-je])ok = false;
+  if(!ok)return -1;
+#endif
+
+  if (y != nv() || occ != 2*ne()){DebugPrintf(" makeDos error"); return -1;}
+  // Compute dosInv  
+  dosInv[0] = 0;
+  for(int i = 1;i <= 2*ne();++i)       
+      dosInv[dos[i]] = i;
+  return 0;
+  }
+
+int DoccGraph::makeDos(tbrin b0)
   {svector<tbrin> tb(0,nv()); tb.clear(); tb.SetName("tb");
   svector<int> dfsnum(0,nv());  dfsnum.SetName("dfsnum");
   svector<tbrin> nel(-ne(),ne());  nel.SetName("nel");
@@ -117,11 +235,11 @@ int DosGraph::makeDos(tbrin b0)
       dosInv[dos[i]] = i;
   return 0;
   }
-void  DosGraph::htreePR()
+void  DoccGraph::htreePR()
   {int hh = 0;
   tbrin last = 0;
   int ix = 1;
- 
+  hauteur.clear();
   for(int i = 1;i <= 2*ne();++i)
       {tedge je = dos[i].GetEdge();
       if(je < nv())
@@ -136,37 +254,51 @@ void  DosGraph::htreePR()
       }
   hmax += 2;
   }
-int  DosGraph::orderPR(tbrin ee, tbrin es)
+int  DoccGraph::orderPR(tbrin ee, tbrin es)
   {return(hauteur[nvin[-es] - 1] - hauteur[nvin[ee] - 1]);
   }
-tbrin  DosGraph::maxedgePR(tedge e)
+tbrin  DoccGraph::rightBrinPR(tedge e)
   {return(dosInv[e.firsttbrin() ] > dosInv[e.secondtbrin()] ? e.firsttbrin()  : e.secondtbrin());
   }
-void  DosGraph::pushPR()
+
+void  DoccGraph::pushPR()
   {tedge js  = 0;
   tbrin es = 0;
+  foc.clear();suc.clear();
   for(int j = 2*ne();j >= 1;--j)
       {tbrin ee = dos[j];
       tedge je = ee.GetEdge();
+      //qDebug("dos[%d]:%d",j,ee());
       if(je  >= nv())     // je  cotree 
           {++foc[je];
           if(je != js)
-              {if(foc[je] != 2)
-                  {if((dosInv[-ee] < dosInv[-es])  && orderPR(ee, es) >= 0) // je coupe es 
-                      {js = je;es = ee;}
+              {if(foc[je] != 2)  // premiere occurrence (en partant de la droite)
+                  {//qDebug("P1  je:%d js: %d",je(),js());
+                  //if(es() && dosInv[-ee] < dosInv[-es]  && orderPR(ee, es) > 0) // je coupe es 
+                  if(dosInv[-ee] < dosInv[-es]  && orderPR(ee, es) >= 0) // je coupe es 
+                      {//qDebug("P1 je:%d coupe es:%d (js=%d)",je(),es(),js());
+                      js = je;es = ee;
+                      }
                   else
-                      {suc[je] = js;js = je;es = ee;}
+                      {//if(js())qDebug("P1   %d pushes %d",je(),js());
+                      suc[je] = js;js = je;
+                      es = ee;
+                      }
                   }
               }
-          else
+          else  // deuxieme occurrence (en partant de la droite)
               while(js > 0 && foc[js] == 2)
-                  {js = suc[js];      es = maxedgePR(js);}
+                  {js = suc[js];      es = rightBrinPR(js);}
           }
       else if(ee > 0)  // je is tree
           suc[ee] = js;
       }
+  vheightPR();
   }
-void  DosGraph::push2PR()
+bool  DoccGraph::stronger_constraintPR(tedge a, tedge b)
+  {return (Max(hauteur[nvin[a] - 1], hauteur[nvin[-a] - 1]) >  Max(hauteur[nvin[b] - 1], hauteur[nvin[-b] - 1]));
+  }
+void  DoccGraph::push2PR()
 // foc = 2 for all cotree edges
   {suc[0] = 0;
   tedge js = 0;
@@ -179,38 +311,57 @@ void  DosGraph::push2PR()
       if(je >= nv())     // je is cotree
           {--foc[je];
           if(je != js)
-              {if(foc[je] != 0)
+              {//qDebug("   je:%d sucje:%d js:%d",je(),suc[je](),js());
+              if(foc[je] != 0)  // premiere occurrence
                   {if(es() == 0)
-                      {suc[je] = js;js = je;es = ee;}
-                  else if( (dosInv[-ee] > dosInv[-es]   && orderPR(ee, es) >= 0)) // je coupe es et je doit croiser pendant la verticale de js 
-                      {js = je;es = ee;}
-                  else
-                      {suc[je] = js;js = je;es = ee;}
+                      {suc[je] = js; js = je;es = ee;
+                      }
+                  else if(dosInv[-ee] > dosInv[-es]   && orderPR(ee, es) >= 0) 
+                      {// je coupe es et je doit croiser  la verticale de js 
+                      //qDebug("PP1 ee:%d coupe es:%d",ee(),es());
+                       js = je;es = ee;
+                      }
+                  //else if(js() && suc[je]()   && dosInv[-ee] < dosInv[-es] &&  stronger_constraintPR(js,suc[je]))
+                  else if(js() && suc[je]()   && dosInv[-ee] < dosInv[-es] &&  stronger_constraintPR(suc[je],js))
+                          {// suc[je] plus haut que js
+                          //if(js != suc[je])qDebug("PP1a je:%d ne coupe pas es:%d mais sucje:%d > js%d ",je(),es(),suc[je](),js());
+                          //qDebug("PP1b je:%d poussait %d",je(),suc[je]());
+                          //qDebug("PP1c je:%d now pushes %d",je(),es.GetEdge()());
+                          suc[je] = es.GetEdge();
+                            js = je;es = ee;
+                          }
+                  else //if(js()) // modification contrainte
+                      {//if(js() != suc[je]() && suc[je]())qDebug("PP1   %d pushes %d (before:%d)",je(),js(),suc[je]());
+                      suc[je] = js; 
+                      js = je;es = ee;
+                      }
                   }
               }
-          else
-              {while(js != 0 && foc[js] == 0)
-                  {js = suc[js];es = -maxedgePR(js);}
-              }
+          else // deuxieme occurrence
+              while(js != 0 && foc[js] == 0)
+                  {js = suc[js];es = -rightBrinPR(js);}
           }
-      else if(ee < 0) // je is cotree
+      else if(ee < 0) // je is tree
           suc[ee] = js;
       }
+
+  //  for(tedge je = nv();je <= ne();je++)  if(suc[je]())qDebug("END  %d pushes %d",je(),suc[je]());
   }
 
-void  DosGraph::vheightPR()
+void  DoccGraph::vheightPR()
   {MaxPath *MP=new MaxPath(ne()+1,nv()+ne());
   for(tbrin  je = -nv()+1;je <= ne();je++)
       {if(je == 0)continue;
       tedge js = suc[je];
       if(js == 0)js = ne()+1;
       MP->insert(je.GetEdge()(),js(),1);
+      //if(je.GetEdge()() > nv())qDebug("MP %d pushes %d",je.GetEdge()(),js());
       }
   MP->solve(hauteur);
   delete  MP;
   hmax = Max(hmax,hauteur[ne()+1] +1);
   }
- void  DosGraph::lrverPR()
+ void  DoccGraph::lrverPR()
   {for(int i = 1;i <= 2*ne();++i)
       {tbrin ee = dos[i];
       tedge je = ee.GetEdge();
@@ -245,7 +396,7 @@ for(int i = 1;i <= 2*ne();++i)
           }
       }
   }
-int  DosGraph::drawPR()
+int  DoccGraph::drawPR()
   {Prop1<Tpoint> pmin(Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(Set(),PROP_POINT_MAX);
   pmin() = Tpoint(.0,-1.5);
@@ -284,22 +435,40 @@ int  DosGraph::drawPR()
         x2[ie] = (double)dosx[dosInv[-je]];
         y1[ie] = (double)hauteur[nvin[dos[dosInv[je]]] - 1] +.5;
         y2[ie] = (double)hauteur[nvin[dos[dosInv[-je]]] - 1] +.5;
-        y[ie] = (double)hauteur[je] +.5;
-#ifdef TDEBUG
-        if(y[ie] <= Max( y1[ie], y2[ie]))ok = false;
-#endif
+        y[ie] = (double)hauteur[je] +.5-.3;
+
+        //if(y[ie] <= Max( y1[ie], y2[ie])){ok = false;setError(-1,"bad drawing");}
         }
   // delete the edges added by Connexity
   for(tedge e = ne();e > morg;e--) DeleteEdge(e);
+#ifndef TDEBUG
   if(!ok)return -1;
+#endif
   return 0;
   }
 int EmbedPolrec(TopologicalGraph &G)
   {int morg = G.ne();
   G.MakeConnected();
-  //G.Planarity();//provisoire
-  tbrin b0 = G.extbrin();
-  DosGraph DG(G,morg,b0);
+  tbrin b0 = 1;
+  DoccGraph DG(G,morg);
+  DG.makeDos(b0);
+  if(!DG.ok)return -1;
+  DG.htreePR();
+  DG.pushPR();
+  DG.push2PR();
+  DG.vheightPR();
+  DG. lrverPR();
+  if(DG.drawPR() != 0)return -1;
+  return 0;
+  }
+
+int EmbedPolrecLR(TopologicalGraph &G)
+  {int morg = G.ne();
+  G.MakeConnected();
+  tbrin b0 = 1;
+  G.Planarity();
+  DoccGraph DG(G,morg);
+  DG.makeDosLR(b0);
   if(!DG.ok)return -1;
   DG.htreePR();
   DG.pushPR();

@@ -18,6 +18,7 @@ DFLAGS = -I$(PIGALEPATH)/incl
 AWK=awk
 ####################### END EDITING #########################
 PIGALEPATH=..
+PIGALELIB =  -L$(PIGALEPATH)/lib    -lpigaleQt$(OPT).la -ltgraph$(OPT).la
 NVERSION=BETA
 # P = name of output program
 
@@ -50,13 +51,12 @@ $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
  
 
-
+static:
 client: client.h client.cpp  
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/client.o client.cpp 
 	$(MMOC) client.h -o moc_client.cpp
 	$(CC) -c $(CFLAGS) $(IFLAGS) -o $(VPATH)/moc_client.o moc_client.cpp 
 	$(CC)  $(CFLAGS) -o client   $(VPATH)/client.o $(VPATH)/moc_client.o $(UNIXLIB) 
-
 
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)

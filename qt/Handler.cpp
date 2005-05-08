@@ -175,22 +175,13 @@ int AlgoHandler(GraphContainer &GC,int action,int nn)
           ret = split(G,nn);
           break;
       case A_ALGO_GEOMETRIC_CIR:
-          {if(G.ComputeGeometricCir() == 0)
-              {G.extbrin() = G.FindExteriorFace();
-              Prop1<int> map(G.Set(),PROP_PLANARMAP);
-              }
-          Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
-          maptype() = PROP_MAPTYPE_GEOMETRIC;
+          if(G.ComputeGeometricCir() == 0)
+              G.extbrin() = G.FindExteriorFace();
           Tprintf("Geometric map");
-          }
           break;
       case A_ALGO_LRALGO_CIR :
-          {if(G.Planarity() == 1)
-              Prop1<int> map(G.Set(),PROP_PLANARMAP);
-          Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
-          maptype() = PROP_MAPTYPE_LRALGO;
+          G.Planarity();
           Tprintf("LR-algo map");
-          }
           break;
       case A_ALGO_SYM://symetrie
           ret = Embed3d(G);
@@ -267,6 +258,10 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           break;
       case A_EMBED_POLREC:ret = 3;
           err = EmbedPolrec(G);
+          drawing = 8;
+          break;
+      case A_EMBED_POLREC_LR:ret = 3;
+          err = EmbedPolrecLR(G);
           drawing = 8;
           break;
       case A_EMBED_VISION:ret = 3;

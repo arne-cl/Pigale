@@ -19,7 +19,7 @@ AWK=awk
 ####################### END EDITING #########################
 PIGALEPATH=..
 NVERSION=BETA
-# P = name of output program
+# P = name of output program (a "s" is prepended for static version)
 ifeq ($(OPT),opt)
 P=Pigale
 else
@@ -63,6 +63,10 @@ OBJECTS       =  $(patsubst %.cpp,%.$(OPT), $(FILES_W_MOC))
 OBJ           =  $(patsubst %.cpp,$(VPATH)/%.$(OPT), $(FILES_W_MOC))
 ALLOBJ        = $(wildcard $(VPATH)/*.$(OPT))
 ALLOBJ        += $(wildcard $(PIGALEPATH)/tgraph/.obj/*.$(OPT))
+
+SALLOBJ    = $(wildcard $(VPATH)/*.$(OPT))
+SLIBOBJ := $(filter-out $(VPATH)/main.$(OPT), $(SALLOBJ))
+
 all : md $(P) 
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h Action.awk
@@ -79,7 +83,8 @@ $(DLIB):$(OBJECTS)
 	@$(CC) -shared  -o $(PIGALEPATH)/lib/lib$L$(OPT).so  $(OBJ)
 
 $(P) : $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
+#	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
+	g++ -o $(P) $(VPATH)/main.$(OPT) $(PIGALEPATH)/lib/libpigaleQt$(OPT).so $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB)
 	
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
@@ -87,12 +92,16 @@ clean:
 md: depend
 	@if ! test -d .obj ; then mkdir .obj ; fi
 test:
-	@echo OBJ=$(OBJ)
-	@echo OBJECTS=$(OBJECTS)
-	@echo FILES=$(FILES)
+	@echo SALLOBJ=$(SALLOBJ)
 
-static:md $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
-	g++  $(CFLAGS) -o s$(P) $(ALLOBJ)  $(UNIXLIB) 
+#static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
+#	g++  $(CFLAGS) -o s$(P) $(ALLOBJ)  $(UNIXLIB) 
+
+static:$(SALLOBJ) 
+	@ar cru $(PIGALEPATH)/lib/lib$L$(OPT).la  $(SLIBOBJ)
+	@ranlib $(PIGALEPATH)/lib/lib$L$(OPT).la
+	g++ -o s$(P) $(VPATH)/main.$(OPT) $(PIGALEPATH)/lib/libpigaleQt$(OPT).la $(PIGALEPATH)/lib/libtgraph$(OPT).la  $(UNIXLIB)
+
 
 moc_cpp:    $(MOC_CPP)
 

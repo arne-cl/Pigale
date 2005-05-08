@@ -10,6 +10,8 @@
 using namespace std;
 #endif
 
+int EmbedPolrecLR(TopologicalGraph &G);
+
 // Allowed return values of Test 
 // -1:error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
 // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
@@ -21,7 +23,7 @@ static int Test3(GraphContainer &GC,int &drawing);
 
 void pigaleWindow:: initMenuTest()
   {setUserMenu(1,"BFS drawing");
-  setUserMenu(2,"TestPlanar2 x1000");
+  setUserMenu(2,"Polrec drawing");
   setUserMenu(3,"Properties");
   }
 int Test(GraphContainer &GC,int action,int &drawing)
@@ -31,9 +33,9 @@ int Test(GraphContainer &GC,int action,int &drawing)
   }
 int Test2(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
-   for (int i=1; i<=1000; i++)
-       G.TestPlanar2();
-   return 0;
+  if(EmbedPolrecLR(G) != 0)return -1;
+  drawing = 8;
+  return 3;
   }
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);

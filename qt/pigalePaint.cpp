@@ -28,7 +28,8 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
   Prop<bool> isTree(G.Set(tedge()),PROP_ISTREE); 
   Prop<long> elabel(G.Set(tedge()),PROP_LABEL); 
-  
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
+
   // draw vertices
   for(tvertex v = 1;v <= G.nv();v++)
       {double dx = (p2[v].x() - p1[v].x()) ;   
@@ -43,16 +44,16 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
        {if(isTree[e])
            {e1 = Tpoint(x1[e],y1[e]);
            e2 = Tpoint(x1[e],y2[e]);
-           paint->DrawSeg(p,e1,e2,ecolor[e]);
+           paint->DrawSeg(p,e1,e2,ecolor[e],ewidth[e]);
            }
        else // cotree edges   (x1,y1) -> (x1,y) -> (x2,y) -> (x2,y2)
            {e1 = Tpoint(x1[e],y1[e]);
            e2 = Tpoint(x1[e],y[e]);
            e3 = Tpoint(x2[e],y[e]);
            e4 = Tpoint(x2[e],y2[e]);
-           paint->DrawSeg(p,e1,e2,ecolor[e]);
-           paint->DrawSeg(p,e2,e3,ecolor[e]);
-           paint->DrawSeg(p,e3,e4,ecolor[e]);
+           paint->DrawSeg(p,e1,e2,ecolor[e],ewidth[e]);
+           paint->DrawSeg(p,e2,e3,ecolor[e],ewidth[e]);
+           paint->DrawSeg(p,e3,e4,ecolor[e],ewidth[e]);
            if(drawTextEdges)
                {QString label=QString("%1").arg(elabel[e]);
                // text is drawn at  position of lower edge occu
