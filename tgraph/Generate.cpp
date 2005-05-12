@@ -136,7 +136,7 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   return &GC;
 }
 GraphContainer *GenerateRandomGraph(int a,int b)
-  {if(debug())DebugPrintf("\nGenerateRandomGraph");  
+  {if(debug())DebugPrintf("\nGenerateRandomGraph %d",randomSetSeed());  
   GraphContainer &GC = *new GraphContainer;
   int n = a;
   int m = (n > 1) ? b : 0;

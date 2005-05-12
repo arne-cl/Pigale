@@ -153,12 +153,14 @@ void Graph_Properties::MaxNDisplayChanged(int i)
   }
 void Graph_Properties::update(GraphContainer & GC,bool print)
   {GeometricGraph G(GC);
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+
+#ifdef TDEBUG
   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
       setError(-1,"vin[0] or cir[0] or acir[0] != 0");
       }
-#ifdef TDEBUG
-DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
+  DebugPrintf("START INFO: n = %d m = %d Name:%s",G.nv(),G.ne(),~title());
 #endif
   
   int nloops = G.RemoveLoops();
@@ -297,11 +299,9 @@ DebugPrintf("START INFO: n = %d m = %d",G.nv(),G.ne());
   
   //Print informations
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  Prop1<tstring> title(G.Set(),PROP_TITRE);
   Tprintf("Name:%s",~title());
 
-
-  if(getError())DebugPrintf("GP %s",(const char *)getErrorString());
+  if(getError())DebugPrintf("ERROR:%s",(const char *)getErrorString());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;

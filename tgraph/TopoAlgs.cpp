@@ -31,12 +31,15 @@ bool TopologicalGraph::FindPlanarMap()
   if(Connect && Set(tvertex()).exist(PROP_COORD)) // Geometric Graph
       {GeometricGraph GG(*this);
       if(debug())DebugPrintf("Executing geometric cir");
+      Prop1<int> maptype(Set(),PROP_MAPTYPE,0);
+      int _maptype = maptype();
       svector<tbrin> cir0,acir0;
       cir0 = cir; acir0 = acir;
       if(GG.ComputeGeometricCir() == 0)
           {if(debug())DebugPrintf("Using geometric map");
           planarMap() = 1;return true;
           }
+      maptype() =  _maptype;
       cir.vector() = cir0; acir.vector() = acir0; 
       }
   if(debug())DebugPrintf("FindPlanarMap:LRALGO");

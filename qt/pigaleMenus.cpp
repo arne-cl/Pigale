@@ -100,7 +100,7 @@ pigaleWindow::pigaleWindow()
   mapActionsInit();
 
   // Atexit: Erase undo_tgf_XXXXXX
-  atexit(UndoErase);
+  //atexit(UndoErase);
   // Initialize input/output drivers
   Init_IO();
   Init_IOGraphml();
@@ -660,6 +660,7 @@ pigaleWindow::pigaleWindow()
 pigaleWindow::~pigaleWindow()
   {delete printer;
   pigaleThread.terminate();pigaleThread.wait();
+  UndoErase();
   }
 void  pigaleWindow::setUserMenu(int i, const QString &txt)
  {userMenu->changeItem ( A_TEST+i,txt);

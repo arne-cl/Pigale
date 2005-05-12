@@ -17,6 +17,8 @@
 
 void DrawPolrec(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
+  Prop1<tstring> title(G.Set(),PROP_TITRE);
+  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop<Tpoint> p1(G.Set(tvertex()),PROP_DRAW_POINT_1);
   Prop<Tpoint> p2(G.Set(tvertex()),PROP_DRAW_POINT_2);
   Prop<double> x1(G.Set(tedge()),PROP_DRAW_DBLE_1 );
@@ -30,6 +32,9 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
   Prop<long> elabel(G.Set(tedge()),PROP_LABEL); 
   Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
 
+  bool drawTextEdges = (G.ne() < 100);
+  QString stitle = QString(title());
+  if(drawTextEdges)paint->DrawText(p,pmin().x(),pmin().y(),stitle);
   // draw vertices
   for(tvertex v = 1;v <= G.nv();v++)
       {double dx = (p2[v].x() - p1[v].x()) ;   
@@ -39,7 +44,7 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
       }
   // draw edges
   Tpoint e1,e2,e3,e4;
-  bool drawTextEdges = G.ne() < 100;
+ 
    for(tedge e = 1;e <= G.ne();e++)
        {if(isTree[e])
            {e1 = Tpoint(x1[e],y1[e]);
@@ -57,7 +62,7 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
            if(drawTextEdges)
                {QString label=QString("%1").arg(elabel[e]);
                // text is drawn at  position of lower edge occu
-               paint->drawText(paint->to_x(x1[e]),paint->to_y(y[e]),label);
+               paint->DrawText(p,x1[e],y[e],label);
                }
            }
        }
@@ -568,6 +573,10 @@ void pigalePaint::DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col)
   //  nx *= xscale; ny *= yscale;
   //  p->drawRect(QRect(to_x(a.x()-nx/2+.5),to_y(a.y()-ny/2+.5),(int)(nx+.5),(int)(ny+.5)));
   p->drawRect(QRect((int)(to_x(a.x()) - nx*Min(xscale,yscale)/2), (int)(to_y(a.y())- ny*Min(xscale,yscale)/2), (int)(nx*Min(xscale,yscale)), (int)(ny*Min(xscale,yscale))));
+  }
+void pigalePaint::DrawText(QPainter *p,double x,double y,QString txt)
+  {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
+  p->drawText(to_x(x),to_y(y),txt);
   }
 void pigalePaint::DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center)
 // draw text centered at a, with a surrounding rectangle

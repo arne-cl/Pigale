@@ -1,7 +1,7 @@
 #!/bin/sh
 rm -f TAGS
 
-etags -a -C ~/pigale/tgraph/*.cpp
-etags -a -C ~/pigale/qt/*.cpp
-etags -a -C ~/pigale/incl/TAXI/*.h
-etags -a -C ~/pigale/incl/QT/*.h
+etags -a -C tgraph/*.cpp
+etags -a -C qt/*.cpp
+etags -a -C incl/TAXI/*.h
+etags -a -C incl/QT/*.h

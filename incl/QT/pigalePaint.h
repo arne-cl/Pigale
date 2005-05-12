@@ -39,6 +39,7 @@ public:
   int to_y(double y);   
   void DrawSeg(QPainter *p,Tpoint &a,Tpoint &b,int col,int width=1);
   void DrawRect(QPainter *p,Tpoint &a,double nx,double ny,int col);
+  void DrawText(QPainter *p,double x,double y,QString txt);
   void DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center);
   void DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int color);
   void update(int index,bool NewDrawing = true);

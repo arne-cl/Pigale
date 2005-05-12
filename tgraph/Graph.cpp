@@ -75,6 +75,7 @@ tedge TopologicalGraph::NewEdge(const tbrin &ref1,const  tbrin &ref2)
   if(planarMap() > 0) planarMap() = 0;
   Set().erase(PROP_PLANAR);
   Set().erase(PROP_SYM);
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   if (Set().exist(PROP_HYPERGRAPH))
       { Prop<bool> ise(Set(tvertex()),PROP_HYPEREDGE);
       if ((ise[vin[b]]^ise[vin[-b]])==false)
@@ -130,6 +131,7 @@ tvertex TopologicalGraph::ContractEdge(const tedge &e)
   Set().erase(PROP_SIMPLE);
   Set().erase(PROP_BIPARTITE);
   Set().erase(PROP_HYPERGRAPH);
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   return v;
   }
 tvertex TopologicalGraph::BissectEdge(const tedge &e)
@@ -165,6 +167,7 @@ tvertex TopologicalGraph::BissectEdge(const tedge &e)
   Set().erase(PROP_SYM);
   Set().erase(PROP_HYPERGRAPH);
   Set().erase(PROP_BIPARTITE);
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   // Orient if necessary
   if(PE().exist(PROP_ORIENTED))
       {Prop<bool> oriented(Set(tedge()),PROP_ORIENTED);
@@ -193,8 +196,7 @@ tedge TopologicalGraph::NewEdge(const tvertex &vv1,const tvertex &vv2,tedge e0)
       }
   else
       Set().erase(PROP_BIPARTITE);
-
-  Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() = 1;
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   return ne();
   }
 void TopologicalGraph::DeleteEdge(const tedge &e)
@@ -208,6 +210,7 @@ void TopologicalGraph::DeleteEdge(const tedge &e)
   Set().erase(PROP_BICONNECTED);
   Set().erase(PROP_TRICONNECTED);
   Set().erase(PROP_FOURCONNECTED);
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   Set().erase(PROP_SYM);
   if(planarMap() < 0)planarMap() = 0;
   }
@@ -221,6 +224,7 @@ void TopologicalGraph::MoveBrin(const tbrin &b, const tvertex &to)
   Set().erase(PROP_TRICONNECTED);
   Set().erase(PROP_FOURCONNECTED);
   Set().erase(PROP_SYM);
+  //Prop1<int> maptype(Set(),PROP_MAPTYPE);maptype() =  PROP_MAPTYPE_UNKNOWN ; 
   if (Set().exist(PROP_HYPERGRAPH))
       { Prop<bool> ise(Set(tvertex()),PROP_HYPEREDGE);
       if ((ise[vin[b]]^ise[vin[-b]])==false)
@@ -289,10 +293,10 @@ void TopologicalGraph::DeleteVertex(const tvertex &v)
       DeleteEdge(pbrin[v].GetEdge());
   SwapVertex(v);
   decsize(tvertex());
-  Set().erase(PROP_CONNECTED);
-  Set().erase(PROP_BICONNECTED);
-  Set().erase(PROP_TRICONNECTED);
-  Set().erase(PROP_FOURCONNECTED);
+//   Set().erase(PROP_CONNECTED);
+//   Set().erase(PROP_BICONNECTED);
+//   Set().erase(PROP_TRICONNECTED);
+//   Set().erase(PROP_FOURCONNECTED);
   }
 void TopologicalGraph::SwapEdge(const tedge &e)
   {// on ne recalcule que pour ne
@@ -458,14 +462,17 @@ bool TopologicalGraph::DebugCir()
   if(vin[0]!=0) {DebugPrintf("DC vin[0]=%d",vin[0]());return false;}
   if(cir[0]!=0) {DebugPrintf("DC cir[0]=%d",cir[0]());return false;}
   if(acir[0]!=0) {DebugPrintf("DC acir[0]=%d",acir[0]());return false;}
+  
   for(tvertex v = 1;v <= nv();v++)
-      {if(!pbrin[v]){DebugPrintf("DC NOT CONNECTED GRAPH");continue;}
+      {int degree = Degree(v);
+      if(!degree){DebugPrintf("DCisolated vertex v=%d",v());continue;}
+      if(!pbrin[v]){DebugPrintf("DC no pbrin at v=%d",v());return false;}
       tbrin b0 = pbrin[v];
       tbrin b = b0;
       do 
           {if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
           if(!acir.InRange(cir[b]())){DebugPrintf("DC acir not in range b=%d",b());return false;}
-          if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d",vin[b](),v());return false;}
+          if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d b=%d degree=%d",vin[b](),v(),b(),degree);return false;}
           if(vin[-b]==v){DebugPrintf("DC %d is a loop at v=%d",b(),v());return false;}
           if(acir[cir[b]]!=b)
               {DebugPrintf("DC at v=%d b=%d cir=%d acir[cir]=%d",v(),b(),cir[b](),acir[cir[b]]());

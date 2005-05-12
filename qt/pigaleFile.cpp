@@ -20,6 +20,7 @@
 #include <qinputdialog.h> 
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qmessagebox.h>
 
 void Init_IO();
 
@@ -148,9 +149,20 @@ int pigaleWindow::load(int pos)
   information(); gw->update();
   return *pGraphIndex;
   }
-int pigaleWindow::save(bool askTitle)
+int pigaleWindow::save(bool manual)
   {TopologicalGraph G(GC);
-  if(askTitle)
+  if(manual) // check overwrite
+      {QFileInfo fi =  QFileInfo(OutputFileName);
+      if(!(IO_Capabilities(OutputDriver)&TAXI_FILE_RECORD_ADD) && fi.exists() )
+          {int rep = QMessageBox::warning(this,"Pigale Editor"
+                                          ,"This file already exixts.<br>"
+                                          "Overwrite ?"
+                                          ,QMessageBox::Ok 
+                                          ,QMessageBox::Cancel);
+          if(rep == 2)return 0;
+          }
+      }
+  if(manual)// ask for a title
       {Prop1<tstring> title(G.Set(),PROP_TITRE);
       QString titre(~title());
       bool ok = TRUE;
@@ -159,6 +171,7 @@ int pigaleWindow::save(bool askTitle)
       if(ok && !titre.isEmpty()) title() = (const char *)titre;
       else if(!ok) return -1;
       }
+
   if(IO_Save(OutputDriver,G,(const char *)OutputFileName) == 1)
       {setError(-1,QString("Cannot open file:%1").arg(OutputFileName));
       return -1;
@@ -205,9 +218,9 @@ void pigaleWindow::saveAs()
     if(FileName.isEmpty())return;
     QString ext="";
     int id=0;
-    for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++id ) {
-      if (selfilter==*it) break;
-    }
+    for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++id ) 
+        {if (selfilter==*it) break;
+        }
     if ((QFileInfo(FileName).extension(false) != IO_Ext(id)) && (IO_Ext(id)!=""))
       {FileName += ".";
 	FileName += IO_Ext(id);
