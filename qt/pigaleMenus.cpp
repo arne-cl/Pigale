@@ -98,9 +98,7 @@ pigaleWindow::pigaleWindow()
   pigaleThread.mw = this;
   // Create the actions map
   mapActionsInit();
-
-  // Atexit: Erase undo_tgf_XXXXXX
-  //atexit(UndoErase);
+  //atexit(UndoErase); 
   // Initialize input/output drivers
   Init_IO();
   Init_IOGraphml();
@@ -327,8 +325,12 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
   embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
-  embed->insertItem(tr("Double &Occurrence"),           A_EMBED_POLREC );
-  embed->insertItem(tr("Double Occurrence (&LR)"),           A_EMBED_POLREC_LR );
+  embed->insertItem(tr("Double Occurrence (&DFS)"),           A_EMBED_POLREC );
+  embed->insertItem(tr("Double Occurrence (&LR DFS)"),           A_EMBED_POLREC_LR );
+#if VERSION_ALPHA
+  embed->insertItem(tr("Double Occurrence (&BFS)"),                A_EMBED_POLAR);
+#endif
+  embed->insertSeparator();
   embed->insertItem(tr("&Visibility"),           A_EMBED_VISION );
   embed->insertItem(tr("FPP Visi&bility"),       A_EMBED_FPP_RECTI);
   embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);
@@ -337,15 +339,14 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(tr("&Polyline"),             A_EMBED_POLYLINE);  
   embed->insertItem(tr("&Curves")  ,             A_EMBED_CURVES);  
  embed->insertSeparator();
-#if VERSION_ALPHA
-  embed->insertItem(tr("&Polar"),                A_EMBED_POLAR);
-  embed->insertItem(xmanIcon,"Sprin&g",      A_EMBED_SPRING);
-  embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
-#endif
   embed->insertItem(xmanIcon,tr("Spring (Map &Preserving)"),A_EMBED_SPRING_PM);
   embed->setWhatsThis(A_EMBED_SPRING_PM,springPM_txt);
   embed->insertItem(xmanIcon,tr("Spring Planar"),           A_EMBED_JACQUARD);
   embed->setWhatsThis(A_EMBED_JACQUARD,jacquard_txt);
+#if VERSION_ALPHA
+  embed->insertItem(xmanIcon,"Sprin&g",      A_EMBED_SPRING);
+  embed->setWhatsThis(A_EMBED_SPRING,spring_txt);
+#endif
   embed->insertSeparator(); 
   embed->insertItem(xmanIcon,tr("&Embedding in Rn"),        A_EMBED_3d);
   embed->setWhatsThis(A_EMBED_3d,embed3d_txt);
@@ -408,6 +409,7 @@ pigaleWindow::pigaleWindow()
   QPopupMenu *popupBipar    = new QPopupMenu(this);
   QPopupMenu *popupPlan     = new QPopupMenu(this);
   QPopupMenu *popupOuter    = new QPopupMenu(this);
+  QPopupMenu *popupGen     = new QPopupMenu(this);
   QPopupMenu *popupSeed     = new QPopupMenu(this);
   menuBar()->insertItem(tr("&Generate"),generate);
   connect(generate,SIGNAL(activated(int)),SLOT(handler(int)));
@@ -447,16 +449,17 @@ pigaleWindow::pigaleWindow()
   // Erase multiple edges
   generate->insertItem(tr("Erase multiple edges"),A_SET_ERASE_MULT);
   generate->setItemChecked(A_SET_ERASE_MULT,randomEraseMultipleEdges());
-  spin_N1 = new QSpinBox(0,100000,1,generate,"spinN1");
+  spin_N1 = new QSpinBox(0,100000,1,popupGen,"spinN1");
   spin_N1->setValue(Gen_N1);     spin_N1->setPrefix("N1: ");
-  spin_N1->setFocusPolicy(QWidget::StrongFocus); 
-  spin_N2 = new QSpinBox(0,100000,1,generate,"spinN2");
+  spin_N2 = new QSpinBox(0,100000,1,popupGen,"spinN2");
   spin_N2->setValue(Gen_N2);     spin_N2->setPrefix("N2: ");
-  spin_M = new QSpinBox(0,300000,1,generate,"spinM");
+  spin_M = new QSpinBox(0,300000,1,popupGen,"spinM");
   spin_M->setValue(Gen_M);      spin_M->setPrefix("M: ");
-  generate->insertItem(spin_N1);
-  generate->insertItem(spin_N2);
-  generate->insertItem(spin_M);
+  generate->insertItem(tr("Values"),popupGen);
+  popupGen->insertItem(tr("Edit Values"));
+  popupGen->insertItem(spin_N1);
+  popupGen->insertItem(spin_N2);
+  popupGen->insertItem(spin_M);
   connect(spin_N1,SIGNAL(valueChanged(int)),SLOT(spinN1Changed(int)));
   connect(spin_N2,SIGNAL(valueChanged(int)),SLOT(spinN2Changed(int)));
   connect(spin_M,SIGNAL(valueChanged(int)),SLOT(spinMChanged(int)));
@@ -661,6 +664,7 @@ pigaleWindow::~pigaleWindow()
   {delete printer;
   pigaleThread.terminate();pigaleThread.wait();
   UndoErase();
+  LogPrintf("END\n");
   }
 void  pigaleWindow::setUserMenu(int i, const QString &txt)
  {userMenu->changeItem ( A_TEST+i,txt);

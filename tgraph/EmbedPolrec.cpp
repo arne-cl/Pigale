@@ -15,22 +15,25 @@ class DoccGraph : public TopologicalGraph
   void init();
   MaxPath *MPATH; 
   int numConstraint;
+  int makeDosDFS();
+  int makeDosLR();
 
  public:
-  DoccGraph(GraphAccess &G,int _morg) : TopologicalGraph(G),hmax(0),morg(_morg),ok(true)
+  DoccGraph(GraphAccess &G,int _morg,int type) : TopologicalGraph(G),hmax(0),morg(_morg),ok(true)
       {init();
-      //if(makeDosLR(b0) != 0)ok = false;
-      //if(makeDos(b0) != 0)ok = false;
+      if(type == 0)
+          makeDosDFS();
+      else
+          makeDosLR();
       }
   ~DoccGraph(){}
-  int makeDos(tbrin b0);
-  int makeDosLR(tbrin b0);
+
   void htreePR();
   bool  horderPR(tbrin ee, tbrin es);
   tbrin  rightBrinPR(tedge e);
   void insertConstraint(tedge je,tedge js);
   void pushSPR();
-  void pushPR();
+  void push1PR();
   bool  stronger_constraintPR(tedge js, tedge sucje);
   void push2PR();
   void  vheightPR();
@@ -51,7 +54,7 @@ void DoccGraph::init()
   lver.resize(1,n);  lver.SetName("DosG:lver");lver.clear();
   rver.resize(1,n);  rver.SetName("DosG:rver");
   }
-int DoccGraph::makeDosLR(tbrin b0)
+int DoccGraph::makeDosLR()
   {Prop<bool> isTree(Set(tedge()),PROP_ISTREE_LR);
 #ifdef TDEBUG
   Prop<short> ecolor(Set(tedge()),PROP_COLOR);
@@ -64,8 +67,7 @@ int DoccGraph::makeDosLR(tbrin b0)
       else ewidth[a] = 1;
       }
 #endif
-  
-  b0 = 1;
+  tbrin b0 = acir[extbrin()];
   svector<int> dfsnum(1,nv()); dfsnum.SetName("dfsnum");
 
  // Renum the vertices as they are discovered
@@ -158,7 +160,6 @@ int DoccGraph::makeDosLR(tbrin b0)
  if (y != nv() || occ != 2*ne()){printf("makeDosPR error\n"); ok = false;}
   if(!ok)return -1;
 #endif
-
   if (y != nv() || occ != 2*ne()){DebugPrintf("makeDosPR error"); ok = false;return -1;}
   // Compute dosInv  
   dosInv[0] = 0;
@@ -167,7 +168,7 @@ int DoccGraph::makeDosLR(tbrin b0)
   return 0;
   }
 
-int DoccGraph::makeDos(tbrin b0)
+int DoccGraph::makeDosDFS()
   {svector<tbrin> tb(0,nv()); tb.clear(); tb.SetName("tb");
   svector<int> dfsnum(0,nv());  dfsnum.SetName("dfsnum");
   svector<tbrin> nel(-ne(),ne());  nel.SetName("nel");
@@ -178,6 +179,7 @@ int DoccGraph::makeDos(tbrin b0)
 #endif
   iel[0] = nel[0] = 0;
   nvin[0]=0;
+  tbrin b0 = acir[extbrin()];
   tbrin b = b0;
   tbrin y = 1;
   tbrin z = nv();
@@ -273,7 +275,7 @@ void DoccGraph::insertConstraint(tedge je,tedge js)
   MPATH->insert(je(),js(),1);
   ++numConstraint;
   }
-void  DoccGraph::pushPR()
+void  DoccGraph::push1PR()
   {tedge js  = 0;
   tbrin es = 0; // right brin of js
   foc.clear();suc.clear();
@@ -453,58 +455,48 @@ int  DoccGraph::drawPR()
         y1[ie] = (double)hauteur[nvin[dos[dosInv[je]]] - 1] +.5;
         y2[ie] = (double)hauteur[nvin[dos[dosInv[-je]]] - 1] +.5;
         y[ie] = (double)hauteur[je] +.5-.3;
-        if(y[ie] <= Max( y1[ie], y2[ie]))
-             {ok = false;
-#ifndef TDEBUG
-            setError(-1,"bad drawing");
-#else
-        printf("ie:%d  %f <= %f ou %f\n",ie(),y[ie],y1[ie],y2[ie]);
-#endif
-             }
+        if(y[ie] <= Max( y1[ie], y2[ie]))ok = false;
         }
   // delete the edges added by Connexity
   for(tedge e = ne();e > morg;e--) DeleteEdge(e);
   return 0;
   }
-int EmbedPolrec(TopologicalGraph &G)
-  {int morg = G.ne();
-  G.MakeConnected();
-  tbrin b0 = 1;
-  DoccGraph DG(G,morg);
-  DG.makeDos(b0);
-  if(!DG.ok)return -1;
-  DG.htreePR();
-  DG.pushPR();
-  DG.push2PR();
-  DG. lrverPR();
-  if(DG.drawPR() != 0)return -1;
-  return 0;
-  }
 
-int EmbedPolrecLR(TopologicalGraph &G)
+int EmbedPolrecGeneral(TopologicalGraph &G,int type)
+// type == 0 -> polerc    
+// type == 1 -> polercLR
   {int morg = G.ne();
   G.MakeConnected();
-  tbrin b0 = 1;
-  // provisoire car maptype pas encore gere
-//   Prop1<int> maptype(G.Set(),PROP_MAPTYPE);
-//   if(maptype() !=  PROP_MAPTYPE_LRALGO) G.Planarity();
-//   else printf("NOT CALLING PLANARITY\n");
-  G.Planarity();
-  if(getError()){printf("ERROR:0 before polrec \n");return -1;}
-  DoccGraph DG(G,morg);
-  DG.makeDosLR(b0);
-  if(!DG.ok){setError(-1,"ERROR:1 polrec");printf("ERROR:1 polrec");return -1;}
+  svector<tbrin> cir0,acir0;
+  if(type == 1) // save the cir
+      {cir0 = G.cir; acir0 = G.acir;
+      G.Planarity();
+      }
+  DoccGraph DG(G,morg,type);
+  if(!DG.ok)
+      {setError(-1,"ERROR: polrec construction");printf("ERROR: polrec");
+      if(type == 1) {G.cir.vector() = cir0; G.acir.vector() = acir0;}
+      return -1;
+      }
   DG.htreePR();
-  // DG.pushSPR();
-  DG.pushPR();
+  DG.push1PR();
   DG.push2PR();
-  DG. lrverPR();
+  DG.lrverPR();
   DG.drawPR();
+  if(type == 1) {G.cir.vector() = cir0; G.acir.vector() = acir0;}
 #ifndef TDEBUG
-  if(!DG.ok){setError(-1,"ERROR:polrec drawing");return -1;}
+  if(!DG.ok){setError(-1,"ERROR: polrec");printf("ERROR: polrec");return -1;}
 #endif
   return 0;
+  }    
+int EmbedPolrec(TopologicalGraph &G)
+  {return  EmbedPolrecGeneral(G,0);
   }
+int EmbedPolrecLR(TopologicalGraph &G)
+  {return  EmbedPolrecGeneral(G,1);
+  }
+
+// not used now
 void  DoccGraph::pushSPR()
   {tedge js  = 0;
   foc.clear();suc.clear();

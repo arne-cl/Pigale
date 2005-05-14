@@ -4,14 +4,16 @@ SUBDIRS=tgraph qt ClientServer
 all: md $(SUBDIRS)
 
 $(SUBDIRS):
-	make -C $@ -e -f gnumakefile $(LINKAGE)
+	make -C $@ -e -f gnumakefile $(TARGET)
 		
 md:
 	@if ! test -d lib ; then mkdir lib ; fi
     
-static:LINKAGE=static
-
+static:TARGET=static
 static: all    
+
+clean:TARGET=clean
+clean: all
 	
 unix:
 	cd tgraph ; dos2unix -k *.cpp

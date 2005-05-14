@@ -172,7 +172,9 @@ void pigaleWindow::settingsHandler(int action)
       return;
       }
   else if(action == A_SET_RANDOM_SEED_CHANGE)
-      {randomSetSeed() = atol((const char *)seedEdit->text()); return; 
+      {randomSetSeed() = atol((const char *)seedEdit->text()); 
+      Tprintf("New seed:%ld",randomSetSeed());
+      return; 
       }
   
 // Change one parameter

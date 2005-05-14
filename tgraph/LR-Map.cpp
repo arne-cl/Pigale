@@ -256,6 +256,6 @@ int Embed::FillLowerHalfEdges()
           }
       ee = cir[-ee];                      // tous les brins d'arbre
       }
-  extbrin() = -left[1]; //as exterior face generate by -cir[b]
+  extbrin() = left[1]; //as exterior face generate by -cir[b]
   return 0;
   }

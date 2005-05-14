@@ -38,7 +38,7 @@ void randomInitSeed()
       time(&time_seed);
       randomSetSeed() = (long)time_seed; 
       }
-  srand48(randomSetSeed());
+  //srand48(randomSetSeed());
   }
 void randomStart()
   {srand48(randomSetSeed());
