@@ -876,6 +876,7 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
   tbrin b,b0;
   tvertex v;
   int stackpos=0;
+
   // compute degrees
   din.clear();
   for (b=-ne(); b<0;b++)
@@ -891,8 +892,6 @@ bool TopologicalGraph::CheckAcyclic(int &ns, int &nt)
       {bool sink=true; 
       v=stack[stackpos--];
       b0 = b = pbrin[v];
-
-      //if(vin[b] != v)qDebug("ERROR v=%d vin=%d",v(),b());
       do 
           {if (b>0)
               {sink=false;
@@ -1329,7 +1328,13 @@ GraphContainer * TopologicalGraph::AngleGraph()
       setError(-1,"Could not compute angle graph");
       return (GraphContainer *)0;
       }
- 
+// #ifdef TDEBUG
+//   if(ComputeGenus() != 0)
+//       {DebugPrintf("Not planar map !");
+//       setError(-1,"Not planar map !");
+//       return (GraphContainer *)0;
+//       }
+// #endif
   int m = ne();
   int n = nv();
   int nn = m + 2; // No exterior face

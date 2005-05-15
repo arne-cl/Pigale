@@ -96,7 +96,6 @@ GraphContainer *GenerateCompleteGraph(int a)
       {vin[b]=v;vin[-b]=vv; b++;}
   TopologicalGraph TG(GC);
   if(a > 4)TG.planarMap() = -1;
-  else TG.planarMap() = 1;
   return &GC;
 }
 GraphContainer *GenerateCompleteBiGraph(int a,int b)
@@ -132,7 +131,6 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
       {vin[bb]=v;vin[-bb]=vv; bb++;}
   TopologicalGraph TG(GC);
   if(a >= 3 && b >=3 )TG.planarMap() = -1;
-  else TG.planarMap() = 1;
   return &GC;
 }
 GraphContainer *GenerateRandomGraph(int a,int b)
@@ -269,7 +267,7 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
   char titre[256];
-  sprintf(titre,"Random_outerplanar%ld",seed);
+  sprintf(titre,"Outerplanar_%ld",seed);
   title() = titre;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
@@ -330,7 +328,6 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   assert(k == 1);
   delete [] Dyck; delete [] add_edges;
   TopologicalGraph TG(GC);
-  TG.planarMap() = 1;
   if(randomEraseMultipleEdges())
       TG.Simplify();
   return &GC;

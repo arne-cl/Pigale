@@ -256,11 +256,15 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
       case A_EMBED_TUTTE:ret = 1;
           G0.Tutte();
           break;
-      case A_EMBED_POLREC:ret = 3;
-          err = EmbedPolrec(G);
+      case A_EMBED_POLREC_DFS:ret = 3;
+          err = EmbedPolrecDFS(G);
           drawing = 8;
           break;
-      case A_EMBED_POLREC_LR:ret = 3;
+      case A_EMBED_POLREC_BFS:ret = 3;
+          err = EmbedPolrecBFS(G);
+          drawing = 8;
+          break;
+      case A_EMBED_POLREC_DFSLR:ret = 3;
           err = EmbedPolrecLR(G);
           drawing = 8;
           break;

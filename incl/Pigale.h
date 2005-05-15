@@ -48,7 +48,8 @@ int Embed3dbis(TopologicalGraph &G0);
 int Embed3dSchnyder(TopologicalGraph &G0);
 int EmbedPolyline(TopologicalGraph &G);
 int EmbedCurves(TopologicalGraph &G);
-int EmbedPolrec(TopologicalGraph &G);
+int EmbedPolrecDFS(TopologicalGraph &G);
+int EmbedPolrecBFS(TopologicalGraph &G);
 int EmbedPolrecLR(TopologicalGraph &G);
 
 // Generators

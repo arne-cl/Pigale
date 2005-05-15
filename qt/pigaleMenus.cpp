@@ -325,17 +325,20 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
   embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
-  embed->insertItem(tr("Double Occurrence (&DFS)"),           A_EMBED_POLREC );
-  embed->insertItem(tr("Double Occurrence (&LR DFS)"),           A_EMBED_POLREC_LR );
+  embed->insertItem(tr("Double Occurrence (&DFS)"),           A_EMBED_POLREC_DFS );
+  embed->insertItem(tr("Double Occurrence (&LR DFS)"),     A_EMBED_POLREC_DFSLR );
+  embed->insertItem(tr("Double Occurrence (&BFS)"),           A_EMBED_POLREC_BFS );
 #if VERSION_ALPHA
-  embed->insertItem(tr("Double Occurrence (&BFS)"),                A_EMBED_POLAR);
+  embed->insertItem(tr("Double Occurrence &Cir (BFS)"),        A_EMBED_POLAR);
 #endif
   embed->insertSeparator();
   embed->insertItem(tr("&Visibility"),           A_EMBED_VISION );
   embed->insertItem(tr("FPP Visi&bility"),       A_EMBED_FPP_RECTI);
   embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);
+  embed->insertSeparator();
   embed->insertItem(tr("&T Contact"),            A_EMBED_T_CONTACT);
   embed->insertItem(tr("&Contact Biparti"),      A_EMBED_CONTACT_BIP);
+  embed->insertSeparator();
   embed->insertItem(tr("&Polyline"),             A_EMBED_POLYLINE);  
   embed->insertItem(tr("&Curves")  ,             A_EMBED_CURVES);  
  embed->insertSeparator();
