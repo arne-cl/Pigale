@@ -79,7 +79,7 @@ int OrientHandler(GraphContainer &GC,int action)
           if(i != 0)Tprintf("i=%d",i);
           break;
       case A_ORIENT_BIPOLAR:
-          first = 1;
+          first = G.extbrin();
           i = G.BipolarPlan(first);
           if(i != 0){Tprintf("err=%d",ret);return -1;}
           G.FixOrientation();
@@ -90,7 +90,7 @@ int OrientHandler(GraphContainer &GC,int action)
           Tprintf("st=%d  (%d %d)",first(),G.vin[first](),G.vin[-first]());
           break;
       case A_ORIENT_BIPOLAR_NP:
-          first = 1;
+          first = G.extbrin();
           i = NPBipolar(G,first);
           if(i != 0){Tprintf("err=%d",i);return -1;}
           G.FixOrientation();
@@ -101,9 +101,9 @@ int OrientHandler(GraphContainer &GC,int action)
           Tprintf("st=%d  (%d %d)",first(),G.vin[first](),G.vin[-first]());
           break;
       case A_ORIENT_BFS:
-	BFSOrientTree(G,tvertex(1));
-	G.RestoreOrientation();
-	break;
+          BFSOrientTree(G,tvertex(1));
+          G.RestoreOrientation();
+          break;
       default:
           return 0;
       }

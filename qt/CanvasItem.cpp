@@ -325,37 +325,43 @@ void ArrowItem::SetColor()
   setPen(*tp);setBrush(*tb);
   update();
   }
+void ArrowItem::SetColor(QColor col)
+  {tp->setColor(col); // needed not to get the desaturated color
+  tb->setColor(col); // needed not to get the desaturated color
+  setPen(*tp);setBrush(*tb);
+  update();
+  }
 int ArrowItem::rtti() const
   {return arrow_rtti;
   }
 //**********************************************************************************
 EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   {GeometricGraph & G = *(g->pGG);
-    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   tvertex v0 = G.vin[e];  tvertex v1 = G.vin[-e];
   int h = g->canvas->height();
   int x0 = (int)G.vcoord[v0].x();  int y0 =  (int)G.vcoord[v0].y();
   int x1 = (int)G.vcoord[v1].x();  int y1 =  (int)G.vcoord[v1].y();
   int x  = (int)(x0 * xorient + x1*(1.-xorient));
   int y  = (int)(y0 * xorient + y1*(1.-xorient));
-  //if(G.ecolor[e] > 16)qDebug("edge:%d col:%d",e(),G.ecolor[e]);
   QColor col = color[bound(G.ecolor[e],1,16)];
   QColor col2 = col;
   if (G.Set(tedge()).exist(PROP_COLOR2))
       {Prop<short> ecolor2(G.Set(tedge()),PROP_COLOR2);
        ecolor2.definit(1);
-       //qDebug("edge:%d col2:%d",e(),ecolor2[e]);
        col2 = color[bound(ecolor2[e],1,16)];
       }
+  // first EdgeItem
   tp->setColor(col);tp->setWidth(G.ewidth[e]);
   EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
+  // second EdgeItem
   if(ShowOrientation() && eoriented[e])
-      {tp->setColor(Desaturate(col));
-      edge0->arrow->show();
+      {edge0->arrow->show();
+      tp->setColor(Desaturate(col));
       }
   else
-      {tp->setColor(col2);
-      edge0->arrow->hide();
+      {edge0->arrow->hide();
+      tp->setColor(col2);
       }
   EdgeItem *edge1 = new EdgeItem(e,x,h-y,x1,h-y1,false,g);
   edge0->opp = edge1;  edge1->opp = edge0;
@@ -393,17 +399,17 @@ EdgeItem::EdgeItem(tedge &ee,GraphWidgetPrivate* g) // used when creating an edg
 int EdgeItem::rtti() const
   {return edge_rtti;
   }
-void EdgeItem::SetColor(QColor c)
+void EdgeItem::SetColor(QColor c,bool both)
   {GeometricGraph & G = *(gwp->pGG);
-    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   tp->setColor(c);tp->setWidth(G.ewidth[e]);
   setPen(*tp);
-  if(lower)
+  if(lower && both)
       {if(eoriented[this->e] && ShowOrientation())
           opp->SetColor(Desaturate(c));
       else
           opp->SetColor(c);
-      arrow->SetColor();
+      arrow->SetColor(c);
       }
   }
 

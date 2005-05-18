@@ -168,6 +168,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       MouseAction = -3;                     //move colored edges 
   else if(Shift && MouseAction == 4)        //bissect
       MouseAction = -4;                     //contract
+ else if(Shift && MouseAction == 5)        //define exterior face
+      MouseAction = -5;                     //define extbrin
   if(MouseAction == 0) // color
       {NodeItem* node;
       EdgeItem *edge;
@@ -286,7 +288,6 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       if(G.FindExteriorFace(pp) == 0)return;
       //ColorExteriorface
       tedge e;
-
       ForAllEdges(e,G)edgeitem[e]->SetColor(color[color_edge]);
       tbrin b0 = G.extbrin();
       tbrin b = b0;
@@ -294,8 +295,31 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
           {e = b.GetEdge();
           edgeitem[e]->SetColor(color[Red]);
           } while((b = G.cir[-b]) != b0);
+      if(b0() > 0)
+          edgeitem[b0.GetEdge()]->SetColor(color[Green],false);
+      else
+          edgeitem[b0.GetEdge()]->opp->SetColor(color[Green],false);
       canvas()->update();
       return; 	  
+      }
+  else if(MouseAction == -5) // Define Extbrin
+      {EdgeItem *edge;
+      int rtt = FindItem(p,edge);
+      if(rtt != edge_rtti)return;
+      Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
+      tedge je;
+      ForAllEdges(je,G)edgeitem[je]->SetColor(color[color_edge]);
+      GeometricGraph & G = *(gwp->pGG);
+      je = edge->e;
+//       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+//       NodeItem *n1 =  nodeitem[G.vin[je]];   Tpoint p1(n1->x(),n1->y());
+//       NodeItem *n2 =  nodeitem[G.vin[-je]];  Tpoint p2(n2->x(),n2->y());
+//       Tpoint pp((double)p.x(),(double)p.y());
+//       G.extbrin() = (Distance2(pp,p1) < Distance2(pp,p2)) ? je.firsttbrin() : je.secondtbrin();
+      G.extbrin() = (edge->lower ) ? je.firsttbrin() : je.secondtbrin();
+      edge->SetColor(color[Green],false);
+      canvas()->update();
+      return;
       }
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
     {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);

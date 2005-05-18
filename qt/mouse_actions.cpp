@@ -27,7 +27,7 @@ const int Height = 150;
 const int Width = 280-5; //5 borders
 const int dy = 18;
 const int oy = 20;                // origin of first radiobutton  
-const int dx = 90;               // width of radiobuttons  (80) 
+const int dx = 100;               // width of radiobuttons  (80) 
 const int ox1 = 6;               // postion of left group
 const int dx1 = 125;              // width radio group (90)
 const int sliderOx = ox1+dx1+3;
@@ -76,7 +76,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
   ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
   ButtonContract->setGeometry(QRect(ox1,oy+5*dy,dx,20)); 
-  ButtonContract->setText(tr("Ext Face"));
+  ButtonContract->setText(tr("Ext Face/brin"));
 
     //****************************************************************
   gw->sizegridChanged(sizegrid);

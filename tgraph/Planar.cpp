@@ -75,8 +75,8 @@ int TopologicalGraph::Planarity()
   svector<tvertex> &low = *new svector<tvertex>(0,n);
   svector<tbrin> xcir;
   xcir = cir;
-  //tbrin b0 = extbrin();
-  tbrin b0 = 1;
+  tbrin b0 = extbrin();
+  //tbrin b0 = 1;
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;

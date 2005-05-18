@@ -81,7 +81,8 @@ int DoccGraph::makeDosLR()
       else ewidth[a] = 1;
       }
 #endif
-  tbrin b0 = acir[extbrin()];
+  //tbrin b0 = acir[extbrin()];
+  tbrin b0 = extbrin();
   svector<int> dfsnum(1,nv()); dfsnum.SetName("dfsnum");
 
  // Renum the vertices as they are discovered
@@ -102,7 +103,7 @@ int DoccGraph::makeDosLR()
           {dfsnum[w] = ++num;  ivl[num] = w;
           b.cross(); v = w;
           }
-      b = acir[b];
+      b = cir[b];
       } while(b != b0);
  
 #ifdef TDEBUG
@@ -151,7 +152,7 @@ int DoccGraph::makeDosLR()
       else                                                                                                                             // tree 1 occ
           {iel[y]=b;                 nel[b] = y; 
            iel[-y] = -b;             nel[-b] = -y;  
-          dos[++occ] = nel[b];
+           dos[++occ] = nel[b];
           nvin[y]=dfsnum[v];  nvin[-y] = dfsnum[w] ;
           visited[w] = true;
           b.cross();
@@ -161,7 +162,7 @@ int DoccGraph::makeDosLR()
           ecolor[b.GetEdge()] = Red;
 #endif
           }
-      b = acir[b];
+      b = cir[b];
       } while(b != b0);
 
 #ifdef TDEBUG
@@ -171,10 +172,11 @@ int DoccGraph::makeDosLR()
       
   for(tedge je = 1; je <= ne();je++)
       if(nvin[je] > nvin[-je])ok = false;
- if (y != nv() || occ != 2*ne()){printf("makeDosPR error\n"); ok = false;}
+   if (y != nv() || occ != 2*ne()){printf("makeDosPR error\n"); ok = false;}
   if(!ok)return -1;
 #endif
   if (y != nv() || occ != 2*ne()){DebugPrintf("makeDosPR error"); ok = false;return -1;}
+
   // Compute dosInv  
   dosInv[0] = 0;
   for(int i = 1;i <= 2*ne();++i)       
@@ -239,17 +241,18 @@ int DoccGraph::makeDosBFS()
               ecolor[b.GetEdge()] = Blue;
 #endif
               }
-          }while((b = acir[b])!= b0);
+          }while((b = cir[b])!= b0);
       }
   
   if (y != nv()-1 || z != ne()){DebugPrintf("DFSRenum z=%d y=%d n=%d",z(),y(),nv());ok = false; return -1;}
   // compute dos sequence
   int occ = 0;
-  b = b0 = acir[extbrin()];
+  //  b = b0 = acir[extbrin()];
+  b = b0 = extbrin();
   do
       {dos[++occ] = nel[b];
       if(nel[b].GetEdge() < nv())b = b.cross();
-      }while((b = acir[b])!= b0);
+      }while((b = cir[b])!= b0);
 
   if(occ != 2*ne()){DebugPrintf("Bad double occurrence sequence (%d != %d)",occ,2*ne());ok = false; return -1;}
  // Compute dosInv  
@@ -269,7 +272,8 @@ int DoccGraph::makeDosDFS()
 #endif
   iel[0] = nel[0] = 0;
   nvin[0]=0;
-  tbrin b0 = acir[extbrin()];
+  //tbrin b0 = acir[extbrin()];
+  tbrin b0 = extbrin();
   tbrin b = b0;
   tbrin y = 1;
   tbrin z = nv();
@@ -320,7 +324,7 @@ int DoccGraph::makeDosDFS()
 #endif
           v = w;
           }
-      b = acir[b];
+      b = cir[b];
       } while(b != b0);
 
   if (y != nv() || z != ne()+1){DebugPrintf("GDFSRenum z=%d y=%d n=%d",z(),y(),nv());ok = false; return -1;}
