@@ -33,7 +33,6 @@ int main(int argc,char ** argv)
   {QApplication app(argc,argv);
   // Set the colors of tha application
   InitPigaleColors();
-
   //Translations
 #ifdef _WINDOWS
   QString transDict= QString(".")+ QDir::separator();

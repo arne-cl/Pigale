@@ -9,7 +9,7 @@
 **
 *****************************************************************************/
 
-#include <TAXI/Tbase.h>
+#include <TAXI/Tbase.h>  
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/Tdebug.h>
@@ -159,6 +159,8 @@ int EmbedVision(TopologicalGraph &G)
   MP=new MaxPath(m,2*m);
   svector<tbrin> &Fpbrin = G.ComputeFpbrin();
   tbrin b0,b;
+  // out == positif
+ 
   for(int i = 1; i <= Fpbrin.n(); i++)
       {b0 = Fpbrin[i];
       if(b0.out())
@@ -169,8 +171,7 @@ int EmbedVision(TopologicalGraph &G)
               {b0=G.cir[-b0];}
           while(b0.in());
       // b0 is the lowest tbrin on the left of the face
-      if(b0 == G.cir[bst]) // face exterieure
-          continue;
+      if(b0 == G.cir[bst])continue; // face exterieure
       
       // référence : e
       tedge e = (G.acir[b0]).GetEdge();
@@ -185,6 +186,8 @@ int EmbedVision(TopologicalGraph &G)
           b=G.cir[-b];
           }
       }
+
+
   MP->solve(x);
   delete &Fpbrin;
   delete MP; 

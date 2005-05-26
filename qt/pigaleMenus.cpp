@@ -91,14 +91,12 @@ pigaleWindow::pigaleWindow()
 #ifdef _WINDOWS
    initGraphDebug();// as the compiler does not initialize static ...
 #endif
-
   // Export some data
   //DefineGraphContainer(&GC);
   DefinepigaleWindow(this);
   pigaleThread.mw = this;
   // Create the actions map
   mapActionsInit();
-  //atexit(UndoErase); 
   // Initialize input/output drivers
   Init_IO();
   Init_IOGraphml();
@@ -144,19 +142,18 @@ pigaleWindow::pigaleWindow()
   printer->setOrientation(QPrinter::Landscape); 
   printer->setColorMode(QPrinter::Color);
 #endif
-
+ 
   // sizes of the editor window
   // int pigaleEditorMinXsize  = 250, pigaleEditorMaxXsize  = 250;
   int pigaleEditorMinXsize  = 280, pigaleEditorMaxXsize  = 280;
   int pigaleEditorMinYsize  = 150;
   // When testing screens 800x600
   //pigaleWindowInitXsize = 800;pigaleWindowInitYsize = 600;
-
   // Widgets
   QWidget *mainWidget = new QWidget(this,"mainWidget");
   setCentralWidget(mainWidget);
   QHBoxLayout *topLayout = new QHBoxLayout(mainWidget,0,0,"topLayout");
-
+ 
   //leftLayout: Graph editor,Paint,GL,Browser
   QHBoxLayout * leftLayout = new QHBoxLayout(topLayout,0,"leftLayout");
   tabWidget = new  QTabWidget(mainWidget,"tabwidget");
@@ -173,7 +170,7 @@ pigaleWindow::pigaleWindow()
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
-
+ 
 #if QT_VERSION >= 300 || _WINDOWS
   browser = new QTextBrowser(tabWidget,"doc");
   tabWidget->addTab(browser,tr("User Guide")); 
@@ -325,7 +322,9 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(xmanIcon,"Tutte &Circle",A_EMBED_TUTTE_CIRCLE);
   embed->setWhatsThis(A_EMBED_TUTTE_CIRCLE,tutte_circle_txt);
   embed->insertSeparator();
+#if VERSION_ALPHA
   embed->insertItem(tr("Double Occurrence (&DFS)"),           A_EMBED_POLREC_DFS );
+#endif
   embed->insertItem(tr("Double Occurrence (&LR DFS)"),     A_EMBED_POLREC_DFSLR );
   embed->insertItem(tr("Double Occurrence (&BFS)"),           A_EMBED_POLREC_BFS );
 #if VERSION_ALPHA
@@ -621,7 +620,6 @@ pigaleWindow::pigaleWindow()
   progressBar->hide();
 
   mainWidget->setFocus(); 
-  
 #if QT_VERSION >= 300 || _WINDOWS
   //Check for documentation repertory
   QFileInfo fdoc = QFileInfo(DirFileDoc);
@@ -716,6 +714,8 @@ void pigaleWindow::banner()
 	    ,(const char *)OutputFileName
 	    ,NumRecordsOut
 	    ,UndoIndex,UndoMax);
+//   qDebug("output:%s",(const char *)OutputFileName);
+//   qDebug("banner:%s",(const char *)msg);
   bannerEvent *e = new bannerEvent(msg);
   QApplication::postEvent(this,e);
   }

@@ -16,62 +16,38 @@
 
 class tstring
   {
-  friend void Build(tstring &);
-  friend void Destroy(tstring &);
-  friend void Cast(const char *const str, tstring &);
-  struct srep 
-      {char *s;
-        int n;    // nombre de references
-        srep ()  {n = 1;}
-      };
-  
-  srep *p;
+  char *p;
 
-  void delref()
-    {if(--p->n == 0){delete[] p->s; delete p;}}
-  void addref(srep *pp)
-    {pp->n++;}
-  void newref()
-    {if(p->n>1)
-      {delete[] p->s; delete p; p=new srep;}
-    else 
-      { delete[] p->s;}
-    }
-
+  void copy(const char * str, bool del=true)
+  { char *tmp = new char[strlen(str) + 1];
+    strcpy(tmp,str);
+    if (del) delete[] p;
+    p = tmp;
+  }
   public:
   tstring()
-      {p = new srep;
-      p->s = new char[1];
-      p->s[0] = '\0';
+      {p = new char[1];
+      *p = '\0';
       }
-  tstring(const tstring &x)
-      {x.p->n++; p = x.p;}
-  tstring(const char * const str)
-      {p = new srep;
-      p->s = new char[strlen(str) + 1];
-      strcpy(p->s,str);
-      }
+  tstring(const tstring &x)  {copy(x.p,false);}
+  tstring(const char * str) {copy(str,false);}
   tstring(char c, int l=1)
-      {p = new srep;
-      p->s = new char[l + 1];
-      memset(p->s,c,l);
-      p->s[l] = '\0';
+      {p = new char[l + 1];
+      memset(p,c,l);
+      p[l] = '\0';
       }
   ~tstring()
-      {delref();
+      {delete[] p;
       }
   tstring & operator =(const tstring &x)
-      {addref(x.p);
-      delref();
-      p = x.p;
-      return *this;
+      {
+	copy(x.p);
+	return *this;
       }
-  tstring & operator =(const char * const str)
-      {newref();
-      p->s = new char[strlen(str) + 1];
-      strcpy(p->s,str);
+  tstring & operator =(const char * str)
+    { copy(str);
       return *this;
-      }
+    }
   
   friend tstring operator + (tstring const &x, tstring const &y)
       {tstring tmp(x); tmp += y; return tmp;}
@@ -86,53 +62,46 @@ class tstring
   
   tstring & operator +=(const tstring &x)
       {char *s = new char[length() + x.length()+1];
-      strcpy(s,p->s);
-      strcat(s,x.p->s);
-      newref();
-      p->s = s;
+      strcpy(s,p);
+      strcat(s,x.p);
+      delete[] p;
+      p = s;
       return *this;
       }
   tstring & operator += (char c)
       {operator +=(tstring(c)); return *this;}
   
-  operator       char * const ()       { return p->s;}
-  operator const char * const () const { return p->s;}
-  char * operator ~()       { return p->s;}
-  const char * const operator ~() const { return p->s;}
+  operator       char * ()       { return p;}
+  operator const char * () const { return p;}
+  char * operator ~()       { return p;}
+  const char * operator ~() const { return p;}
 
   char  operator[] (int i) const
       {if(i > length())return '\0';
-      return p->s[i];
+      return p[i];
       }
   char & operator[] (int i)  
-      {if(i > length())return p ->s[0];  // ????
-      if(p->n > 1)
-          {srep* np = new srep;
-          np->s = new char[strlen(p->s)+1];
-          strcpy(np->s,p->s);
-          p->n--;
-          p = np;
-          }
-      return p->s[i];
-      }
+    {if(i > length())return p[length()]; 
+      return p[i];
+    }
 
-  const int length() const {return (int)strlen(p->s);}
+  const int length() const {return (int)strlen(p);}
     
   friend int operator == (tstring const &x, tstring const &y)
-      {return strcmp(x.p->s, y.p->s) == 0;}
+      {return strcmp(x.p, y.p) == 0;}
   friend int operator == (tstring const &x, char const *y)
-      {return strcmp(x.p->s, y) == 0;}
+      {return strcmp(x.p, y) == 0;}
   friend int operator == (char const *x, tstring const &y)
-      {return strcmp(x, y.p->s) == 0;}
+      {return strcmp(x, y.p) == 0;}
   friend int operator != (tstring const &x, tstring const &y)
-      {return strcmp(x.p->s, y.p->s);}
+      {return strcmp(x.p, y.p);}
   friend int operator != (tstring const &x, char const *y)
-      {return strcmp(x.p->s, y);}
+      {return strcmp(x.p, y);}
   friend int operator != (char const *x, tstring const &y)
-      {return strcmp(x, y.p->s);}
+      {return strcmp(x, y.p);}
    
   friend T_STD ostream& operator <<(T_STD ostream &os,const tstring &x)
-      {return os << x.p->s << T_STD endl;}
+      {return os << x.p << T_STD endl;}
   friend T_STD istream& operator >> (T_STD istream &is, tstring & x)
       {char buff[256];
       is >> buff;
@@ -143,24 +112,26 @@ class tstring
   //substrings
   tstring operator () (int pos) const
     {tstring tmp;
-    if(pos < length()) tmp = p->s + pos;
+    if(pos < length()) tmp = p + pos;
+    else tmp=tstring();
     return tmp;
     }
   tstring operator () (int pos, int l) const
       {tstring tmp;
         if(pos < length())
-            {tmp = p->s + pos;
-            if(l < tmp.length())tmp.p->s[l+1] = '\0';
+            {tmp = p + pos;
+            if(l+pos < tmp.length())tmp.p[l+1] = '\0';
             }
+	else tmp=tstring();
         return tmp;
       }
  
   // Others
   int match(tstring const &x, int pos) const
       {tstring tmp;
-      if(pos < length()) tmp = p->s + pos;
+      if(pos < length()) tmp = p + pos;
       else return 0;
-      if(strcmp(x.p->s,tmp.p->s) <= 0)return 1;
+      if(strcmp(x.p,tmp.p) <= 0)return 1;
       return 0;
       }
   int match(tstring const &x) const
@@ -170,8 +141,6 @@ class tstring
           if(match(x,pos))return pos;
       return -1;
       }
-  
-  
   };
 #endif
 

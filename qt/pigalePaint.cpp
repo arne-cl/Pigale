@@ -33,8 +33,9 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
   Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
 
   bool drawTextEdges = (G.ne() < 100);
-  QString stitle = QString(title());
+  QString stitle(~title());
   if(drawTextEdges)paint->DrawText(p,pmin().x(),pmin().y(),stitle);
+  
   // draw vertices
   for(tvertex v = 1;v <= G.nv();v++)
       {double dx = (p2[v].x() - p1[v].x()) ;   
@@ -44,7 +45,6 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
       }
   // draw edges
   Tpoint e1,e2,e3,e4;
- 
    for(tedge e = 1;e <= G.ne();e++)
        {if(isTree[e])
            {e1 = Tpoint(x1[e],y1[e]);
@@ -112,13 +112,15 @@ void DrawPolar(QPainter *p,pigalePaint *paint)
       dt = (int)((Etheta2[ee] - Etheta1[ee])*16*180/PI+.5); 
       p->drawArc(ox,oy,nx,ny,theta,dt);
       }
-  /*
+  
   // Draw the vertices
-  int n = G.nv();
-  DrawNode(Vcoord[1],1,Blue);
-  for(tvertex v = 2;v <= n;v++)
-      DrawNode(Vcoord[v],v,Yellow);
-  */
+  double dx = .001;
+  for(tvertex v = 1;v <= G.nv();v++)
+      {double x = Vcoord[v].x()-dx*.5;
+      double y = Vcoord[v].y()-dx*.5;
+      Tpoint pt(x,y);
+      paint->DrawText(p,pt, v,Yellow,1);
+      }
   }
 void DrawPolyline(QPainter *p,pigalePaint *paint)
   {GeometricGraph G(paint->GCP);

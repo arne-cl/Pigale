@@ -26,31 +26,28 @@ class DoccGraph : public TopologicalGraph
           makeDosDFS();
       else  if(type == 1)
           makeDosLR();
-      else
+      else  if(type == 2)
           makeDosBFS();
       }
   ~DoccGraph(){}
 
-  void htreePR();
-  bool  horderPR(tbrin ee, tbrin es)
-      {return (hauteur[nvin[ee] - 1] <  hauteur[nvin[es] - 1]);}
+  void vertexHeight();
   tbrin  rightBrinPR(tedge e)
       {// si e a son brin bas a gauche -> brin haut
       // si e a son brin bas a droite     -> brin bas
       return(dosInv[e.firsttbrin() ] > dosInv[e.secondtbrin()] ? e.firsttbrin()  : e.secondtbrin());
       }
   void insertConstraint(tedge je,tedge js,int len = 1);
-  void pushSPR();
-  void push1PR();
+  void edgeHeight();
   bool  stronger_constraintPR(tedge js, tedge sucje);
-  void push2PR();
-  void  lrverPR();
+  void edgeHeightLR();
+  void  vertexLeftRight();
   int drawPR();
 };
 void DoccGraph::insertConstraint(tedge je,tedge js,int len)
       {if(js == 0)js = ne()+1;
-//       else if(je() >= nv())
-//           printf("END  %d pushes %d (%d %d) by %d\n",je(),js(),nvin[js](),nvin[-js](),len);
+//        else if(je() >= nv())
+//            printf("END  %d pushes %d (%d %d) by %d\n",je(),js(),nvin[js](),nvin[-js](),len);
       MPATH->insert(je(),js(),len);
       ++numConstraint;
       }
@@ -81,7 +78,6 @@ int DoccGraph::makeDosLR()
       else ewidth[a] = 1;
       }
 #endif
-  //tbrin b0 = acir[extbrin()];
   tbrin b0 = extbrin();
   svector<int> dfsnum(1,nv()); dfsnum.SetName("dfsnum");
 
@@ -175,7 +171,7 @@ int DoccGraph::makeDosLR()
    if (y != nv() || occ != 2*ne()){printf("makeDosPR error\n"); ok = false;}
   if(!ok)return -1;
 #endif
-  if (y != nv() || occ != 2*ne()){DebugPrintf("makeDosPR error"); ok = false;return -1;}
+  if (y != nv() || occ != 2*ne()){setError(-1,"makeDosPR"); ok = false;return -1;}
 
   // Compute dosInv  
   dosInv[0] = 0;
@@ -247,12 +243,11 @@ int DoccGraph::makeDosBFS()
   if (y != nv()-1 || z != ne()){DebugPrintf("DFSRenum z=%d y=%d n=%d",z(),y(),nv());ok = false; return -1;}
   // compute dos sequence
   int occ = 0;
-  //  b = b0 = acir[extbrin()];
   b = b0 = extbrin();
   do
       {dos[++occ] = nel[b];
       if(nel[b].GetEdge() < nv())b = b.cross();
-      }while((b = cir[b])!= b0);
+      }while((b = acir[b])!= b0);
 
   if(occ != 2*ne()){DebugPrintf("Bad double occurrence sequence (%d != %d)",occ,2*ne());ok = false; return -1;}
  // Compute dosInv  
@@ -335,7 +330,7 @@ int DoccGraph::makeDosDFS()
       dosInv[dos[i]] = i;
   return 0;
   }
-void  DoccGraph::htreePR()
+void  DoccGraph::vertexHeight()
   {int hh = 0;
   tbrin last = 0;
   int ix = 1;
@@ -354,11 +349,10 @@ void  DoccGraph::htreePR()
       }
   hmax += 2;
   }
-void  DoccGraph::pushSPR()
+void  DoccGraph::edgeHeight()
   {tedge js  = 0;
   foc.clear();suc.clear();
   MPATH=new MaxPath(ne()+1,2*ne());
-
   for(int j = 2*ne();j >= 1;--j)
       {tbrin ee = dos[j];
       tedge je = ee.GetEdge();
@@ -373,7 +367,7 @@ void  DoccGraph::pushSPR()
           else  // deuxieme occurrence (en partant de la droite) et je == js
               while(js > 0 && foc[js] == 2)
                   {js = suc[js];
-                  //insertConstraint(je,js);
+                  insertConstraint(je,js);
                   }
           }
       else  // je is tree
@@ -381,49 +375,33 @@ void  DoccGraph::pushSPR()
           suc[ee] = js;
           }
       }
-  //printf("deuxieme passage\n"); 
-  for(int j = 1;j <= 2*ne();j++)
-      {tbrin ee = dos[j];
-      tedge je = ee.GetEdge();
-      if(je  >= nv())     // je  cotree 
-          {--foc[je];
-          if(je != js)
-              {if(foc[je] != 0)  // premiere occurrence 
-                  {insertConstraint(je,js);
-                  suc[je] = js;js = je;
-                  }
-              }
-          else  // deuxieme occurrence  et je == js
-              while(js > 0 && foc[js] == 0)js = suc[js];
-          }
-      }
 
   MPATH->solve(hauteur);
   delete  MPATH;
   hmax = Max(hmax,hauteur[ne()+1] +1);
-  //printf("-----------------------------------------------\n");
   }
-void  DoccGraph::push1PR()
+
+bool  DoccGraph::stronger_constraintPR(tedge a, tedge b)
+  {return (Max(hauteur[nvin[a] - 1], hauteur[nvin[-a] - 1]) <  Max(hauteur[nvin[b] - 1], hauteur[nvin[-b] - 1]));
+  }
+void  DoccGraph::edgeHeightLR()
   {tedge js  = 0;
   tbrin es = 0; // right brin of js
   foc.clear();suc.clear();
   MPATH=new MaxPath(ne()+1,2*ne());
-  numConstraint = 0;
   for(int j = 2*ne();j >= 1;--j)
       {tbrin ee = dos[j];
       tedge je = ee.GetEdge();
-      //qDebug("dos[%d]:%d",j,ee());
       if(je  >= nv())     // je  cotree 
           {++foc[je];
           if(je != js)
               {if(foc[je] != 2)  // premiere occurrence (en partant de la droite)
-                  {if(dosInv[-ee] < dosInv[-es]  && horderPR(ee,-es) )
-                      {//printf("P1 je:%d coupe es:%d (js=%d)\n",je(),es(),js());
-                          js = je;es = ee;
-                      }
+                  //{if(dosInv[-ee] < dosInv[-es]  && horderPR(ee,-es) )
+                  {if(es() && dosInv[-ee] < dosInv[-es]  &&  (hauteur[nvin[ee] - 1] <  hauteur[nvin[-es] - 1]))
+                       {js = je;es = ee;
+                       }
                   else
-                      {//printf("P1   %d pushes %d\n",je(),js());
-                      suc[je] = js;
+                      {suc[je] = js;
                       insertConstraint(je,js);
                       js = je; es = ee;
                       }
@@ -440,48 +418,23 @@ void  DoccGraph::push1PR()
           insertConstraint(je,js);
           }
       }
-  //for(tedge je = nv();je <= ne();je++)  if(suc[je]())printf("END1  %d pushes %d\n",je(),suc[je]());
-  //vheightPR();
-  //MPATH->solve(hauteur);
-  //printf("END PUSH\n");
-  }
-bool  DoccGraph::stronger_constraintPR(tedge a, tedge b)
-  {return (Max(hauteur[nvin[a] - 1], hauteur[nvin[-a] - 1]) <  Max(hauteur[nvin[b] - 1], hauteur[nvin[-b] - 1]));
-  }
-void  DoccGraph::push2PR()
-// foc = 2 for all cotree edges
-// je ne reinitialise pas suc pour verifier l'absence de circuits
-  {suc[0] = 0;
-  tedge js = 0;
-  tbrin es = 0; // left  brin of js
-  tedge je;
+  // now foc = 2 for all cotree edges
+  suc[0] = 0;
+  js = 0;
+  es = 0; // left  brin of js
   for(int j = 1;j <= 2*ne();j++)
       {tbrin ee = dos[j];
       tedge je = ee.GetEdge();
       if(je >= nv())     // je is cotree
           {--foc[je];
           if(je != js)
-              {//qDebug("   je:%d sucje:%d js:%d",je(),suc[je](),js());
-              if(foc[je] != 0)  // premiere occurrence
-                  {if(es() && dosInv[-ee] > dosInv[-es] 
-                      && horderPR(es, ee) && horderPR(ee, -es) && horderPR(-es,- ee))
-                      {
-//                       printf("ee=%d  (%d %d) es=%d (%d %d) js=%d sucjs=%d\n"
-//                              ,ee(),nvin[ee](),nvin[-ee](),es(),nvin[es](),nvin[-es](),js(),suc[js]());
-//                       if(suc[js]() && Max(dosInv[suc[js]] ,dosInv[-suc[js]]) > j 
-//                          && Max(dosInv[suc[js]] ,dosInv[-suc[js]])  < dosInv[-je]) 
-//                           {insertConstraint(je,suc[js]);
-//                           }
-                      //insertConstraint(js,je);
-                      insertConstraint(je,js); //ok
-                      suc[js] = je; 
-                      //suc[je] = js; 
-                      js = je;es = ee;
+              {if(foc[je] != 0)  // premiere occurrence
+                  {if(es() && dosInv[-ee] > dosInv[-es] && hauteur[nvin[-es] - 1] >=  hauteur[nvin[ee] - 1] )
+                      {js = je;es = ee;
                       }
-//                   else if(js() && suc[je]() &&  dosInv[-js] > dosInv[-ee] && stronger_constraintPR(js, suc[je]))
-//                       {//suc[je] = js;
-//                       js = je;es = ee;
-//                       }
+                  else if(js() && suc[je]() &&  dosInv[-js] > dosInv[-ee] && stronger_constraintPR(js, suc[je]))
+                      {js = je;es = ee;
+                      }
                   else
                       {insertConstraint(je,js);
                       suc[je] = js;
@@ -500,16 +453,11 @@ void  DoccGraph::push2PR()
           insertConstraint(je,js);
           }
       }
-
- //  for(tedge je = nv();je <= ne();je++)  
-//       if(suc[je]())printf("END  %d pushes %d (%d %d)\n",je(),suc[je](),nvin[suc[je]](),nvin[-suc[je]]());
   MPATH->solve(hauteur);
   delete  MPATH;
   hmax = Max(hmax,hauteur[ne()+1] +1);
-  //vheightPR();
-  // printf("end  Maxpath:%d (m=%d)---------------------------\n",numConstraint,ne());
   }
- void  DoccGraph::lrverPR()
+ void  DoccGraph::vertexLeftRight()
   {for(int i = 1;i <= 2*ne();++i)
       {tbrin ee = dos[i];
       tedge je = ee.GetEdge();
@@ -595,17 +543,17 @@ int EmbedPolrecGeneral(TopologicalGraph &G,int type)
 // type == 1 -> polercLR
   {int morg = G.ne();
   svector<tbrin> cir0,acir0;
-  if(type == 1){cir0 = G.cir; acir0 = G.acir;}
+  tbrin b0;
+  if(type == 1){cir0 = G.cir; acir0 = G.acir;b0 = G.extbrin();}
   G.MakeConnected();
   if(type == 1)G.Planarity();
   DoccGraph DG(G,morg,type);
   if(!DG.ok){setError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
-  DG.htreePR();
-  DG.push1PR();
-  DG.push2PR();
-  DG.lrverPR();
+  DG.vertexHeight();
+  DG.edgeHeightLR();
+  DG.vertexLeftRight();
   DG.drawPR();
-  if(type == 1) {G.cir.vector() = cir0; G.acir.vector() = acir0;}
+  if(type == 1) {G.cir.vector() = cir0; G.acir.vector() = acir0; G.extbrin() = b0;}
 #ifndef TDEBUG
   if(!DG.ok){setError(-1,"ERROR: polrec");DebugPrintf("ERROR: polrec");return -1;}
 #endif
@@ -622,11 +570,9 @@ int EmbedPolrecBFS(TopologicalGraph &G)
   G.MakeConnected();
   DoccGraph DG(G,morg,2);
   if(!DG.ok){setError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
-  DG.htreePR();
-//   DG.pushSPR();
-  DG.push1PR();
-  DG.push2PR();
-  DG.lrverPR();
+  DG.vertexHeight();
+  DG.edgeHeight();
+  DG.vertexLeftRight();
   DG.drawPR();
   return 0;
   }

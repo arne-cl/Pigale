@@ -102,7 +102,7 @@ int ComputeExtremities(TopologicalGraph &G,svector<tvertex> &orig,
           if (x2m[v]<xe) x2m[v]=xe;
           }
       if (G.vin[e.secondtbrin()]==14 || orig[e.secondtbrin()]==14)
-	{DebugPrintf("b:%d, vin: %d orig:%d x=%d -> x1=%d, x2=%d",
+          {if(debug())DebugPrintf("b:%d, vin: %d orig:%d x=%d -> x1=%d, x2=%d",
 		     e.secondtbrin()(), G.vin[e.secondtbrin()](),
 		     orig[e.secondtbrin()](),
 		     xe,x1[14],x2[14]

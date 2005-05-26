@@ -109,10 +109,12 @@ int TopologicalGraph::Planarity()
       else xcir[-iel[b]] = iel[b2];
       }
   xcir[0]=0;
+  // the lralgo cir is clockwise
   xcir.Tswap(cir);
-  Prop<tbrin> acir(PB(),PROP_ACIR);
+  // xcir.Tswap(acir);
   for (b = -ne(); b<= ne(); b++)
-      acir[cir[b]] = b;
+         acir[cir[b]] = b;
+  //      cir[acir[b]] = b;
   if(extbrin() > 0)
       extbrin() = iel[extbrin()];
   else
@@ -123,13 +125,14 @@ int TopologicalGraph::Planarity()
       {b = (tbrin)-iel[v-1];
       pbrin[vin[b]] = b;
       }
-    
+
+#ifdef TDEBUG    
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
           {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
       }
-
+#endif
   if(m != m_origin)
       for(tedge e = m; e() > m_origin;--e) DeleteEdge(e);
 

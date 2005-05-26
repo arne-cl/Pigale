@@ -171,7 +171,7 @@ int pigaleWindow::save(bool manual)
       if(ok && !titre.isEmpty()) title() = (const char *)titre;
       else if(!ok) return -1;
       }
-
+ 
   if(IO_Save(OutputDriver,G,(const char *)OutputFileName) == 1)
       {setError(-1,QString("Cannot open file:%1").arg(OutputFileName));
       return -1;
@@ -219,11 +219,11 @@ void pigaleWindow::saveAs()
     QString ext="";
     int id=0;
     for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++id ) 
-        {if (selfilter==*it) break;
-        }
+        if (selfilter==*it) break;
+        
     if ((QFileInfo(FileName).extension(false) != IO_Ext(id)) && (IO_Ext(id)!=""))
       {FileName += ".";
-	FileName += IO_Ext(id);
+      FileName += IO_Ext(id);
       }
     OutputFileName = FileName;
     OutputDriver = id;

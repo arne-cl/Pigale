@@ -59,6 +59,7 @@ class ArrowItem: public QCanvasPolygonalItem
   ~ArrowItem();
   void ComputeCoord();
   void SetColor();
+  void SetColor(QColor col);
   int rtti() const;
  private:
   QPointArray ArrowItem::areaPoints () const;
@@ -73,7 +74,7 @@ class EdgeItem: public QCanvasLine
   EdgeItem(tedge &ee,GraphWidgetPrivate* g);
   EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
 	   ,GraphWidgetPrivate* g);
-  void SetColor(QColor c);
+  void SetColor(QColor c,bool both=true);
   void SetColors(QColor c1, QColor c2);
   void setFromPoint(int x,int y) ;
   void setToPoint(int x,int y);

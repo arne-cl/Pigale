@@ -532,7 +532,7 @@ bool SwapBadBrins(DoubleOccurenceSequence &Dos)
           // DPRINTF(("Push %d on vertex %d",-b(),Dos.vin[-b]()));            
           }
       else
-          {DPRINTF(("Now brins %d and %d",b(),-b()));
+          {//DPRINTF(("Now brins %d and %d",b(),-b()));
           if ((b2=PS.Top((v=Dos.vin[b])()))!=b) // b is a second brin
               {BadExists=true;
               while (Dos.IsFirst(b2))
@@ -699,27 +699,23 @@ int Polar0(TopologicalGraph &G)
 int Polar(TopologicalGraph &G)
   { 
   // Mark the edges of a BFS tree
-  // if(!G.Set(tedge()).exist(PROP_ISTREE))
-  {G.Set().erase(PROP_CONNECTED);
+  G.Set().erase(PROP_CONNECTED);
   if(!G.CheckConnected())
-      {//Twait("Not Connected!");
-          return -1;
+      {setError(-1,"Polar: graph not connected");
+      return -1;
       }
-  }
   
-  G.Planarity();
+  //G.Planarity();
   
   int n = G.nv();
   tbrin b0=G.pbrin[1];
   DoubleOccurenceSequence Dos(G,b0);
   svector<bool> Invert(1,n);
   if (SwapBadBrins(Dos))
-      {//Tprintf("Swaped some brins");
-          Dos.Compute(b0);
-          if (MarkBadCir(Dos,Invert))
-              {//Twait("Still bad!");
-                  ;
-              }
+      {if(debug())DebugPrintf("Swaped some brins");
+      Dos.Compute(b0);
+      if (MarkBadCir(Dos,Invert))
+          DebugPrintf("Polar:dos still bad!");
       }
   Polar0(G);
   return 0;

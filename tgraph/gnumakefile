@@ -67,7 +67,7 @@ nodepend:
 list:
 	../makelist *.cpp >Make.lst
 	
-md:depend
+md:
 	@if ! test -d .obj ; then mkdir .obj ; fi
 	@if ! test -d ../lib ; then mkdir ../lib ; fi	
 	

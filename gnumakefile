@@ -14,6 +14,12 @@ static: all
 
 clean:TARGET=clean
 clean: all
+
+depend:TARGET=depend
+depend: all
+
+nodepend:TARGET=nodepend
+nodepend: all
 	
 unix:
 	cd tgraph ; dos2unix -k *.cpp

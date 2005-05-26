@@ -2697,50 +2697,44 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   pm_edge *Cur1; 
   pm_vertex *Vtx = Map.root->from;
   pm_vertex *Vtx1 = Map.root->from;
+  // compute the number of vertices and edges
   long ni=0, i=0;
   while (Vtx1 != NULL)
       {i++;
-      for (Cur1 = Vtx1->root->next; Cur1 != Vtx1->root; Cur1 = Cur1->next)
-	  i++;
+      for (Cur1 = Vtx1->root->next; Cur1 != Vtx1->root; Cur1 = Cur1->next) i++;
       Vtx1 = Vtx1->next;
       ni++;
       }
   int n = (int)ni;
   int m = (int)i/2;
-
+  // resize the graph container
   GC.setsize(n,m);
+  // define the title
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
   char seed_txt[20];
   sprintf(seed_txt,"_%ld",randomSetSeed());
-  title() = t;
-  title() += seed_txt;
-  Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
-  Prop<tbrin> cir(GC.Set(tbrin()),PROP_CIR); cir[0]=0;
-  Prop<tbrin> acir(GC.Set(tbrin()),PROP_ACIR); acir[0]=0;
-  Prop<tbrin> pb(GC.Set(tvertex()),PROP_PBRIN); pb.clear();
-  cir.SetName("cir"); 
-  acir.SetName("acir"); 
-  vin.SetName("vin");
-  pb.SetName("pbrin"); 
+  title() = t;  title() += seed_txt;
+  Prop<tvertex> vin(GC.Set(tbrin()),PROP_VIN); vin[0]=0;               vin.SetName("vin");
+  Prop<tbrin> cir(GC.Set(tbrin()),PROP_CIR); cir[0]=0;                     cir.SetName("cir"); 
+  Prop<tbrin> acir(GC.Set(tbrin()),PROP_ACIR); acir[0]=0;              acir.SetName("acir"); 
+  Prop<tbrin> pb(GC.Set(tvertex()),PROP_PBRIN); pb.clear();        pb.SetName("pbrin");  
   Prop1<int> maptype(GC.Set(),PROP_MAPTYPE);
   maptype() = PROP_MAPTYPE_ARBITRARY;
   Prop1<tbrin> extbrin(GC.Set(),PROP_EXTBRIN); extbrin()=1;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
   Prop<long> vlabel(GC.PV(),PROP_LABEL);
   Prop<long> elabel(GC.PE(),PROP_LABEL);
-  tvertex v;
-  tedge e;
+  // compute the labels and coordinates
   vlabel[0]=0;
   double angle = 2.*acos(-1.)/n;
-  for (v=1; v<=n; v++)
+  for (tvertex v=1; v<=n; v++)
     {vlabel[v]=v();
     vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
     }
-  for (e=0; e<=m; e++)
+  for (tedge e=0; e<=m; e++)
     elabel[e]=e();
-
+  // compute vin, cir, acir
   tbrin b = 0;
-
   Cur1 = Vtx->root; 
   while(Cur1 != Vtx->root->prev)
       {if(Cur1->label > 0)
@@ -2778,9 +2772,15 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
 	  }
       }
+
+  // construct pbrin
   for (b=-m; b<=m; b++)
     if ((b!=0) && (pb[vin[b]]==0)) pb[vin[b]]=b;
+
   pmFreeMap(&Map);
+  randomEnd();
+
+  // construct a topological graph
   TopologicalGraph TG(GC);
   int erased  = 0;
   if(!loops){Prop1<int> numloops(TG.Set(),PROP_NLOOPS);numloops() = 0;}
@@ -2788,9 +2788,8 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       erased = TG.Simplify();
   else if(loops)
       erased = TG.RemoveLoops();
-  randomEnd();
-  int g = TG.ComputeGenus();
-  if (g) setError(-1,"Bad genus for random map (Schaeffer)");
+
+  if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
   else TG.planarMap() = 1;
   if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
   return &GC;
