@@ -174,6 +174,7 @@ void pigaleWindow::macroHandler(int event)
           MacroRecording = false;
           MacroWait = false;
           MacroLooping = true;
+          setFocus(); 
           postMessageClear();
           DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
           t0.start();
@@ -251,9 +252,9 @@ void pigaleWindow::macroHandler(int event)
           }
           break;
       case 8:// read
-          {QString FileName = QFileDialog::
-          getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
+          {QString FileName = QFileDialog:: getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
           postMessageClear();
+          DirFileMacro = QFileInfo(FileName).dirPath(true);
           if(macroLoad(FileName) == -1)break;
           MacroWait = false;
           }
