@@ -70,7 +70,7 @@ int DFSKura::ShrinkToNonPlanar(bool show)
 
   e2 = Hist.RightTop;
 
-  EgaliteBasse = (bool)(nvin[e1]==nvin[e2]);
+  EgaliteBasse = (nvin[e1]==nvin[e2]);
   if (EgaliteBasse)    
       {if (LrSort.num[e1]>LrSort.num[e2])
           {tedge g=e1; e1=e2; e2=g;}

@@ -60,15 +60,15 @@ struct _DFS
     tbrin treein(tvertex v) {return v()-1;}
     tvertex treetarget(tedge e) {return e()+1;}
     tvertex father(tvertex v) {return nvin[v()-1];}
-    int SmallerThan(tvertex v, tvertex w)
+    bool SmallerThan(tvertex v, tvertex w)
         { return (v<w) && (DualOrder[v]<DualOrder[w]); }
-    int SmallerEqual(tvertex v, tvertex w)
+    bool SmallerEqual(tvertex v, tvertex w)
         { return (v<=w) && (DualOrder[v]<=DualOrder[w]); }
-    int Comparable(tvertex v,tvertex w)
+    bool Comparable(tvertex v,tvertex w)
         { if (v<w) return (DualOrder[v]<DualOrder[w]);
         else return (DualOrder[v]>=DualOrder[w]);
         }
-    int ComparableDifferent(tvertex v,tvertex w)
+    bool ComparableDifferent(tvertex v,tvertex w)
         { if (v<w) return (DualOrder[v]<DualOrder[w]);
         else return (DualOrder[v]>DualOrder[w]);
         }
@@ -81,20 +81,19 @@ struct _DFS
             { e=f; f=g;}
         else if (nvin[-e]<nvin[-f])
             {e=f; f=g;}
-        return;
         }
-    int OrdInterlaced(tedge e, tedge f) // e,f : cotree edges in order
+    bool OrdInterlaced(tedge e, tedge f) // e,f : cotree edges in order
         {
         return ((nvin[e]!=nvin[f]) && (nvin[f]<nvin[-e]) &&!SmallerEqual(nvin[-f],nvin[-e]));
         }
-    int Interlaced(tedge e, tedge f) // e,f : cotree edges
+    bool Interlaced(tedge e, tedge f) // e,f : cotree edges
         { tvertex v1=nvin[e];
         tvertex v2=nvin[f];
-        if (v1==v2) return 0;
+        if (v1==v2) return false;
         if (v1<v2) return ((nvin[f]<nvin[-e]) &&!SmallerEqual(nvin[-f],nvin[-e]));
         else return ((nvin[e]<nvin[-f]) && !SmallerEqual(nvin[-e],nvin[-f]));
         }
-    int OrdChainInterlaced(tedge e, tedge f)
+    bool OrdChainInterlaced(tedge e, tedge f)
         { return ((nvin[e]!=nvin[f]) && (nvin[f]<nvin[-e]) 
                   && SmallerThan(nvin[-e],nvin[-f]));
         }

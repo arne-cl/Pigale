@@ -30,6 +30,7 @@ int & pauseDelay();
 int & useDistance();
 bool & ShowOrientation();
 bool & ShowArrow();
+bool & ShowExtBrin();
 int & ShowVertex();
 QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);

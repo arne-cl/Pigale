@@ -82,7 +82,7 @@
     </message>
     <message>
         <source>Ext Face</source>
-        <translation>Face Ext</translation>
+        <translation type="obsolete">Face Ext</translation>
     </message>
     <message>
         <source>Fit grid</source>
@@ -111,6 +111,10 @@
     <message>
         <source>Z -</source>
         <translation type="obsolete">Z -</translation>
+    </message>
+    <message>
+        <source>Ext Face/extbrin</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -154,6 +158,10 @@
     <message>
         <source>default </source>
         <translation>défaut</translation>
+    </message>
+    <message>
+        <source>Polrec</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -687,7 +695,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Polar</source>
-        <translation>&amp;Polaire</translation>
+        <translation type="obsolete">&amp;Polaire</translation>
     </message>
     <message>
         <source>&amp;Dual/Angle</source>
@@ -906,6 +914,34 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Text</source>
         <translation>Texte</translation>
+    </message>
+    <message>
+        <source>Double Occurrence (&amp;DFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double Occurrence (&amp;LR DFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double Occurrence (&amp;BFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double Occurrence &amp;Cir (BFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Values</source>
+        <translation>Valeurs</translation>
+    </message>
+    <message>
+        <source>Edit Values</source>
+        <translation>Editer </translation>
+    </message>
+    <message>
+        <source>Show the extbrin</source>
+        <translation>Montrer le brin extérieur</translation>
     </message>
 </context>
 </TS>

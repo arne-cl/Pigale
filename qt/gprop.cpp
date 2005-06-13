@@ -154,7 +154,6 @@ void Graph_Properties::MaxNDisplayChanged(int i)
 void Graph_Properties::update(GraphContainer & GC,bool print)
   {GeometricGraph G(GC);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
-
 #ifdef TDEBUG
   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
@@ -214,16 +213,30 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
   allowAction(A_EMBED_POLAR,C1 && NotBigD);                        //polair
   //Augment
-  allowAction(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
-  allowAction(A_AUGMENT_CONNECT_V,(G.nv() > 1) && !C1);               //make connected 
-  allowAction(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
-  allowAction(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
-  allowAction(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
-  allowAction(A_AUGMENT_BICONNECT_NP_V, !SMALL &&!C2);                  //make 2 connected NP  
-  allowAction(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
-  allowAction(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
-  allowAction(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
-  allowAction(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B && !MaxBi);    //Quadrangulate
+  if(print)
+      {allowAction(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
+      allowAction(A_AUGMENT_CONNECT_V,(G.nv() > 1) && !C1);               //make connected 
+      allowAction(A_AUGMENT_BICONNECT,!SMALL && P && !C2);              //make 2 connected
+      allowAction(A_AUGMENT_BICONNECT_6,!SMALL && P && !C2);            //make 2 connected opt
+      allowAction(A_AUGMENT_BICONNECT_NP,!SMALL && !C2);                //make 2 connected NP  
+      allowAction(A_AUGMENT_BICONNECT_NP_V, !SMALL &&!C2);                  //make 2 connected NP  
+      allowAction(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S && !T);      //vertex triangulate
+      allowAction(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S && !T);     //ZigZag 
+      allowAction(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 && !T);    //Tricon triangulate opt
+      allowAction(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B && !MaxBi);    //Quadrangulate
+      }
+  else // macro
+      {allowAction(A_AUGMENT_CONNECT,(G.nv() > 1));               //make connected 
+      allowAction(A_AUGMENT_CONNECT_V,(G.nv() > 1));               //make connected 
+      allowAction(A_AUGMENT_BICONNECT,!SMALL && P );              //make 2 connected
+      allowAction(A_AUGMENT_BICONNECT_6,!SMALL && P);            //make 2 connected opt
+      allowAction(A_AUGMENT_BICONNECT_NP,!SMALL );                //make 2 connected NP  
+      allowAction(A_AUGMENT_BICONNECT_NP_V, !SMALL );                  //make 2 connected NP  
+      allowAction(A_AUGMENT_TRIANGULATE_V,!SMALL && P && S );      //vertex triangulate
+      allowAction(A_AUGMENT_TRIANGULATE_ZZ,!SMALL && P && S );     //ZigZag 
+      allowAction(A_AUGMENT_TRIANGULATE_3C,!SMALL && P && C3 );    //Tricon triangulate opt
+      allowAction(A_AUGMENT_QUADRANGULATE_V,(G.nv() > 1) && B );    //Quadrangulate
+      }
   allowAction( A_AUGMENT_BISSECT_ALL_E ,G.ne());    //Bissect all edges
   //Embed
   allowAction(A_EMBED_SCHNYDER_E,!SMALL && S && P && NotBigD);       //Schnyder
@@ -235,9 +248,13 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
   allowAction(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
   allowAction(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
+#ifndef VERSION_ALPHA
+  allowAction( A_EMBED_GVISION,C2&& NotBigD);//Vision
+#else
+  allowAction( A_EMBED_GVISION,NotBigD);//Vision
+#endif
   allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   allowAction(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
-  allowAction(A_EMBED_GVISION,!SMALL  && NotBigD);                   //Gvision
   allowAction(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   allowAction(A_EMBED_SPRING,NotBigD);                               //spring
   allowAction(A_EMBED_SPRING_PM,NotBigD);                            //springPM
@@ -326,5 +343,5 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   //int g = G.ComputeGenus();
   //if(g)Tprintf("Genus of the current map: %d",g);
   if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
-
+  //Tprintf("extbrin:%d %d (index)",G.vin[G.extbrin()](),G.vin[-G.extbrin()]());
   }

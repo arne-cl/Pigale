@@ -20,12 +20,19 @@ inline double abs(double x) {if(x>=0) return x; else return -x;}
 static int Test1(GraphContainer &GC,int &drawing);
 static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
-
+#if VERSION_ALPHA
 void pigaleWindow:: initMenuTest()
   {setUserMenu(1,"BFS drawing");
   setUserMenu(2,"Polrec drawing");
   setUserMenu(3,"Properties");
   }
+#else
+void pigaleWindow:: initMenuTest()
+  {setUserMenu(1,"1000xTestPlanar");
+  setUserMenu(2,"Polrec drawing");
+  setUserMenu(3,"Properties");
+  }
+#endif
 int Test(GraphContainer &GC,int action,int &drawing)
   {if(action == 1)return Test1(GC,drawing);
   else if(action == 2)return Test2(GC,drawing);
@@ -37,6 +44,8 @@ int Test2(GraphContainer &GC,int &drawing)
   drawing = 8;
   return 3;
   }
+
+#if VERSION_ALPHA
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
     int morg=G.ne();
@@ -58,6 +67,13 @@ int Test1(GraphContainer &GC,int &drawing)
     drawing=2;
   return 3;
   }
+#else 
+int Test1(GraphContainer &GC,int &drawing)
+  {TopologicalGraph G(GC);
+  for(int i = 0;i < 1000;i++)G.TestPlanar();
+  return 0;
+  }
+#endif
 int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.
   {TopologicalGraph G(GC);

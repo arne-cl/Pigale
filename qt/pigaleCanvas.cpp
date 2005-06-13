@@ -628,6 +628,12 @@ void GraphEditor::load(bool initgrid)
   for(tedge e = 1;e <= G.ne();e++)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
 
+  if(ShowExtBrin())
+      {tedge e = G.extbrin().GetEdge();
+      EdgeItem *edge = (G.extbrin() > 0) ? edgeitem[e]  : edgeitem[e]->opp;
+      edge->SetColor(color[Green],false);
+      }
+
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
 //   Prop<long> elabel(G.Set(tedge()),PROP_LABEL);  elabel.definit(0);
 //   Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL); vlabel.definit(0);

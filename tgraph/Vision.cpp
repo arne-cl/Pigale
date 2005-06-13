@@ -400,7 +400,7 @@ int Vision(TopologicalGraph &xG,int morg)
 
 
   // NEW 27/04/2005
-
+  
   // Recompute cir
 
   svector<tedge> first_x(0,maxxval); first_x.clear();
@@ -551,7 +551,7 @@ int Vision(TopologicalGraph &xG,int morg)
   if (!G.DebugCir()) myabort();
   maxxval=ComputeExtremities(G,orig,x,x1,x2,x1m,x2m,morg);
 
-
+  
   // END NEW 27/04/2005
 
   Prop1<int> maxx(xG.Set(),PROP_DRAW_INT_1);

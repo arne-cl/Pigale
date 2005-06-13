@@ -54,7 +54,7 @@ class Graph : public GraphAccess
     void PrepDFS(svector<tbrin> &cir,tbrin b0=1);
     bool CheckBiconnected();
     int TestPlanar();
-    int Planarity();
+    int Planarity(tbrin b0 = 1);
 };
 
 class TopologicalGraph : public Graph
@@ -255,7 +255,7 @@ public :
     // in Planar.cpp
     int MaxPlanar();
     int MaxPlanar(svector<bool> &mark);
-    int Planarity();
+    int Planarity(tbrin b0 = 1);
     int CotreeCritical(int &ret);
     int CotreeCritical(svector<bool> &mark);
     int KCotreeCritical(int &);

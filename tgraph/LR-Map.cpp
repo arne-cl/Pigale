@@ -42,7 +42,8 @@ int Embed::LowerSideUpperSide()
   // determine the Side of the upper and lower end of each edge
   // 0 and tree edges have been initialized to GAUCHE
 
-  Side.up.fill(n,m,AUTRE|DROITE);
+  //Side.up.fill(n,m,AUTRE|DROITE);
+  for(i = n;i <= m;++i)Side.up[i] = AUTRE|DROITE;
   Side.dwn[0] = Side.up[0] = GAUCHE;
   for(i = n;i <= m;++i)
       {if(!(Side.up[i] & AUTRE))continue;
@@ -256,6 +257,6 @@ int Embed::FillLowerHalfEdges()
           }
       ee = cir[-ee];                      // tous les brins d'arbre
       }
-  extbrin() = left[1]; //as exterior face generate by -cir[b]
+  extbrin() = left[1]; 
   return 0;
   }

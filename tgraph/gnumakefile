@@ -82,349 +82,349 @@ test:
 .PHONY: md all
 # DO NOT DELETE
 
-3-ConOrientTriang.opt: ../incl/TAXI/KantShel.h ../incl/TAXI/graphs.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-3-ConOrientTriang.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-3-ConOrientTriang.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
-3-ConOrientTriang.opt: ../incl/TAXI/Tarray.h
-3-ConShelling1.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h
-3-ConShelling1.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-3-ConShelling1.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-3-ConShelling1.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-3-ConShelling1.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-3-ConShelling1.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-3-ConShelling1.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/color.h
-3-ConShelling1.opt: ../incl/TAXI/KantShel.h ../incl/TAXI/IntList.h
-3-ConShelling2.opt: ../incl/TAXI/KantShel.h ../incl/TAXI/graphs.h
-3-ConShelling2.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-3-ConShelling2.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-3-ConShelling2.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-3-ConShelling2.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-3-ConShelling2.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-3-ConShelling2.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
-3-ConShelling2.opt: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
-3-ConShelling2.opt: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
-3-ConShelling2.opt: ../incl/TAXI/Tarray.h
-Barycenter.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-Barycenter.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-Barycenter.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-Barycenter.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-Barycenter.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-Barycenter.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
-Barycenter.opt: ../incl/TAXI/smatrix.h
-BFS.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-BFS.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-BFS.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-BFS.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-BFS.opt: ../incl/TAXI/Tsmap.h
-Biconnect.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/color.h
-Biconnect.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-Biconnect.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Biconnect.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Biconnect.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Biconnect.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-Biconnect.opt: ../incl/TAXI/IntList.h
-Bipolar.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-Bipolar.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Bipolar.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Bipolar.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Bipolar.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-Bipolar.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-Bipolar.opt: ../incl/TAXI/DFSGraph.h
-BipPlanarize.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
-BipPlanarize.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-BipPlanarize.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-BipPlanarize.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-BipPlanarize.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-BipPlanarize.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-BipPlanarize.opt: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
-CotreeCritical.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/CotreeCritical.h
-CotreeCritical.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
-CotreeCritical.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-CotreeCritical.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-CotreeCritical.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-CotreeCritical.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-CotreeCritical.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-CotreeCritical.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
-CotreeCritical.opt: ../incl/TAXI/DFSLow.h ../incl/TAXI/lralgo.h
-CotreeCritical.opt: ../incl/TAXI/bicon.h
-Debug.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Debug.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-Debug.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Debug.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Debug.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-DFS.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-DFS.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-DFS.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-DFS.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-DFS.opt: ../incl/TAXI/bicon.h ../incl/TAXI/color.h
-DFSGraph.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/DFSLow.h ../incl/TAXI/color.h
-DFSGraph.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
-DFSGraph.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-DFSGraph.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-DFSGraph.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-DFSGraph.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-DFSGraph.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/lralgo.h
-DFSGraph.opt: ../incl/TAXI/bicon.h
-DFSMap.opt: ../incl/TAXI/DFSLow.h ../incl/TAXI/Tbase.h ../incl/TAXI/color.h
-DFSMap.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
-DFSMap.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-DFSMap.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-DFSMap.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-DFSMap.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-DFSMap.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/lralgo.h ../incl/TAXI/bicon.h
-DFSMap.opt: ../incl/TAXI/embed.h
-Diagonalise.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tdebug.h
-Diagonalise.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tmessage.h
-Diagonalise.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-Diagonalise.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-Diagonalise.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tpropio.h
-Diagonalise.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-Diagonalise.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/netcut.h
-Diagonalise.opt: ../incl/TAXI/embedrn.h
-Embed2Pages.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-Embed2Pages.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-Embed2Pages.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Embed2Pages.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Embed2Pages.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Embed2Pages.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-Embed2Pages.opt: ../incl/TAXI/IntList.h ../incl/TAXI/Tmessage.h
-Embed2Pages.opt: ../incl/TAXI/color.h
-EmbedCCD.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-EmbedCCD.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-EmbedCCD.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-EmbedCCD.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-EmbedCCD.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-EmbedCCD.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/SchnyderWood.h
-EmbedCCD.opt: ../incl/TAXI/IntList.h ../incl/TAXI/color.h
-EmbedCCD.opt: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
-EmbedFPP.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-EmbedFPP.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-EmbedFPP.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-EmbedFPP.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-EmbedFPP.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-EmbedFPP.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/SchPack.h
-EmbedFPP.opt: ../incl/TAXI/IntList.h ../incl/TAXI/MaxPath.h
-EmbedPolrec.opt: ../incl/Pigale.h ../incl/TAXI/Tbase.h
-EmbedPolrec.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h
-EmbedPolrec.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-EmbedPolrec.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-EmbedPolrec.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-EmbedPolrec.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-EmbedPolrec.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-EmbedPolrec.opt: ../incl/TAXI/color.h ../incl/TAXI/Tfile.h
-EmbedPolrec.opt: ../incl/TAXI/random.h ../incl/TAXI/MaxPath.h
-EmbedPolyline.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-EmbedPolyline.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-EmbedPolyline.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-EmbedPolyline.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-EmbedPolyline.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-EmbedPolyline.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-EmbedPolyline.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/MaxPath.h
-EmbedPolyline.opt: ../incl/TAXI/color.h ../incl/TAXI/SchPack.h
-EmbedPolyline.opt: ../incl/TAXI/IntList.h
-EmbedTutteCircle.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-EmbedTutteCircle.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-EmbedTutteCircle.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-EmbedTutteCircle.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-EmbedTutteCircle.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-EmbedTutteCircle.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-EmbedTutteCircle.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-EmbedVision.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-EmbedVision.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-EmbedVision.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-EmbedVision.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-EmbedVision.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-EmbedVision.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-EmbedVision.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/MaxPath.h
-EmbedVision.opt: ../incl/TAXI/color.h
-FastTwit.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/lralgo.h ../incl/TAXI/graph.h
-FastTwit.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-FastTwit.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-FastTwit.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-FastTwit.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-FastTwit.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tpoint.h
-FastTwit.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
-FastTwit.opt: ../incl/TAXI/bicon.h
-File.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tstring.h ../incl/TAXI/graph.h
-File.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-File.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-File.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h ../incl/TAXI/Tgf.h
-File.opt: ../incl/TAXI/Tproptgf.h ../incl/TAXI/Tfile.h ../incl/TAXI/graphs.h
-File.opt: ../incl/TAXI/Tsmap.h ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
-Generate.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tbase.h
-Generate.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Generate.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-Generate.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Generate.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Generate.opt: ../incl/TAXI/propdef.h ../incl/TAXI/random.h
-Generate.opt: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
-GeoAlgs.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/smatrix.h
-GeoAlgs.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/elmt.h
-GeoAlgs.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-GeoAlgs.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/Tpoint.h
-GeoAlgs.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/Tprop.h
-GeoAlgs.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/propdef.h
-GeoAlgs.opt: ../incl/TAXI/color.h
-Graph.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tpoint.h ../incl/TAXI/graphs.h
-Graph.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-Graph.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-Graph.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-Graph.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/bicon.h
-Graph.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-k-InfOrient.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-k-InfOrient.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-k-InfOrient.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-k-InfOrient.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-k-InfOrient.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-k-InfOrient.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-k-InfOrient.opt: ../incl/TAXI/IntList.h
-LR-Algo.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-LR-Algo.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-LR-Algo.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-LR-Algo.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-LR-Algo.opt: ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
-LR-Algo.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
-LR-Algo.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
-LR-Map.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
-LR-Map.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-LR-Map.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-LR-Map.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-LR-Map.opt: ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
-LR-Map.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
-LR-Map.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h ../incl/TAXI/embed.h
-LR-Map.opt: ../incl/TAXI/DFSLow.h ../incl/TAXI/Tmessage.h
-mark.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-mark.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-mark.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-mark.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-mark.opt: ../incl/TAXI/bicon.h ../incl/TAXI/Tmessage.h
-MaxPlanar.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
-MaxPlanar.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-MaxPlanar.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-MaxPlanar.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-MaxPlanar.opt: ../incl/TAXI/propdef.h ../incl/TAXI/color.h
-MaxPlanar.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
-MaxPlanar.opt: ../incl/TAXI/Tpoint.h
-more.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tbase.h ../incl/TAXI/elmt.h
-more.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tprop.h
-more.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h ../incl/TAXI/graph.h
-more.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-netcut.opt: ../incl/TAXI/netcut.h ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
-netcut.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-netcut.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-netcut.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-netcut.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-netcut.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
-netcut.opt: ../incl/TAXI/embedrn.h ../incl/TAXI/color.h
-NewPolar.opt: ../incl/TAXI/Dos.h ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
-NewPolar.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-NewPolar.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-NewPolar.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-NewPolar.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-NewPolar.opt: ../incl/TAXI/Tpoint.h
-NpBiconnect.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-NpBiconnect.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-NpBiconnect.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-NpBiconnect.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-NpBiconnect.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-NpBiconnect.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-NpBiconnect.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-Planar.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
-Planar.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Planar.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Planar.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Planar.opt: ../incl/TAXI/propdef.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
-Planar.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tpoint.h
-Planar.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h ../incl/TAXI/embed.h
-Planar.opt: ../incl/TAXI/DFSLow.h ../incl/TAXI/ndfs.h ../incl/TAXI/Tmessage.h
-PropTgf.opt: ../incl/TAXI/Tproptgf.h ../incl/TAXI/Tprop.h
-PropTgf.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tsvector.h ../incl/TAXI/elmt.h
-PropTgf.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-PropTgf.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h ../incl/TAXI/Tgf.h
-PropTgf.opt: ../incl/TAXI/Tpoint.h
-PSet.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tbase.h ../incl/TAXI/Tsvector.h
-PSet.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-PSet.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-random.opt: ../incl/TAXI/Tbase.h
-reduce.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
-reduce.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-reduce.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-reduce.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-reduce.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-reduce.opt: ../incl/TAXI/Tmessage.h
-SchaefferGen.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tmessage.h
-SchaefferGen.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-SchaefferGen.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-SchaefferGen.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-SchaefferGen.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-SchaefferGen.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-SchaefferGen.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/color.h
-SchaefferGen.opt: ../incl/TAXI/random.h
-Schnyder.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/SchPack.h
-Schnyder.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-Schnyder.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Schnyder.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Schnyder.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Schnyder.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-Schnyder.opt: ../incl/TAXI/IntList.h ../incl/TAXI/Tmessage.h
-Schnyder.opt: ../incl/TAXI/color.h ../incl/TAXI/embedrn.h
-SchnyderWood.opt: ../incl/TAXI/SchnyderWood.h ../incl/TAXI/graphs.h
-SchnyderWood.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-SchnyderWood.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-SchnyderWood.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-SchnyderWood.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-SchnyderWood.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-SchnyderWood.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
-SchnyderWood.opt: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
-SchnyderWood.opt: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
-SchnyderWood.opt: ../incl/TAXI/Tarray.h ../incl/TAXI/KantShel.h
-SchnyderWood.opt: ../incl/TAXI/SWShelling.h
-STList.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-STList.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-STList.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-STList.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-STList.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-STList.opt: ../incl/TAXI/Tmessage.h
-SWShelling.opt: ../incl/TAXI/SWShelling.h ../incl/TAXI/graphs.h
-SWShelling.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-SWShelling.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-SWShelling.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-SWShelling.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-SWShelling.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-SWShelling.opt: ../incl/TAXI/IntList.h ../incl/TAXI/color.h
-SWShelling.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/Tflist.h
-SWShelling.opt: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
-Tgf.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tgf.h ../incl/TAXI/Tsvector.h
-Tgf.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-TopoAlgs.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/Tbase.h
-TopoAlgs.opt: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-TopoAlgs.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-TopoAlgs.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-TopoAlgs.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/propdef.h
-TopoAlgs.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h
-TopoAlgs.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-Twit.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Tbase.h ../incl/TAXI/Errors.h
-Twit.opt: ../incl/TAXI/lralgo.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
-Twit.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h ../incl/TAXI/Tpropio.h
-Twit.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
-Twit.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
-Twit.opt: ../incl/TAXI/bicon.h
-VertexPacking.opt: ../incl/TAXI/SchPack.h ../incl/TAXI/graphs.h
-VertexPacking.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
-VertexPacking.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
-VertexPacking.opt: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
-VertexPacking.opt: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
-VertexPacking.opt: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
-VertexPacking.opt: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
-Vision.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
-Vision.opt: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
-Vision.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
-Vision.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
-Vision.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
-Vision.opt: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
-Vision.opt: ../incl/TAXI/MaxPath.h ../incl/TAXI/Channel.h
+3-ConOrientTriang.dbg: ../incl/TAXI/KantShel.h ../incl/TAXI/graphs.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+3-ConOrientTriang.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
+3-ConOrientTriang.dbg: ../incl/TAXI/Tarray.h
+3-ConShelling1.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h
+3-ConShelling1.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+3-ConShelling1.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+3-ConShelling1.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+3-ConShelling1.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+3-ConShelling1.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+3-ConShelling1.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/color.h
+3-ConShelling1.dbg: ../incl/TAXI/KantShel.h ../incl/TAXI/IntList.h
+3-ConShelling2.dbg: ../incl/TAXI/KantShel.h ../incl/TAXI/graphs.h
+3-ConShelling2.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+3-ConShelling2.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+3-ConShelling2.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+3-ConShelling2.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+3-ConShelling2.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+3-ConShelling2.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
+3-ConShelling2.dbg: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
+3-ConShelling2.dbg: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
+3-ConShelling2.dbg: ../incl/TAXI/Tarray.h
+Barycenter.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+Barycenter.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+Barycenter.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+Barycenter.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+Barycenter.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+Barycenter.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
+Barycenter.dbg: ../incl/TAXI/smatrix.h
+BFS.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+BFS.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+BFS.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+BFS.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+BFS.dbg: ../incl/TAXI/Tsmap.h
+Biconnect.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/color.h
+Biconnect.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+Biconnect.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Biconnect.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Biconnect.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Biconnect.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+Biconnect.dbg: ../incl/TAXI/IntList.h
+Bipolar.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+Bipolar.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Bipolar.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Bipolar.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Bipolar.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+Bipolar.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+Bipolar.dbg: ../incl/TAXI/DFSGraph.h
+BipPlanarize.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
+BipPlanarize.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+BipPlanarize.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+BipPlanarize.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+BipPlanarize.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+BipPlanarize.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+BipPlanarize.dbg: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
+CotreeCritical.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/CotreeCritical.h
+CotreeCritical.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
+CotreeCritical.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+CotreeCritical.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+CotreeCritical.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+CotreeCritical.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+CotreeCritical.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+CotreeCritical.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
+CotreeCritical.dbg: ../incl/TAXI/DFSLow.h ../incl/TAXI/lralgo.h
+CotreeCritical.dbg: ../incl/TAXI/bicon.h
+Debug.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Debug.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+Debug.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Debug.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Debug.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+DFS.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+DFS.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+DFS.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+DFS.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+DFS.dbg: ../incl/TAXI/bicon.h ../incl/TAXI/color.h
+DFSGraph.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/DFSLow.h ../incl/TAXI/color.h
+DFSGraph.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
+DFSGraph.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+DFSGraph.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+DFSGraph.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+DFSGraph.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+DFSGraph.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/lralgo.h
+DFSGraph.dbg: ../incl/TAXI/bicon.h
+DFSMap.dbg: ../incl/TAXI/DFSLow.h ../incl/TAXI/Tbase.h ../incl/TAXI/color.h
+DFSMap.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
+DFSMap.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+DFSMap.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+DFSMap.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+DFSMap.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+DFSMap.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/lralgo.h ../incl/TAXI/bicon.h
+DFSMap.dbg: ../incl/TAXI/embed.h
+Diagonalise.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tdebug.h
+Diagonalise.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tmessage.h
+Diagonalise.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+Diagonalise.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+Diagonalise.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tpropio.h
+Diagonalise.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+Diagonalise.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/netcut.h
+Diagonalise.dbg: ../incl/TAXI/embedrn.h
+Embed2Pages.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+Embed2Pages.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+Embed2Pages.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Embed2Pages.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Embed2Pages.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Embed2Pages.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+Embed2Pages.dbg: ../incl/TAXI/IntList.h ../incl/TAXI/Tmessage.h
+Embed2Pages.dbg: ../incl/TAXI/color.h
+EmbedCCD.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+EmbedCCD.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+EmbedCCD.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+EmbedCCD.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+EmbedCCD.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+EmbedCCD.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/SchnyderWood.h
+EmbedCCD.dbg: ../incl/TAXI/IntList.h ../incl/TAXI/color.h
+EmbedCCD.dbg: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
+EmbedFPP.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+EmbedFPP.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+EmbedFPP.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+EmbedFPP.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+EmbedFPP.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+EmbedFPP.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/SchPack.h
+EmbedFPP.dbg: ../incl/TAXI/IntList.h ../incl/TAXI/MaxPath.h
+EmbedPolrec.dbg: ../incl/Pigale.h ../incl/TAXI/Tbase.h
+EmbedPolrec.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/graphs.h
+EmbedPolrec.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+EmbedPolrec.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+EmbedPolrec.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+EmbedPolrec.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+EmbedPolrec.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+EmbedPolrec.dbg: ../incl/TAXI/color.h ../incl/TAXI/Tfile.h
+EmbedPolrec.dbg: ../incl/TAXI/random.h ../incl/TAXI/MaxPath.h
+EmbedPolyline.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+EmbedPolyline.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+EmbedPolyline.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+EmbedPolyline.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+EmbedPolyline.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+EmbedPolyline.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+EmbedPolyline.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/MaxPath.h
+EmbedPolyline.dbg: ../incl/TAXI/color.h ../incl/TAXI/SchPack.h
+EmbedPolyline.dbg: ../incl/TAXI/IntList.h
+EmbedTutteCircle.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+EmbedTutteCircle.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+EmbedTutteCircle.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+EmbedTutteCircle.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+EmbedTutteCircle.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+EmbedTutteCircle.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+EmbedTutteCircle.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+EmbedVision.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+EmbedVision.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+EmbedVision.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+EmbedVision.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+EmbedVision.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+EmbedVision.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+EmbedVision.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/MaxPath.h
+EmbedVision.dbg: ../incl/TAXI/color.h
+FastTwit.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/lralgo.h ../incl/TAXI/graph.h
+FastTwit.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+FastTwit.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+FastTwit.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+FastTwit.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+FastTwit.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tpoint.h
+FastTwit.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
+FastTwit.dbg: ../incl/TAXI/bicon.h
+File.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tstring.h ../incl/TAXI/graph.h
+File.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+File.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+File.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h ../incl/TAXI/Tgf.h
+File.dbg: ../incl/TAXI/Tproptgf.h ../incl/TAXI/Tfile.h ../incl/TAXI/graphs.h
+File.dbg: ../incl/TAXI/Tsmap.h ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
+Generate.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tbase.h
+Generate.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Generate.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+Generate.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Generate.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Generate.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/random.h
+Generate.dbg: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
+GeoAlgs.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/smatrix.h
+GeoAlgs.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/elmt.h
+GeoAlgs.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+GeoAlgs.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/Tpoint.h
+GeoAlgs.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/Tprop.h
+GeoAlgs.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/propdef.h
+GeoAlgs.dbg: ../incl/TAXI/color.h
+Graph.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tpoint.h ../incl/TAXI/graphs.h
+Graph.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+Graph.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+Graph.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+Graph.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/bicon.h
+Graph.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+k-InfOrient.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+k-InfOrient.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+k-InfOrient.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+k-InfOrient.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+k-InfOrient.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+k-InfOrient.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+k-InfOrient.dbg: ../incl/TAXI/IntList.h
+LR-Algo.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+LR-Algo.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+LR-Algo.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+LR-Algo.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+LR-Algo.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
+LR-Algo.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
+LR-Algo.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
+LR-Map.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
+LR-Map.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+LR-Map.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+LR-Map.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+LR-Map.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
+LR-Map.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
+LR-Map.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h ../incl/TAXI/embed.h
+LR-Map.dbg: ../incl/TAXI/DFSLow.h ../incl/TAXI/Tmessage.h
+mark.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+mark.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+mark.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+mark.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+mark.dbg: ../incl/TAXI/bicon.h ../incl/TAXI/Tmessage.h
+MaxPlanar.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
+MaxPlanar.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+MaxPlanar.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+MaxPlanar.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+MaxPlanar.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/color.h
+MaxPlanar.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/graphs.h
+MaxPlanar.dbg: ../incl/TAXI/Tpoint.h
+more.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tbase.h ../incl/TAXI/elmt.h
+more.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h ../incl/TAXI/Tprop.h
+more.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h ../incl/TAXI/graph.h
+more.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+netcut.dbg: ../incl/TAXI/netcut.h ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
+netcut.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+netcut.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+netcut.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+netcut.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+netcut.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/Tmessage.h
+netcut.dbg: ../incl/TAXI/embedrn.h ../incl/TAXI/color.h
+NewPolar.dbg: ../incl/TAXI/Dos.h ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h
+NewPolar.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+NewPolar.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+NewPolar.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+NewPolar.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+NewPolar.dbg: ../incl/TAXI/Tpoint.h
+NpBiconnect.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+NpBiconnect.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+NpBiconnect.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+NpBiconnect.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+NpBiconnect.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+NpBiconnect.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+NpBiconnect.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+Planar.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
+Planar.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Planar.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Planar.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Planar.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
+Planar.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tpoint.h
+Planar.dbg: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h ../incl/TAXI/embed.h
+Planar.dbg: ../incl/TAXI/DFSLow.h ../incl/TAXI/ndfs.h ../incl/TAXI/Tmessage.h
+PropTgf.dbg: ../incl/TAXI/Tproptgf.h ../incl/TAXI/Tprop.h
+PropTgf.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tsvector.h ../incl/TAXI/elmt.h
+PropTgf.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+PropTgf.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h ../incl/TAXI/Tgf.h
+PropTgf.dbg: ../incl/TAXI/Tpoint.h
+PSet.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tbase.h ../incl/TAXI/Tsvector.h
+PSet.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+PSet.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+random.dbg: ../incl/TAXI/Tbase.h
+reduce.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h
+reduce.dbg: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+reduce.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+reduce.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+reduce.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+reduce.dbg: ../incl/TAXI/Tmessage.h
+SchaefferGen.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tmessage.h
+SchaefferGen.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+SchaefferGen.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+SchaefferGen.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+SchaefferGen.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+SchaefferGen.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+SchaefferGen.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/color.h
+SchaefferGen.dbg: ../incl/TAXI/random.h
+Schnyder.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/SchPack.h
+Schnyder.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+Schnyder.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Schnyder.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Schnyder.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Schnyder.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+Schnyder.dbg: ../incl/TAXI/IntList.h ../incl/TAXI/Tmessage.h
+Schnyder.dbg: ../incl/TAXI/color.h ../incl/TAXI/embedrn.h
+SchnyderWood.dbg: ../incl/TAXI/SchnyderWood.h ../incl/TAXI/graphs.h
+SchnyderWood.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+SchnyderWood.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+SchnyderWood.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+SchnyderWood.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+SchnyderWood.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+SchnyderWood.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
+SchnyderWood.dbg: ../incl/TAXI/color.h ../incl/TAXI/Tmessage.h
+SchnyderWood.dbg: ../incl/TAXI/Tflist.h ../incl/TAXI/Tstack.h
+SchnyderWood.dbg: ../incl/TAXI/Tarray.h ../incl/TAXI/KantShel.h
+SchnyderWood.dbg: ../incl/TAXI/SWShelling.h
+STList.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+STList.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+STList.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+STList.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+STList.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+STList.dbg: ../incl/TAXI/Tmessage.h
+SWShelling.dbg: ../incl/TAXI/SWShelling.h ../incl/TAXI/graphs.h
+SWShelling.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+SWShelling.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+SWShelling.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+SWShelling.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+SWShelling.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+SWShelling.dbg: ../incl/TAXI/IntList.h ../incl/TAXI/color.h
+SWShelling.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/Tflist.h
+SWShelling.dbg: ../incl/TAXI/Tstack.h ../incl/TAXI/Tarray.h
+Tgf.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/Tgf.h ../incl/TAXI/Tsvector.h
+Tgf.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+TopoAlgs.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/Tbase.h
+TopoAlgs.dbg: ../incl/TAXI/graphs.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+TopoAlgs.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+TopoAlgs.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+TopoAlgs.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/propdef.h
+TopoAlgs.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/bicon.h
+TopoAlgs.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+Twit.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Tbase.h ../incl/TAXI/Errors.h
+Twit.dbg: ../incl/TAXI/lralgo.h ../incl/TAXI/graph.h ../incl/TAXI/elmt.h
+Twit.dbg: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h ../incl/TAXI/Tpropio.h
+Twit.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h ../incl/TAXI/graphs.h
+Twit.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h
+Twit.dbg: ../incl/TAXI/bicon.h
+VertexPacking.dbg: ../incl/TAXI/SchPack.h ../incl/TAXI/graphs.h
+VertexPacking.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graph.h
+VertexPacking.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h
+VertexPacking.dbg: ../incl/TAXI/Tsvector.h ../incl/TAXI/Tdebug.h
+VertexPacking.dbg: ../incl/TAXI/Errors.h ../incl/TAXI/Tpropio.h
+VertexPacking.dbg: ../incl/TAXI/Tstring.h ../incl/TAXI/propdef.h
+VertexPacking.dbg: ../incl/TAXI/Tpoint.h ../incl/TAXI/IntList.h
+Vision.dbg: ../incl/TAXI/Tbase.h ../incl/TAXI/graphs.h ../incl/TAXI/graph.h
+Vision.dbg: ../incl/TAXI/elmt.h ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+Vision.dbg: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+Vision.dbg: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+Vision.dbg: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+Vision.dbg: ../incl/TAXI/Tmessage.h ../incl/TAXI/color.h
+Vision.dbg: ../incl/TAXI/MaxPath.h ../incl/TAXI/Channel.h

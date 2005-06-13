@@ -136,6 +136,25 @@ QString pigaleWindow::getActionString(int action)
 int pigaleWindow::getActionInt(QString action_str)
   {return mapActionsInt[action_str];
   }
+void pigaleWindow::computeInformation()
+// only called manually from the menu
+  {TopologicalGraph G(GC);
+  if(G. Set(tvertex()).exist(PROP_NLOOPS))  G. Set(tvertex()).erase(PROP_NLOOPS);
+  if(G.Set(tedge()).exist(PROP_MULTIPLICITY))  G.Set(tedge()).erase(PROP_MULTIPLICITY);
+  if(G.Set(tedge()).exist(PROP_ORIENTED))  G.Set(tedge()).erase(PROP_ORIENTED);
+  if(G.Set(tedge()).exist(PROP_REORIENTED))  G.Set(tedge()).erase(PROP_REORIENTED);
+  if(G.Set().exist(PROP_SIMPLE))      G.Set().erase(PROP_SIMPLE);
+  if(G.Set().exist(PROP_CONNECTED))  G.Set().erase(PROP_CONNECTED);
+  if(G.Set().exist(PROP_BICONNECTED))  G.Set().erase(PROP_BICONNECTED);
+  if(G.Set().exist(PROP_TRICONNECTED))  G.Set().erase(PROP_TRICONNECTED);
+  if(G.Set().exist(PROP_BIPARTITE))  G.Set().erase(PROP_BIPARTITE);
+  if(G.Set().exist(PROP_PLANAR))  G.Set().erase(PROP_PLANAR);
+  if(G. Set().exist(PROP_NLOOPS))  G. Set().erase(PROP_NLOOPS);
+  Prop1<int> maptype(G.Set(),PROP_MAPTYPE,PROP_MAPTYPE_UNKNOWN);
+  G.planarMap() = 0;
+  postMessageClear();
+  graph_properties->update(GC,true);
+  }
 void pigaleWindow::information()
   {if(!getError() && !MacroExecuting && !ServerExecuting)postMessageClear();
   graph_properties->update(GC,!MacroExecuting && !ServerExecuting);
@@ -186,12 +205,13 @@ void pigaleWindow::settingsHandler(int action)
   SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
   ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
   ShowArrow()     =  menuBar()->isItemChecked(A_SET_ARROW);
+  ShowExtBrin()     =  menuBar()->isItemChecked(A_SET_EXTBRIN);
   randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
   randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
   pauseDelay() = macroSpin->value();
   UndoEnable(menuBar()->isItemChecked(A_SET_UNDO));
 
-  if(action == A_SET_ORIENT || action == A_SET_ARROW )
+  if(action == A_SET_ORIENT || action == A_SET_ARROW  || action == A_SET_EXTBRIN)
       // update the editor
       {handlerEvent *e = new handlerEvent(1,0,0);
       QApplication::postEvent(this,e);

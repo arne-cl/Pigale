@@ -553,6 +553,9 @@ pigaleWindow::pigaleWindow()
   spin_MaxND->setValue(MaxND);      
   spin_MaxND->setPrefix(tr("Display: "));
   popupLimits->insertItem(spin_MaxND);
+  //ShowExtBrin
+  settings->insertItem(tr("Show the extbrin"),A_SET_EXTBRIN);
+  settings->setItemChecked(A_SET_EXTBRIN,ShowExtBrin());
   //Edge arrow
   settings->insertItem(tr("Show arrows"),A_SET_ARROW);
   settings->setItemChecked(A_SET_ARROW,ShowArrow());
@@ -597,8 +600,8 @@ pigaleWindow::pigaleWindow()
   //End of the menuBar():window
   //help
   QPopupMenu * help = new QPopupMenu(this);
-  menuBar()->insertItem(tr("&Help"),help);
-  help->insertItem(infoIcon,tr("&Graph properties"),this,SLOT(information())
+  menuBar()->insertItem(tr("&Information"),help);
+  help->insertItem(infoIcon,tr("&Graph properties"),this,SLOT(computeInformation())
 		   ,SHIFT+Key_F2);
   help->insertSeparator();
   help->insertItem(helpIcon,tr("What is ?"),this,SLOT(whatsThis()),SHIFT+Key_F1);

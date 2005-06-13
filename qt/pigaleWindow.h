@@ -118,6 +118,7 @@ public slots:
   void banner();
   void timerWait();
   void UndoSave();
+  void computeInformation();
   void information();
   void print();
   void png();

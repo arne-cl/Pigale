@@ -1,3 +1,11 @@
+12/06/2005: Some new drawings that can display any map: the tree has an upward drawing and the cotree edges 
+                      are now represented by "Us" (mostly theorical tools).
+12/06/2005: The "graph properties" (in menu Information) allows to recompute the properties of the current graph 
+                      (properties are first erased).
+12/06/2005: There was a bug introduced on the 8/4/05 which could crash Pigale while loading graphs.
+12/06/2005: The class tstring was bugged and has been rewritten.
+12/06/2005: Many small changes: now one can define the extbrin, ...
+----------------------------------------------------------------------------------
 14/04/2005: the client can receive the current server graph in TGF, GRAPHML or ASCII format.
 08/04/2005: text labels for vertices can be displayed for all drawings.
 08/04/2005: graphml format is partially supported.

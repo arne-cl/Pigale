@@ -87,5 +87,12 @@ en resolvant les contraintes
             }
         }
     }
+bool verify(svector<int> &potentiel)
+      {bool ok = true;
+      for(int i = 1; i <= m;i++)
+          if(potentiel[vin[i]] + length[i]  > potentiel[vin[-i]] )
+              {printf("%d  > %d\n",vin[i],vin[-i]);ok = false;}
+      return ok;
+      } 
 };
 #endif

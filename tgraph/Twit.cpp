@@ -55,7 +55,7 @@ int _Twit::DeleteRight(tvertex vi)
           if(--_current)return AGAIN;
           return FIN;
           }
-      if(Hist.Dus[Twin().ltop()] < 0)DebugPrintf("\n Twit.cpp B");
+      //if(Hist.Dus[Twin().ltop()] < 0)DebugPrintf("\n Twit.cpp B");
       }
   return STOP;
   }
@@ -102,12 +102,9 @@ void _Twit::Fusion(tedge ej)
   }
 
 void _Twit::Flipin(tedge ej)
-  {tedge cv;
-  int l1,l2;
-
-  cv = Couve();
-  l1 = (vin[PrevTwin().ltop()] <= vin[PrevTwin().rbot()]);
-  l2 = (vin[PrevTwin().rtop()] <= vin[PrevTwin().lbot()]);
+  {tedge cv = Couve();
+  int l1 = (vin[PrevTwin().ltop()] <= vin[PrevTwin().rbot()]);
+  int l2 = (vin[PrevTwin().rtop()] <= vin[PrevTwin().lbot()]);
 
   if(l2)
       {if(l1 && !Cover(cv))
@@ -141,12 +138,13 @@ void _Twit::Flipe(tedge ej) // toujours k=pile   bj=brin correspondant … ej
       Hist.Link[PrevTwin().rbot()] = 0;
       }while(vin[ej] < vin[PrevTwin().ltop()]);
 
-  if(PrevTwin().ltop() == tedge(0)) PrevTwin().lbot() = tedge(0);
+  if(PrevTwin().ltop() == 0) PrevTwin().lbot() = 0;
   }
 
 void _Twit::Efnp(tedge ej)  // toujours k=pile;
-  {tedge je;
-  isnotplanar=1;
+// if Flipin did not succeed
+  {isnotplanar=1;
+  tedge je;
   do
       {je = PrevTwin().ltop();
       Hist.Dus[je] = Hist.Flip[je] ^ Hist.Flip[ej];
@@ -155,19 +153,17 @@ void _Twit::Efnp(tedge ej)  // toujours k=pile;
       Hist.Link[je] = ej;
       }while(vin[ej] < vin[PrevTwin().ltop()]);
 
-  if (PrevTwin().ltop() == tedge(0)) PrevTwin().lbot() = tedge(0);
+  if (PrevTwin().ltop() == 0) PrevTwin().lbot() = 0;
   }
 
 void _Twit::Thin(tedge ej)
 // align all lower cotree edges on the same side by fliping edges
 // in such a case we cannot find an obstruction to planarity and use the fast align method
-  {int flipin;
-
-  flipin = Hist.Flip[ej];
+  {int flipin = Hist.Flip[ej];
   for (; _current > _fork; _current--)
-      {if (Twin().lbot() == tedge(0))
+      {if (Twin().lbot() == 0)
           Align(Twin().rtop(),flipin,ej);
-      else if (Twin().rbot() == tedge(0))
+      else if (Twin().rbot() == 0)
           Align(Twin().ltop(),flipin,ej);
       else
           {Align(Twin().rtop(),(int)(1 ^ flipin),ej);
@@ -206,11 +202,10 @@ void _Twit::Thick()
   }
 
 void _Twit::Drop()
-  {tedge rtp,lbt;
-
-  rtp = Twin().rtop();
-  lbt = Twin().lbot();
-  isnotplanar=1;
+// if Flick (called by Thick) did not succeed
+  {isnotplanar=1;
+  tedge rtp = Twin().rtop();
+  tedge lbt = Twin().lbot();
   Twin().rtop() = Hist.Link[rtp];
   Hist.Link[rtp] = lbt;
   Hist.Dus[rtp] =  (int)(1 ^ Hist.Flip[rtp] ^ Hist.Flip[lbt]);

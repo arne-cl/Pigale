@@ -57,13 +57,14 @@ int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
       }
   return p;
   }
-int TopologicalGraph::Planarity()
+int TopologicalGraph::Planarity(tbrin b0)
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::Planarity");
 #ifdef TDEBUG
   if(!DebugCir())
       {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 #endif
+  
   int m_origin = ne();
   MakeConnected();
   int m = ne();
@@ -75,8 +76,6 @@ int TopologicalGraph::Planarity()
   svector<tvertex> &low = *new svector<tvertex>(0,n);
   svector<tbrin> xcir;
   xcir = cir;
-  tbrin b0 = extbrin();
-  //tbrin b0 = 1;
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;
@@ -113,8 +112,8 @@ int TopologicalGraph::Planarity()
   xcir.Tswap(cir);
   // xcir.Tswap(acir);
   for (b = -ne(); b<= ne(); b++)
-         acir[cir[b]] = b;
-  //      cir[acir[b]] = b;
+      acir[cir[b]] = b;
+  //  cir[acir[b]] = b;
   if(extbrin() > 0)
       extbrin() = iel[extbrin()];
   else
@@ -154,6 +153,7 @@ int TopologicalGraph::TestPlanar()
   if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
   svector<tvertex> nvin(-m,m);nvin.SetName("nvin TestPlanar");
   // DFS calls GDFS after some initializations
+
   if(!DFS(nvin)) //Not connected graph
       {MakeConnected();
       m = ne();
@@ -334,12 +334,16 @@ int TopologicalGraph::KKuratowski()
 int TestOuterPlanar(TopologicalGraph &G)
   {if(G.ne() < 6)return true;
   if(debug())DebugPrintf("Executing OuterPlanar");
+  bool simple = G.Set().exist(PROP_SIMPLE);
+  bool bipartite = G.Set().exist(PROP_BIPARTITE);
   tvertex v0 = G.NewVertex();
   for(tvertex v = 1; v < v0;v++)
-	  G.NewEdge(v,v0);
+      G.NewEdge(v,v0);
   int OuterPlanar = G.TestPlanar();
   G.DeleteVertex(v0);
   if(debug())DebugPrintf("END OuterPlanar");
+  if(simple)Prop1<int> simple(G.Set(),PROP_SIMPLE);
+  if(bipartite)Prop1<int> bipartite(G.Set(),PROP_BIPARTITE);
   return OuterPlanar;
   }
 int FindOuterPlanar(TopologicalGraph &G, int depth)

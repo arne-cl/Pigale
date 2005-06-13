@@ -60,6 +60,10 @@ bool & ShowArrow()
   {static bool showarrow= true;
   return showarrow;
   }
+bool & ShowExtBrin()
+  {static bool showextbrin= false;
+  return showextbrin;
+  }
 int & ShowVertex()
 // -3:nothing -2:index else:prop
   {static int _show = 0; 

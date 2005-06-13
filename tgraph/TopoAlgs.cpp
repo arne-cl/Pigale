@@ -17,7 +17,7 @@
 #include <TAXI/color.h>
 
 bool TopologicalGraph::FindPlanarMap()
-  {if(planarMap() < 0){DebugPrintf("  EXIST planarMap < 0");return false;}
+  {if(planarMap() < 0){if(debug())DebugPrintf("  EXIST planarMap < 0");return false;}
   bool Connect= CheckConnected();
 
   if(planarMap() == 1) 
@@ -73,8 +73,7 @@ bool TopologicalGraph::CheckBiconnected()
 int TopologicalGraph::Simplify()
 // returns the # o multiple edges + #  loops
   {if(Set().exist(PROP_SIMPLE))return 0;
-  if(debug())DebugPrintf("  Execute Simplify");
-  Prop1<int>is_simple(Set(),PROP_SIMPLE);
+  if(debug())DebugPrintf("  Executing Simplify");
   // Remove Loops
   int n = RemoveLoops();
   if(!ne()){Prop1<int> simple(Set(),PROP_SIMPLE);return n;}
@@ -123,9 +122,12 @@ int TopologicalGraph::Simplify()
 	  e=next;
           }
       }
+
+  bool erased = false;
   for(e = ne();e >= 1;e--)
-      if(link[e]!=0)DeleteEdge(e);
-  
+      if(link[e]!=0){DeleteEdge(e);erased = true;}
+
+  if(!erased)Set(tedge()).erase(PROP_MULTIPLICITY);
   Prop1<int> simple(Set(),PROP_SIMPLE);  
   return n;
   }
@@ -240,9 +242,8 @@ int TopologicalGraph::MakeConnectedVertex()
   Prop1<int>is_connected(Set(),PROP_CONNECTED);
   if(!nv()) return 0;
   if(debug())DebugPrintf("Executing MakeConnectedVertex");
-  int simple = 0,bipartite = 0;
-  if(Set().exist(PROP_SIMPLE))simple= true;
-  if(Set().exist(PROP_BIPARTITE))bipartite= true;
+  bool simple = Set().exist(PROP_SIMPLE);
+  bool bipartite = Set().exist(PROP_BIPARTITE);
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
@@ -508,10 +509,7 @@ bool TopologicalGraph::CheckHypergraph(tvertex v0, bool v0ise)
 
 
 bool TopologicalGraph::CheckConnected()
-  {if(debug())
-      {DebugPrintf("   CheckConnected");
-      if(Set().exist(PROP_CONNECTED))DebugPrintf("END PROP_CONNECTED EXIST");
-      }
+  {if(debug())DebugPrintf("   CheckConnected");
   if(Set().exist(PROP_CONNECTED))return true;
   if(nv() < 2 || ne() < nv() - 1) return false;
   if(debug())DebugPrintf("Executing CheckConnected");
@@ -633,6 +631,7 @@ int TopologicalGraph::ZigZagTriangulate()
   if(!CheckPlanar()) return -1;
   if(ne() == 3*nv() - 6)return 0;
   if(debug())DebugPrintf("Executing ZigZagTriangulate");
+  bool simple = Set().exist(PROP_SIMPLE);
 
   ZigZag();
 
@@ -679,6 +678,7 @@ int TopologicalGraph::ZigZagTriangulate()
   for(e = ne();e > Orgm;e--)
       if(link[e] != 0)Rotate(e);
   if(ne() != 3*nv() - 6)return -2;
+  if(simple)Prop1<int> simple(Set(),PROP_SIMPLE);
   return 0;
   }
 tedge TopologicalGraph::IdentifyEdge(tvertex &v1,tvertex &v2)
@@ -708,7 +708,7 @@ int TopologicalGraph::VertexQuadrangulate()
   // The graph was not two connected, we add blue vertices
   if( ne() != 2*nv() - 4 || !CheckBiconnected())
       _VertexQuadrangulate(false);
-
+ 
   tvertex v;
   if(ne() != 2*nv() - 4 && !debug())
       {for(v = nv(); v > n0;v--)

@@ -180,7 +180,7 @@ int AlgoHandler(GraphContainer &GC,int action,int nn)
           Tprintf("Geometric map");
           break;
       case A_ALGO_LRALGO_CIR :
-          G.Planarity();
+          G.Planarity( G.extbrin());
           Tprintf("LR-algo map");
           break;
       case A_ALGO_SYM://symetrie
