@@ -113,6 +113,7 @@ class NodeTextItem: public QCanvasText
   NodeTextItem(GraphWidgetPrivate* g,QString &t);
   ~NodeTextItem() {}
   void SetColor(QColor c);
+  void SetText(QString t){setText(t);update();}
   int rtti() const;
 
   NodeItem *nodeitem;

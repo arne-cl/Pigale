@@ -47,6 +47,7 @@ public:
   QRadioButton* ButtonMove;
   QRadioButton* ButtonBissect;
   QRadioButton* ButtonContract;
+  QRadioButton* ButtonLabel;
 
   QCheckBox* ButtonFitGrid;
   QCheckBox* ButtonShowGrid;

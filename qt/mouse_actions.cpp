@@ -25,8 +25,8 @@ int GetMouseAction_1()
 
 const int Height = 150; 
 const int Width = 280-5; //5 borders
-const int dy = 18;
-const int oy = 20;                // origin of first radiobutton  
+const int dy = 17;//18;
+const int oy = 16;//20;                // origin of first radiobutton  
 const int dx = 110;               // width of radiobuttons  (80) 
 const int ox1 = 6;               // postion of left group
 const int dx1 = 125;              // width radio group (90)
@@ -49,7 +49,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
 
   ButtonGroup1 = new QButtonGroup(this,"ButtonGroup1");
-  ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,6*dy+oy+15)); 
+  ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,7*dy+oy+15)); 
   ButtonGroup1->setTitle(tr("Left Button"));
   ButtonGroup1->setRadioButtonExclusive(TRUE);
 
@@ -77,6 +77,10 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
   ButtonContract->setGeometry(QRect(ox1,oy+5*dy,dx,20)); 
   ButtonContract->setText(tr("Ext Face/extbrin"));
+
+  ButtonLabel = new QRadioButton(ButtonGroup1,"ButtonLabel");
+  ButtonLabel->setGeometry(QRect(ox1,oy+6*dy,dx,20)); 
+  ButtonLabel->setText(tr("Label"));
 
     //****************************************************************
   gw->sizegridChanged(sizegrid);

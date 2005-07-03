@@ -29,6 +29,7 @@
 #include <qfiledialog.h>
 #include <qpaintdevicemetrics.h> 
 #include <qapplication.h> 
+#include <qinputdialog.h> 
 
 //A QCanvasView is widget which provides a view of a QCanvas
 GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name, WFlags f)
@@ -123,16 +124,16 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,node,edge);
       if(rtt == 0)rtt = FindItem(p,edge);//augment the collision zone
       if(rtt == node_rtti)
-	if (G.Set().exist(PROP_VSLABEL) && G.Set(tvertex()).exist(PROP_SLABEL))
-	  {QString tt;
-	    Prop1<svector<tstring *> >vslabel(G.Set(),PROP_VSLABEL);
-	    Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
-	    if (vslabel()[slabel[node->v]]==(tstring *)0) tt="(null)";
-	    else tt=~(*(vslabel()[slabel[node->v]]));
-	    t.sprintf("vertex:%d Label:%ld (%s)",(node->v)(),G.vlabel[node->v],(const char *)tt);
-	  }
-	else
-          t.sprintf("vertex:%d Label:%ld",(node->v)(),G.vlabel[node->v]);
+          if (G.Set().exist(PROP_VSLABEL) && G.Set(tvertex()).exist(PROP_SLABEL))
+              {QString tt;
+              Prop1<svector<tstring *> >vslabel(G.Set(),PROP_VSLABEL);
+              Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
+              if (vslabel()[slabel[node->v]]==(tstring *)0) tt="(null)";
+              else tt=~(*(vslabel()[slabel[node->v]]));
+              t.sprintf("vertex:%d Label:%ld (%s)",(node->v)(),G.vlabel[node->v],(const char *)tt);
+              }
+          else
+              t.sprintf("vertex:%d Label:%ld",(node->v)(),G.vlabel[node->v]);
       else if(rtt == edge_rtti)
           {double d = Distance(G.vcoord[G.vin[edge->e]],G.vcoord[G.vin[-(edge->e)]])+.5;
           t.sprintf("edge:%d Label:%ld len:%d",(edge->e)(),G.elabel[edge->e],(int)d);
@@ -318,6 +319,21 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
 //       G.extbrin() = (Distance2(pp,p1) < Distance2(pp,p2)) ? je.firsttbrin() : je.secondtbrin();
       G.extbrin() = (edge->lower ) ? je.firsttbrin() : je.secondtbrin();
       edge->SetColor(color[Green],false);
+      canvas()->update();
+      return;
+      }
+  else if(MouseAction == 6) // Modify label
+      {NodeItem* node;
+      EdgeItem *edge;
+      int rtt = FindItem(p,node,edge);
+      if(rtt != node_rtti)return;
+      tvertex v = node->v;
+      bool ok;
+      int res = QInputDialog::getInteger("Pigale", "Enter a number:", (int)G.vlabel[node->v], 0, 2147483647, 1,&ok, this );
+      if(!ok)return;
+      G.vlabel[node->v] = res;
+      QString t = getVertexLabel(G.Container(),v);
+      node->nodetextitem->SetText (t);
       canvas()->update();
       return;
       }
