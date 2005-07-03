@@ -1,3 +1,5 @@
+03/07/2005: Now it is possible to modify the labels of the vertices.
+----------------------------------------------------------------------------------
 12/06/2005: Some new drawings that can display any map: the tree has an upward drawing and the cotree edges 
                       are now represented by "Us" (mostly theorical tools).
 12/06/2005: The "graph properties" (in menu Information) allows to recompute the properties of the current graph 

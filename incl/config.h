@@ -70,13 +70,13 @@
 #define PACKAGE_PATH "/home/pigale"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "pigale 1.2.14"
+#define PACKAGE_STRING "pigale 1.2.15"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "Public Implementation of a Graph Library and Editor"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.2.14"
+#define PACKAGE_VERSION "1.2.15"
 
 /* Qt Thread Support */
 #define QT_THREAD_SUPPORT 1
@@ -85,7 +85,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.2.14"
+#define VERSION "1.2.15"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

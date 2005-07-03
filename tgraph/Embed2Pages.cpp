@@ -183,6 +183,7 @@ int EmbedContactBip(GeometricGraph &G)
   tbrin FirstBrin;
   int  n_origin = G.nv();
   int m_origin = G.ne();
+  PSet1  propSave(G.Set());
   svector<bool> save_oriented(0,G.ne());
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,false);
   save_oriented.Tswap(oriented);
@@ -197,6 +198,7 @@ int EmbedContactBip(GeometricGraph &G)
   	G.DeleteVertex(v);
  for(tedge e  =  G.ne();e > m_origin;e--)
   	G.DeleteEdge(e);
+ G.Set() =  propSave;
   // computes extremities of vertices
   Prop<int> h1(G.Set(tvertex()),PROP_DRAW_INT_2); 
   Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3); 
@@ -216,10 +218,12 @@ int EmbedContactBip(GeometricGraph &G)
       xymin = Min(xymin,h[v]);
       }
   save_oriented.Tswap(oriented);G.RestoreOrientation();
+
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   pmin() = Tpoint(xymin-1,xymin-1);
   pmax() = Tpoint(xymax+1,xymax+1);
+ 
   return 0;
   }
 

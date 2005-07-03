@@ -172,11 +172,8 @@ int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
 	delete pGC2;
 	}*/
 
+ if(!G.CheckPlanar() || ! G.CheckTriconnected()){setError(-1,"initial conditions not satisfied");return -1;}
   tvertex v;
-  G.MakeConnected();
-  if(!G.CheckPlanar())
-    return -1;
-
   tbrin FirstBrin = G.extbrin();
   SchnyderWood SW(G, FirstBrin);
   int DeltaSmoothCCW_before = SW.CountDeltaSmoothCCW();

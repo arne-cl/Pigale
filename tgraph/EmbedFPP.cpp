@@ -166,6 +166,7 @@ int EmbedFPP(TopologicalGraph &G)
   if(!G.CheckSimple())return -1;
   if(SchnyderRect())return EmbedFPP_Rect(G);
   int OldNumEdge = G.ne();
+  PSet1  propSave(G.Set());
   G.MakeConnected();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
@@ -240,11 +241,13 @@ int EmbedFPP(TopologicalGraph &G)
       }
   // Erase added edges
   for(tedge e = G.ne();e > OldNumEdge;e--)G.DeleteEdge(e);
+  G.Set() =  propSave;
   return 0;
   }
 
 int EmbedFPP_Rect(TopologicalGraph &G)
   {int OldNumEdge = G.ne();
+  PSet1  propSave(G.Set());
   G.MakeConnected();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
@@ -321,6 +324,7 @@ int EmbedFPP_Rect(TopologicalGraph &G)
   //printf("******************************\n");
   // Erase added edges
   for(tedge e = G.ne();e > OldNumEdge;e--)G.DeleteEdge(e);
+  G.Set() =  propSave;
   return 0;
   }
 
@@ -503,6 +507,7 @@ int EmbedFPPRecti(TopologicalGraph &G)
   {if(G.nv() < 3)return -1;
   if(!G.CheckSimple())return -1;
   int OldNumEdge = G.ne();
+ PSet1  propSave(G.Set());
   G.MakeConnected();
   if(!G.CheckPlanar())return -1;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
@@ -550,6 +555,7 @@ int EmbedFPPRecti(TopologicalGraph &G)
   // Erase added edges
   for(tedge e = G.ne();e > OldNumEdge;e--)
       G.DeleteEdge(e);
+  G.Set() =  propSave;
   // Defines properties for the drawing
   Prop<int> pxliv(G.Set(tvertex()),PROP_DRAW_INT_1);
   Prop<int> pxriv(G.Set(tvertex()),PROP_DRAW_INT_2);
