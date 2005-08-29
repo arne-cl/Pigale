@@ -139,7 +139,7 @@ int diag(double **dis,int NumberOfPoints,double **Distances,svector<double>& Eig
       {Sum += (EigenValues[i1]/TraceInit * 100.);
       Tprintf("%lf M:%d P:%d%%",EigenValues[i1],Multiplicite[i1],(int)(Sum+.5));
       }
-  Tprintf("----");
+  
   
   int MaxMul = Multiplicite[1];
   for(i1 = 2;i1 <= nf;i1++)
@@ -159,7 +159,7 @@ int diag(double **dis,int NumberOfPoints,double **Distances,svector<double>& Eig
       }
   Tprintf("Equal:%d MaxMul:%d Null:%d Neg:%d",NumEqualEigenvalues,MaxMul,NumNullEigenvalues,negative);
   Tprintf("%d simple eigenvalues (%d,%d,%d,...)",Mult1,val1,val2,val3);
-
+  Tprintf("----");
   if(debug())
       {LogPrintf("\nEigenvalues equal:%d null:%d"
                ,NumEqualEigenvalues,NumNullEigenvalues);

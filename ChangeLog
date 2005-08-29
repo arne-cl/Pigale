@@ -1,9 +1,10 @@
-03/07/2005: Now it is possible to modify the labels of the vertices.
+26/08/2005: When you save a graph in "txt" format, the labels (previously the index).
+10/07/2005: Contract an edge: now contracts towards the vertex closer to the mouse arrow.
+03/07/2005: Now it is possible to modify the labels of the vertices or reset tem as the indices.
 ----------------------------------------------------------------------------------
 12/06/2005: Some new drawings that can display any map: the tree has an upward drawing and the cotree edges 
                       are now represented by "Us" (mostly theorical tools).
-12/06/2005: The "graph properties" (in menu Information) allows to recompute the properties of the current graph 
-                      (properties are first erased).
+12/06/2005: The "graph properties" (in menu Information) allows to recompute the properties of the current graph    (properties are first erased).
 12/06/2005: There was a bug introduced on the 8/4/05 which could crash Pigale while loading graphs.
 12/06/2005: The class tstring was bugged and has been rewritten.
 12/06/2005: Many small changes: now one can define the extbrin, ...

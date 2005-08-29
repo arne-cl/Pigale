@@ -171,6 +171,8 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       MouseAction = -4;                     //contract
  else if(Shift && MouseAction == 5)        //define exterior face
       MouseAction = -5;                     //define extbrin
+ else if(Shift && MouseAction == 6)        //define a label
+      MouseAction = -6;                     //reset all labels
   if(MouseAction == 0) // color
       {NodeItem* node;
       EdgeItem *edge;
@@ -277,6 +279,9 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
       gwp->mywindow->UndoTouch(true);
+      // provisoire
+      if(edge->lower)G.ReverseEdge(edge->e);
+      // end provisoire
       G.ContractEdge(edge->e);
       load(false);
       gwp->mywindow->information();// Informations
@@ -336,6 +341,17 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       node->nodetextitem->SetText (t);
       canvas()->update();
       return;
+      }
+  else if(MouseAction == -6) // Reset all labels
+      {Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+      for(tvertex v = 1; v <= G.nv();v++)
+          {G.vlabel[v] = v();
+          NodeItem *node = nodeitem[v];
+          node->nodetextitem->SetText (QString("%1").arg(v()));
+          }
+      for(tedge e = 1; e <= G.ne();e++)
+          G.elabel[e] = e();
+      canvas()->update();
       }
   else if(MouseAction == 2  || MouseAction == -2) // Orient/Reverse or deorient
     {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);

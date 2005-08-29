@@ -80,7 +80,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
 
   ButtonLabel = new QRadioButton(ButtonGroup1,"ButtonLabel");
   ButtonLabel->setGeometry(QRect(ox1,oy+6*dy,dx,20)); 
-  ButtonLabel->setText(tr("Label"));
+  ButtonLabel->setText(tr("Label/Reset all"));
 
     //****************************************************************
   gw->sizegridChanged(sizegrid);

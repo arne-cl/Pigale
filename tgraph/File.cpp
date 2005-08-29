@@ -468,9 +468,13 @@ int SaveGraphAscii(GraphAccess& G,tstring filename)
   if(title().length() == 0)title() = "No Name";
   out << title() <<endl;
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
+  bool existVlabel = G.Set(tvertex()).exist(PROP_LABEL);
+ Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+ if(!existVlabel)for(int i = 0;i <= G.nv();i++)vlabel[i] = i;
   // write edge list
   for(int e = 1;e <= G.ne();e++)
-      out << vin[(tbrin)e]() << " " << vin[(tbrin)-e]() << endl;
+      //      out << vin[(tbrin)e]() << " " << vin[(tbrin)-e]() << endl;
+      out << vlabel[vin[(tbrin)e]()] << " " << vlabel[vin[(tbrin)-e]()] << endl;
   out << "0 0" << endl;
   return 0;
   }

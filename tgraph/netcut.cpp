@@ -76,6 +76,7 @@ int Embed3d(TopologicalGraph &G0)
   for (i = 1; i<=em.dmax;i++)
     for (int v=1; v<= G0.nv(); v++)
       em.vector(i)[v]=G.Coords[v][i];
+
   Prop<Tpoint3> Coord3(G0.Set(tvertex()),PROP_COORD3);
   Coord3.vector()=em.Coord();
   Prop<double> EigenValues(G0.Set(tvertex()),PROP_EIGEN);

@@ -71,13 +71,14 @@ class RnEmbedding {
     return Coord3;
     }
   RnEmbedding(int nv, int dm, int faces): dmax(dm),facets(faces),n(nv),
-    Space(1,dm), Coord3ok(false),Coord3(0,n)
-    {for (int i=1; i<=dmax; i++)
+    Space(0,dm), Coord3ok(false),Coord3(0,n)  //Space(1,dm)
+    {for (int i = 0; i<=dmax; i++)
       Space[i]=new svector<double>(0,n);
+    Space[0]->clear();
     SetAxes(1,2,3);
     }
   ~RnEmbedding()
-    {for (int i=1; i<=dmax; i++)
+    {for (int i = 0; i<=dmax; i++)
       delete Space[i];
     }
 };

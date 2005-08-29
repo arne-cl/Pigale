@@ -125,9 +125,9 @@ int GraphGL::update()
       rb_x->setChecked(FALSE);
       rb_y->setChecked(FALSE);
       rb_z->setChecked(TRUE);
-      spin_X = new QSpinBox(1,100,1,this,"spinX");
-      spin_Y = new QSpinBox(1,100,1,this,"spinY");
-      spin_Z = new QSpinBox(1,100,1,this,"spinZ");
+      spin_X = new QSpinBox(0,100,1,this,"spinX");
+      spin_Y = new QSpinBox(0,100,1,this,"spinY");
+      spin_Z = new QSpinBox(0,100,1,this,"spinZ");
       spin_X->setValue(1);     spin_X->setPrefix("X: ");
       spin_Y->setValue(2);     spin_Y->setPrefix("Y: ");
       spin_Z->setValue(3);     spin_Z->setPrefix("Z: ");
@@ -171,13 +171,12 @@ int GraphGL::update()
 #else
   d->mw->tabWidget->setTabLabel(this,"3-d Embedding");
 #endif
-  spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
+  spin_X->setMinValue(0);   spin_Y->setMinValue(0);   spin_Z->setMinValue(0);
   spin_X->setMaxValue(d->embed().dmax);  spin_Y->setMaxValue(d->embed().dmax);  spin_Z->setMaxValue(d->embed().dmax);
+  spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
   Reload(1);
   return 0;
   }
-
-
 void GraphGL:: EdgeWidth(int i)
   {d->edge_width = i /2.;
   d->editor->initialize(false);
@@ -191,12 +190,11 @@ void GraphGL::Reload()
   d->editor->initialize(false);
   }
 void GraphGL::Reload(int i)
-  {if(i == 0){d->editor->initialize(false);return;}
+  {//if(i == 0){d->editor->initialize(false);return;}
   RnEmbedding &em = d->embed();
-  int i1,i2,i3;
-  i1 = spin_X->value(); i1 = Min(i1,em.dmax);
-  i2 = spin_Y->value(); i2 = Min(i2,em.dmax);
-  i3 = spin_Z->value(); i3 = Min(i3,em.dmax);
+  int i1 = spin_X->value(); i1 = Min(i1,em.dmax);
+  int i2 = spin_Y->value(); i2 = Min(i2,em.dmax);
+  int i3 = spin_Z->value(); i3 = Min(i3,em.dmax);
   em.SetAxes(i1,i2,i3);
   d->editor->initialize(true);
   }
