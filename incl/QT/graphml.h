@@ -11,6 +11,50 @@
 
 class QString;
 
+#define PSET_V 0
+#define PSET_E 1
+#define PSET_B 2
+
+struct PAccess {
+  _svector *v;
+  vProp *vp;
+  PAccess(): v(0),vp(0) {}
+};
+
+struct key_desc {
+  QString desc;
+  int pnum;
+  int prop;
+  void (*init)(GraphAccess &);
+  bool (*isdef)(GraphAccess &);
+  PAccess (*access)(GraphAccess &);
+
+  QString setid() { if (pnum==0) return "V"; else if (pnum==1) return "E"; else return "B";}
+  QString xsetid() { if (pnum==0) return "node"; else if (pnum==1) return "edge"; else return "???";}
+  QString id() { 
+    QString num; num.sprintf("%d",prop);
+    return "Pigale/"+setid()+"/"+num;
+  }
+  public:
+  key_desc(int s, int n, QString d, void (*_init)(GraphAccess &), 
+	   bool (*_isdef)(GraphAccess &), PAccess (*_access)(GraphAccess &))
+    :desc(d),pnum(s),prop(n),init(_init),isdef(_isdef),access(_access) {}
+};
+
+
+
+#define MLKEY(_pset, _prop_num, _prop_type, _prop_desc)	\
+  static void mlkey_init##_pset##_prop_num(GraphAccess &G) {Prop<_prop_type>v(G.P##_pset(),_prop_num);}\
+  static bool mlkey_isdef##_pset##_prop_num(GraphAccess &G) {return G.P##_pset().defined(_prop_num);} \
+  static PAccess mlkey_access##_pset##_prop_num(GraphAccess &G) { \
+    PAccess pa;\
+    if (mlkey_isdef##_pset##_prop_num(G)) {pa.v=G.P##_pset()[_prop_num];pa.vp=G.P##_pset()(_prop_num);} \
+    return pa;} //
+
+#define MLKEY2(_pset, _prop_num, _prop_type, _prop_desc)	\
+  key_desc(PSET_##_pset,_prop_num,_prop_desc, \
+	   mlkey_init##_pset##_prop_num, mlkey_isdef##_pset##_prop_num, mlkey_access##_pset##_prop_num)
+
 #define PARSE_NUMRECORDS  0
 #define PARSE_TITLE       1
 #define PARSE_GRAPHINFO   2
@@ -162,6 +206,9 @@ class GraphmlReader : public GraphmlParser {
     index(_index), nv(0), ne(0), has_coords(false)
     {record(true); vin[0]=0;}
   
+
+    void ProcessNode(int v);
+    void ProcessEdge(int e);
   
   void EnterGraph() 
   { if (inside!=none) skip(); // nested graph
@@ -188,6 +235,7 @@ class GraphmlReader : public GraphmlParser {
 	if (!parseTpoint(current.data["Pigale/V/16"],vcoord[v])) return;
 	has_coord[v]=true;
       }
+    ProcessNode(v);
   }
   void ExitEdge() 
   {
@@ -202,6 +250,7 @@ class GraphmlReader : public GraphmlParser {
 	else
 	  eoriented[ne]=false;
       }
+    ProcessEdge(ne);
   }
   void ExitGraph() 
   {
@@ -236,6 +285,7 @@ class GraphmlReader : public GraphmlParser {
 	return;
       }
     Prop1<svector<tstring *> > vslabel(G.Set(),PROP_VSLABEL);
+    bool has_labels = G.Set(tvertex()).exist(PROP_LABEL);
     Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL,0);
     Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
     vslabel().resize(0,nv);
@@ -244,9 +294,9 @@ class GraphmlReader : public GraphmlParser {
     slabel[0]=0;
     vslabel()[0]=(tstring *)0;
     for (QMap<QString,int>::Iterator it=V.begin(); it!=V.end(); ++it)
-      {vlabel[it.data()]=it.data();
-	slabel[it.data()]=it.data();
-	vslabel()[it.data()]=new tstring((const char *)it.key());
+        {if(!has_labels)vlabel[it.data()]=it.data();
+      slabel[it.data()]=it.data();
+      vslabel()[it.data()]=new tstring((const char *)it.key());
       }
   }
 };

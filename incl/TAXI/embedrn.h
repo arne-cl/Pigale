@@ -71,14 +71,13 @@ class RnEmbedding {
     return Coord3;
     }
   RnEmbedding(int nv, int dm, int faces): dmax(dm),facets(faces),n(nv),
-    Space(0,dm), Coord3ok(false),Coord3(0,n)  //Space(1,dm)
-    {for (int i = 0; i<=dmax; i++)
+    Space(1,dm), Coord3ok(false),Coord3(0,n)
+    {for (int i=1; i<=dmax; i++)
       Space[i]=new svector<double>(0,n);
-    Space[0]->clear();
     SetAxes(1,2,3);
     }
   ~RnEmbedding()
-    {for (int i = 0; i<=dmax; i++)
+    {for (int i=1; i<=dmax; i++)
       delete Space[i];
     }
 };
@@ -91,4 +90,5 @@ struct RnEmbeddingPtr
   ~RnEmbeddingPtr() { if (ptr!=0) delete ptr;}
 };
 T_STD  ostream& operator <<(T_STD  ostream &os,const RnEmbeddingPtr &x);
+T_STD  istream& operator >>(T_STD  istream &is, RnEmbeddingPtr &x);
 #endif

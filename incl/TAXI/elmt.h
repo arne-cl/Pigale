@@ -160,5 +160,10 @@ inline tedge tbrin::GetEdge() const {return (tedge)((value <0) ? -value : value)
 inline T_STD  ostream & operator<<(T_STD  ostream & out, const tbrin &b) {return out<<b();}
 inline T_STD  ostream & operator<<(T_STD  ostream & out, const tedge &e) {return out<<e();}
 inline T_STD  ostream & operator<<(T_STD  ostream & out, const tvertex &v) {return out<<v();}
+inline T_STD  istream & operator>>(T_STD  istream & in, tbrin &b) {return in>>b();}
+inline T_STD  istream & operator>>(T_STD  istream & in, tedge &e) {return in>>e();}
+inline T_STD  istream & operator>>(T_STD  istream & in, tvertex &v) {return in>>v();}
+template <class T>
+T_STD  istream& operator>>(T_STD  istream & in, T *&p) {long l; in >>l; p=(T *)l; return in;}
 
 #endif

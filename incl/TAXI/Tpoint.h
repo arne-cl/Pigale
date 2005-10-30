@@ -91,7 +91,9 @@ template<class T> void Scale(Point3_<T> &point1,const Point3_<T> &mult,const Poi
     }
 
 template<class T> T_STD  ostream& operator <<(T_STD  ostream& out,const Point3_<T> point)
-    {out << point.x() << " " << point.y() << " " << point.z();return(out);}
+    {out << point.x() << "," << point.y() << "," << point.z();return(out);}
+template<class T> T_STD  istream& operator >>(T_STD  istream& in, Point3_<T> & point)
+{char c; in >> point.x() >> c >> point.y() >> c >> point.z();return (in);}
 
 template<class T> class Point2_
     {private:
@@ -182,7 +184,10 @@ template<class T> void Scale(Point2_<T> &point1,const Point2_<T> &mult,const Poi
     }
 
 template<class T> T_STD  ostream& operator <<(T_STD  ostream& out,const Point2_<T> & point)
-    {out << point.x() << " " <<point.y();return (out);}
+    {out << point.x() << "," <<point.y();return (out);}
+
+template<class T> T_STD  istream& operator >>(T_STD  istream& in, Point2_<T> & point)
+{char c; in >> point.x() >> c >> point.y();return (in);}
 
 template<class T>double Angle(Point2_<T> p)
     {double b,x,y;
@@ -270,7 +275,7 @@ typedef Point3_<double> Tpoint3;
 typedef Point2_<double> Tpoint;
 
 inline void read(T_STD  istream &in,Tpoint &p)
-    {double x,y;
+{double x,y;
     in >> x >> y;
     p = Tpoint(x,y);
     }
@@ -279,7 +284,7 @@ inline void write(T_STD  ostream &out,const Tpoint &p)
 
 
 inline void read(T_STD  istream &in,Tpoint3 &p)
-    {double x,y,z;
+{double x,y,z;
     in >> x >> y >> z;
     p = Tpoint3(x,y,z);
     }

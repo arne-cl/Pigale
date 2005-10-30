@@ -1,5 +1,5 @@
 /****************************************************************************
-** $Id: graphml.cpp,v 1.1 2005/04/12 17:12:18 hbonnin Exp $
+** $Id: graphml.cpp,v 1.2 2005/10/30 14:23:24 hbonnin Exp $
 **
 ** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
 **
@@ -14,6 +14,44 @@
 #include <qmap.h>
 #include <QT/graphml.h>
 #include <config.h>
+
+MLKEY(V, PROP_COORD, Tpoint, "Coordinates");
+MLKEY(V, PROP_COLOR, short, "Color");
+MLKEY(V, PROP_LABEL, long, "Label");
+MLKEY(E, PROP_COLOR, short, "Color");
+MLKEY(E, PROP_WIDTH, int, "Width");
+
+static key_desc key_tab[]={
+  MLKEY2(V, PROP_COORD, Tpoint, "Coordinates"),
+  MLKEY2(V, PROP_COLOR, short, "Color"),
+  MLKEY2(V, PROP_LABEL, long, "Label"),
+  MLKEY2(E, PROP_COLOR, short, "Color"),
+  MLKEY2(E, PROP_WIDTH, int, "Width")
+};
+
+void GraphmlReader::ProcessNode(int v)
+{ GraphAccess GA(G);
+  for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc);ind++)
+    { if (key_tab[ind].pnum!=0) continue;
+      if (current.data.contains(key_tab[ind].id()))
+	{ (*(key_tab[ind].init))(GA);
+	  PAccess pa=(*(key_tab[ind].access))(GA);
+	  pa.vp->fromstr(pa.v,v,(const char *)current.data[key_tab[ind].id()]);
+	}
+    }
+}
+
+void GraphmlReader::ProcessEdge(int e)
+{GraphAccess GA(G);
+  for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc);ind++)
+    { if (key_tab[ind].pnum!=1) continue;
+      if (current.data.contains(key_tab[ind].id()))
+	{ (*(key_tab[ind].init))(GA);
+	  PAccess pa=(*(key_tab[ind].access))(GA);
+	  pa.vp->fromstr(pa.v,e,(const char *)current.data[key_tab[ind].id()]);
+	}
+    }
+}
 
 static bool CallParse(tstring fname, GraphmlParser &parser)
   {    
@@ -91,6 +129,10 @@ static QString xlabel(GraphAccess &G,tvertex v)
 	Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
 	id=~(*(vslabel()[slabel[v]]));
       }
+ //    else if (G.Set(tvertex()).exist(PROP_LABEL))
+//     {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+//     id.sprintf("%ld",label[v]);
+//     }
     else id.sprintf("n%d",v());
     return id;
   }
@@ -121,23 +163,27 @@ int  Taxi_FileIOGraphml::Save(GraphAccess& G,tstring fname)
     stream << " attr.name=\"Pigale version\" attr.type=\"string\">"<<endl;
     stream << "    <default>"<<PACKAGE_VERSION<<"</default>"<<endl;
     stream << "  </key>"<<endl;
-    if (G.Set(tvertex()).exist(PROP_COORD))
-      { stream << "  <key id=\"Pigale/V/16\" for=\"node\"";
-	stream << " attr.name=\"Coordinates\" attr.type=\"string\"/>"<<endl;
+    for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc); ind++)
+      { if ((*(key_tab[ind].isdef))(G)) {
+	  stream << "  <key id=\"" << key_tab[ind].id() << "\" ";
+	  stream << "for=\"" << key_tab[ind].xsetid() << "\" ";
+	  stream << "attr.name=\"" << key_tab[ind].desc << "\" ";
+	  stream << "attr.type=\"string\"/>" << endl;
+	}
       }
     stream << "  <graph id=\""<<(const char *)title()<<"\" edgedefault=\"";
     if (!oriented) stream << "un";
     stream << "directed\">" << endl;
     for (tvertex v=1; v<=G.nv(); v++)
-      {if (G.Set(tvertex()).exist(PROP_COORD))
-	  {Prop<Tpoint> coord(G.Set(tvertex()),PROP_COORD);
-	    stream << "    <node id=\""<<xlabel(G,v)<<"\">"<<endl;
-	    stream << "       <data key=\"Pigale/V/16\">";
-	    stream << coord[v].x() << "," << coord[v].y() << "</data>" <<endl;
-	    stream << "    </node>" << endl;
-	  }
-	else
-	  stream << "    <node id=\""<<xlabel(G,v)<<"\"/>" << endl;
+      {
+	stream << "    <node id=\""<<xlabel(G,v)<<"\">"<<endl;
+	for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc); ind++) {
+	  if (key_tab[ind].pnum!=0 || !(*(key_tab[ind].isdef))(G)) continue;
+	  PAccess pa=(*(key_tab[ind].access))(G);
+	  stream << "      <data key=\"" << key_tab[ind].id() << "\">";
+	  stream <<  pa.vp->tostr(pa.v,v()) << "</data>" << endl;
+	}
+        stream << "    </node>" << endl;
       }
     for (tedge e=1; e<=G.ne(); e++)
       {stream << "     <edge source=\""<<xlabel(G,vin[e])<<"\" target=\""<<xlabel(G,vin[-e])<<"\"";
@@ -146,7 +192,14 @@ int  Taxi_FileIOGraphml::Save(GraphAccess& G,tstring fname)
 	    if (eoriented[e]!=oriented)
 	      stream << " directed=\"" << otherorient <<"\"";
 	  }
-	stream << "/>" <<endl;
+	stream << ">" <<endl;
+	for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc); ind++) {
+	  if (key_tab[ind].pnum!=1 || !(*(key_tab[ind].isdef))(G)) continue;
+	  PAccess pa=(*(key_tab[ind].access))(G);
+	  stream << "      <data key=\"" << key_tab[ind].id() << "\">";
+	  stream <<  pa.vp->tostr(pa.v,e()) << "</data>" << endl;
+	}
+        stream << "    </edge>" << endl;	
       }
     stream << "   </graph>"<<endl;
     stream << "</graphml>"<<endl;

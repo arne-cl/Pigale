@@ -123,7 +123,8 @@ class vProp
       virtual int size_elmt() const = 0; //!< size of element
       virtual void affiche(T_STD  ostream& out,const _svector *v) const =0; 
       virtual tstring tostr(const _svector *v, int i) const = 0;
-      
+      virtual void fromstr(const _svector *v, int i,tstring t) const = 0;
+     
       //!< prints the element (debugging purpose)
       /*!< \param out output stream
        *   \param v vector to print
@@ -420,7 +421,11 @@ class vP : public vProp
 	out << (const T &)(*(svector<T> *)v)[i];
 	return tstring(out.str().c_str());
       }
-      
+      void fromstr(const _svector *v, int i, tstring t) const
+      { istringstream in;
+        in.str((const char *)t);
+	in >> (T &)(*(svector<T> *)v)[i];
+      }      
     void affiche(T_STD  ostream &out, const _svector *p) const
      	{if (p->origin()==(void *)0)
             {out << " undefined"<<T_STD  endl;
