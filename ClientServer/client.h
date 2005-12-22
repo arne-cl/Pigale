@@ -40,6 +40,7 @@ In the input:
 - line  starting by ':!' signals the end of file
 - line  starting by ':D' signals the client to echo the comments
 - line  starting by ':d' signals the client not to echo the comments
+- line  starting by ':X' stops the client
 
 - otherwise a line contains commands  separated by ':'
 - commands may contain arguments separated by ';'
@@ -67,6 +68,7 @@ public:
   void sendToServer(QString& str);
   void writeToClient(QString str);
   void customEvent(QCustomEvent * e );
+  void exit( );
 
 private slots:
   void closeConnection();
@@ -94,7 +96,7 @@ private:
   QTextView *infoText;
   QLineEdit *inputText;
   threadRead ThreadRead;
-  int numPng;
+  int numFiles;
 
 public:
   bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}

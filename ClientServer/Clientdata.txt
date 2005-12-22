@@ -15,14 +15,14 @@ RC_GRAPH;../tgf/a.tgf;1
 # get the number of vertices and edges
 N:M
 # ask for a spring embedder
-SPRING_PMPNG
+SPRING_PM:PNG
 FPP_RECTI:PNG
 EMBED-3d:PNG
 
 #read an ascii file containing a graph
 RC_GRAPH;../tgf/graph.txt
 VISION
-PNG
+PS
 
 #create a graph
 N_GRAPH
@@ -49,9 +49,12 @@ RS_SAVE_GRAPH;g.graphml;
 GEN_M;50
 GEN_PLANAR_4R_3C
 N:M
+EMBED-3d
+PNG
 # and close the file
-:!
- 
+#:!
+# quit
+:X 
 
 
 

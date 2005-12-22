@@ -75,5 +75,5 @@ nodepend:
 .PHONY: md all
 # DO NOT DELETE
 
-client.dbg: client.h ../incl/config.h ../incl/QT/clientEvent.h
-client.dbg: ../incl/QT/Action_def.h ../incl/TAXI/Tbase.h
+client.opt: client.h ../incl/config.h ../incl/QT/clientEvent.h
+client.opt: ../incl/QT/Action_def.h ../incl/TAXI/Tbase.h
