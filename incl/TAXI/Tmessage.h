@@ -22,6 +22,7 @@ class GraphDebug {
   virtual void printf(const char *,...) {}
   static GraphDebug *gd;
   GraphDebug() {if (gd==(GraphDebug *)0) gd=this;}
+  virtual ~GraphDebug() {}
 };
 
 inline void DrawGraph(Graph &G) {GraphDebug::gd->DrawGraph(G);}

@@ -144,7 +144,7 @@ void DrawPolyline(QPainter *p,pigalePaint *paint)
           paint->DrawSeg(p, Epoint1[ee], Epoint2[ee] , ecolor[ee]);
       }
   // Draw the vertices
-  p->setFont(QFont("lucida",Min((int)(.45 * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("sans",Min((int)(.45 * Min(paint->xscale,paint->yscale) + .5),13)));
   for(tvertex v = 1;v <= G.nv();v++)
        paint->DrawText(p,Vcoord[v],v,vcolor[v],1);
   }
@@ -186,7 +186,7 @@ void DrawCurves(QPainter *p,pigalePaint *paint)
       paint->DrawSeg(p, vcoord[G.vin[ee]], vcoord[G.vin[-ee]] , ecolor[ee]);
       }
   // Draw the vertices
-  p->setFont(QFont("lucida",Min((int)(10*Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("sans",Min((int)(10*Min(paint->xscale,paint->yscale) + .5),13)));
   for(tvertex v = 1;v <= n;v++) 
       paint->DrawText(p,vcoord[v],v,vcolor[v],1);
   }
@@ -206,7 +206,7 @@ void DrawTContact(QPainter *p,pigalePaint *paint)
       if(vp1[v].x() > .0)paint->DrawSeg(p,vp1[v],vp2[v],Black);
       }
   // Draw text
-  p->setFont(QFont("lucida",Min((int)(sizetext() * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("sans",Min((int)(sizetext() * Min(paint->xscale,paint->yscale) + .5),13)));
   for(v=1; v <= G.nv();v++)
       paint->DrawText(p,postxt[v],v,G.vcolor[v],0);
   }
@@ -228,7 +228,7 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
   p->drawLine(ps,pt);
   int dy = Min(12,paint->height()/(pmax().y()+1)-2);
   int dx;
-  QFont font = QFont("lucida",dy);
+  QFont font = QFont("sans",dy);
   p->setFont(font);
   for(tvertex v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.45:-.45;
@@ -337,7 +337,7 @@ void DrawFPPVisibility(QPainter *p,pigalePaint *paint)
 
   // Draw vertices
   double xt = .9*Min(2*alpha*paint->xscale,beta*paint->yscale);
-  p->setFont(QFont("lucida",Min((int)(xt + .5),13)));
+  p->setFont(QFont("sans",Min((int)(xt + .5),13)));
   for(tvertex v=1; v <= G.nv();v++) 
       paint->DrawText(p,xliv[v]-beta, y[v], xriv[v]-xliv[v]+2.*beta, 2.*alpha,v,vcolor[v]);
   }
@@ -352,7 +352,7 @@ void DrawVisibility(QPainter *p,pigalePaint *paint)
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
   double alpha=0.35;
-  p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("sans",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   Tpoint a,b;
   for(tvertex v=1;v<=G.nv();v++)
       paint->DrawText(p,x1[v]-alpha,y[v]+alpha, x2[v]-x1[v]+2*alpha,2*alpha,v,vcolor[v]);
@@ -378,7 +378,7 @@ void DrawGeneralVisibility(QPainter *p,pigalePaint *paint)
   Tpoint a,b;
 
 
-  p->setFont(QFont("lucida",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
+  p->setFont(QFont("sans",Min((int)(1.8*alpha * Min(paint->xscale,paint->yscale) + .5),13)));
   for(tvertex v=1;v<=G.nv();v++)
       {if(x1m[v] != x2m[v]) // always 
           {a.x() = x1m[v]; a.y() = y[v];
@@ -429,15 +429,38 @@ pigalePaint::pigalePaint(QWidget *parent, const char *name,pigaleWindow *f):
   setFocusPolicy(QWidget::ClickFocus); 
   }
 void pigalePaint::print(QPrinter* printer)
-  {if(index < 0)return;
-  if(printer->setup(this))
-      {QPainter pp(printer);
+  { QString FileName="";
+    QString OldFileName="";
+    bool outf=false;
+    QPrinter::Orientation orient=QPrinter::Portrait;
+    QPrinter::ColorMode cm=QPrinter::Color;
+    if(index < 0)return;
+    if(mw->ServerExecuting)
+      { FileName = QString("/tmp/server%1.ps").arg(mw->ServerClientId);
+	orient=printer->orientation();
+	cm=printer->colorMode();
+	printer->setOrientation(QPrinter::Portrait);
+	printer->setColorMode(QPrinter::Color);
+	OldFileName=printer->outputFileName();
+	printer->setOutputFileName(FileName);
+	outf=printer->outputToFile();
+	printer->setOutputToFile(true);
+      }
+    else if(!printer->setup(this)) return;
+    { QPainter pp(printer);
       QPaintDeviceMetrics pdm(printer);
       int nx = width();
       int ny = height();
       double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
       printer->setResolution((int)(scale*printer->resolution()+.5));
       drawIt(&pp);
+    }
+    if(mw->ServerExecuting)
+      {
+	printer->setOrientation(orient); 
+	printer->setColorMode(cm);
+	printer->setOutputFileName(OldFileName);
+	printer->setOutputToFile(outf);
       }
   }
 void pigalePaint::png()

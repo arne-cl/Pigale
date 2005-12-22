@@ -23,13 +23,13 @@ static int Test3(GraphContainer &GC,int &drawing);
 #if VERSION_ALPHA
 void pigaleWindow:: initMenuTest()
   {setUserMenu(1,"BFS drawing");
-  setUserMenu(2,"Polrec drawing");
+  setUserMenu(2,"test ST");
   setUserMenu(3,"Properties");
   }
 #else
 void pigaleWindow:: initMenuTest()
   {setUserMenu(1,"1000xTestPlanar");
-  setUserMenu(2,"Polrec drawing");
+  setUserMenu(2,"1000xTestPlanar2");
   setUserMenu(3,"Properties");
   }
 #endif
@@ -38,14 +38,117 @@ int Test(GraphContainer &GC,int action,int &drawing)
   else if(action == 2)return Test2(GC,drawing);
   return Test3(GC,drawing);
   }
+/******************************************************************************************************/
+/******************************************************************************************************/
+#if VERSION_ALPHA
+bool find2ContractibleEdges(TopologicalGraph &G,tbrin in, tbrin &b1,tbrin &b2)
+// In a max planar graph find two contractible edges, adjacent to in.
+// C4 are not yet checked
+  {tvertex v = G.vin[in];
+  int degree = G.Degree(v);
+  svector<tvertex> voisins(1,degree);   voisins.SetName("voisins");
+  svector<tbrin> bv(1,degree);   bv.SetName("bv");// brins adjacent to v
+  svector<bool> vAdj(1,G.nv());  vAdj.SetName("vAdj"); vAdj.clear(); // vertices adjacent to v <=> true
+  svector<bool> notCon(1,degree);  notCon.SetName("notCon"); notCon.clear(); // contractible <=> false
+  // mark vertices adjacent to  G.vin[b]
+  tbrin b = in;
+  int nv = 0;
+  do
+      {voisins[++nv] = G.vin[-b];
+      bv[nv] = b;
+      vAdj[G.vin[-b]] = true;
+      }while((b = G.acir[b]) != in);
+
+  // mark  vertices of vAdj which are adjacent
+  notCon[1] = true; 
+  notCon[nv] = true; 
+  for(nv = 1; nv <= degree;nv++)
+      {tbrin b0 = G.pbrin[voisins[nv]];
+      b = b0;
+      do
+          {tvertex w = G.vin[-b];
+          if( v == w || vAdj[w] == false)continue;
+          if(G.acir[b] == -bv[nv] || G.cir[b] == -bv[nv])continue;
+          notCon[nv] = true;
+          }while((b = G.acir[b]) != b0);
+      }
+
+ int numContractible = 0;
+ int nv1 = 0,nv2 = 0;
+ for(nv = 1; nv <= degree;nv++)
+     {if(notCon[nv] == true)continue;
+     ++numContractible;
+     if(nv1 == 0) nv1 = nv;
+     else if(nv1 && nv != nv1+1)nv2 = nv;
+     }
+
+ if(nv2 == 0)
+     {qDebug("v=%d degree:%d contractible:%d",v(),degree,numContractible);
+     for(nv = 1; nv <= degree;nv++)
+         qDebug("voisins:%d contractible:%d",voisins[nv](),1-(int)notCon[nv]);
+     return false;
+     }
+ else 
+     {if( bv[nv1].GetEdge() > bv[nv2].GetEdge())
+         {b1 = bv[nv1];b2 = bv[nv2]; }
+     else
+         {b1 = bv[nv2];b2 = bv[nv1]; }
+     return true;
+     }
+  }
+tbrin findBrinLabel(GeometricGraph &G,tvertex v,long label)
+  {tbrin brin = 0;
+  tbrin b0 = G.pbrin[v];
+  tbrin b = b0;
+  do
+      {if(G.elabel[b.GetEdge()] == label){brin = b;break;}
+      }while((b = G.acir[b]) != b0);
+  if(b() && G.vin[b] != v)
+      brin = brin.opposite();
+  //qDebug(" found at %d label:%ld  -> %d %d",v(),label,G.vin[brin](),G.vin[-brin]());
+  return brin;
+  }
 int Test2(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-  if(EmbedPolrecLR(G) != 0)return -1;
-  drawing = 8;
-  return 3;
+  {GeometricGraph G(GC);
+  for(tedge e = 1; e <= G.ne();e++)G.elabel[e] = e();
+  for(tvertex vv = 1; vv <= G.nv();vv++)G.vlabel[vv] = vv();
+  G.ComputeGeometricCir();
+  G.extbrin() =  G.acir[G.extbrin()];
+  Prop<bool> EdgeToDelete(G.Set(tedge()),PROP_MARK); 
+  EdgeToDelete.clear();
+  long extEdgeLabel =  G.elabel[G.extbrin().GetEdge()];
+  tvertex v = G.vin[ G.acir[G.extbrin()]];
+  tbrin brin =  G.extbrin();
+  qDebug("ext %ld %ld (%ld)",G.vlabel[G.vin[brin]],G.vlabel[G.vin[-brin]],G.elabel[brin.GetEdge()]);
+
+  tbrin b1,b2;
+  bool xx = true;
+  // Reverse pour contracter vers le bon sommet
+  while(xx &&G.nv() > 4 && find2ContractibleEdges(G,brin,b1,b2))
+      {EdgeToDelete[G.acir[-b1].GetEdge()] = true;      EdgeToDelete[G.cir[-b1].GetEdge()] = true;
+      EdgeToDelete[G.acir[-b2].GetEdge()] = true;      EdgeToDelete[G.cir[-b2].GetEdge()] = true;
+      qDebug("A %ld %ld (%ld) ",G.vlabel[G.vin[b1]],G.vlabel[G.vin[-b1]],G.elabel[b1.GetEdge()]);
+      qDebug("B %ld %ld (%ld) ",G.vlabel[G.vin[b2]],G.vlabel[G.vin[-b2]],G.elabel[b2.GetEdge()]);
+      tedge je =b1.GetEdge();
+      if(G.vin[je] == v)G.ReverseEdge(je);
+      v = G.ContractEdge(je); 
+      je =b2.GetEdge();
+      if(G.vin[je] == v)G.ReverseEdge(je);
+      v = G.ContractEdge(je);
+      // erase
+      Forall_adj_edges(je,v,G)
+        {if( EdgeToDelete[je])G.DeleteEdge(je);
+        }
+      brin = findBrinLabel(G,v,extEdgeLabel);
+      qDebug("ext %ld %ld (%ld)",G.vlabel[G.vin[brin]],G.vlabel[G.vin[-brin]],G.elabel[brin.GetEdge()]);
+      //xx = false;
+      if(!G.CheckSimple())break;
+      }
+  if(G.nv() > 4)setError(-1,"not reduced");
+  G.Set(tedge()).erase(PROP_MARK);
+  return 2;
   }
 
-#if VERSION_ALPHA
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
     int morg=G.ne();
@@ -71,6 +174,11 @@ int Test1(GraphContainer &GC,int &drawing)
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
   for(int i = 0;i < 1000;i++)G.TestPlanar();
+  return 0;
+  }
+int Test2(GraphContainer &GC,int &drawing)
+  {TopologicalGraph G(GC);
+  for(int i = 0;i < 1000;i++)G.TestPlanar2();
   return 0;
   }
 #endif

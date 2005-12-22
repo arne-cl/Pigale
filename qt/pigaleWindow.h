@@ -115,6 +115,7 @@ private:
   void UndoInit();
   void initMenuTest();
 public slots:
+ void putOnTop(); 
   void banner();
   void timerWait();
   void UndoSave();
@@ -133,6 +134,7 @@ public:
   void postWait(const QString &msg);
   void postMessageClear();
   void postDrawG();
+  void wait(int millisec);
   void UndoTouch(bool save=false);
   void blockInput(bool t);
   int getKey();

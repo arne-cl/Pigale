@@ -708,7 +708,7 @@ int EmbedPolrecGeneral(TopologicalGraph &G,int type)
 // type == 1 -> polercLR
   {int morg = G.ne();
   svector<tbrin> cir0,acir0;
-  tbrin b0;
+  tbrin b0=0;
   if(type == 1){cir0 = G.cir; acir0 = G.acir;b0 = G.extbrin();}
   G.MakeConnected();
   if(type == 1)G.Planarity(G.extbrin());

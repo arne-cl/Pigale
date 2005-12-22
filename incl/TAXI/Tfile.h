@@ -37,6 +37,7 @@ class Taxi_FileIO {
   virtual int Capabilities(void) { return 0;}
   virtual const char *Name(void) {return "No Name";}
   virtual const char *Ext(void) {return "";}
+  virtual ~Taxi_FileIO() {}
 };
 
 

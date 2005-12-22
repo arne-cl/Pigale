@@ -1,7 +1,8 @@
+29/11/2005: When taking a png of a 3d embedding, Pigale's window becomes a top level window.
 30/10/2005: When you save a graph in "graphml" format, the colors and thickness and vertex labels are saved.
 26/08/2005: When you save a graph in "txt" format, the labels (previously the index) are saved.
 10/07/2005: Contract an edge: now contracts towards the vertex closer to the mouse arrow.
-03/07/2005: Now it is possible to modify the labels of the vertices or reset tem as the indices.
+03/07/2005: Now it is possible to modify the labels of the vertices or reset them as the indices.
 ----------------------------------------------------------------------------------
 12/06/2005: Some new drawings that can display any map: the tree has an upward drawing and the cotree edges 
                       are now represented by "Us" (mostly theorical tools).

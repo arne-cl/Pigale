@@ -101,7 +101,7 @@ int GraphGL::update()
       hb2->addWidget(d->Slider);
 
       d->bt_facet = new QCheckBox("Facet",this); d->bt_facet->setChecked(false);
-      d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(false);
+      d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(true);
       d->bt_color = new QCheckBox("Color",this); d->bt_color->setChecked(false);
       hb->addWidget(d->bt_facet); hb->addWidget(d->bt_label); hb->addWidget(d->bt_color);
 
@@ -224,16 +224,50 @@ GLWindow::GLWindow(GraphGLPrivate *g,QWidget * parent,const char * name)
   {is_init = false;
   object = 0;
   setAnimationDelay(-1);
-  xRot = yRot = zRot = 0.0;
+  xRot = yRot = zRot = .0;
   scale = 1.;	
   }
 GLWindow::~GLWindow()
   {makeCurrent();
   glDeleteLists(object,1);
   }
+
 void GLWindow::png()
   {qApp->processEvents();
-  QPixmap pixmap = QPixmap::grabWindow(this->winId());
+  pigaleWindow  *mw = (pigaleWindow*)qApp->mainWidget () ;
+  QPoint p = mw->pos();
+  if(mw->ServerExecuting)
+      {//mw->putOnTop();qApp->processEvents();
+      QPoint p0(0,0);
+#ifdef _WINDOWS
+      mw->reparent(0,WDestructiveClose |WStyle_StaysOnTop,p0,true);
+#else
+      mw->reparent(0,WDestructiveClose |WStyle_StaysOnTop| WX11BypassWM,p0,true);
+#endif
+      mw->wait(100);
+      }
+
+  QPixmap pixmap = QPixmap::grabWindow(this->winId(),2);
+  qApp->processEvents();
+  if(mw->ServerExecuting)mw->reparent(0,WDestructiveClose ,p,true);
+
+  /*#include <qimage.h>
+    #define GAMMA 2.2
+  QImage image  = pixmap.convertToImage(); 
+  for(int i = 0; i < image.width();i++)
+      for(int j = 0; j < image.height();j++)
+          {QRgb pix = image.pixel(i,j);
+          QColor col =  QColor(pix);
+          int  h,s,v;
+          col.getHsv (h,s, v);
+          double lum = v/255.;
+          lum = pow(1.- pow(lum,GAMMA),1./GAMMA);
+          col.setHsv(h,s,(int)(lum*255.));
+          pix = col.pixel();
+          image.setPixel(i,j,pix);
+          }
+  pixmap.convertFromImage(image,0); 
+  */
   QString FileName;
   if(!glp->mw->ServerExecuting)
       {FileName = QFileDialog::
@@ -253,14 +287,16 @@ void GLWindow::initializeGL()
   glDepthFunc(GL_LESS);//hide features
   glEnable(GL_DEPTH_TEST);//hide features
   glEnable(GL_LINE_SMOOTH);//pas grand chose
-  qglClearColor(color[Black]);
+  //qglClearColor(color[Black]);GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
+  qglClearColor(color[White]);
   glShadeModel(GL_FLAT);
   //fog
   glEnable(GL_FOG);
   glFogi(GL_FOG_MODE, GL_LINEAR);
-  glFogf(GL_FOG_DENSITY,.15);
-  glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
-  GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
+  //glFogi(GL_FOG_MODE, GL_EXP);glFogf(GL_FOG_DENSITY,.15);
+  glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,10.5);
+  //glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
+  GLfloat fog_color[] = {1.0,1.0,1.0, 1.0};
   glFogfv(GL_FOG_COLOR,fog_color);
 #ifdef HAVE_LIBGLUT
   CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
@@ -274,10 +310,15 @@ void GLWindow::initialize(bool init)
   }
 GLuint GLWindow::load(bool init)
   {GLfloat ds = (1./40.)*glp->vertex_width;
-  if(init)
-      {xRot = yRot = zRot = 0.0;
+  if(init) // angles when first display
+      {if(((pigaleWindow*)qApp->mainWidget ())->ServerExecuting)
+          {xRot =  zRot = 15.0;
+          yRot = - xRot;
+          }
+      else
+          xRot =  yRot =  zRot = 0.0;
       xTrans = yTrans = 0.0;
-      zTrans = -10.0;
+      zTrans = -9.0;// -10
       scale = 1.41;
       }
   RnEmbedding &embed = glp->embed();
@@ -297,7 +338,7 @@ GLuint GLWindow::load(bool init)
       x1 = (GLfloat)embed.rx(v1);y1 = (GLfloat)embed.ry(v1);z1 = (GLfloat)embed.rz(v1);
 
       if(G.ecolor[e] == Black && WithFaces)glColor3f(.5,.5,.5);
-      else if(G.ecolor[e] == Black)glColor3f(1.,1.,.8);
+      //else if(G.ecolor[e] == Black)glColor3f(1.,1.,.8);
       else qglColor(color[bound(G.ecolor[e],1,16)]);
       glVertex3f(x0,y0,z0);      glVertex3f(x1,y1,z1);
       }
@@ -377,6 +418,8 @@ void GLWindow::paintGL()
   glLoadIdentity();
   transform();
   glCallList(object);
+//   cout <<"x:"<< xRot <<" y:"<<yRot<<" z:"<<zRot<<endl;
+//   cout << "z: "<<zTrans<<endl;
   }
 void GLWindow::paintEvent(QPaintEvent *e)
   {//initialize the QLWindow

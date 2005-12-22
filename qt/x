@@ -12,5 +12,5 @@ a=./Pigale_dbg
 fi
 
 cd ..
-make -f gnumakefile -e && cd qt && $a &
+time -p make -f gnumakefile -e && cd qt && $a &
 

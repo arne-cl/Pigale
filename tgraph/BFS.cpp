@@ -153,7 +153,7 @@ private:
         }
     void crunch(int num)
         {int i=botq[num];
-        if (topq[num]=i) topq[num]=botq[num]=0;
+        if (topq[num]==i) topq[num]=botq[num]=0;
         else botq[num]=next[i];
         give_back(i);
         }

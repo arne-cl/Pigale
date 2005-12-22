@@ -99,12 +99,17 @@ void ClientSocket::readClient()
 void ClientSocket::run()
   {while (canReadLine())
       {QString str = cli.readLine();
+      //cout << "received:" <<str<<":"<<endl;
       if(str.at(0) == '#')
           {cli << "!" << str << endl;
           }
       else if(str.at(0) == '!')
           {cli << ":END OF FILE" << endl;
           cli << "!!" << endl;
+          }
+      else if(str.at(0) == '|')
+          {cli << ":QUIT" << endl;
+          cli << "!|" << endl;
           }
       else 
           xhandler(str);
@@ -124,8 +129,9 @@ void ClientSocket::xhandler(const QString& dataAction)
   int action = mw->getActionInt(beg);
   Tprintf("%s ",(const char *)dataAction);
  // call the right handler
+  //cout <<dataAction<<" action:"<<beg<<" ->"<<action<<endl;
   if(action == 0)
-      ;
+     setError( UNKNOWN_COMMAND,"unknown command");
   else if(action > A_INFO && action < A_INFO_END)
       handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
@@ -136,12 +142,59 @@ void ClientSocket::xhandler(const QString& dataAction)
       {if(mw->graph_properties->actionAllowed(action))
           mw->handler(action);
       else 
+          {//cout <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
           cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
+          }
+      }
+  else if (action > A_PROP_DEFAULT && action < A_PROP_DEFAULT_END)
+      {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+      if(fields.count() != 3)
+          {setError(WRONG_PARAMETERS,"Bad number of parameters");
+          cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
+          setError();
+          cli << "!" << endl;
+          return;
+          }
+      bool ok =true;
+      int setnum = fields[0].toInt(&ok); if (ok && (setnum<0 || setnum>2)) ok=false;
+      if(!ok)setError(WRONG_PARAMETERS,"Wrong set number");
+      PSet *set=(PSet *)0;
+      switch(setnum) {
+      case 0:
+	set=&mw->GC.Set(tvertex());
+	break;
+      case 1:
+	set=&mw->GC.Set(tedge());
+	break;
+      case 2:
+	set=&mw->GC.Set(tbrin());
+	break;
+      }
+      int pnum=fields[1].toInt(&ok); if (ok && (pnum<0 || pnum > 255)) ok=false;
+      if(!ok)setError(WRONG_PARAMETERS,"Wrong property number");
+      switch(action)
+         {case A_PROP_DEF_SHORT:
+             {Prop<short> x(*set,pnum);
+	       x.definit(fields[2].toShort(&ok));
+	     }
+	     break;
+	 case A_PROP_DEF_INT:
+             {Prop<int> x(*set,pnum);
+	       x.definit(fields[2].toInt(&ok));
+	     }
+	     break;
+	 default:
+             setError( UNKNOWN_COMMAND,"unknown command");
+	     ok=true;
+	 }
+      if(!ok)setError(WRONG_PARAMETERS,"Wrong second parameter");
       }
   else if(action > A_TRANS && action < A_TRANS_END)
       {if(action == A_TRANS_SEND_PNG) 
           // send a png
           Png();
+      else if(action == A_TRANS_SEND_PS) 
+          PS();
       else if(action == A_TRANS_GET_CGRAPH) 
           // get a graph form client and read a record
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
@@ -161,7 +214,7 @@ void ClientSocket::xhandler(const QString& dataAction)
       }
   else if(action > A_SET_GEN && action < A_SET_GEN_END)
       {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-      if(fields.count() < 1)
+    if(fields.count() < 1)
           {setError(WRONG_PARAMETERS,"Missing  parameter");
           cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
           setError();
@@ -182,6 +235,9 @@ void ClientSocket::xhandler(const QString& dataAction)
               case A_SET_GEN_M:
                   mw->Gen_M = value;
                   break;
+              case A_SET_GEN_SEED:
+                  randomSetSeed() = value;
+		  break;
               default:
                   setError( UNKNOWN_COMMAND,"unknown command");
                   break;
@@ -295,6 +351,27 @@ void ClientSocket::Png()
   char *buff = new char[size];
   stream.readRawBytes(buff,size); 
   cli <<"!PNG" << endl;
+  clo.writeBytes(buff,size);
+  delete [] buff;
+  file.remove();
+  }
+void ClientSocket::PS()
+  {mw->print();
+  QString PsFileName =  QString("/tmp/server%1.ps").arg(mw->ServerClientId);
+  PsFileName = universalFileName(PsFileName);
+  QFileInfo fi = QFileInfo(PsFileName);
+  uint size = fi.size();
+  if(size == 0)
+    {setError(-1,"no ps file"); return ;}
+  else if(sdebug)
+      cli << ":SENDING:" << PsFileName << endl;
+  
+  QFile file(PsFileName);
+  file.open(IO_ReadWrite);
+  QDataStream stream(&file);
+  char *buff = new char[size];
+  stream.readRawBytes(buff,size); 
+  cli <<"!PS" << endl;
   clo.writeBytes(buff,size);
   delete [] buff;
   file.remove();

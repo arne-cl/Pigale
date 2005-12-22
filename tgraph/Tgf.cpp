@@ -424,7 +424,8 @@ int Tgf::DeleteRecord(int num)
       WriteHeader();
       return 1;
       }
-  long next = (num < Header.RecordNum) ?  next = IfdOffset[num+1] : 0L;
+  //long next = (num < Header.RecordNum) ?  next = IfdOffset[num+1] : 0L;
+  long next = (num < Header.RecordNum) ?  IfdOffset[num+1] : 0L;
   if(num > 1)
       {stream.seekp(IfdOffset[num - 1]+12, ios::beg);
       stream.write((char *)&next, 4);

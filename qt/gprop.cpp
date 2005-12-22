@@ -25,7 +25,7 @@
 Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 				   ,const char* name,WFlags fl)
     : QWidget( parent,name,fl)
-    ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END),_updateMenu(true)
+    ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END,1),_updateMenu(true)
   {if(!name)setName("Graph_Properties");
   setMinimumHeight(180); 
   //marge,spacing
@@ -211,7 +211,6 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
   allowAction(A_ALGO_NPSET,!P && NotBigS && S);                    //maxplanar
   allowAction(A_ALGO_MAX_PLANAR,!P && NotBigS && S);               //maxplanar
-  allowAction(A_EMBED_POLAR,C1 && NotBigD);                        //polair
   //Augment
   if(print)
       {allowAction(A_AUGMENT_CONNECT,(G.nv() > 1) && !C1);               //make connected 
@@ -247,18 +246,22 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
   allowAction(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
   allowAction(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
-  allowAction(A_EMBED_VISION,(!SMALL || G.ne() > 1) && P && NotBigD);//Vision
+  allowAction(A_EMBED_VISION,(!SMALL || G.ne() >= 1) && P && NotBigD);//Vision
 #ifndef VERSION_ALPHA
-  allowAction( A_EMBED_GVISION,C2&& NotBigD);//Vision
+  allowAction(A_EMBED_GVISION,(!SMALL || G.ne() > 1)  && NotBigD);//GVision
 #else
-  allowAction( A_EMBED_GVISION,NotBigD);//Vision
+  allowAction( A_EMBED_GVISION,(G.nv() > 1) && NotBigD);//GVision
 #endif
   allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   allowAction(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
   allowAction(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
-  allowAction(A_EMBED_SPRING,NotBigD);                               //spring
-  allowAction(A_EMBED_SPRING_PM,NotBigD);                            //springPM
-  allowAction(A_EMBED_CURVES, NotBigD);                               //curves
+  allowAction(A_EMBED_POLAR,C1 && NotBigD);//
+  allowAction(A_EMBED_POLREC_DFS,C1 && NotBigD);//
+  allowAction(A_EMBED_POLREC_DFSLR,C1 && NotBigD);//
+  allowAction(A_EMBED_POLREC_BFS,C1 && NotBigD);//
+  allowAction(A_EMBED_SPRING,(G.ne() >= 1) && NotBigD);                               //spring
+  allowAction(A_EMBED_SPRING_PM,(G.ne() >= 1) && NotBigD);                            //springPM
+  allowAction(A_EMBED_CURVES, (G.ne() >= 1) && NotBigD);                               //curves
   allowAction(A_EMBED_JACQUARD,!SMALL && P && NotBigD);              //Jacquard
   allowAction(A_EMBED_3dSCHNYDER,!SMALL && S && P && NotBigD);       //Schnyder 3d
   //dual

@@ -187,7 +187,7 @@ void DFSGraph::ShrinkSubdivision()
   Prop<tedge> NewEdge(G.Set(tedge()),PROP_NEW);
   NewEdge.clear();
   // Cote racine
-  tedge f;
+  tedge f=0;
   tedge cotree_root=0;
   // le coarbre
   for (e=G.nv(); e<=G.ne();e++)
@@ -306,7 +306,8 @@ void DFSLow::LralgoSort(_LrSort &LrSort)
   {
   svector<tedge> thin(0,nv()); thin.clear(); thin.SetName("thin:_DFS");
   svector<tedge> thick(0,nv()); thick.clear(); thick.SetName("thick:_DFS");
-  tedge je,pje,nextje;
+  tedge je,nextje;
+  tedge pje=0;
   tvertex iv;
 
   TEdgeStackPartition Stack(LrSort.linkt);
@@ -518,7 +519,8 @@ int DFSGraph::MarkKuratowski()
   Set(tbrin()).erase(PROP_PBRIN);
 
   // find last edge incident to neither v1 or v2 or vv1 or vv2
-  tvertex vvv1,vvv2;
+  tvertex vvv1=0;
+  tvertex vvv2=0;
   for (e=1; e<=ne(); e++)
       {if (keep[e]) continue;
       vvv1= nvin[e];

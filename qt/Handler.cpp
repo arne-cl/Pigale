@@ -51,7 +51,7 @@ int OrientHandler(GraphContainer &GC,int action)
           ret = 1;
           break;
       case A_REORIENT_COLOR:
-          {short ecol; G.ecolor.getinit(ecol);
+          {short ecol=0; G.ecolor.getinit(ecol);
           for(tedge e = 1; e <= G.ne() ;e++)
               if(G.ecolor[e] == ecol)
                   {G.ReverseEdge(e);eoriented[e] = true;}
@@ -163,9 +163,9 @@ int AlgoHandler(GraphContainer &GC,int action,int nn)
           return 1;
           break;
       case A_ALGO_RESET_COLORS:
-          {short ecol; G.ecolor.getinit(ecol);
-          short vcol;  G.vcolor.getinit(vcol);
-          int width; G.ewidth.getinit(width);
+          {short ecol=0; G.ecolor.getinit(ecol);
+          short vcol=0;  G.vcolor.getinit(vcol);
+          int width=0; G.ewidth.getinit(width);
           ForAllEdges(e,G) {G.ecolor[e] = ecol; G.ewidth[e] = width;}
           ForAllVertices(v,G) G.vcolor[v] = vcol;
           }
@@ -445,19 +445,22 @@ int RemoveHandler(GraphContainer &GC,int action)
           G.RemoveIsthmus();
           break;
       case A_REMOVE_COLOR_V://Erase Color Vertices
-          short vcol; GG.vcolor.getinit(vcol);
+	  {short vcol=0; GG.vcolor.getinit(vcol);
           for(v= GG.nv() ;v > 0;v--)
               if(GG.vcolor[v] == vcol)GG.DeleteVertex(v);
+	  }
           break;
       case A_REMOVE_COLOR_E://Erase Color Edges
-          short ecol; GG.ecolor.getinit(ecol);
+	  {short ecol=0; GG.ecolor.getinit(ecol);
           for(e = GG.ne() ;e > 0;e--)
               if(GG.ecolor[e] == ecol)GG.DeleteEdge(e);
+	  }
           break;
       case A_REMOVE_THICK_E://Erase Thick Edges
-          int ewidth; GG.ewidth.getinit(ewidth);
+	  {int ewidth=0; GG.ewidth.getinit(ewidth);
           for(e = GG.ne() ;e > 0;e--)
               if(GG.ewidth[e] == ewidth)GG.DeleteEdge(e);
+	  }
           break;
       default:
           return 0;

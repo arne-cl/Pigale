@@ -398,7 +398,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
       if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
           gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-      short vcol;  G.vcolor.getinit(vcol);
+      short vcol=0;  G.vcolor.getinit(vcol);
       G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
       Tpoint translate(this->width()/2.,0);
@@ -429,7 +429,7 @@ void GraphEditor::contentsMousePressEvent(QMouseEvent* e)
           gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-      short vcol;  G.vcolor.getinit(vcol);
+      short vcol=0;  G.vcolor.getinit(vcol);
       G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
       Tpoint translate(this->width()/2.,0);
@@ -466,7 +466,7 @@ void GraphEditor::contentsMouseMoveEvent(QMouseEvent* e)
   else if(gwp->moving_subgraph)
       {GeometricGraph & G = *(gwp->pGG);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-      short vcol;  G.vcolor.getinit(vcol);
+      short vcol=0;  G.vcolor.getinit(vcol);
       NodeItem * node;
       for(tvertex v = 1; v <= G.nv();v++)
           {node =(NodeItem *)nodeitem[v];
@@ -516,7 +516,7 @@ void GraphEditor::contentsMouseReleaseEvent(QMouseEvent* event)
       if(!gwp->FitToGrid)return;
       GeometricGraph & G = *(gwp->pGG);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-      short vcol;  G.vcolor.getinit(vcol);
+      short vcol=0;  G.vcolor.getinit(vcol);
       NodeItem * node;
       // Find a vertex of the subgraph
       tvertex mv = 0;
@@ -677,16 +677,40 @@ void GraphEditor::load(bool initgrid)
   canvas()->update();
   }
 void GraphEditor::print(QPrinter *printer)
-  {if(printer->setup(this))
-      {QPainter pp(printer);
+  { QString FileName="";
+    QString OldFileName="";
+    bool outf=false;
+    QPrinter::Orientation orient=QPrinter::Portrait;
+    QPrinter::ColorMode cm=QPrinter::Color;
+    if(gwp->mywindow->ServerExecuting)
+      { FileName = QString("/tmp/server%1.ps").arg(gwp->mywindow->ServerClientId);
+	orient=printer->orientation();
+	cm=printer->colorMode();
+	printer->setOrientation(QPrinter::Portrait);
+	printer->setColorMode(QPrinter::Color);
+	OldFileName=printer->outputFileName();
+	printer->setOutputFileName(FileName);
+	outf=printer->outputToFile();
+	printer->setOutputToFile(true);
+      }
+    else if(!printer->setup(this)) return; 
+    { QPainter pp(printer);
       QPaintDeviceMetrics pdm(printer);
       int nx = gwp->canvas->width()-space-sizerect-20;
       int ny = gwp->canvas->height();
       double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
       printer->setResolution((int)(scale*printer->resolution()+.5));
       gwp->canvas->drawArea(QRect(0,0,nx,ny),&pp,FALSE);
+    }
+    if(gwp->mywindow->ServerExecuting)
+      {
+	printer->setOrientation(orient); 
+	printer->setColorMode(cm);
+	printer->setOutputFileName(OldFileName);
+	printer->setOutputToFile(outf);
       }
   }
+
 void GraphEditor::png()
   {QString FileName;
   if(!gwp->mywindow->ServerExecuting)

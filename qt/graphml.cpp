@@ -1,5 +1,5 @@
 /****************************************************************************
-** $Id: graphml.cpp,v 1.2 2005/10/30 14:23:24 hbonnin Exp $
+** $Id: graphml.cpp,v 1.3 2005/12/22 13:36:14 hbonnin Exp $
 **
 ** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
 **
@@ -10,10 +10,10 @@
 
 #include <qfile.h>
 #include <qxml.h>
-#include <qwindowdefs.h>
+#include <qwindowdefs.h> 
 #include <qmap.h>
 #include <QT/graphml.h>
-#include <config.h>
+#include <config.h> 
 
 MLKEY(V, PROP_COORD, Tpoint, "Coordinates");
 MLKEY(V, PROP_COLOR, short, "Color");

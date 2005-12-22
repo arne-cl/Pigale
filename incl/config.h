@@ -67,7 +67,7 @@
 #define PACKAGE_NAME "pigale"
 
 /* Path to Pigale root directory */
-#define PACKAGE_PATH "/home/pigale"
+#define PACKAGE_PATH "/usr/local/pigale-1.2.15"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "pigale 1.2.15"

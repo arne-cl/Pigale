@@ -58,6 +58,7 @@ private:
   void run();
   void sendServerId();
   void Png();
+  void PS();
   void  sendSaveGraph(const QString &FileName);
   void readServerGraph(QString &dataParam);
   void readClientGraph(int indexRemoteGraph);

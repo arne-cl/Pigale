@@ -69,8 +69,8 @@ static int TriangulateByMarks(TopologicalGraph &G, svector<int> &mark)
   {int OrgM=G.ne(), len;
      
   svector<int> MarkedB(-OrgM,OrgM,0);
-  tbrin b, bb, b0, b1, b2, b3, b4, PrevB, NextB;
-     
+  tbrin b, bb, b0, b1, b2, b3, b4, PrevB;
+  tbrin NextB=0;
   for (b=-OrgM;b<=OrgM;b++)
       {if (MarkedB[b]) continue;
       bb=b;

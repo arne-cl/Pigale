@@ -63,7 +63,7 @@ tedge GeometricGraph::FindEdge(const Tpoint &p,double node_radius) const
 tedge GeometricGraph::FindEdge(const Tpoint &p) const
   {Tpoint ps, pt;
   double d,d_min = DBL_MAX;
-  tedge e0;
+  tedge e0=0;
   if(!ne()) return 0;
   for (tedge e=1; e<=ne(); e++)
       {ps = vcoord[vin[-e]]; pt = vcoord[vin[e]];
@@ -151,7 +151,7 @@ tbrin GeometricGraph::FindExteriorFace()
   {//find leftmost vertex with edges
   if(!ne())return 0;
   double x = DBL_MAX;
-  tvertex lv;
+  tvertex lv=0;
   for(tvertex v = 1; v <= nv();v++)
       if(vcoord[v].x() < x && (pbrin[v]!=0)){x = vcoord[v].x();lv = v;}
 
@@ -192,8 +192,8 @@ tbrin  GeometricGraph::FindExteriorFace(Tpoint& pp)
 int GeometricGraph::ColorExteriorface()
   {if(!FindPlanarMap())
       {DebugPrintf("Exterior face of non planar graph");return -1;}
-  short ecol;  ecolor.getinit(ecol);
-  int width; ewidth.getinit(width);
+  short ecol=0;  ecolor.getinit(ecol);
+  int width=0; ewidth.getinit(width);
   tedge e;
   for(e=1; e<= ne();e++){ecolor[e] = ecol; ewidth[e] = width;}
   tbrin b0 = extbrin();

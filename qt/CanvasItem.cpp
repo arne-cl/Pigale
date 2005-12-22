@@ -241,7 +241,7 @@ void CursItem::setToPoint(int x,int y)
 InfoItem::InfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p)
 : QCanvasText(t,g->canvas)
   {gwp = g;
-  setFont(QFont("lucida",gwp->fontsize));
+  setFont(QFont("sans",gwp->fontsize));
   setTextFlags(Qt::AlignCenter);
   setColor(Qt::blue);
   //bug si texte trop long
@@ -254,7 +254,7 @@ int InfoItem::rtti() const
   {return node_rtti;
   }
 InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
-  {QFont font = QFont("lucida",gwp->fontsize);
+  {QFont font = QFont("sans",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 8;  int dy =size.height() +6;
   p.ry() -= dy;
@@ -441,7 +441,7 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   int x = (int) G.vcoord[v].x();
   int y =  gwp->canvas->height() - (int) G.vcoord[v].y();
   QString t = getVertexLabel(G.Container(),v);
-  QFont font = QFont("lucida",gwp->fontsize);
+  QFont font = QFont("sans",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 6;  int dy =size.height() + 2;
   if(t.length() == 0){dx = 8; dy = 8;}
@@ -551,7 +551,7 @@ int NodeTextItem::rtti() const
 NodeTextItem::NodeTextItem(GraphWidgetPrivate* g,QString &t)
     : QCanvasText(t,g->canvas)
   {gwp = g;
-  setFont(QFont("lucida",gwp->fontsize)); 
+  setFont(QFont("sans",gwp->fontsize)); 
   setTextFlags(Qt::AlignCenter);
   setZ(ntxt_z);  
   }

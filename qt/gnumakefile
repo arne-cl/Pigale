@@ -10,9 +10,10 @@ OPT=opt
 PIC=-fpic
 #libray paths
 MQTDIR=$(QTDIR)
-UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
+#UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL -lGLU  
+UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt -L/usr/X11R6/lib -lglut -lGL
 #include paths
-IFLAGS =  -I$(MQTDIR)/include 
+IFLAGS =  -idirafter$(MQTDIR)/include 
 IFLAGS += -I$(PIGALEPATH)/incl
 #awk 
 AWK=awk
@@ -66,7 +67,7 @@ ALLOBJ        = $(wildcard $(VPATH)/*.$(OPT))
 ALLOBJ        += $(wildcard $(PIGALEPATH)/tgraph/.obj/*.$(OPT))
 SLIBOBJ       = $(filter-out $(VPATH)/main.$(OPT), $(OBJ))
 
-all : md $(P) 
+all : md depend $(P) 
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h Action.awk
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
@@ -84,17 +85,16 @@ $(DLIB):$(OBJECTS)
 $(P) : $(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 #	$(CC)  $(CFLAGS) -o $(P)  $(PIGALELIB)  $(UNIXLIB) 
 	g++ -o $(P) $(VPATH)/main.$(OPT) $(PIGALEPATH)/lib/libpigaleQt$(OPT).so $(PIGALEPATH)/lib/libtgraph$(OPT).so  $(UNIXLIB)
-	
+
 clean:
 	@rm -f *~ *bak *.flc  moc_*.cpp  $(OBJ) $(DLIB)
-	
+
 md: 
 	@if ! test -d .obj ; then mkdir .obj ; fi
-	
+
 test:
 	@echo SLIBOBJ=$(SLIBOBJ)
 	@echo OBJ=$(OBJ)
-	
 
 #static:$(DLIB) $(PIGALEPATH)/lib/libtgraph$(OPT).so 
 #	g++  $(CFLAGS) -o s$(P) $(ALLOBJ)  $(UNIXLIB) 

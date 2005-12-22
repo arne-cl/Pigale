@@ -22,7 +22,7 @@ QString  universalFileName(QString const & fileName)
 
 //class Client : public QVBox
 Client::Client(const QString &host, Q_UINT16 port)
-    :ActionsToDo(0),dbg(false),numPng(0)
+  :ActionsToDo(0),dbg(false),numFiles(0)
   {
   infoText = new QTextView( this );
   QHBox *hb1 = new QHBox( this );
@@ -46,6 +46,13 @@ Client::Client(const QString &host, Q_UINT16 port)
   infoText->append("Trying to connect to the server\n" );
   socket->connectToHost(host,port);
   inputText->setFocus();
+  }
+void Client::stop()
+  {ThreadRead.terminate();ThreadRead.wait();
+  }
+void Client::exit()
+  {
+  qApp->quit();
   }
 int Client::ChangeActionsToDo(int delta)
   {int i;
@@ -102,10 +109,6 @@ void Client:: customEvent(QCustomEvent * e )
   {if( e->type() != TEXT_EVENT ) return;
   textEvent *event  =  (textEvent  *)e;
   infoText->append(event->getString());
-  }
-
-void Client::stop()
-  {ThreadRead.terminate();ThreadRead.wait();
   }
 
 void Client::closeConnection()
@@ -206,6 +209,7 @@ void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
       str = str.stripWhiteSpace();
+      //cout << "line:" << str << endl;
       if(str.at(0) == ':')
           writeToClient(str.mid(1));
       else if(str.contains("!PNG"))// receiving a png image
@@ -215,13 +219,29 @@ void Client::socketReadyRead()
           char * buffer = NULL;
           uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
-          QString PngFile = QString("image%1.png").arg(++numPng);
+          QString PngFile = QString("image%1.png").arg(++numFiles);
           QFile file(PngFile);          file.open(IO_ReadWrite);
           QDataStream stream(&file);
           stream.writeRawBytes(buffer,size);
           file.close();
           delete [] buffer;
           if(debug())writeToClient(QString("GOT:%1").arg(PngFile));
+          ChangeActionsToDo(-1);
+          }
+      else if(str.contains("!PS"))// receiving a png image
+          {QString *txt  =  new QString("GET_PS");
+          stack.push(txt);
+          ChangeActionsToDo(1);
+          char * buffer = NULL;
+          uint size = readBuffer(buffer);
+          if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
+          QString PsFile = QString("image%1.ps").arg(++numFiles);
+          QFile file(PsFile);          file.open(IO_ReadWrite);
+          QDataStream stream(&file);
+          stream.writeRawBytes(buffer,size);
+          file.close();
+          delete [] buffer;
+          if(debug())writeToClient(QString("GOT:%1").arg(PsFile));
           ChangeActionsToDo(-1);
           }
       else if(str.contains("!GRAPH"))// receiving a graph
@@ -248,6 +268,10 @@ void Client::socketReadyRead()
           {ChangeActionsToDo(-1);
           closeConnection();
           writeToClient("Connection Closed");
+          }
+      else if(str == "!|")// server ha finished everything and client wants to quit
+          {closeConnection();
+          exit();
           }
       else if(str.at(0) == '!')//server has finished one action
           ChangeActionsToDo(-1);
@@ -283,6 +307,10 @@ void threadRead::run()
                   break;
               case 'd':
                   pclient->debug(false);
+                  break;
+              case 'X':
+                  str = "|";
+                  pclient->sendToServer(str);
                   break;
               default:
                   break;

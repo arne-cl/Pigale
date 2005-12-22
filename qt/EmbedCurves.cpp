@@ -71,7 +71,7 @@ int EmbedCurves(TopologicalGraph &G)
     beta = NGG.vcoord[n+2*e()];
     if (Abs(Determinant(alpha-x,vec))>Abs(Determinant(beta-x,vec)))
       {tmp=alpha; alpha=beta; beta=tmp;}
-    double a,aa,b;
+    double a=0,aa=0,b=0;
     bool ok;
     // check if [x,y] intersects [alpha,beta]
     ok=intersect(x,vec,alpha,beta-alpha,a,b);

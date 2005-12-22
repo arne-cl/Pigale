@@ -95,6 +95,13 @@ void pigaleWindow::blockInput(bool t)
 void pigaleWindow::timerWait()
   {MacroWait = false;
   }
+void pigaleWindow::wait(int millisec)
+  {MacroWait = true;
+  QTimer::singleShot(millisec,this,SLOT(timerWait()));
+  do
+      {qApp->processEvents();
+      }while(MacroWait);
+  }
 void AllowAllMenus(QMenuBar *menubar)
   {for(int menu = A_AUGMENT;menu <= A_TEST_END;menu++)
       {if(menubar->text(menu) == QString::null ||menubar->isItemEnabled(menu))continue;

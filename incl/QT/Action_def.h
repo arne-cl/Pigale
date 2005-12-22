@@ -50,7 +50,7 @@
 #define  A_EMBED_POLREC_DFSLR        (A_EMBED+14)        // POLREC_DFSLR
 #define  A_EMBED_POLREC_BFS           (A_EMBED+15)        // POLREC_BFS
 #define  A_EMBED_VISION             (A_EMBED+50)        // VISION
-#define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTATC_BIPARTI 
+#define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTACT_BIPARTI 
 #define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 
 #define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
 #define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
@@ -74,7 +74,7 @@
 #define  A_REMOVE_MULTIPLE_E       (A_REMOVE+3)         // REMOVE_MULTIPLE_E
 #define  A_REMOVE_BRIDGES          (A_REMOVE+4)         // REMOVE_BRIDGES
 #define  A_REMOVE_COLOR_V          (A_REMOVE+5)         // REMOVE_COLOR_V
-#define  A_REMOVE_COLOR_E          (A_REMOVE+6)         // EMOVE_COLOR_E
+#define  A_REMOVE_COLOR_E          (A_REMOVE+6)         // REMOVE_COLOR_E
 #define  A_REMOVE_THICK_E          (A_REMOVE+7)         // REMOVE_THICK_E
 #define  A_REMOVE_END              (A_REMOVE+99)
 
@@ -112,7 +112,7 @@
 #define  A_ALGO_NETCUT             (A_ALGO+6)           // NETCUT 
 #define  A_ALGO_GEOMETRIC_CIR      (A_ALGO+7)           // USE_GEOMETRIC_CIR
 #define  A_ALGO_LRALGO_CIR         (A_ALGO+8)           // USE_LRALGO_CIR
-#define  A_ALGO_SYM                (A_ALGO+9)           // SYMETRIE
+#define  A_ALGO_SYM                (A_ALGO+9)           // SYMMETRY
 #define  A_ALGO_COLOR_BIPARTI      (A_ALGO+10)          // COLOR_BIPARTI
 #define  A_ALGO_COLOR_EXT          (A_ALGO+11)          // COLOR_EXT_FACE
 #define  A_ALGO_COLOR_NON_CRITIC   (A_ALGO+12)          // COLOR_NON_CRITIC
@@ -140,6 +140,12 @@
 #define  A_TEST_2                  (A_TEST+2)           // TEST_2 
 #define  A_TEST_3                  (A_TEST+3)           // TEST_3 
 #define  A_TEST_END                (A_TEST+99)
+
+//Properties
+#define  A_PROP_DEFAULT            (1000)
+#define  A_PROP_DEF_SHORT          (A_PROP_DEFAULT+1)   // PROP_DEF_SHORT
+#define  A_PROP_DEF_INT            (A_PROP_DEFAULT+2)   // PROP_DEF_INT
+#define  A_PROP_DEFAULT_END        (A_PROP_DEFAULT+999)
 
 //Settings
 #define A_SET                       (10000)
@@ -195,12 +201,14 @@
 #define A_TRANS_SEND_PNG                     (A_TRANS+1)    // PNG  
 #define A_TRANS_GET_CGRAPH                (A_TRANS+2)    // RC_GRAPH  
 #define A_TRANS_SEND_GRAPH_SAVE   (A_TRANS+3)    // RS_SAVE_GRAPH  
+#define A_TRANS_SEND_PS        (A_TRANS+4)       // PS
 #define A_TRANS_END            (A_TRANS+99)  
 
 #define A_SET_GEN                                       (A_SERVER+300)
 #define A_SET_GEN_N1                                (A_SET_GEN+1)    // GEN_N1  
 #define A_SET_GEN_N2                                (A_SET_GEN+2)    // GEN_N2
 #define A_SET_GEN_M                                  (A_SET_GEN+3)    // GEN_M  
+#define A_SET_GEN_SEED                               (A_SET_GEN+4)    // GEN_SEED
 #define A_SET_GEN_END                             (A_SET_GEN+99)
 
 #define SERVER_DEBUG           (A_SERVER+999)  // S_DEBUG  

@@ -141,7 +141,7 @@ void GraphEditor::Spring()
 	  canvas()->update();
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
-      stop = (n_red == G.nv())? ++stop : 0;
+      stop = (n_red == G.nv())? stop+1 : 0;
       if(stop)force *= .9;
       if(dep < .25 || stop == 4)break;
       qApp->processEvents(1);
@@ -364,7 +364,7 @@ t current tanslation of v0
           qApp->processEvents(); // absolutely needed
           }
       if(iter%2 == 0 && draw)canvas()->update();
-      stop = (n_red == G.nv())? ++stop : 0;
+      stop = (n_red == G.nv())? stop+1 : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;

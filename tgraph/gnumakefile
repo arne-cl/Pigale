@@ -43,7 +43,7 @@ FILES2  += $(SPECIAL)
 OBJECTS =  $(patsubst %.cpp,%.$(OPT), $(FILES2))
 OBJ =  $(patsubst %.$(OPT),$(VPATH)/%.$(OPT), $(OBJECTS))
 
-all : md $(DLIB)
+all : md depend $(DLIB)
 
 PropName.cpp : $(PIGALEPATH)/incl/TAXI/propdef.h
 	$(AWK) -f propname.awk $(PIGALEPATH)/incl/TAXI/propdef.h > PropName.cpp
@@ -342,6 +342,13 @@ Planar.opt: ../incl/TAXI/propdef.h ../incl/TAXI/bicon.h ../incl/TAXI/lralgo.h
 Planar.opt: ../incl/TAXI/graphs.h ../incl/TAXI/Tpoint.h
 Planar.opt: ../incl/TAXI/DFSGraph.h ../incl/TAXI/color.h ../incl/TAXI/embed.h
 Planar.opt: ../incl/TAXI/DFSLow.h ../incl/TAXI/ndfs.h ../incl/TAXI/Tmessage.h
+PropStd.opt: ../incl/TAXI/graph.h ../incl/TAXI/elmt.h ../incl/TAXI/Tbase.h
+PropStd.opt: ../incl/TAXI/Tprop.h ../incl/TAXI/Tsvector.h
+PropStd.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h
+PropStd.opt: ../incl/TAXI/Tpropio.h ../incl/TAXI/Tstring.h
+PropStd.opt: ../incl/TAXI/propdef.h ../incl/TAXI/Tpoint.h
+PropStd.opt: ../incl/TAXI/embedrn.h ../incl/TAXI/graphs.h
+PropStd.opt: ../incl/TAXI/proptypes.h
 PropTgf.opt: ../incl/TAXI/Tproptgf.h ../incl/TAXI/Tprop.h
 PropTgf.opt: ../incl/TAXI/Tbase.h ../incl/TAXI/Tsvector.h ../incl/TAXI/elmt.h
 PropTgf.opt: ../incl/TAXI/Tdebug.h ../incl/TAXI/Errors.h

@@ -130,6 +130,7 @@ class vProp
        *   \param v vector to print
        */
       virtual vProp * dup() const = 0; //!< duplicates the access
+      virtual ~vProp() {}
     };
 
 //! Set of vector property for scalar types (without constructor or destructor)
@@ -566,6 +567,7 @@ class vProp1
     /*!< \param elmt element to export
      * \retval edup copy of the element
      */
+    virtual ~vProp1() {}
     };
 //! Template class for virtual access point to single properties
 template <class T>

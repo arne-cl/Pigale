@@ -756,9 +756,34 @@ int GraphSym::update()
   return 0;
   }
 void GraphSym::print(QPrinter *printer)
-  {if(!d->is_init)return;
-  d->editor->print(printer);
+  { QString FileName="";
+    QString OldFileName="";
+    bool outf=false;
+    QPrinter::Orientation orient=QPrinter::Portrait;
+    QPrinter::ColorMode cm=QPrinter::Color;
+    if(!d->is_init)return;
+    if(d->mw->ServerExecuting)
+      { FileName = QString("/tmp/server%1.ps").arg(d->mw->ServerClientId);
+	orient=printer->orientation();
+	cm=printer->colorMode();
+	printer->setOrientation(QPrinter::Portrait);
+	printer->setColorMode(QPrinter::Color);
+	OldFileName=printer->outputFileName();
+	printer->setOutputFileName(FileName);
+	outf=printer->outputToFile();
+	printer->setOutputToFile(true);
+      }
+    else if(!printer->setup(this)) return;
+    d->editor->print(printer);
+    if(d->mw->ServerExecuting)
+      {
+	printer->setOrientation(orient); 
+	printer->setColorMode(cm);
+	printer->setOutputFileName(OldFileName);
+	printer->setOutputToFile(outf);
+      }
   }
+
 void GraphSym::png()
   {qApp->processEvents();
   QString FileName;
@@ -933,7 +958,7 @@ void SymWindow::update(QPainter *p)
       ps = QPoint((int)xtr,0); pt = QPoint((int)xtr,this->height());
       p->drawLine(ps,pt);
       //draw labels
-      font = QFont("lucida",14);
+      font = QFont("sans",14);
       p->setFont(font);
       pn.setColor(color[Violet]);p->setPen(pn);
       t.sprintf("(%d)",axe1);
@@ -951,7 +976,7 @@ void SymWindow::update(QPainter *p)
       }
   //Draw vertices
   QColor  col;
-  font = QFont("lucida",fs);p->setFont(font);
+  font = QFont("sans",fs);p->setFont(font);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   for(tvertex v = 1; v <= G.nv();v++)
@@ -1017,8 +1042,6 @@ void SymWindow::Normalise()
   
   }
 void SymWindow::print(QPrinter *printer)
-  {if(printer->setup(this))
-      {QPainter pp(printer);
-      this->update(&pp);
-      }
+  {QPainter pp(printer);
+    this->update(&pp);
   }

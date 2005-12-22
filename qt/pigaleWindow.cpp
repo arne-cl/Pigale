@@ -38,13 +38,13 @@ int InitPigaleServer(pigaleWindow *w);
 
 void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
-  ServerClientId = 0;
-  if(Server)InitPigaleServer(this); 
+  if(Server)initServer();
   }
 void pigaleWindow::initServer()
   {ServerClientId = 0;
   NewGraph(); 
-  InitPigaleServer(this); 
+  InitPigaleServer(this);
+  showMinimized();
   }
 void pigaleWindow::customEvent( QCustomEvent * ev)
   {switch( ev->type())

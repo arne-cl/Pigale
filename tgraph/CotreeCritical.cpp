@@ -147,7 +147,8 @@ void DFSKura2::ComputeAncestors()
   {svector<bool> marque(0,nv()); marque.clear(); 
   marque.SetName("marque ancestors");
   tvertex v=t1;
-  tvertex vv, vv_son;
+  tvertex vv=0;
+  tvertex vv_son=0;
   tedge ee;
   tvertex lv,tv;
 
@@ -357,11 +358,11 @@ void DFSKura2::Compute()
   //if(debug())Tprintf("down_edge:%d",ie(down_edge)());
   /*Flash(down_edge,cyan);*/
 
-  tedge previous_pink;
+  tedge previous_pink=0;
   tedge e = e2;
   tvertex lv = l2;
   tvertex tv = branch;
-  tedge f;
+  tedge f=0;
   int npink=0;
   while(1)
       {if ((tv==t1) || ((f = FindInterlaced(e, lv, tv))==0))

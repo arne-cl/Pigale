@@ -78,7 +78,8 @@ void UndoErase();
 void  initGraphDebug();
 
 pigaleWindow::pigaleWindow()
-    :QMainWindow(0,"_Pigale",WDestructiveClose )
+//    :QMainWindow(0,"_Pigale",WDestructiveClose | WStyle_StaysOnTop| WX11BypassWM)
+    :QMainWindow(0,"_Pigale",WDestructiveClose)
     ,ServerExecuting(false),ServerClientId(0)
     ,GraphIndex1(1),GraphIndex2(1),pGraphIndex(&GraphIndex1)
     ,UndoIndex(0),UndoMax(0)
@@ -95,6 +96,7 @@ pigaleWindow::pigaleWindow()
   //DefineGraphContainer(&GC);
   DefinepigaleWindow(this);
   pigaleThread.mw = this;
+  qApp->setMainWidget(this); // to be able to retrieve the mainWidget
   // Create the actions map
   mapActionsInit();
   // Initialize input/output drivers
@@ -127,7 +129,7 @@ pigaleWindow::pigaleWindow()
   LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
   // Create a printer
-  printer = new QPrinter;
+  printer = new QPrinter; //(QPrinter::HighResolution);
 #if QT_VERSION >= 300 || _WINDOWS
   if(PrinterOrientation == QPrinter::Portrait)
       printer->setOrientation(QPrinter::Portrait); 
@@ -152,6 +154,7 @@ pigaleWindow::pigaleWindow()
   // Widgets
   QWidget *mainWidget = new QWidget(this,"mainWidget");
   setCentralWidget(mainWidget);
+  
   QHBoxLayout *topLayout = new QHBoxLayout(mainWidget,0,0,"topLayout");
  
   //leftLayout: Graph editor,Paint,GL,Browser
@@ -622,7 +625,7 @@ pigaleWindow::pigaleWindow()
   progressBar->setGeometry(rect_status); 
   progressBar->hide();
 
-  mainWidget->setFocus(); 
+  mainWidget->setFocus();
 #if QT_VERSION >= 300 || _WINDOWS
   //Check for documentation repertory
   QFileInfo fdoc = QFileInfo(DirFileDoc);
@@ -669,6 +672,14 @@ pigaleWindow::~pigaleWindow()
   pigaleThread.terminate();pigaleThread.wait();
   UndoErase();
   LogPrintf("END\n");
+  }
+void pigaleWindow::putOnTop()
+  {QPoint p0(0,0);
+#ifdef _WINDOWS
+  reparent(0,WDestructiveClose |WStyle_StaysOnTop,p0,true);
+#else
+  reparent(0,WDestructiveClose |WStyle_StaysOnTop| WX11BypassWM,p0,true);
+#endif
   }
 void  pigaleWindow::setUserMenu(int i, const QString &txt)
  {userMenu->changeItem ( A_TEST+i,txt);
