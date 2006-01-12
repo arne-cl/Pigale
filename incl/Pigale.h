@@ -31,6 +31,7 @@ bool & SchnyderRect();
 bool & SchnyderLongestFace();
 bool & SchnyderColor();
 int EmbedTContact(TopologicalGraph &G);
+int EmbedTriangle(TopologicalGraph &G);
 int EmbedFPPRecti(TopologicalGraph &G);
 int EmbedFPP(TopologicalGraph &G);
 int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact);

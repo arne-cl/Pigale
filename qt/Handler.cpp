@@ -302,6 +302,11 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           if(err)Tprintf("T-Contact err=%d",err);
           drawing = 5;
           break;
+      case A_EMBED_TRIANGLE:ret = 3;
+          err = EmbedTriangle(G);
+          if(err)Tprintf("Triangle err=%d",err);
+          drawing = 9;
+          break;
       case A_EMBED_3d:ret = 4; //Embed3d
           err = Embed3d(G);
           break;

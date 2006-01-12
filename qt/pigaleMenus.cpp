@@ -339,6 +339,7 @@ pigaleWindow::pigaleWindow()
   embed->insertItem(tr("&General Visibility"),   A_EMBED_GVISION);
   embed->insertSeparator();
   embed->insertItem(tr("&T Contact"),            A_EMBED_T_CONTACT);
+  embed->insertItem(tr("&R Triangle Contact"),   A_EMBED_TRIANGLE);
   embed->insertItem(tr("&Contact Biparti"),      A_EMBED_CONTACT_BIP);
   embed->insertSeparator();
   embed->insertItem(tr("&Polyline"),             A_EMBED_POLYLINE);  

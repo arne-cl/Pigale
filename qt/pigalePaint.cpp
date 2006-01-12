@@ -395,6 +395,23 @@ void DrawGeneralVisibility(QPainter *p,pigalePaint *paint)
     paint->DrawSeg(p,a,b,ecolor[e],ewidth[e]);
     }
   }
+void DrawTriangle(QPainter *p,pigalePaint *paint)
+  {TopologicalGraph G(paint->GCP);
+  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+  Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+  Prop<Tpoint> pleft(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> pright(G.Set(tvertex()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> ptop(G.Set(tvertex()),PROP_DRAW_POINT_3);
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
+
+  p->setFont(QFont("sans",Min((int)(Min(paint->xscale,paint->yscale) + .5),13)));
+  for(tvertex iv = 1; iv <= G.nv();iv++)
+      {paint->DrawTriangle(p,pleft[iv],pright[iv],ptop[iv],vcolor[iv]);
+      Tpoint center = (pleft[iv]+pright[iv]+ptop[iv])/3.;
+      paint->DrawText(p,center,iv,vcolor[iv],1);
+      }
+
+  }
 
 //**********************************************************************************************
 //**********************************************************************************************
@@ -416,6 +433,7 @@ static DrawThing DrawFunctions[] =
     {DrawPolyline,QT_TRANSLATE_NOOP("pigalePaint", "Polyline")},
     {DrawCurves,QT_TRANSLATE_NOOP("pigalePaint", "Curves")},
     {DrawPolrec,QT_TRANSLATE_NOOP("pigalePaint", "Polrec")},
+    {DrawTriangle,QT_TRANSLATE_NOOP("pigalePaint", "Triangle contact")},
     {0,QT_TRANSLATE_NOOP("pigalePaint","default ")}  
     };
 const int border = 20;
@@ -635,4 +653,14 @@ void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,tve
   pn.setWidth(1);p->setPen(pn);
   QString t = getVertexLabel(GCP,v);
   p->drawText(rect,Qt::AlignCenter,t);
+  }
+void pigalePaint::DrawTriangle(QPainter *p,Tpoint &p1,Tpoint &p2,Tpoint &p3,int col)
+  {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
+  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[bound(col,1,16)]);p->setBrush(pb);
+  QPointArray vertices(3);
+  vertices[0] = QPoint((int)to_x(p1.x()),(int)to_y(p1.y()));
+  vertices[1] = QPoint((int)to_x(p2.x()),(int)to_y(p2.y()));
+  vertices[2] = QPoint((int)to_x(p3.x()),(int)to_y(p3.y()));
+  p->drawPolygon(vertices); 
   }

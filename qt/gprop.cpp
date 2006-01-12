@@ -255,6 +255,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
   allowAction(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
   allowAction(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
+  allowAction(A_EMBED_TRIANGLE,!SMALL && S && P && NotBigD);        //Triangle
   allowAction(A_EMBED_POLAR,C1 && NotBigD);//
   allowAction(A_EMBED_POLREC_DFS,C1 && NotBigD);//
   allowAction(A_EMBED_POLREC_DFSLR,C1 && NotBigD);//

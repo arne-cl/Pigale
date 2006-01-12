@@ -100,7 +100,7 @@ if test "x$enable_debug" = xyes; then
     		CXXFLAGS="$CXXFLAGS -O0 "
   	fi
 elif test  "$GXX" = "yes";then
-	CXXFLAGS="-O3 $CPU -pipe -Wall -Wpointer-arith -Werror -fomit-frame-pointer"
+	CXXFLAGS="-O3 $CPU -pipe -Wall -Wpointer-arith -fomit-frame-pointer"
 fi
 
 dnl Checks for X11, OpenGL, Qt,moc
@@ -123,7 +123,7 @@ dnl Checks for libraries.
 AC_CHECK_LIB([Xi], [XOpenDevice])
 AC_CHECK_LIB([Xmu], [XmuLookupStandardColormap])
 AC_CHECK_LIB(GL, glEnd)
-AC_CHECK_LIB(GLU, gluSphere)
+AC_CHECK_LIB(GLU, gluEndCurve)
 AC_CHECK_LIB(glut, glutStrokeCharacter)
 
 

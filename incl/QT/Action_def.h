@@ -19,18 +19,18 @@
 
 //Augment
 #define  A_AUGMENT                  (100)
-#define  A_AUGMENT_CONNECT                     (A_AUGMENT+1)       // CONNECT
-#define  A_AUGMENT_CONNECT_V                 (A_AUGMENT+2)       // CONNECT_V
-#define  A_AUGMENT_BICONNECT                  (A_AUGMENT+3)       // BICONNECT
-#define  A_AUGMENT_BICONNECT_6              (A_AUGMENT+4)       // BICONNECT_6
-#define  A_AUGMENT_BICONNECT_NP           (A_AUGMENT+5)       // BICONNECT_NP
-#define  A_AUGMENT_BICONNECT_NP_V      (A_AUGMENT+6)       // BICONNECT_NP_V
-#define  A_AUGMENT_TRIANGULATE_V          (A_AUGMENT+7)       // TRIANGULATE_V
-#define  A_AUGMENT_TRIANGULATE_ZZ        (A_AUGMENT+8)       // TRIANGULATE_ZZ
-#define  A_AUGMENT_TRIANGULATE_3C        (A_AUGMENT+9)       // TRIANGULATE_3C
-#define  A_AUGMENT_QUADRANGULATE_V   (A_AUGMENT+10)     // QUADRANGULATE_V
-#define  A_AUGMENT_BISSECT_ALL_E            (A_AUGMENT+11)      // BISSECT_ALL_E
-#define  A_AUGMENT_END              (A_AUGMENT+99)
+#define  A_AUGMENT_CONNECT           (A_AUGMENT+1)       // CONNECT
+#define  A_AUGMENT_CONNECT_V         (A_AUGMENT+2)       // CONNECT_V
+#define  A_AUGMENT_BICONNECT         (A_AUGMENT+3)       // BICONNECT
+#define  A_AUGMENT_BICONNECT_6       (A_AUGMENT+4)       // BICONNECT_6
+#define  A_AUGMENT_BICONNECT_NP      (A_AUGMENT+5)       // BICONNECT_NP
+#define  A_AUGMENT_BICONNECT_NP_V    (A_AUGMENT+6)       // BICONNECT_NP_V
+#define  A_AUGMENT_TRIANGULATE_V     (A_AUGMENT+7)       // TRIANGULATE_V
+#define  A_AUGMENT_TRIANGULATE_ZZ    (A_AUGMENT+8)       // TRIANGULATE_ZZ
+#define  A_AUGMENT_TRIANGULATE_3C    (A_AUGMENT+9)       // TRIANGULATE_3C
+#define  A_AUGMENT_QUADRANGULATE_V   (A_AUGMENT+10)      // QUADRANGULATE_V
+#define  A_AUGMENT_BISSECT_ALL_E     (A_AUGMENT+11)      // BISSECT_ALL_E
+#define  A_AUGMENT_END               (A_AUGMENT+99)
 
 //Embed
 #define  A_EMBED                    (200)
@@ -46,16 +46,17 @@
 #define  A_EMBED_CURVES             (A_EMBED+10)        // CURVES  
 #define  A_EMBED_CCD                (A_EMBED+11)        // CCD
 #define  A_EMBED_CD                 (A_EMBED+12)        // CD
-#define  A_EMBED_POLREC_DFS           (A_EMBED+13)        // POLREC_DFS
-#define  A_EMBED_POLREC_DFSLR        (A_EMBED+14)        // POLREC_DFSLR
-#define  A_EMBED_POLREC_BFS           (A_EMBED+15)        // POLREC_BFS
+#define  A_EMBED_POLREC_DFS         (A_EMBED+13)        // POLREC_DFS
+#define  A_EMBED_POLREC_DFSLR       (A_EMBED+14)        // POLREC_DFSLR
+#define  A_EMBED_POLREC_BFS         (A_EMBED+15)        // POLREC_BFS
 #define  A_EMBED_VISION             (A_EMBED+50)        // VISION
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTACT_BIPARTI 
 #define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 
 #define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
 #define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
 #define  A_EMBED_T_CONTACT          (A_EMBED+55)        // T_CONTACT
-#define  A_EMBED_3dSCHNYDER         (A_EMBED+56)        // EMBED-3d_SCHNYDER
+#define  A_EMBED_TRIANGLE           (A_EMBED+56)        // TRIANGLE_CONTACT
+#define  A_EMBED_3dSCHNYDER         (A_EMBED+57)        // EMBED-3d_SCHNYDER
 #define  A_EMBED_3d                 (A_EMBED+98)        // EMBED-3d
 #define  A_EMBED_END                (A_EMBED+99)
 
@@ -116,7 +117,7 @@
 #define  A_ALGO_COLOR_BIPARTI      (A_ALGO+10)          // COLOR_BIPARTI
 #define  A_ALGO_COLOR_EXT          (A_ALGO+11)          // COLOR_EXT_FACE
 #define  A_ALGO_COLOR_NON_CRITIC   (A_ALGO+12)          // COLOR_NON_CRITIC
-#define  A_ALGO_COLOR_CONNECTED   (A_ALGO+13)          // COLOR_CONNECTED
+#define  A_ALGO_COLOR_CONNECTED    (A_ALGO+13)          // COLOR_CONNECTED
 #define  A_ALGO_END                (A_ALGO+99)
 
 //Orient
@@ -194,22 +195,22 @@
 #define A_INPUT_READ_GRAPH     (A_INPUT+1)    //  RS_GRAPH 
 #define A_INPUT_NEW_GRAPH      (A_INPUT+2)    //  N_GRAPH
 #define A_INPUT_NEW_VERTEX     (A_INPUT+3)    //  N_V
-#define A_INPUT_NEW_EDGE         (A_INPUT+4)    //  N_E
-#define A_INPUT_END                       (A_INPUT+99)    
+#define A_INPUT_NEW_EDGE       (A_INPUT+4)    //  N_E
+#define A_INPUT_END            (A_INPUT+99)    
 
-#define A_TRANS                                            (A_SERVER+200)  
-#define A_TRANS_SEND_PNG                     (A_TRANS+1)    // PNG  
-#define A_TRANS_GET_CGRAPH                (A_TRANS+2)    // RC_GRAPH  
-#define A_TRANS_SEND_GRAPH_SAVE   (A_TRANS+3)    // RS_SAVE_GRAPH  
-#define A_TRANS_SEND_PS        (A_TRANS+4)       // PS
+#define A_TRANS                (A_SERVER+200)  
+#define A_TRANS_SEND_PNG       (A_TRANS+1)    // PNG  
+#define A_TRANS_GET_CGRAPH     (A_TRANS+2)    // RC_GRAPH  
+#define A_TRANS_SEND_GRAPH_SAVE (A_TRANS+3)    // RS_SAVE_GRAPH  
+#define A_TRANS_SEND_PS        (A_TRANS+4)    // PS
 #define A_TRANS_END            (A_TRANS+99)  
 
-#define A_SET_GEN                                       (A_SERVER+300)
-#define A_SET_GEN_N1                                (A_SET_GEN+1)    // GEN_N1  
-#define A_SET_GEN_N2                                (A_SET_GEN+2)    // GEN_N2
-#define A_SET_GEN_M                                  (A_SET_GEN+3)    // GEN_M  
-#define A_SET_GEN_SEED                               (A_SET_GEN+4)    // GEN_SEED
-#define A_SET_GEN_END                             (A_SET_GEN+99)
+#define A_SET_GEN              (A_SERVER+300)
+#define A_SET_GEN_N1           (A_SET_GEN+1)    // GEN_N1  
+#define A_SET_GEN_N2           (A_SET_GEN+2)    // GEN_N2
+#define A_SET_GEN_M            (A_SET_GEN+3)    // GEN_M  
+#define A_SET_GEN_SEED         (A_SET_GEN+4)    // GEN_SEED
+#define A_SET_GEN_END          (A_SET_GEN+99)
 
 #define SERVER_DEBUG           (A_SERVER+999)  // S_DEBUG  
 

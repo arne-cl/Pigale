@@ -733,3 +733,97 @@ int EmbedTContact(TopologicalGraph &G)
   txt[iv3].x() = (hp1[iv3].x() + hp2[iv3].x())/2 ;
   return 0;
   }
+
+static double xIntersection(Tpoint & p1, Tpoint &p2, double y)
+// returns the x-coordinate of the horizontal "y" and the line defined by (p1,p2)
+  {return  (p1.x() + (p2.x() -p1.x())*(y -p1.y())/(p2.y() - p1.y()));
+  }
+int EmbedTriangle(TopologicalGraph &G)
+  {if(G.nv() < 3)return -1;
+  if(!G.CheckSimple())return -1;
+  if(!G.CheckPlanar())return -1;
+  PSet1  propSave(G.Set());
+  bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
+  int nOrigin = G.nv();
+  if(!MaxPlanar)G.VertexTriangulate();
+  if(G.ne() != 3 * G.nv() - 6)return -1;
+  int n = G.nv();
+
+  tbrin ee = G.extbrin();
+  tvertex iv1 = G.vin[ee];
+  tvertex iv2 = G.vin[-ee];
+  tvertex iv3 = G.vin[-G.acir[ee]];
+  svector<tvertex> leftFather(1,n),rightFather(1,n),topFather(1,n);
+  svector<tvertex>order(1,n); 
+  svector<int> hauteur(0,n); hauteur.clear();
+
+  topFather[iv1] =  topFather[iv2] = iv3;  topFather[iv3] = 0;
+  order[1] = iv1;  order[2] = iv2;
+  hauteur[iv2] = 1;
+  SchnyderPacking SP(G,-G.acir[ee]);
+  // Skip first two vertices
+  SP.FindVertex();  SP.FindVertex();
+  tbrin left,right;
+  tvertex iv;
+  for(tvertex ivn = 3;ivn <= G.nv();ivn++)
+      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      leftFather[iv] = G.vin[-left];
+      rightFather[iv] = G.vin[-right];
+      order[ivn] = iv;
+      ee = left;
+      do
+          {hauteur[iv] = Max(hauteur[iv],hauteur[G.vin[-ee]]+1);
+          if(ee != left)topFather[G.vin[-ee]]= iv;
+          }while((ee = G.cir[ee]) != right);
+      hauteur[iv] = Max(hauteur[iv],hauteur[G.vin[-ee]]+1);
+      }
+  
+  double ymax =  hauteur[order[n]];
+  // Properties defining the traiangles
+  Prop<Tpoint> pleft(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  Prop<Tpoint> pright(G.Set(tvertex()),PROP_DRAW_POINT_2);
+  Prop<Tpoint> ptop(G.Set(tvertex()),PROP_DRAW_POINT_3);
+
+  // triangle iv1
+  pright[iv1].x() = .5; pright[iv1].y() = 1.;
+  pleft[iv1].x() = .5; pleft[iv1].y() = 1.;
+  ptop[iv1].x() = 0.; ptop[iv1].y() = ymax;
+  // triangle iv2
+  pleft[iv2].x() = .5; pleft[iv2].y() = 1.;
+  pright[iv2].x() = .5; pright[iv2].y() = 1.;
+  ptop[iv2].x() = 1.; ptop[iv2].y() = ymax;
+  // triangle iv3
+  pleft[iv3].x() = .0; pleft[iv3].y() = ymax;
+  pright[iv3].x() = 1.; pright[iv3].y() = ymax;
+  ptop[iv3].x() = .5; ptop[iv3].y() = ymax;
+
+  // compute y-coordinates of all other triangles
+  for(int i = 3; i < n;i++)
+      {tvertex iv= order[i];
+      pleft[iv].y() =  pright[iv].y() = hauteur[iv];
+      ptop[iv].y() = hauteur[topFather[iv]];
+      }
+  // compute x-coordinates of all other triangles
+    for(int i = 3; i < n;i++)
+      {tvertex iv= order[i];
+      tvertex ivl = leftFather[iv];
+      pleft[iv].x() = xIntersection(pright(ivl),ptop[ivl],pleft[iv].y());
+      tvertex ivr = rightFather[iv];
+      pright[iv].x() = xIntersection(pleft[ivr],ptop[ivr],pright[iv].y());
+      ptop[iv].x() = .5*(pleft[iv].x() + pright[iv].x());
+      }
+    
+    if(nOrigin != n)
+        {//erase added vertices
+        for(tvertex iv = n; iv > nOrigin;iv--)G.DeleteVertex(iv);
+        G.Set() =  propSave;
+        }
+
+    // define the boundaries
+    Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+    Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+    const double border = .002;
+    pmin() = Tpoint(-border,.0);
+    pmax() = Tpoint(1.-border,ymax + 1.);
+    return(0);
+    }

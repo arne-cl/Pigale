@@ -42,6 +42,7 @@ public:
   void DrawText(QPainter *p,double x,double y,QString txt);
   void DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center);
   void DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int color);
+  void DrawTriangle(QPainter *p,Tpoint &p1,Tpoint &p2,Tpoint &p3,int col);
   void update(int index,bool NewDrawing = true);
   void update();
   void print(QPrinter *printer);

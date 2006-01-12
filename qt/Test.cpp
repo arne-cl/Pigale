@@ -22,7 +22,7 @@ static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 #if VERSION_ALPHA
 void pigaleWindow:: initMenuTest()
-  {setUserMenu(1,"BFS drawing");
+  {setUserMenu(1,"Triangle drawing");
   setUserMenu(2,"test ST");
   setUserMenu(3,"Properties");
   }
@@ -148,7 +148,7 @@ int Test2(GraphContainer &GC,int &drawing)
   G.Set(tedge()).erase(PROP_MARK);
   return 2;
   }
-
+/*
 int Test1(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
     int morg=G.ne();
@@ -168,6 +168,14 @@ int Test1(GraphContainer &GC,int &drawing)
     G.DeleteVertex(t);
     while (G.ne()>morg) G.DeleteEdge(G.ne());
     drawing=2;
+  return 3;
+  }
+*/
+int EmbedTriangle(TopologicalGraph &G);
+int Test1(GraphContainer &GC,int &drawing)
+  {TopologicalGraph G(GC);
+  EmbedTriangle(G);
+  drawing = 9;
   return 3;
   }
 #else 
