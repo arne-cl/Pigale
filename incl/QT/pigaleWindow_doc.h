@@ -9,6 +9,8 @@
 **
 *****************************************************************************/
 
+
+
 const char * fileopen_txt = "Click this button to open a <em>new file</em>. <br>\
 	A <em>.txt</em> file contains only <b>One</b> graph <br>\
 	A <em>.tgf</em> file contains a <b>collection</b> of graphs";

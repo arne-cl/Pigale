@@ -20,7 +20,13 @@
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+
+#if QT_VERSION >= 0x40000
+#include <q3filedialog.h>
+#include <qevent.h> 	
+#else
 #include <qfiledialog.h>
+#endif
 #include <qtabwidget.h>
 #include <qapplication.h>
 

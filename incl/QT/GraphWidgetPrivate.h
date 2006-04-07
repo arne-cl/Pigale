@@ -12,7 +12,10 @@
 #ifndef  GRAPHWIDGETPRIVATE_H_INCLUDED
 #define  GRAPHWIDGETPRIVATE_H_INCLUDED
 
+#if QT_VERSION >= 0x40000
 
+#define QCanvas Q3Canvas
+#endif 
 class GraphWidgetPrivate
 {public:
   GraphWidgetPrivate()

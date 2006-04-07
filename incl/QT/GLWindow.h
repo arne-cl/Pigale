@@ -18,6 +18,8 @@
 */
 #ifndef _GLWINDOW_H_INCLUDED_
 #define _GLWINDOW_H_INCLUDED_
+
+
 #include <qgl.h>
 
 class GLControlWidget; 

@@ -11,6 +11,7 @@
 
 #ifndef _SYMWINDOW_H_INCLUDED_
 #define _SYMWINDOW_H_INCLUDED_
+
 #include <TAXI/graphs.h>
 #include <TAXI/Tmessage.h>
 #include <TAXI/Tpoint.h>

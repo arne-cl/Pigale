@@ -1,5 +1,5 @@
 struct _Action  {const char* name;int num;};
-static _Action actions[]={
+static _Action Actions[]={
 {"PAUSE",(99)},
 {"CONNECT",(A_AUGMENT+1)},
 {"CONNECT_V",(A_AUGMENT+2)},

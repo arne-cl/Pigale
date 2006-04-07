@@ -1,8 +1,16 @@
 #ifndef XGRAPHML_H
 #define XGRAPHML_H   
-//#include <qobject.h>
+
+
+
 #include <qxml.h>
+
+#if QT_VERSION >= 0x40000
+#include <q3ptrstack.h>
+#else
 #include <qptrstack.h>
+#endif
+
 #include <qmap.h>
 #include <qfile.h>
 #include <qwindowdefs.h>
@@ -60,14 +68,46 @@ struct key_desc {
 #define PARSE_GRAPHINFO   2
 #define PARSE_GRAPH       3
 
+
+#if QT_VERSION >= 0x40000
+class MyErrorHandler : public QXmlErrorHandler {
+    QXmlParseException *exception;
+    QString type;
+protected:
+    bool warning ( const QXmlParseException & e) 
+    {  delete exception;
+       exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
+       type="Warning"; return TRUE;}
+    bool error ( const QXmlParseException & e)
+    {  delete exception;
+       exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
+       type="Error";return FALSE;}
+    bool fatalError ( const QXmlParseException & e)
+    {  delete exception;
+       exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
+       type="Fatal error";return FALSE;}
+public:
+    MyErrorHandler() : exception(0) {}
+      ~MyErrorHandler() { delete exception;}
+
+  QString errorString () const
+  { QString s; 
+    s.sprintf("%s %s : line %d, column %d",
+	      (const char *)type, (const char *)exception->message(),
+	      exception->lineNumber(), exception->columnNumber()); return s;
+  }
+};
+#else
+
 class MyErrorHandler : public QXmlErrorHandler {
     QXmlParseException exception;
     QString type;
-  public:
-  virtual ~MyErrorHandler() {}
+public:
   bool warning ( const QXmlParseException & e) {exception=e; type="Warning"; return TRUE;}
   bool error ( const QXmlParseException & e) {exception=e; type="Error";return FALSE;}
   bool fatalError ( const QXmlParseException & e) {exception=e; type="Fatal error";return FALSE;}
+  virtual ~MyErrorHandler() {}
+
   QString errorString () 
   { QString s; 
     s.sprintf("%s %s : line %d, column %d",
@@ -76,6 +116,9 @@ class MyErrorHandler : public QXmlErrorHandler {
   }
 };
 
+
+
+#endif
 class Taxi_FileIOGraphml : public Taxi_FileIO
 {
  public:

@@ -12,12 +12,35 @@
 #ifndef  MYCANVAS_H_INCLUDED
 #define  MYCANVAS_H_INCLUDED
 
+#if QT_VERSION >= 0x40000
+#include <q3canvas.h>
+#define QCanvasPolygonalItem  Q3CanvasPolygonalItem
+#define QPointArray  Q3PointArray
+#define QCanvasLine Q3CanvasLine
+#define QCanvasText  Q3CanvasText
+#define QCanvasRectangle Q3CanvasRectangle
+#define QCanvasView  Q3CanvasView
+//#include <QWheelEvent> 	
+//#include <qwheelevent.h> 	
+//#include <QPaintEvent> 	
+//#include <qpaintevent.h> 	
+#include <Q3PointArray> 	
+//#include <QHideEvent> 	
+//#include <qhideevent.h> 	
+//#include <QKeyEvent> 	
+//#include <QShowEvent> 	
+//#include <qshowevent.h> 	
+//#include <QResizeEvent> 	
+//#include <QMouseEvent> 
+#else
+#include <qcanvas.h>
+#endif
+
 #include <TAXI/graphs.h> 
 #include <TAXI/color.h> 
 #include <TAXI/Tpoint.h> 
 #include <QT/grid.h> 
 
-#include <qcanvas.h>
 #include <qpainter.h>
 
 bool & ShowOrientation();
@@ -164,7 +187,7 @@ private:
 
 class GraphEditor : public QCanvasView
 {public:
-  GraphEditor(GraphWidgetPrivate *g,QWidget* parent=0,const char* name=0,WFlags f=0);
+  GraphEditor(GraphWidgetPrivate *g,QWidget* parent=0,const char* name=0,Qt::WFlags f=0);
   ~GraphEditor();
   QSize sizeHint() const;
   double zoom;

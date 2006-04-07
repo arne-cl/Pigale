@@ -9,7 +9,7 @@
 **
 *****************************************************************************/
 
-#ifndef  ACTIONS_H_INCLUDED
+#ifndef  ACTIONS_H_INCLUDED 
 #define  ACTIONS_H_INCLUDED  
 
 // The header Action.h is automatically generated from this file
@@ -150,21 +150,22 @@
 
 //Settings
 #define A_SET                       (10000)
-#define A_SET_DOC                       (A_SET+9)
-#define A_SET_COLOR                  (A_SET+10)
-#define A_SET_DEBUG                  (A_SET+1)
-#define A_SET_UNDO                     (A_SET+5)
+#define A_SET_DOC                   (A_SET+9)
+#define A_SET_COLOR                 (A_SET+10)
+#define A_SET_DEBUG                 (A_SET+1)
+#define A_SET_UNDO                  (A_SET+5)
 #define A_SET_RANDOM_SEED           (A_SET+7)
 #define A_SET_RANDOM_SEED_CHANGE    (A_SET+8)
-#define A_SET_SCH_RECT           (A_SET+2)
-#define A_SET_SCH_COLOR        (A_SET+4)
-#define A_SET_LFACE                   (A_SET+3)
-#define A_SET_ORIENT                 (A_SET+20)
+#define A_SET_SCH_RECT              (A_SET+2)
+#define A_SET_SCH_COLOR             (A_SET+4)
+#define A_SET_LFACE                 (A_SET+3)
+#define A_SET_ORIENT                (A_SET+20)
 #define A_SET_ARROW                 (A_SET+21)
 #define A_SET_EXTBRIN               (A_SET+22)
-#define A_SET_ERASE_MULT      (A_SET+6)
-#define A_SET_PAUSE_DELAY    (A_SET+11)
-#define A_SET_SAVE                      (A_SET+11)
+#define A_SET_ERASE_MULT            (A_SET+6)
+#define A_SET_GEN_CIR               (A_SET+11)
+#define A_SET_PAUSE_DELAY           (A_SET+14)
+#define A_SET_SAVE                  (A_SET+13)
 
 
 // Defines used by the server

@@ -3,7 +3,13 @@
 #define GRAPHMLPARSER_H   
 
 #include <qxml.h>
+#if QT_VERSION >= 0x40000
+#include <q3ptrstack.h>
+#define QPtrStack  Q3PtrStack
+#else
 #include <qptrstack.h>
+#endif
+
 #include <TAXI/graphs.h>
 #include <qmap.h>
 
