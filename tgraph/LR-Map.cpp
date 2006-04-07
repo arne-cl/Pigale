@@ -145,15 +145,21 @@ void Embed::FillUpperHalfEdges()
   for(vi = 2;vi <= n;++vi)
       {ej = LrSort.tel[vi];
       if(ej == 0)/* seulement une arete de reference en ce sommet */
-          {if(LrSort.tref[vi]!=0)
+          {if(LrSort.tref[vi]== 0)
+              {cir[treein(vi).secondtbrin()] = treein(vi).secondtbrin();
+              continue;
+              }
+          else if(LrSort.tref[vi]< n)
               {cir[treein(vi).secondtbrin()] = LrSort.tref[vi].firsttbrin();
               cir[LrSort.tref[vi].firsttbrin()] = treein(vi).secondtbrin();
               continue;
               }
           else
-              {cir[treein(vi).secondtbrin()] = treein(vi).secondtbrin();
+              {cir[treein(vi).secondtbrin()] = LrSort.tref[vi].secondtbrin();
+              cir[LrSort.tref[vi].secondtbrin()] = treein(vi).secondtbrin();
               continue;
               }
+
           }
       else
           {toprif = toplif = botlif = topli = 0;
@@ -168,13 +174,13 @@ void Embed::FillUpperHalfEdges()
                   break;
 
                   case CAS(GAUCHE,DROITE) :/* feeding toprif with flipped edges */
-                      if(LrSort.tref[vi] == 0 || status[LrSort.tref[vi]] <PROP_TSTATUS_THIN)
+                      if(LrSort.tref[vi] == 0 || LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN)
                           {ins_top(ee,botli,topli);break;}
                       ins_top(ee,botrif,toprif);
                       break;
 
                   case CAS(DROITE,GAUCHE) :/* feeding botlif with flipped edges */
-                      if(LrSort.tref[vi] == 0 || status[LrSort.tref[vi]] <PROP_TSTATUS_THIN)
+                      if(LrSort.tref[vi] == 0 || LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN)
                           {ins_bot(ee,botri,topri);break;}
                       ins_bot(ee,botlif,toplif);
                       break;
@@ -188,7 +194,7 @@ void Embed::FillUpperHalfEdges()
                       break;
 
                   case CAS(AUTRE|DROITE,AUTRE|DROITE) :/* feeding botli with articulated edges */
-                      if(status[LrSort.tref[vi]] <PROP_TSTATUS_THIN)
+                      if(LrSort.tref[vi] < n  && status[LrSort.tref[vi]] < PROP_TSTATUS_THIN)
                           {ins_bot(ee,botli,topli);break;}
                       ins_bot(ee,botrif,toprif);
                       break;
@@ -220,8 +226,14 @@ void Embed::fuse(tvertex vi,tbrin topri,tbrin toprif,tbrin topli,tbrin toplif,
 
   /* fusing botli and LrSort.tref(vi) */
   if(LrSort.tref[vi]!=0)
-      {cir[botli] = LrSort.tref[vi].firsttbrin();
-      botli = LrSort.tref[vi].firsttbrin();
+      {if(LrSort.tref[vi] < n)
+          {cir[botli] = LrSort.tref[vi].firsttbrin();
+          botli = LrSort.tref[vi].firsttbrin();
+          }
+      else
+          {cir[botli] = LrSort.tref[vi].secondtbrin();
+          botli = LrSort.tref[vi].secondtbrin();
+          }
       }
 
   /* fusing botli and topri */

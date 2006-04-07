@@ -179,9 +179,136 @@ int TopologicalGraph::TestPlanar()
   int ret = fastlralgo(n,m,nvin,Bicon,LrSort,Hist);
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
   else planarMap() = -1;
-  if(debug())DebugPrintf("END TopologicalGraph:TestPlanar");
+  if(debug())DebugPrintf("    END TopologicalGraph:TestPlanar");
   return ret;
   }
+
+
+int TopologicalGraph::NewPlanarity(tbrin b0)
+  {if(!ne())return 1;
+  if(debug())DebugPrintf("Executing TopologicalGraph::NewPlanarity");
+#ifdef TDEBUG
+  if(!DebugCir())
+      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+#endif
+  
+  int m_origin = ne();
+  MakeConnected();
+  int m = ne();
+  int n = nv();
+#ifdef TDEBUG
+  if(debug())DebugPrintf("n=%d m=%d",n,m);
+#endif
+  svector<tvertex> nvin(-m,m);
+  svector<tvertex> &low = *new svector<tvertex>(0,n);
+  svector<tbrin> xcir;
+  xcir = cir;
+  xcir[0] = b0; xcir[acir[b0]] = 0;
+  if(!GDFSRenum(xcir,nvin)) // Error
+      {delete &low;
+      DebugPrintf("GDFSRenum ERROR");
+      setError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
+      }
+  nvin.Tswap(vin);
+  _Bicon Bicon(n);
+  int ret = bicon(n,m,vin,Bicon,low);
+  if(ret) Prop1<int> isbicon(Set(),PROP_BICONNECTED);
+  _LrSort LrSort(n,m);
+  NewLralgoSort(n,m,vin,Bicon,low,LrSort);
+  delete &low;
+
+  _Hist Hist(n,m);
+  ret = Newlralgo(n,m,vin,Bicon,LrSort,Hist);
+  if(debug())DebugPrintf("    New Embed lralgo = %d (1-Planar 0-NonPlanar)",ret);
+  Embed Embedder(me(),Bicon,LrSort,Hist);
+  Embedder();
+  nvin.Tswap(vin);
+  Prop<long> ivl(PV(),PROP_LABEL);
+  Prop<long> iel(PE(),PROP_LABEL);
+  tbrin b;
+  for (b = 1; b <= ne(); b++)
+      { tbrin b2 = cir[b];
+      if (b2<0) xcir[iel[b]] = -iel[-b2];
+      else xcir[iel[b]] = iel[b2];
+      b2 = cir[-b];
+      if (b2<0) xcir[-iel[b]] = -iel[-b2];
+      else xcir[-iel[b]] = iel[b2];
+      }
+  xcir[0]=0;
+  // the lralgo cir is clockwise
+  xcir.Tswap(cir);
+  // xcir.Tswap(acir);
+  for (b = -ne(); b<= ne(); b++)
+      acir[cir[b]] = b;
+  //  cir[acir[b]] = b;
+  if(extbrin() > 0)
+      extbrin() = iel[extbrin()];
+  else
+      extbrin() = -iel[-extbrin()];
+  b = iel[1];
+  pbrin[vin[b]] = b;
+  for(tvertex v = 2;v <= nv();v++)
+      {b = (tbrin)-iel[v-1];
+      pbrin[vin[b]] = b;
+      }
+
+#ifdef TDEBUG    
+  if(ret)
+      {int g;
+      if((g = ComputeGenus()) != 0)
+          {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
+      }
+#endif
+  if(m != m_origin)
+      for(tedge e = m; e() > m_origin;--e) DeleteEdge(e);
+
+  Prop1<int> maptype(Set(),PROP_MAPTYPE);
+  maptype() = PROP_MAPTYPE_LRALGO;
+  if(ret)
+      {Prop1<int> isplanar(Set(),PROP_PLANAR);
+      planarMap() = 1;
+      }
+  else  planarMap() = -1;
+  if(debug())DebugPrintf("    END New Planarity");
+  return ret;
+  }
+int TopologicalGraph::TestNewPlanar()
+  {int m = ne();
+  int n = nv();
+  int m_origin = m;
+  if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
+  if(debug())DebugPrintf("Executing TopologicalGraph:NewTestPlanar");
+  svector<tvertex> nvin(-m,m);nvin.SetName("nvin TestPlanar");
+  // DFS calls GDFS after some initializations
+
+  if(!DFS(nvin)) //Not connected graph
+      {MakeConnected();
+      m = ne();
+      nvin.resize(-m,m);
+      DFS(nvin);
+      for(tedge e = m; e() > m_origin;--e)
+          DeleteEdge(e);
+      }
+  else
+      Prop1<int>is_connected(Set(),PROP_CONNECTED);
+  if(m - n < 3)
+      {Prop1<int> isplanar(Set(),PROP_PLANAR);
+      return 1;
+      }
+  if(Set().exist(PROP_SIMPLE) && m > 3*n - 6)return 0;
+  svector<tvertex> low(0,n);low.SetName("low TestPlanar");
+  _Bicon Bicon(n);
+  if(bicon(n,m,nvin,Bicon,low))
+      Prop1<int> isbicon(Set(),PROP_BICONNECTED);
+  _LrSort LrSort(n,m);
+  NewLralgoSort(n,m,nvin,Bicon,low,LrSort);
+  int ret = Newfastlralgo(n,m,nvin,Bicon,LrSort);
+  if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
+  else planarMap() = -1;
+  if(debug())DebugPrintf("    END TopologicalGraph:NewTestPlanar");
+  return ret;
+  }
+
 int TopologicalGraph::TestPlanar2()
   {if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar2");
   GraphContainer DFSContainer;
@@ -207,7 +334,7 @@ int TopologicalGraph::TestPlanar2()
   int ret = DG.TestPlanar();
   if(ret)Prop1<int> isplanar(Set(),PROP_PLANAR);
   else planarMap() = -1;
-  if(debug())DebugPrintf("END:TestPlanar2 -> %d (1-planar)",ret);
+  if(debug())DebugPrintf("    END:TestPlanar2 -> %d (1-planar)",ret);
   return ret;
   }
 int TopologicalGraph::RemoveIsthmus()
@@ -341,7 +468,7 @@ int TestOuterPlanar(TopologicalGraph &G)
       G.NewEdge(v,v0);
   int OuterPlanar = G.TestPlanar();
   G.DeleteVertex(v0);
-  if(debug())DebugPrintf("END OuterPlanar");
+  if(debug())DebugPrintf("    END OuterPlanar");
   if(simple)Prop1<int> simple(G.Set(),PROP_SIMPLE);
   if(bipartite)Prop1<int> bipartite(G.Set(),PROP_BIPARTITE);
   return OuterPlanar;

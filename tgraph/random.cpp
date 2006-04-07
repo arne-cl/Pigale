@@ -11,7 +11,7 @@
 *****************************************************************************/
 
 #include <TAXI/Tbase.h>
-
+#include <TAXI/Tsvector.h>
 #ifdef _WINDOWS
 #define srand48 srand
 #define lrand48 rand
@@ -21,6 +21,10 @@ bool & randomEraseMultipleEdges()
 // if true the generators generate simple graphs
   {static bool _Erase = false;
   return _Erase;
+  }
+bool & randomUseGeneratedCir()
+  {static bool _UseGeneratedCir = true;
+  return _UseGeneratedCir;
   }
 long & randomSetSeed()
   {static long _seed = 1;
@@ -38,7 +42,6 @@ void randomInitSeed()
       time(&time_seed);
       randomSetSeed() = (long)time_seed; 
       }
-  //srand48(randomSetSeed());
   }
 void randomStart()
   {srand48(randomSetSeed());
@@ -50,3 +53,16 @@ long randomGet(long range)
 //returns an integer >= 1 && <= range
   {return (lrand48()%(long)range) +1;
   }
+void randomShuffle(svector<int> &tab)
+// randomly permute the elements of tab
+ {int n = tab.n();
+ if(n < 2)return;
+ randomStart();
+ for(int i = 0;i < n;i++)
+     {int r = i + (int) (lrand48()%(long)(n-i));
+     if(i == r)continue;
+     tab.SwapIndex(i,r);
+     }
+ randomEnd();
+ }
+

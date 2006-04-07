@@ -2766,11 +2766,11 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  Cur1 = Cur1->next; 
 	  }
       if(Cur1->label > 0) 
-	{b=Cur1->label;
-	  vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
-	  cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
-	  cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
-	  }
+          {b=Cur1->label;
+          vin[b] = (int)Cur1->from->label;  vin[-b]  = (int)Cur1->oppo->from->label;
+          cir[b] = (int)Cur1->next->label; acir[b]=(int)Cur1->prev->label;
+          cir[-b] = (int)Cur1->oppo->next->label; acir[-b]=(int)Cur1->oppo->prev->label;
+          }
       }
 
   // construct pbrin
@@ -2781,6 +2781,11 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   randomEnd();
 
   // construct a topological graph
+  if(!randomUseGeneratedCir())
+      {GC.Set(tbrin()).erase(PROP_CIR); GC.Set(tbrin()).erase(PROP_ACIR);
+      GC.Set(tvertex()).erase(PROP_PBRIN);
+      }
+
   TopologicalGraph TG(GC);
   int erased  = 0;
   if(!loops){Prop1<int> numloops(TG.Set(),PROP_NLOOPS);numloops() = 0;}
@@ -2788,9 +2793,11 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       erased = TG.Simplify();
   else if(loops)
       erased = TG.RemoveLoops();
-
-  if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
-  else TG.planarMap() = 1;
+  
+   if(randomUseGeneratedCir())
+       {if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
+       else TG.planarMap() = 1;
+       }
   if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
   return &GC;
   }

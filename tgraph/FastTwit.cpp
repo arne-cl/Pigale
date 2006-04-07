@@ -230,3 +230,119 @@ void _FastTwit::Flick()
       }
   _current = SauvCurrent;
   }
+/**********************************************************************************************************/
+// Convention: lbot corresponds to the non null edge with minimum incidence.
+ 
+#ifdef TDEBUG
+void _NewFastTwit::Print()
+{
+  int c=_current;
+  int fn=_topfork;
+  int f=_fork;
+      while (c>0)
+	{
+	  tedge l=tw[c].ltop();
+	  tedge r=tw[c].rtop();
+	  do {
+	    cout << c << ": ";
+	    if (l!=0) cout << vin[l]() << "(" << l << ")"; else cout << "      ";
+	    if (r!=0) cout << "  " << vin[r]()<< "("<<r<<")";
+	    cout << endl;
+	    if (l!=0 && l!=tw[c].lbot()) l=Link[l]; else l=0;
+	    if (r!=0 && r!=tw[c].rbot()) r=Link[r]; else r=0;
+	  } while (l!=0 || r!=0);
+	  --c;
+	  if (c==f)
+	    {cout   << "   =============" << endl; f=ForkStack[--fn];}
+	  else cout << "   -------------"<<endl;
+	}
+    }
+#endif
+
+void _NewFastTwit::Deletion(tvertex vi)
+  {tedge ej;
+  if (vin[Twin().ltop()]<vi && vin[Twin().rtop()]<vi) return;
+  while (_current!=_fork && vi<=vin[Twin().lbot()]) _current--; // pop all the stacks >= vi
+  if(! Twin().Empty(TW_RIGHT)) // right side
+      { for(ej=Twin().rtop(); vi<=vin[ej]; ej=Link[ej]) // find the first < vi
+          ;
+      Twin().rtop()=ej;
+      if (ej==0) {Twin().rbot()=0;}
+      }
+    // left side (never empty)
+  for (ej=Twin().ltop(); vi<=vin[ej]; ej=Link[ej]) // find the first < vi
+      ;
+  Twin().ltop()=ej;
+  }
+// Fuse with the previous stack. The right side of the current stack should be empty.
+// The left side of the current stack is put on the top of the side 'side' of the previous stack.
+void _NewFastTwit::FusePrev(int side)
+  {if (Twin().NotEmpty(TW_RIGHT)) SetNonPlanar();
+  Link[Twin().lbot()]=PrevTwin().top(side); PrevTwin().top(side)=Twin().ltop();
+  --_current;
+  }
+// Fuse the stacks till the fusion will contain an element <= vi or the fork is reached.
+void _NewFastTwit::FuseTo(tvertex vi)
+  {if (_current==_fork+1) // only one stack
+      { if (vin[Twin().ltop()]>vi && vin[Twin().rtop()]>vi) SetNonPlanar();	  
+      return; // nothing to do !
+      }
+  while (_current>_fork+2 && vin[PrevTwin().lbot()]>vi) FusePrev(TW_LEFT);
+  if (vin[PrevTwin().ltop()]>vi) // one more fuse to left ?
+      { if (vin[PrevTwin().rtop()]>vi) SetNonPlanar();
+      FusePrev(TW_LEFT);
+      }
+  else if (vin[PrevTwin().rtop()]>vi)	FusePrev(TW_RIGHT); // one more fuse to right ?
+  else if (vin[Twin().ltop()]>vi && vin[Twin().rtop()]>vi) SetNonPlanar();
+  }
+void _NewFastTwit::Thin()
+  { tedge ej= Twin().lbot();
+  PopFork();
+  Fusion(ej);
+  }
+void _NewFastTwit::Fusion(tedge ej) // for thin and cotree edges
+  {if (vin[ej]>=vin[Twin().ltop()] && vin[ej]>=vin[Twin().rtop()])
+      NewTwin(ej); // in this case, create a new twin.
+  else 
+      {FuseTo(vin[ej]);
+      // add the edge ej 'by hand'
+      if (vin[ej]>=vin[Twin().ltop()]) 
+          { Link[ej]=Twin().ltop(); Twin().ltop()=ej;} 
+      else // vin[ej]>=vin[Twin().rtop()]
+          { Link[ej]=Twin().rtop(); Twin().rtop()=ej;
+          if (Twin().rbot()==0)
+              { Twin().rbot()=ej;
+              if (vin[Twin().lbot()]>vin[ej]) Twin().Permute();
+              }
+          }
+      }
+  }
+void _NewFastTwit::Thick()
+  {tvertex vlow = vin[Twin1().lbot()];
+  tvertex vlow2 = vin[FirstTwin().lbot()];
+  FuseTo(vlow);
+  if (Twin().rbot()!=0)
+      { isnotplanar = 1;
+      longjmp(env,1);
+      }
+  int _SauvCurrent=_current; // keep this stack in touch.
+  PopFork();
+  FuseTo(vlow2);
+  if (vlow2>=vin[Twin().ltop()])
+    if (vlow2 >= vin[Twin().rtop()]) // no fuse bewteen the stacks
+      { _current++;
+      Twin()=tw[_SauvCurrent]; // copy the backuped stack.
+      return;
+      }
+    else
+        {Link[tw[_SauvCurrent].lbot()]=Twin().ltop(); Twin().ltop()=tw[_SauvCurrent].ltop();} // link to left
+  else // vlow2>=vin[Twin().rtop()]
+      {Link[tw[_SauvCurrent].lbot()]=Twin().rtop(); Twin().rtop()=tw[_SauvCurrent].ltop(); // link to right
+      if (Twin().rbot()==0)
+          {Twin().rbot()=tw[_SauvCurrent].lbot();
+          if (vin[Twin().lbot()]>vin[Twin().rbot()]) Twin().Permute();
+          }
+      }
+  }    
+
+

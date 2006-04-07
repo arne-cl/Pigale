@@ -38,18 +38,18 @@ int IO_n() {return  FileIOHandler->n();}
 
 
 // tags for TGF file format
-#define  TAG_NAME                  512
-#define  TAG_N                          513
-#define  TAG_M                          514
-#define  TAG_ELIST                   515
-#define  TAG_COORDLAB        516
-#define  TAG_VCOLOR              517
-#define  TAG_LEDA                    518
+#define  TAG_NAME         512
+#define  TAG_N            513
+#define  TAG_M            514
+#define  TAG_ELIST        515
+#define  TAG_COORDLAB     516
+#define  TAG_VCOLOR       517
+#define  TAG_LEDA         518
 #define  TAG_VERSION	  519
 
 #define  TAG_VCOORD	      520
 #define  TAG_VLABEL	      521
-#define  TAG_VIN	                        522
+#define  TAG_VIN	      522
 #define  TAG_ECOLOR	      523
 #define  TAG_ELABEL	      524
 #define  TAG_EWIDTH	      525
@@ -87,7 +87,7 @@ int IsFileAscii(const char *name)
   if(!stream.is_open())return -1;
   stream.read(ID,4);
   stream.close();
-  if(strncmp(ID,"PIG",3) != 0)return 0;
+  if(strncmp(ID,"PIG:",4) != 0)return 0;
   return 1;
   }
 

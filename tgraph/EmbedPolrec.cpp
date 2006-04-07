@@ -712,6 +712,7 @@ int EmbedPolrecGeneral(TopologicalGraph &G,int type)
   if(type == 1){cir0 = G.cir; acir0 = G.acir;b0 = G.extbrin();}
   G.MakeConnected();
   if(type == 1)G.Planarity(G.extbrin());
+  
   DoccGraph DG(G,morg,type);
   if(!DG.ok){setError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
   DG.vertexHeight();
