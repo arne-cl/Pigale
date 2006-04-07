@@ -98,7 +98,7 @@ that is all the Pigale macros plus some specific ones:
         <tr><td class="opt">REG			</td><td> regular</td></tr> 
         <tr><td class="opt">C1			</td><td> connected</td></tr> 
         <tr><td class="opt">C2			</td><td> 2-Connected</td></tr> 	
-        <tr><td class="opt">OPT			</td><td> 3-Connected</td></tr> 
+        <tr><td class="opt">C3			</td><td> 3-Connected</td></tr> 
         <tr><td class="opt">MIN_D		</td><td> minimal degree</td></tr> 
         <tr><td class="opt">MAX_D		</td><td> maximal degree</td></tr> 
         <tr><td class="opt">COORD		</td><td> retrieve coords</td></tr> 
@@ -199,7 +199,7 @@ All the other commands are the standart Pigale macros.
 <tr><td class="opt">NPSET</td><td></td></tr>    
 <tr><td class="opt">FIND_MAX_PLANAR</td><td>heuristic to find a maximal planar subgraph in a non-planar graph</td></tr>    
 <tr><td class="opt">NETCUT </td><td>partition a graph in a prescribe number of classes</td></tr>   
-<tr><td class="opt">SYMETRIE</td><td>heuristic to detect a symetrie in a graph</td></tr>    
+<tr><td class="opt">SYMMETRY</td><td>heuristic to detect a symetrie in a graph</td></tr>    
 <tr><td class="opt">USE_GEOMETRIC_CIR</td><td></td></tr>    
 <tr><td class="opt">USE_LRALGO_CIR</td><td></td></tr>    
 <tr><td class="opt">COLOR_BIPARTI</td><td></td></tr>    
@@ -239,6 +239,7 @@ Lines starting with <b>#</b> or <b>;</b> have a special meaning:<br>
 <ul>
 <li>:D    debugging mode</li>
 <li>:!      signals the end of file and disconnects from the server</li>
+<li>:X      signals the end of file, disconnects from the server and close the client</li>
 </ul>
 
 <p>
@@ -269,7 +270,7 @@ Below is a screen-shot of the client running the previous file.<br>
 </center>
 
    <hr><!-- hhmts start -->
-Last modified: Thu Jan 12 15:32:53 CET 2006
+Last modified: Fri Jan 13 17:35:24 CET 2006
 <!-- hhmts end -->
 </body>
 

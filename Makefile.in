@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -38,9 +37,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-DIST_COMMON = README $(am__configure_deps) $(noinst_HEADERS) \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS \
+DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(srcdir)/pigale.inc.in $(top_srcdir)/configure AUTHORS \
 	ChangeLog config.guess config.sub depcomp install-sh ltconfig \
 	ltmain.sh missing mkinstalldirs
 subdir = .
@@ -52,7 +51,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/incl/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = pigale.inc
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -70,7 +69,6 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(datadir)"
 nobase_dataDATA_INSTALL = $(install_sh_DATA)
 DATA = $(nobase_data_DATA)
-HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
@@ -99,11 +97,13 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPU = @CPU@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+DEBUG = @DEBUG@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO = @ECHO@
@@ -124,10 +124,8 @@ LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIB_VERSION = @LIB_VERSION@
 LN_S = @LN_S@
-LRELEASE = @LRELEASE@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
-MOC = @MOC@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -136,9 +134,9 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PPATH = @PPATH@
 QINC = @QINC@
-QLIB = @QLIB@
-QT_INCLUDES = @QT_INCLUDES@
+QT4DIR = @QT4DIR@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -197,9 +195,8 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = tgraph qt ClientServer
-EXTRA_DIST = qt/icones Doc tgf  incl tgraph/propname.awk gnumakefile
-noinst_HEADERS = Doxyfile
-nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*)
+EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h incl/QT/*.h qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/gnumakefile qt/pigale_fr.ts qt/pigale_fr.qm gnumakefile ClientServer/*.h ClientServer/*.cpp ClientServer/gnumakefile ClientServer/client.pro ClientServer/Clientdata.txt gnumakefile runqmake.sh Doxyfile tgraph/*.cpp tgraph/tgraph.pro  tgraph/propname.awk 
+nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*)
 all: all-recursive
 
 .SUFFIXES:
@@ -253,6 +250,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f incl/config.h incl/stamp-h1
+pigale.inc: $(top_builddir)/config.status $(srcdir)/pigale.inc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -406,7 +405,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/qt $(distdir)/tgraph
+	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/incl $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -547,7 +546,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(DATA) $(HEADERS)
+all-am: Makefile $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(datadir)"; do \
