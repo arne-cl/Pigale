@@ -1,3 +1,7 @@
+10/01/2006: A representation of  a planar graph by contact of triangles.
+15/12/2005: Server new commands: 
+	    "PS" to save an image in a postscript file.
+	    "GEN_N1","GEN_N2","GEN_M","GEN_SEED" to sert the default values for the graph generators.
 29/11/2005: When taking a png of a 3d embedding, Pigale's window becomes a top level window.
 30/10/2005: When you save a graph in "graphml" format, the colors and thickness and vertex labels are saved.
 26/08/2005: When you save a graph in "txt" format, the labels (previously the index) are saved.

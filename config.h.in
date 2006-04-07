@@ -11,26 +11,11 @@
 /* Define to 1 if you have the <GL/glut.h> header file. */
 #undef HAVE_GL_GLUT_H
 
-/* Define to 1 if you have the <GL/gl.h> header file. */
-#undef HAVE_GL_GL_H
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `GL' library (-lGL). */
-#undef HAVE_LIBGL
-
-/* Define to 1 if you have the `GLU' library (-lGLU). */
-#undef HAVE_LIBGLU
-
 /* Define to 1 if you have the `glut' library (-lglut). */
 #undef HAVE_LIBGLUT
-
-/* Define to 1 if you have the `Xi' library (-lXi). */
-#undef HAVE_LIBXI
-
-/* Define to 1 if you have the `Xmu' library (-lXmu). */
-#undef HAVE_LIBXMU
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
@@ -76,9 +61,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* Qt Thread Support */
-#undef QT_THREAD_SUPPORT
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
