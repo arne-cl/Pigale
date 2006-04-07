@@ -65,7 +65,8 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
       b = cir[b];
       } while(1);
 
-  if (y != n || z != n-1){DebugPrintf("GDFSRenum z=%d y=%d n=%d",z(),y(),n); return 0;}
+  if (y != n || z != n-1)
+      {DebugPrintf("GDFSRenum z=%d y=%d n=%d",z(),y(),n); return 0;}
   else return 1;
   }
 
