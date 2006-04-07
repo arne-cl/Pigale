@@ -19,6 +19,9 @@
 #include <QT/GraphWidgetPrivate.h>
 #include <QT/grid.h>
 #include <qtabwidget.h>
+//Added by qt3to4:
+#include <Q3PointArray>
+//#include <QResizeEvent>
 
 static QBrush *tb = 0;
 static QPen *tp = 0;
@@ -145,7 +148,7 @@ void CreatePenBrush()
   if(!tp) tp = new QPen( Qt::black );
   }
 ColorItem:: ColorItem(GraphWidgetPrivate* g,QRect &rect,int pcolor,int bcolor,bool is_node)
-    :QCanvasRectangle(rect,g->canvas)
+    :Q3CanvasRectangle(rect,g->canvas)
     ,brush_color(bcolor),node(is_node)
   {gwp = g;
   tp->setColor(color[pcolor]);  tp->setWidth(3); setPen(*tp);
@@ -189,7 +192,7 @@ void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
       }
   }
 ThickItem:: ThickItem(GraphWidgetPrivate* g,QRect &rect,int ewidth,int bcolor)
-    :QCanvasRectangle(rect,g->canvas)
+    :Q3CanvasRectangle(rect,g->canvas)
     ,brush_color(bcolor),width(ewidth)
   {gwp = g;
   tp->setColor(color[Black]);  tp->setWidth(ewidth); setPen(*tp);
@@ -223,7 +226,7 @@ void CreateThickItems(GraphWidgetPrivate* gwp,int width_edge)
 //********************************************************
 //CursItem is used to add an edge
 CursItem::CursItem(tvertex &vv,QPoint &p,GraphWidgetPrivate* g)
-    : QCanvasLine(g->canvas)
+    : Q3CanvasLine(g->canvas)
   {gwp = g;
   v = vv;
   tp->setColor(Qt::green);tp->setWidth(2);setPen(*tp);
@@ -239,7 +242,7 @@ void CursItem::setToPoint(int x,int y)
   }
 //*********************************************************
 InfoItem::InfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p)
-: QCanvasText(t,g->canvas)
+: Q3CanvasText(t,g->canvas)
   {gwp = g;
   setFont(QFont("sans",gwp->fontsize));
   setTextFlags(Qt::AlignCenter);
@@ -262,7 +265,7 @@ InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
   p.ry() = bound(p.y(),dy/2,gwp->canvas->height()-dy/2);
   InfoItem *infoitem  = new InfoItem(gwp,t,p);
   QRect rect = QRect(p.x()-dx/2,p.y()-dy/2,dx,dy);
-  QCanvasRectangle *rectitem = new QCanvasRectangle(rect,gwp->canvas);
+  Q3CanvasRectangle *rectitem = new Q3CanvasRectangle(rect,gwp->canvas);
   tp->setWidth(2); tp->setColor(Qt::red); tb->setColor(Qt::white);
   rectitem->setBrush(*tb);rectitem->setPen(*tp);
   rectitem->setZ(inforect_z);
@@ -272,7 +275,7 @@ InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
   }
 //**********************************************************************************
 ArrowItem::ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g)
-    : QCanvasPolygonalItem (g->canvas)
+    : Q3CanvasPolygonalItem (g->canvas)
   {gwp = g;
   pts.resize(4);
   refresh.resize(4);
@@ -308,7 +311,7 @@ void ArrowItem::ComputeCoord()
    refresh[2] = QPoint(xmax,ymax);   refresh[3] = QPoint(xmax,ymin);
    update();
   }
-QPointArray ArrowItem::areaPoints () const
+Q3PointArray ArrowItem::areaPoints () const
   {return refresh;
   }
 void ArrowItem::drawShape ( QPainter & p )
@@ -369,7 +372,7 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   }
 EdgeItem::EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
 		   ,GraphWidgetPrivate* g) // used when CreateEdgeItem is called (load)
-    : QCanvasLine(g->canvas)
+    : Q3CanvasLine(g->canvas)
   {gwp = g;
   lower = l;
   e = ee;
@@ -383,7 +386,7 @@ EdgeItem::EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
   show();
   }
 EdgeItem::EdgeItem(tedge &ee,GraphWidgetPrivate* g) // used when creating an edge in the editor
-    : QCanvasLine(g->canvas)
+    : Q3CanvasLine(g->canvas)
   {gwp = g;
   e = ee;
   GeometricGraph & G = *(gwp->pGG);
@@ -460,7 +463,7 @@ NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   return nodeitem;
   }
 NodeItem::NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRect& rect)
-    : QCanvasRectangle(rect,g->canvas)
+    : Q3CanvasRectangle(rect,g->canvas)
   {gwp = g;
   v = vv;
   width = rect.width();
@@ -482,7 +485,7 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
   double nx = x() + dx; //new x position
   double ny = y() + dy;
-  QCanvasRectangle::moveBy(nx-x(),ny-y());
+  Q3CanvasRectangle::moveBy(nx-x(),ny-y());
   nx += width/2;  ny += height/2;
   nodetextitem->move(nx,ny);// move the text 
   // Deplacer les aretes
@@ -516,7 +519,7 @@ void NodeItem::moveBy(double dx, double dy)
   int h = gwp->canvas->height();
   double nx = x() + dx; //new x position
   double ny = y() + dy;
-  QCanvasRectangle::moveBy(nx-x(),ny-y());
+  Q3CanvasRectangle::moveBy(nx-x(),ny-y());
   nx += width/2;  ny += height/2;
   G.vcoord[v].x() = nx;  G.vcoord[v].y() = h - ny;
   nodetextitem->move(nx,ny);// move the text
@@ -549,7 +552,7 @@ int NodeTextItem::rtti() const
   {return ntxt_rtti;
   }
 NodeTextItem::NodeTextItem(GraphWidgetPrivate* g,QString &t)
-    : QCanvasText(t,g->canvas)
+    : Q3CanvasText(t,g->canvas)
   {gwp = g;
   setFont(QFont("sans",gwp->fontsize)); 
   setTextFlags(Qt::AlignCenter);
@@ -564,7 +567,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
 // compute xstep and the grid
   {if(GridDrawn)clearGrid();
   if( grid.delta.x() < 7 ||  grid.delta.y() < 7){clearGrid();return;}
-  QCanvasLine *line;
+  Q3CanvasLine *line;
   tp->setColor(color[Grey2]);tp->setWidth(1);
   double x0 = grid.orig.x() - (int)(grid.orig.x()/grid.delta.x())*grid.delta.x();
   double dy = gwp->canvas->height()- grid.orig.y();
@@ -580,7 +583,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
   for(;;) //horizontales
       {y = i++ * grid.delta.y() + y0 +.5;
       if(y > y1 )break;
-      line = new QCanvasLine(gwp->canvas);
+      line = new Q3CanvasLine(gwp->canvas);
       line->setPoints((int)x0,(int)y,(int)x1,(int)y);
       line->setPen(*tp); line->setZ(grid_z); 
       if(gwp->ShowGrid) line->show();
@@ -590,7 +593,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
   for(;;) //verticales
       {x =i++*grid.delta.x() + x0 + .5;
       if(x > x1)break;
-      line = new QCanvasLine(gwp->canvas);
+      line = new Q3CanvasLine(gwp->canvas);
       line->setPoints((int)x,(int)y0,(int)x,(int)y1);
       line->setPen(*tp); line->setZ(grid_z);
       if(gwp->ShowGrid) line->show();

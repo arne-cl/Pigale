@@ -10,7 +10,6 @@
 using namespace std;
 #endif
 
-int EmbedPolrecLR(TopologicalGraph &G);
 
 // Allowed return values of Test 
 // -1:error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
@@ -22,161 +21,95 @@ static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 #if VERSION_ALPHA
 void pigaleWindow:: initMenuTest()
-  {setUserMenu(1,"Triangle drawing");
-  setUserMenu(2,"test ST");
-  setUserMenu(3,"Properties");
+  {
+  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x) ");
+  setUserMenu(2,"1000xNewPlanarity");
+  setUserMenu(3,"Test planarity algos");
   }
 #else
 void pigaleWindow:: initMenuTest()
-  {setUserMenu(1,"1000xTestPlanar");
+  {
+  setUserMenu(1,"1000xTestPlanar");
   setUserMenu(2,"1000xTestPlanar2");
   setUserMenu(3,"Properties");
   }
 #endif
 int Test(GraphContainer &GC,int action,int &drawing)
-  {if(action == 1)return Test1(GC,drawing);
-  else if(action == 2)return Test2(GC,drawing);
-  return Test3(GC,drawing);
+  {cout <<"test:"<<action<<endl;
+  if(debug())DebugPrintf("Executing Test:%d",action);
+  int ret;
+  if(action == 1)ret= Test1(GC,drawing);
+  else if(action == 2)ret = Test2(GC,drawing);
+  else ret =  Test3(GC,drawing);
+  if(debug())DebugPrintf("    END executing Test:%d",action);
+  return ret;
   }
 /******************************************************************************************************/
 /******************************************************************************************************/
 #if VERSION_ALPHA
-bool find2ContractibleEdges(TopologicalGraph &G,tbrin in, tbrin &b1,tbrin &b2)
-// In a max planar graph find two contractible edges, adjacent to in.
-// C4 are not yet checked
-  {tvertex v = G.vin[in];
-  int degree = G.Degree(v);
-  svector<tvertex> voisins(1,degree);   voisins.SetName("voisins");
-  svector<tbrin> bv(1,degree);   bv.SetName("bv");// brins adjacent to v
-  svector<bool> vAdj(1,G.nv());  vAdj.SetName("vAdj"); vAdj.clear(); // vertices adjacent to v <=> true
-  svector<bool> notCon(1,degree);  notCon.SetName("notCon"); notCon.clear(); // contractible <=> false
-  // mark vertices adjacent to  G.vin[b]
-  tbrin b = in;
-  int nv = 0;
-  do
-      {voisins[++nv] = G.vin[-b];
-      bv[nv] = b;
-      vAdj[G.vin[-b]] = true;
-      }while((b = G.acir[b]) != in);
 
-  // mark  vertices of vAdj which are adjacent
-  notCon[1] = true; 
-  notCon[nv] = true; 
-  for(nv = 1; nv <= degree;nv++)
-      {tbrin b0 = G.pbrin[voisins[nv]];
-      b = b0;
+void shuffleCir(TopologicalGraph &G)
+  {for(tvertex v = 1; v < G.nv();v++)
+      {int degree = G.Degree(v);
+      if(degree < 3)continue;
+      svector<int> tab(degree);
+      tbrin e0 = G.pbrin[v];
+      tbrin e = e0;
+      int d = 0;
       do
-          {tvertex w = G.vin[-b];
-          if( v == w || vAdj[w] == false)continue;
-          if(G.acir[b] == -bv[nv] || G.cir[b] == -bv[nv])continue;
-          notCon[nv] = true;
-          }while((b = G.acir[b]) != b0);
+          {tab[d++] = e();
+          }while((e = G.cir[e]) != e0);
+      randomShuffle(tab);
+      for(d = 0;d < degree-1;d++)
+          G.cir[tab[d]] = (tbrin)tab[d+1];
+      G.cir[tab[degree-1]] = (tbrin)tab[0];
+      G.pbrin[v] = (tbrin)tab[0];
       }
-
- int numContractible = 0;
- int nv1 = 0,nv2 = 0;
- for(nv = 1; nv <= degree;nv++)
-     {if(notCon[nv] == true)continue;
-     ++numContractible;
-     if(nv1 == 0) nv1 = nv;
-     else if(nv1 && nv != nv1+1)nv2 = nv;
-     }
-
- if(nv2 == 0)
-     {qDebug("v=%d degree:%d contractible:%d",v(),degree,numContractible);
-     for(nv = 1; nv <= degree;nv++)
-         qDebug("voisins:%d contractible:%d",voisins[nv](),1-(int)notCon[nv]);
-     return false;
-     }
- else 
-     {if( bv[nv1].GetEdge() > bv[nv2].GetEdge())
-         {b1 = bv[nv1];b2 = bv[nv2]; }
-     else
-         {b1 = bv[nv2];b2 = bv[nv1]; }
-     return true;
-     }
+  // Compute acir
+  for(tbrin b = -G.ne(); b<= G.ne(); b++)
+      G.acir[G.cir[b]] = b;
   }
-tbrin findBrinLabel(GeometricGraph &G,tvertex v,long label)
-  {tbrin brin = 0;
-  tbrin b0 = G.pbrin[v];
-  tbrin b = b0;
-  do
-      {if(G.elabel[b.GetEdge()] == label){brin = b;break;}
-      }while((b = G.acir[b]) != b0);
-  if(b() && G.vin[b] != v)
-      brin = brin.opposite();
-  //qDebug(" found at %d label:%ld  -> %d %d",v(),label,G.vin[brin](),G.vin[-brin]());
-  return brin;
+int Test1(GraphContainer &GC,int &drawing)
+  {TopologicalGraph G(GC);
+  shuffleCir(G);
+  QTime timer;timer.start();
+  for(int i = 0;i < 1000;i++)G.TestPlanar();
+  double Time1 = timer.elapsed()/1000.;
+  //cout <<"Time1: "<<Time<<endl;
+  timer.start();
+  for(int i = 0;i < 1000;i++)G.TestNewPlanar();
+  double Time2 = timer.elapsed()/1000.;
+  //cout <<"Time2: "<<Time<<endl;
+  cout<<"%: "<<100 - 100*Time2/Time1 <<endl;
+  return 0;
   }
 int Test2(GraphContainer &GC,int &drawing)
-  {GeometricGraph G(GC);
-  for(tedge e = 1; e <= G.ne();e++)G.elabel[e] = e();
-  for(tvertex vv = 1; vv <= G.nv();vv++)G.vlabel[vv] = vv();
-  G.ComputeGeometricCir();
-  G.extbrin() =  G.acir[G.extbrin()];
-  Prop<bool> EdgeToDelete(G.Set(tedge()),PROP_MARK); 
-  EdgeToDelete.clear();
-  long extEdgeLabel =  G.elabel[G.extbrin().GetEdge()];
-  tvertex v = G.vin[ G.acir[G.extbrin()]];
-  tbrin brin =  G.extbrin();
-  qDebug("ext %ld %ld (%ld)",G.vlabel[G.vin[brin]],G.vlabel[G.vin[-brin]],G.elabel[brin.GetEdge()]);
-
-  tbrin b1,b2;
-  bool xx = true;
-  // Reverse pour contracter vers le bon sommet
-  while(xx &&G.nv() > 4 && find2ContractibleEdges(G,brin,b1,b2))
-      {EdgeToDelete[G.acir[-b1].GetEdge()] = true;      EdgeToDelete[G.cir[-b1].GetEdge()] = true;
-      EdgeToDelete[G.acir[-b2].GetEdge()] = true;      EdgeToDelete[G.cir[-b2].GetEdge()] = true;
-      qDebug("A %ld %ld (%ld) ",G.vlabel[G.vin[b1]],G.vlabel[G.vin[-b1]],G.elabel[b1.GetEdge()]);
-      qDebug("B %ld %ld (%ld) ",G.vlabel[G.vin[b2]],G.vlabel[G.vin[-b2]],G.elabel[b2.GetEdge()]);
-      tedge je =b1.GetEdge();
-      if(G.vin[je] == v)G.ReverseEdge(je);
-      v = G.ContractEdge(je); 
-      je =b2.GetEdge();
-      if(G.vin[je] == v)G.ReverseEdge(je);
-      v = G.ContractEdge(je);
-      // erase
-      Forall_adj_edges(je,v,G)
-        {if( EdgeToDelete[je])G.DeleteEdge(je);
-        }
-      brin = findBrinLabel(G,v,extEdgeLabel);
-      qDebug("ext %ld %ld (%ld)",G.vlabel[G.vin[brin]],G.vlabel[G.vin[-brin]],G.elabel[brin.GetEdge()]);
-      //xx = false;
-      if(!G.CheckSimple())break;
+  {TopologicalGraph G(GC);
+  shuffleCir(G);
+  for(int i = 0;i < 1000;i++)G.TestNewPlanar();
+  return 0;
+  }
+int Test3(GraphContainer &GC,int &drawing)
+  {drawing = 0;
+  TopologicalGraph G(GC);
+  tvertex v1 = randomGet(G.nv());
+  tvertex v2 = randomGet(G.nv());
+  if(v1 != v2)G.NewEdge(v1,v2);
+  shuffleCir(G);
+  int ret0 = G.TestPlanar(); 
+  int ret1 = G.TestNewPlanar();
+  int ret2 = G.NewPlanarity(randomGet(G.ne()));
+  if(ret0 != ret1)
+      {setError(-1,"Error TestNewPlanar");
+	cout << ret0 << " " << ret1 << endl;
+	return 2;
       }
-  if(G.nv() > 4)setError(-1,"not reduced");
-  G.Set(tedge()).erase(PROP_MARK);
+  if(ret0 != ret2)
+      {setError(-1,"Error NewPlanarity");
+      cout << ret0 << " " << ret1 << endl;
+      return 2;
+      }
   return 2;
-  }
-/*
-int Test1(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-    int morg=G.ne();
-    if(!G.CheckConnected())G.MakeConnected();
-    BFSOrientTree(G,tvertex(1));
-    Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH,1);
-    Prop<bool> istree(G.Set(tedge()),PROP_ISTREE);
-    for (tedge e=1; e<=morg; e++)
-      if (istree[e]) ewidth[e]++;
-    G.RestoreOrientation(); 
-    GeometricGraph GG(G);
-    ColorPoles(GG);
-    tvertex t = G.NewVertex();
-    for (tvertex v=1; v<G.nv(); v++)
-      if (G.OutDegree(v)==0) G.NewEdge(v,t);
-    Vision(G,morg);  
-    G.DeleteVertex(t);
-    while (G.ne()>morg) G.DeleteEdge(G.ne());
-    drawing=2;
-  return 3;
-  }
-*/
-int EmbedTriangle(TopologicalGraph &G);
-int Test1(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-  EmbedTriangle(G);
-  drawing = 9;
-  return 3;
   }
 #else 
 int Test1(GraphContainer &GC,int &drawing)
@@ -189,7 +122,7 @@ int Test2(GraphContainer &GC,int &drawing)
   for(int i = 0;i < 1000;i++)G.TestPlanar2();
   return 0;
   }
-#endif
+
 int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.
   {TopologicalGraph G(GC);
@@ -226,6 +159,7 @@ int Test3(GraphContainer &GC,int &drawing)
   return 0;
   }
 
+#endif
 
 
 

@@ -43,7 +43,7 @@ void pigaleWindow::Undo()
   if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
-  this->undoR->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
+  undoRAct->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
   }
 void pigaleWindow::UndoTouch(bool save)
   {if (UndoIndex<=UndoMax) {UndoMax=UndoIndex; UndoIndex++;banner();}
@@ -66,7 +66,7 @@ void pigaleWindow::UndoSave()
   if(IO_Save(0,G,undofile) == 1)
       {handler(A_SET_UNDO);return;}
   UndoIndex=UndoMax=++nb;
-  undoL->setEnabled(true);
+  undoLAct->setEnabled(true);
   banner();
   }
 void pigaleWindow::Redo()
@@ -74,20 +74,21 @@ void pigaleWindow::Redo()
     if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
   information(); gw->update();
-  undoR->setEnabled(UndoIndex < UndoMax);
+  undoRAct->setEnabled(UndoIndex < UndoMax);
   }
 void pigaleWindow::UndoClear()
   {if(!IsUndoEnable)return;
   UndoIndex = 0;
   UndoMax = 0;
-  undoL->setEnabled(false);
-  undoR->setEnabled(false);
+  //hub
+  //undoL->setEnabled(false);
+  //undoR->setEnabled(false);
   // empty the tgf file
   Tgf undo_tgf;
   undo_tgf.open(undofile,Tgf::create);
   }
 void pigaleWindow::UndoEnable(bool enable)
-  {this->undoS->setEnabled(enable);
+  {undoSAct->setEnabled(enable);
   if(!enable)
       UndoClear();
   else

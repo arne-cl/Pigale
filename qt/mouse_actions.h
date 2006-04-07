@@ -15,13 +15,15 @@
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qvariant.h>   // first for gcc 2.7.2
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qlcdnumber.h>
 #include <qslider.h>
+//Added by qt3to4:
+//#include <QMouseEvent>
 
 class GraphWidget;
 class GraphGL;
@@ -34,13 +36,13 @@ class Mouse_Actions : public QWidget
     Q_OBJECT
 
 public:
-  Mouse_Actions(QWidget* parent = 0,const char* name = 0,WFlags fl = 0
+  Mouse_Actions(QWidget* parent = 0,const char* name = 0,Qt::WFlags fl = 0
 		,GraphWidget* gw=0);
   ~Mouse_Actions();
   
   void contentsMousePressEvent(QMouseEvent* e);
 
-  QButtonGroup* ButtonGroup1;
+  Q3ButtonGroup* ButtonGroup1;
   QRadioButton* ButtonAddV;
   QRadioButton* ButtonAddE;
   QRadioButton* ButtonDel;

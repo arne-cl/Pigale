@@ -41,14 +41,32 @@ const int dx2 = Width-ox2-1;             // group of radiobuttons
 const int dxb = dx2/2;// width of buttons
 
 Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
-			     ,WFlags fl,GraphWidget* gw)
+			     ,Qt::WFlags fl,GraphWidget* gw)
     : QWidget(parent,name,fl)
+//: QWidget()
   {if(!name)setName("Mouse_Acions");
+  
+  //hub
+//   //QPalette bup(Qt::red,Qt::blue);
+//   QPalette bup(Qt::red);
+//    QBrush brush = bup.window();   brush.setColor(Qt::yellow);
+//    bup.setBrush(QPalette::Active,QPalette::Window,brush);
+//   //bup.setColor(QPalette::Active,QPalette::Window,Qt::yellow);
+//   bup.setColor(QPalette::Active,QPalette::WindowText,Qt::darkGreen);
+//   bup.setColor(QPalette::Active,QPalette::Button,Qt::darkGreen);
+//   //bup.setColor(this->backgroundRole(),Qt::yellow);
+//   bup.setColor(backgroundRole(),Qt::yellow);
+//   setPalette(bup);
+//   setBackgroundRole(QPalette::Button);
+//   setForegroundRole(QPalette::Button);
+//   //setEraseColor(Qt::white);
+//   //setBackgroundMode(Qt::BackgroundMode widgetBackground, Qt::BackgroundMode paletteBackground = Qt::PaletteBackground );
+//   setBackgroundMode(Qt::PaletteButton);
+  
 
   setMinimumHeight(Height);  setMaximumHeight(Height); 
-  //QFont fnt = this->font();  fnt.setBold(true);  setFont(fnt,true);
 
-  ButtonGroup1 = new QButtonGroup(this,"ButtonGroup1");
+  ButtonGroup1 = new Q3ButtonGroup(this,"ButtonGroup1");
   ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,7*dy+oy+15)); 
   ButtonGroup1->setTitle(tr("Left Button"));
   ButtonGroup1->setRadioButtonExclusive(TRUE);
@@ -117,7 +135,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   Slider->setGeometry(QRect(sliderOx,sliderOy,sliderWidth,sliderHeight)); 
   Slider->setMinValue(2);    Slider->setMaxValue(100);
   Slider->setValue(sizegrid);
-  Slider->setOrientation(QSlider::Vertical);
+  Slider->setOrientation(Qt::Vertical);
 
   ButtonFitGrid = new QCheckBox(this,"ButtonFitGrid");
   ButtonFitGrid->setGeometry(QRect(ox2,oy2+35,Width-ox2,20)); 
@@ -147,6 +165,8 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   }
 Mouse_Actions::~Mouse_Actions()
 {}
+#include "Pigale.h"  
+#include <stdio.h>  
 void Mouse_Actions::valueChanged(int i)
   {mouse_action_1 = i;
   }

@@ -11,6 +11,7 @@
 
 #include <config.h>
 #include <qapplication.h>
+#include <qdesktopwidget.h>
 #include "pigaleWindow.h"
 #include "mouse_actions.h"
 #include "LineEditNum.h"
@@ -30,160 +31,42 @@
 #include <qdir.h>
 #include <qtextcodec.h>
 
-#if QT_VERSION < 300
-#undef QTextEdit
-#include <qtextview.h>
-#define QTextEdit QTextView
-#include <qtextstream.h>
-#else
-#include <qtextedit.h>
+#include <qstyle.h>
+#include <qstylefactory.h>
+//#include <q3textedit.h>
 #include <qsettings.h>
-#endif
-
+#include <qmessagebox.h>
+#include <qtextstream.h>
+#include <Q3FileDialog>
 #ifdef _WINDOWS
 #undef PACKAGE_PATH
 #define PACKAGE_PATH "c:\\Program Files\\Pigale"
 #endif
 
-#if QT_VERSION < 300
-
-void pigaleWindow::SaveSettings()
-  {QFile settings("settings.txt");
-  if(!settings.open(IO_WriteOnly))return; 
-  QTextStream txt(&settings);
-  txt << "GeometryHeight=" << this->height() << endl;
-  txt << "GeometryWidth=" << this->width() << endl;
-  txt << "InputFileName=" << InputFileName << endl;
-  txt << "OutputFileName=" << OutputFileName << endl;
-  txt << "Debug=" << debug() << endl;
-  txt << "IsUndoEnable=" << IsUndoEnable << endl;
-  txt << "RandomSeedEnable=" << randomSeed() << endl;
-  txt << "RandomSeed=" << randomSetSeed() << endl;
-  txt << "LimitsSlow=" << spin_MaxNS->value() << endl;
-  txt << "LimitsDisplay=" << spin_MaxND->value() << endl;
-  txt << "EmbedShowLabels=" << ShowVertex() << endl;
-  txt << "EmbedRect=" << SchnyderRect() << endl;
-  txt << "EmbedLongestFace=" << SchnyderLongestFace() << endl;
-  txt << "EmbedSchnyderColor=" << SchnyderColor() << endl;
-  txt << "EmbedDistance=" << useDistance() << endl;
-  txt << "GenerateN1=" << spin_N1->value() << endl;
-  txt << "GenerateN2=" << spin_N2->value() << endl;
-  txt << "GenerateM=" << spin_M->value() << endl;
-  txt << "GenerateMultiple=" << randomEraseMultipleEdges() << endl;
-  txt << "MacroRepeat=" << macroLine->getNum() << endl;
-  txt << "MacroRepeatMul=" << macroLine->getMul() << endl;
-  txt << "MacroDelay=" << pauseDelay() << endl;
-  txt << "MacroDir=" << DirFileMacro << endl;
-  txt << "PngDir=" << DirFilePng << endl;
-  txt << "DocDir=" << DirFileDoc << endl; 
-  txt << "PrinterColorMode=" << printer->colorMode() << endl;
-  txt << "PrinterOrientation=" << printer->orientation() << endl;
-  settings.close();
+void pigaleWindow::SetDocumentPath()
+  {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
+  DirFileDoc = Q3FileDialog::
+  getExistingDirectory(StartDico,this,"find",tr("Choose the documentation directory <em>Doc</em>"),TRUE);
+  if(!DirFileDoc.isEmpty())
+      {QFileInfo fi =  QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
+      if(fi.exists())
+          {browser->setSearchPaths(QStringList(DirFileDoc));
+          browser->setSource(QUrl("manual.html"));
+          SaveSettings();
+          QMessageBox::information(this,"Pigale Editor"
+                                   ,tr("You should restart Pigale"
+                                       " to get the manual loaded")
+                                   ,QMessageBox::Ok);
+          }
+      else 
+          QMessageBox::information(this,"Pigale Editor"
+                                   ,tr("I cannot find the inline manual <em>manual.html</em>")
+                                   ,QMessageBox::Ok);
+      }
+  return;
   }  
-
-void pigaleWindow::LoadSettings()
-  {// define default values
-  pigaleWindowInitYsize = 600;
-  pigaleWindowInitXsize = 800;
-  InputFileName = OutputFileName = "a.txt";
-  IsUndoEnable = true;
-  debug() = false;
-  randomSeed() = true;
-  randomSetSeed() = 1;
-  pauseDelay() = 1;
-  macroRepeat = 1;
-  macroMul = 0;
-  MaxNS = 500;
-  MaxND = 500;
-  Gen_N1 = Gen_N2 = 10;
-  Gen_M = 60;
-  PrinterOrientation = 1;
-  PrinterColorMode = 1;
-  DirFileMacro = ".";
-  DirFilePng = ".";
-  DirFileDoc = "Doc";
- 
-  // Read settings
-  QFile settings("settings.txt");
-  if(!settings.open(IO_ReadOnly))return; 
-  QTextStream txt(&settings);
-  QString str,arg,param;
-  int pos;
-  bool ok;
-  int val;
-  while(!txt.atEnd())
-      {str = txt.readLine();
-       pos = str.find('=');
-       arg = str.left(pos); param = str.right(str.length() - 1 - pos);
-       ok = true;
-       if(arg == "GeometryHeight")
-          {val = param.toInt(&ok); if(ok)pigaleWindowInitYsize = val;}
-       else if(arg == "GeometryWidth")
-          {val = param.toInt(&ok); if(ok)pigaleWindowInitXsize = val;}
-       else if(arg == "InputFileName")
-          {if(!param.isEmpty())InputFileName = param;}
-       else if(arg == "OutputFileName")
-          {if(!param.isEmpty())OutputFileName = param;}
-       else if(arg == "Debug")
-          {val = param.toInt(&ok); if(ok)debug() = (bool)val;}
-       else if(arg == "IsUndoEnable")
-          {val = param.toInt(&ok); if(ok)IsUndoEnable = (bool)val;}
-       else if(arg == "RandomSeedEnable")
-          {val = param.toInt(&ok); if(ok)randomSeed() = (bool)val;}
-       else if(arg == "RandomSeed")
-          {val = param.toInt(&ok); if(ok)randomSetSeed() = val;}
-       else if(arg == "LimitsSlow")
-          {val = param.toInt(&ok); if(ok)MaxNS = val;}
-       else if(arg == "LimitsDisplay")
-          {val = param.toInt(&ok); if(ok)MaxND = val;}
-       else if(arg == "EmbedShowLabels")
-          {val = param.toInt(&ok); if(ok)ShowVertex() = val;}
-       else if(arg == "EmbedLongestFace")
-          {val = param.toInt(&ok); if(ok)SchnyderLongestFace() = (bool)val;}
-       else if(arg == "EmbedSchnyderColor")
-          {val = param.toInt(&ok); if(ok)SchnyderColor() = (bool)val;}
-       else if(arg == "EmbedRect")
-          {val = param.toInt(&ok); if(ok)SchnyderRect() = (bool)val;}
-       else if(arg == "EmbedDistance")
-          {val = param.toInt(&ok); if(ok)useDistance() = val;}
-       else if(arg == "GenerateN1")
-          {val = param.toInt(&ok); if(ok)Gen_N1 = val;}
-       else if(arg == "GenerateN2")
-          {val = param.toInt(&ok); if(ok)Gen_N2 = val;}
-       else if(arg == "GenerateM")
-          {val = param.toInt(&ok); if(ok)Gen_M = val;}
-       else if(arg == "GenerateMultiple")
-          {val = param.toInt(&ok); if(ok)randomEraseMultipleEdges() = (bool)val;}
-       else if(arg == "MacroRepeat")
-          {val = param.toInt(&ok); if(ok)macroRepeat  = val;}
-       else if(arg == "MacroRepeatMul")
-          {val = param.toInt(&ok); if(ok)macroMul  = val;}
-       else if(arg == "MacroDelay")
-          {val = param.toInt(&ok); if(ok)pauseDelay()  = val;}
-      else if(arg == "MacroDir")
-          {if(!param.isEmpty())DirFileMacro = param;}
-      else if(arg == "PngDir")
-          {if(!param.isEmpty())DirFilePng = param;}
-      else if(arg == "DocDir")
-          {if(!param.isEmpty())DirFileDoc = param;}
-       else if(arg == "PrinterOrientation")
-          {val = param.toInt(&ok); if(ok)PrinterOrientation = val;}
-       else if(arg == "PrinterColorMode")
-          {val = param.toInt(&ok); if(ok)PrinterColorMode = val;}
-      else
-         LogPrintf("could not interpret:\n%s\n",(const char *)str);
-      if(!ok)LogPrintf("ERROR SETTINGS:%s -> %s\n",(const char *)arg,(const char *)param);
-      } 
-  settings.close();
-  LogPrintf("language:-%s-\n",(const char *)QTextCodec::locale());
-  }
-int GetPigaleColors()
-  {
-  return -1;
-  }
-#else
 void pigaleWindow:: SaveSettings()
-  {QSettings setting;
+  {QSettings setting("EHESS-CNRS","Pigale");
   setting.insertSearchPath(QSettings::Windows,"/pigale");
   setting.writeEntry("/pigale/TgfFile input",InputFileName);
   setting.writeEntry("/pigale/TgfFile output",OutputFileName);
@@ -209,9 +92,9 @@ void pigaleWindow:: SaveSettings()
   setting.writeEntry("/pigale/generate/gen N2",spin_N2->value());
   setting.writeEntry("/pigale/generate/gen M",spin_M->value());
   setting.writeEntry("/pigale/generate/gen EraseMultiple",randomEraseMultipleEdges());
+  setting.writeEntry("/pigale/generate/gen UseGeneratedCir",randomUseGeneratedCir());
   // macro
-  setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getNum());
-  setting.writeEntry("/pigale/macro/macroRepeat macroMul",macroLine->getMul());
+  setting.writeEntry("/pigale/macro/macroRepeat macroRepeat",macroLine->getVal());
   setting.writeEntry("/pigale/macro/macroDelay macroDelay", pauseDelay());
   setting.writeEntry("/pigale/macro/macroDir macroDir",DirFileMacro);
   // Printer
@@ -245,11 +128,10 @@ void pigaleWindow:: SaveSettings()
   // Font
   setting.writeEntry("/pigale/font/family",this->font().family());
   setting.writeEntry("/pigale/font/size",this->font().pointSize());
-
   }
 
 void pigaleWindow::LoadSettings()
-  {QSettings setting;
+  {QSettings setting("EHESS-CNRS","Pigale");
   setting.insertSearchPath(QSettings::Windows,"/pigale");
   // Screen size
   pigaleWindowInitYsize = setting.readNumEntry("/pigale/geometry height",600);
@@ -266,6 +148,7 @@ void pigaleWindow::LoadSettings()
   // limits to display and execute slow algos
   MaxNS = setting.readNumEntry("/pigale/limits slow_algo",500);
   MaxND = setting.readNumEntry("/pigale/limits display",500);
+
   // Embed
   ShowVertex() = setting.readNumEntry("/pigale/embed/label show",0);
   SchnyderRect() = setting.readBoolEntry("/pigale/embed/schnyder rect",false);
@@ -275,12 +158,12 @@ void pigaleWindow::LoadSettings()
   // Macro
   pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
   macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
-  macroMul = setting.readNumEntry("/pigale/macro/macroRepeat macroMul",0);
   // Generator
   Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);
   Gen_N2 = setting.readNumEntry("/pigale/generate/gen N2",10);
   Gen_M  = setting.readNumEntry("/pigale/generate/gen M",30);
   randomEraseMultipleEdges() = setting.readBoolEntry("/pigale/generate/gen EraseMultiple",true);
+  randomUseGeneratedCir() = setting.readBoolEntry("/pigale/generate/gen UseGeneratedCir",true);
   //DirFile 
   DirFilePng = setting.readEntry("/pigale/png dir",".");
   DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
@@ -289,13 +172,8 @@ void pigaleWindow::LoadSettings()
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);
   DirFileDoc = setting.readEntry("/pigale/Documentation dir",QString(PACKAGE_PATH)+QDir::separator()+"Doc");
   // Font
-#if QT_VERSION >= 300
-  QRect rect = QApplication::desktop()->screenGeometry();
-  int h = rect.height();
-#else
-  QWidget *d = QApplication::desktop();
-  int h = d->height();
-#endif
+  QDesktopWidget *desktop = QApplication::desktop();
+  int h = desktop->height();
   int fontSize = (h > 600) ? 9 : 8;
   QString family = setting.readEntry("/pigale/font/family","Helvetica");
   fontSize = setting.readNumEntry("/pigale/font/size",fontSize);
@@ -303,22 +181,65 @@ void pigaleWindow::LoadSettings()
   QApplication::setFont(font,true);
 }
 
+
+void pigaleWindow::EditPigaleColors()
+  {QColor  initial = QColor(248,238,224);
+  QColorDialog::getColor(initial,this); 
+  UpdatePigaleColors();
+  }
+void pigaleWindow::UpdatePigaleColors()
+  {QPalette Palette = QApplication::palette();
+  Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
+  Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
+  Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
+  QApplication::setPalette(Palette);
+  this->setPalette(Palette,TRUE);
+  LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
+  LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
+  gSettings->setPalette(LightPalette); 
+  mouse_actions->setPalette(LightPalette,TRUE);
+  tabWidget->setPalette(LightPalette,TRUE);
+  statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
+  }
+void pigaleWindow::SetPigaleColorsProfile1() //gray
+  {QColor col;
+  //Background
+  col.setRgb(180,180,180);QColorDialog::setCustomColor(0,col.rgb());
+  //LightBackground
+  col.setRgb(208,208,208);QColorDialog::setCustomColor(2,col.rgb());
+  //Base
+  col.setRgb(248,238,224);QColorDialog::setCustomColor(1,col.rgb());
+  UpdatePigaleColors();
+  //QApplication::setStyle(QStyleFactory::create("windows"));
+  }
+void pigaleWindow::SetPigaleColorsProfile2()//yellow
+  {QColor col;
+  //Background
+  col.setRgb(163,163,127);QColorDialog::setCustomColor(0,col.rgb());
+  //LightBackground
+  col.setRgb(189,187,154);QColorDialog::setCustomColor(2,col.rgb());
+  //Base
+  col.setRgb(248,238,224);QColorDialog::setCustomColor(1,col.rgb());
+  UpdatePigaleColors();
+  //QApplication::setStyle(QStyleFactory::create("plastique"));
+  //QApplication::setPalette(QApplication::style()->standardPalette());
+  }
 int GetPigaleColors()
-  {QSettings setting;
+  {QSettings setting("EHESS-CNRS","Pigale");
   setting.insertSearchPath(QSettings::Windows,"/pigale");
   QColor col;
   int r,g,b;
-  r = setting.readNumEntry("/pigale/colors/Background r",180);
-  g = setting.readNumEntry("/pigale/colors/Background g",180);
-  b = setting.readNumEntry("/pigale/colors/Background b",180);
+  r = setting.readNumEntry("/pigale/colors/Background r",163);//180
+  g = setting.readNumEntry("/pigale/colors/Background g",163);//180
+  b = setting.readNumEntry("/pigale/colors/Background b",127);//180
   col.setRgb(r,g,b);QColorDialog::setCustomColor(0,col.rgb());
-  r = setting.readNumEntry("/pigale/colors/Base r",248);
-  g = setting.readNumEntry("/pigale/colors/Base g",238);
-  b = setting.readNumEntry("/pigale/colors/Base b",224);
+  r = setting.readNumEntry("/pigale/colors/Base r",248);//248
+  g = setting.readNumEntry("/pigale/colors/Base g",238);//238
+  b = setting.readNumEntry("/pigale/colors/Base b",224);//224
   col.setRgb(r,g,b);QColorDialog::setCustomColor(1,col.rgb());
-  r = setting.readNumEntry("/pigale/colors/LightBackground r",208);
-  g = setting.readNumEntry("/pigale/colors/LightBackground g",208);
-  b = setting.readNumEntry("/pigale/colors/LightBackground b",208);
+  r = setting.readNumEntry("/pigale/colors/LightBackground r",189);//208
+  g = setting.readNumEntry("/pigale/colors/LightBackground g",187);//208
+  b = setting.readNumEntry("/pigale/colors/LightBackground b",154);//208
   col.setRgb(r,g,b);QColorDialog::setCustomColor(2,col.rgb());
   r = setting.readNumEntry("/pigale/colors/GreenBackground r",165);
   g = setting.readNumEntry("/pigale/colors/GreenBackground g",210);
@@ -326,7 +247,26 @@ int GetPigaleColors()
   col.setRgb(r,g,b);QColorDialog::setCustomColor(3,col.rgb());
   return 0;
   }
-#endif
+void InitPigaleColors()
+  {// Set the colors of tha application
+  GetPigaleColors();
+//   if(GetPigaleColors() == -1)
+//       {QColor BackgroundColor  = QColor(170,187,203);
+//       QColor Base = QColor(248,238,224);
+//       QColor LightBackgroundColor = QColor(180,210,241);
+//       QColor GreenBackgroundColor = QColor(165,210,180);
+//       QColorDialog::setCustomColor(0,BackgroundColor.rgb()); 
+//       QColorDialog::setCustomColor(1,Base.rgb()); 
+//       QColorDialog::setCustomColor(2,LightBackgroundColor.rgb()); 
+//       QColorDialog::setCustomColor(3,GreenBackgroundColor.rgb()); 
+//       }
+  QPalette Palette = QApplication::palette();
+  Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
+  Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
+  Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
+  QApplication::setPalette(Palette);
+  }
+
 void pigaleWindow::ParseArguments()
   // if pigale was called with arguments, we may modify some values
   {if(qApp->argc() < 1)return;
@@ -362,42 +302,6 @@ void pigaleWindow::ParseArguments()
       }
   if(Server || MacroPlay)IsUndoEnable = false;
   }
-void pigaleWindow::SetPigaleColors()
-  {QColor  initial = QColor(248,238,224);
-  QColorDialog::getColor(initial,this); 
-  QPalette Palette = QApplication::palette();
-  Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
-  Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
-  Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
-  QApplication::setPalette(Palette,TRUE);
-  LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
-  LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
-  this->mouse_actions->setPalette(LightPalette,TRUE);
-  this->tabWidget->setPalette(LightPalette,TRUE);
-  this->statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
-  QBrush pb(QColorDialog::customColor(1));
-  this->messages->setPaper(pb); 
-  }
-void InitPigaleColors()
-  {// Set the colors of tha application
-  if(GetPigaleColors() == -1)
-      {QColor BackgroundColor  = QColor(170,187,203);
-      QColor Base = QColor(248,238,224);
-      QColor LightBackgroundColor = QColor(180,210,241);
-      QColor GreenBackgroundColor = QColor(165,210,180);
-      QColorDialog::setCustomColor(0,BackgroundColor.rgb()); 
-      QColorDialog::setCustomColor(1,Base.rgb()); 
-      QColorDialog::setCustomColor(2,LightBackgroundColor.rgb()); 
-      QColorDialog::setCustomColor(3,GreenBackgroundColor.rgb()); 
-      }
-  QPalette Palette = QApplication::palette();
-  Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
-  Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
-  Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
-  QApplication::setPalette(Palette,TRUE);
-  }
-
-
 
 
 

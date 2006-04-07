@@ -22,8 +22,17 @@
 #include <qprinter.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qapplication.h>
+//Added by qt3to4:
+//#include <QPixmap>
+#include <qpixmap.h>
+// #include <QPaintEvent>
+// #include <QHideEvent>
+// #include <QShowEvent>
+#include <Q3HBoxLayout>
+// #include <QResizeEvent>
+#include <Q3VBoxLayout>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -694,10 +703,10 @@ GraphSym::~GraphSym()
 
 int GraphSym::update()
   {if(!d->is_init)
-      {QVBoxLayout* vb = new QVBoxLayout(this,2,2);
+      {Q3VBoxLayout* vb = new Q3VBoxLayout(this,2,2);
       d->editor = new SymWindow(d,this,"SymWindow");
       vb->addWidget(d->editor);
-      QHBoxLayout* hb = new QHBoxLayout(vb,60);
+      Q3HBoxLayout* hb = new Q3HBoxLayout(vb,60);
       QPushButton* bt_next = new QPushButton( "Next",this);
 
       d->bt_fact = new QCheckBox( "Fact",this);           
@@ -788,7 +797,7 @@ void GraphSym::png()
   {qApp->processEvents();
   QString FileName;
   if(!d->mw->ServerExecuting)
-      {FileName = QFileDialog::
+      {FileName = Q3FileDialog::
       getSaveFileName(d->mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")

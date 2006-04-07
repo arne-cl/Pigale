@@ -26,11 +26,16 @@
 #include <qdir.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
+//#include <QStyle>
+#include <qstyle.h>
 
 void InitPigaleColors();
 
-int main(int argc,char ** argv)
-  {QApplication app(argc,argv);
+int main(int argc,char * argv[])
+  {//QApplication::setStyle(new QWindowsStyle);
+  QApplication::setDesktopSettingsAware(false);
+
+  QApplication app(argc,argv);
   // Set the colors of tha application
   InitPigaleColors();
   //Translations
@@ -51,6 +56,5 @@ int main(int argc,char ** argv)
   pigaleWindow *mw = new pigaleWindow();
   mw->show();
   app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));
-  int result = app.exec();
-  return result;
+  return app.exec();
   }

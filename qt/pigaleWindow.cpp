@@ -10,27 +10,27 @@
 *****************************************************************************/
 
 #include <config.h>
+#include <qstatusbar.h>
+#include <qfontdialog.h> 
+#include <qmessagebox.h>
+#include <qprogressbar.h>
+#include <qtextedit.h>
+#include "ClientSocket.h"
 #include "pigaleWindow.h"
-#include <TAXI/Tgf.h>
 #include "GraphWidget.h"
 #include "GraphGL.h"
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
 #include "LineEditNum.h"
-
+#include <TAXI/Tgf.h>
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
 #include <QT/Action.h>
 #include <QT/pigalePaint.h> 
-#include <QT/pigaleCanvas.h>
+#include <QT/pigaleCanvas.h> 
 #include <QT/clientEvent.h>
-
-#include <qstatusbar.h>
-#include <qfontdialog.h> 
-#include <qmessagebox.h>
-#include <qprogressbar.h>
 
 
 int Test(GraphContainer &GC,int action,int & drawing);
@@ -46,24 +46,41 @@ void pigaleWindow::initServer()
   InitPigaleServer(this);
   showMinimized();
   }
-void pigaleWindow::customEvent( QCustomEvent * ev)
-  {switch( ev->type())
-      {case CLIENT_EVENT:
-          {clientEvent *event  =  (clientEvent  *)ev;
-          int action  = event->getAction();
-          QString msg = event->getParamString();
-          if(action > A_AUGMENT && action < A_TEST_END)
-              handler(action);
-          ServerBusy = false;
-          }
-          break;
+bool pigaleWindow::event(QEvent * ev)
+  {if(ev->type() >=  QEvent::User)
+      {customEvent(ev);
+      return TRUE;
+      }
+  if(ev->type() >=  QEvent::QEvent::KeyPress)
+      {QKeyEvent *k = (QKeyEvent *)ev;
+      keyPressEvent(k);
+      return TRUE;
+      }
+  //qDebug("event:%d",(int)ev->type());
+  return FALSE;
+  }
+void pigaleWindow::customEvent(QEvent * ev)
+  {ev->accept();
+  switch( ev->type())
+      {
+//       case CLIENT_EVENT:
+//           {clientEvent *event  =  (clientEvent  *)ev;
+//           int action  = event->getAction();
+//           QString msg = event->getParamString();
+//           cout << "customEvent action:"<<action<<endl;
+//           if(action > A_AUGMENT && action < A_TEST_END)
+//               handler(action);
+//           ServerBusy = false;
+//           }
+//           break;
       case  TEXT_EVENT:
           {textEvent *event  =  (textEvent  *)ev;
           Message(event->getString());
           }
           break;
       case CLEARTEXT_EVENT:
-          messages->setText("");
+          //messages->setText("");
+          messages->setPlainText("");
           break;
       case BANNER_EVENT:
           {bannerEvent *event  =  (bannerEvent  *)ev;
@@ -88,18 +105,31 @@ void pigaleWindow::customEvent( QCustomEvent * ev)
           if(action == -1)
               progressBar->hide();
           else if(action == 1)
-              {progressBar->setTotalSteps(event->getStep());
-              progressBar->setProgress(0);
+              {progressBar->setRange(0,event->getStep());
+              progressBar->setValue(0);
               progressBar->show();
               }
           else
-              progressBar->setProgress(event->getStep());
+              progressBar->setValue(event->getStep());
           }
           break;
       default:
           qDebug("UNKNOWN EVENT");
           break;
       }
+  }
+void pigaleWindow::banner()
+  {QString msg;  
+    int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName);
+    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName);
+    msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
+	    ,(const char *)InputFileName
+	    ,*pGraphIndex,NumRecords
+	    ,(const char *)OutputFileName
+	    ,NumRecordsOut
+	    ,UndoIndex,UndoMax);
+  bannerEvent *e = new bannerEvent(msg);
+  QApplication::postEvent(this,e);
   }
 void pigaleWindow::postMessage(const QString &msg)
   {textEvent *e = new textEvent(msg);
@@ -119,15 +149,13 @@ void pigaleWindow::postWait(const QString &msg)
   }
 void pigaleWindow::Message(QString s)
   {messages->append(s);
-#if QT_VERSION >= 300
-  messages->scrollToBottom ();
-#endif
+  messages->ensureCursorVisible();
   } 
 void pigaleWindow::mapActionsInit()
-  {int na = (int)(sizeof(actions)/sizeof(_Action));
+  {int na = (int)(sizeof(Actions)/sizeof(_Action));
   for(int i = 0;i < na;i++)
-      {mapActionsString[actions[i].num] = actions[i].name;
-      mapActionsInt[actions[i].name] = actions[i].num;
+      {mapActionsString[Actions[i].num] = Actions[i].name;
+      mapActionsInt[Actions[i].name] = Actions[i].num;
       }
   }
 QString pigaleWindow::getActionString(int action)
@@ -152,7 +180,7 @@ void pigaleWindow::computeInformation()
   if(G. Set().exist(PROP_NLOOPS))  G. Set().erase(PROP_NLOOPS);
   Prop1<int> maptype(G.Set(),PROP_MAPTYPE,PROP_MAPTYPE_UNKNOWN);
   G.planarMap() = 0;
-  postMessageClear();
+  postMessageClear();setError(0);
   graph_properties->update(GC,true);
   }
 void pigaleWindow::information()
@@ -160,120 +188,63 @@ void pigaleWindow::information()
   graph_properties->update(GC,!MacroExecuting && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
-  {if(action == A_SET_COLOR)
-      {SetPigaleColors(); return;}
-  else if(action == A_SET_DOC)
-      {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
-      DirFileDoc = QFileDialog::
-      getExistingDirectory(StartDico,this,"find",
-                           tr("Choose the documentation directory <em>Doc</em>"),TRUE);
-      if(!DirFileDoc.isEmpty())
-          {QFileInfo fi =  QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
-          if(fi.exists())
-              {browser->mimeSourceFactory()->setFilePath(DirFileDoc);
-              browser->setSource("manual.html");
-              SaveSettings();
-              QMessageBox::information(this,"Pigale Editor"
-                                       ,tr("You should restart Pigale"
-                                           " to get the manual loaded")
-                                       ,QMessageBox::Ok);
-              }
-          else 
-              QMessageBox::information(this,"Pigale Editor"
-                                       ,tr("I cannot find the inline manual <em>manual.html</em>")
-                                       ,QMessageBox::Ok);
-          }
+  {switch(action)
+      {case A_SET_PAUSE_DELAY:
+          pauseDelay() = macroSpin->value();
           return;
+      case A_SET_DEBUG:
+          debug() = !debug();
+          return;
+      case  A_SET_SCH_RECT:
+          SchnyderRect() = !SchnyderRect();
+          return;
+      case A_SET_LFACE:
+          SchnyderLongestFace() = !SchnyderLongestFace();
+          return;
+      case A_SET_SCH_COLOR:
+          SchnyderColor() =! SchnyderColor();
+          return;
+      case A_SET_ERASE_MULT:
+          randomEraseMultipleEdges() = !randomEraseMultipleEdges();
+          return;
+      case A_SET_GEN_CIR:
+          randomUseGeneratedCir() = !randomUseGeneratedCir();
+          return;
+      case A_SET_RANDOM_SEED:
+          randomSeed() = !randomSeed();
+          return;
+      case A_SET_UNDO:
+          IsUndoEnable = !IsUndoEnable;
+          UndoEnable(IsUndoEnable);
+          return;
+      case A_SET_ORIENT:
+          ShowOrientation() = !ShowOrientation();
+          break;
+      case A_SET_ARROW:
+          ShowArrow() = !ShowArrow();
+          break;
+      case A_SET_EXTBRIN:
+          ShowExtBrin() = !ShowExtBrin();
+          break;
       }
-  else if(action == A_SET_PAUSE_DELAY) 
-      {pauseDelay() = macroSpin->value();
-      SaveSettings();
-      return;
-      }
-  else if(action == A_SET_RANDOM_SEED_CHANGE)
-      {randomSetSeed() = atol((const char *)seedEdit->text()); 
-      Tprintf("New seed:%ld",randomSetSeed());
-      return; 
-      }
-  
-// Change one parameter
-  menuBar()->setItemChecked(action,!menuBar()->isItemChecked(action));
-  // Read parameters when one is changed
-  debug()               =  menuBar()->isItemChecked(A_SET_DEBUG);
-  SchnyderRect()        =  menuBar()->isItemChecked(A_SET_SCH_RECT);
-  SchnyderLongestFace() =  menuBar()->isItemChecked(A_SET_LFACE);
-  SchnyderColor()       =  menuBar()->isItemChecked(A_SET_SCH_COLOR);
-  ShowOrientation()     =  menuBar()->isItemChecked(A_SET_ORIENT);
-  ShowArrow()     =  menuBar()->isItemChecked(A_SET_ARROW);
-  ShowExtBrin()     =  menuBar()->isItemChecked(A_SET_EXTBRIN);
-  randomEraseMultipleEdges()  =  menuBar()->isItemChecked(A_SET_ERASE_MULT);
-  randomSeed()          =  menuBar()->isItemChecked(A_SET_RANDOM_SEED);
-  pauseDelay() = macroSpin->value();
-  UndoEnable(menuBar()->isItemChecked(A_SET_UNDO));
-
-  if(action == A_SET_ORIENT || action == A_SET_ARROW  || action == A_SET_EXTBRIN)
-      // update the editor
-      {handlerEvent *e = new handlerEvent(1,0,0);
-      QApplication::postEvent(this,e);
-      }
+  // update the editor
+  handlerEvent *e = new handlerEvent(1,0,0);
+  QApplication::postEvent(this,e);
   return;
   }
-void PigaleThread:: run(int _action,int  _N,int _N1,int _N2,int _M,int _delay)
-  {action = _action;
-  N = _N;
-  N1 = _N1;
-  N2 = _N2;
-  M = _M;
-  delay = _delay;
-#if QT_VERSION > 0x030300
-  start (QThread::HighPriority);
-#else
-  start();
-#endif
-  }
-void PigaleThread::run()
-  {if(!action)return;
-  mw->timer.start();
-  int ret = 0;
-  int saveType = 0;
-  int drawingType = 0;
-  if(action < A_AUGMENT_END)
-      ret = AugmentHandler(mw->GC,action);
-  else if(action < A_EMBED_END)
-      ret = EmbedHandler(mw->GC,action,drawingType);
-  else if(action < A_GRAPH_END)
-      {ret = DualHandler(mw->GC,action); 
-      saveType = 1;
-      }
-  else if(action < A_REMOVE_END)
-      {ret = RemoveHandler(mw->GC,action);
-      saveType = 2;
-      }
-  else if(action < A_GENERATE_END)
-      {ret = GenerateHandler(mw->GC,action,N1,N2,M);
-      saveType = 1;
-      }
-  else if(action < A_ALGO_END)
-      ret = AlgoHandler(mw->GC,action,N);
-  else if(action < A_ORIENT_END)
-      {ret = OrientHandler(mw->GC,action);
-      ShowOrientation() = true;
-      }
-//   else if(action < A_TEST_END)
-//       ret  = Test(mw->GC,action - A_TEST,drawingType);
-  
-  handlerEvent *e = new handlerEvent(ret,drawingType,saveType);
-  QApplication::postEvent(mw,e);
-  }
+
 int  pigaleWindow::getResultHandler(int value)
   {static int _value = 0;
   int value0 = _value;
   _value = value;
   return value0;
   }
+void pigaleWindow::handler(QAction *qaction)
+  {int Id = getId(qaction);
+  if(Id)handler(Id);
+  }
 int pigaleWindow::handler(int action)
-// Should not have any graphic action (so can be called from a thread)
-  {if(action > A_SET){settingsHandler(action);return 0;}
+  {if(action < A_PAUSE)return 0;
   if(MacroRecording)macroRecord(action);
   if(action == A_PAUSE)
       {pauseDelay() = macroSpin->value();
@@ -282,9 +253,9 @@ int pigaleWindow::handler(int action)
       QTimer::singleShot(1000*pauseDelay(),this,SLOT(timerWait()));
       return 0;
       }
-  if(action > A_TEST_END)return 0;
-
-  blockInput(true);
+//   if(!ServerExecuting && !graph_properties->actionAllowed(action))
+//       {Tprintf("Action not allowed");return 0;} //il faudrait action > A_AUGMENT
+  //blockInput(true);
   if(action < A_AUGMENT_END)
       {UndoSave();
       pigaleThread.run(action);
@@ -302,7 +273,6 @@ int pigaleWindow::handler(int action)
   else if(action < A_GENERATE_END)
       {UndoClear();UndoSave();
       pigaleThread.run(action,0,Gen_N1,Gen_N2,Gen_M);
-      //pigaleThread.run(action,0,spin_N1->value(),spin_N2->value(),spin_M->value());
       }
   else if(action < A_ALGO_END)
       pigaleThread.run(action,spin_N->value());
@@ -316,58 +286,70 @@ int pigaleWindow::handler(int action)
       QApplication::postEvent(this,e);
       return 0;
       }
-      //pigaleThread.run(action);
+   else if(action > A_INPUT && action < A_INPUT_END)
+       pigaleThread.run(action);
+   else if(action > A_TRANS && action < A_TRANS_END)
+       pigaleThread.run(action);
+  else if(action > A_SET)
+      {settingsHandler(action);return 0;}
   else
       return 0;
-  while( pigaleThread.running())
-      {pigaleThread.wait(50);
-      qApp->processEvents (); 
-      }
   return 0;
   }
-
-int pigaleWindow::postHandler(QCustomEvent *ev)
-  {// 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
+int pigaleWindow::postHandler(QEvent *ev)
+  {handlerEvent *event = (handlerEvent  *)ev;  
+  int action = event->getAction();
+  postHandler(action,event->getDrawingType(),event->getSaveType());
+  pigaleThread.run(0); //to unlock the thread
+  return 0;
+  }
+int pigaleWindow::postHandler(int action,int drawingType,int saveType)
+  {//action   0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
-  handlerEvent *event = (handlerEvent  *)ev;  
-  int ret = event->getAction();
-   getResultHandler(ret);    // set the result
-  if(ret < 0){blockInput(false);return ret;}
-  int saveType = event->getSaveType();
+  //10:png to client
+  double Time = timer.elapsed()/1000.;
+
+   getResultHandler(action);    // set the result
+  if(action < 0){blockInput(false);return action;}
   if(saveType == 1)
       UndoSave();
   else if(saveType == 2)
       UndoTouch(false);
 
   // In case we called the orienthandler
-  menuBar()->setItemChecked(A_SET_ORIENT,ShowOrientation()); 
-  double Time = timer.elapsed()/1000.;
-  if(ret == 1)
+  box6->setCheckState(ShowOrientation() ? Qt::Checked : Qt::Unchecked);
+  if(action == 1)
       {if(!MacroExecuting )gw->update();}
-  else if(ret == 2)
+  else if(action == 2)
       {if(!MacroRecording)information();
       if(!MacroExecuting )gw->update();
       }
-  else if(ret == 20) // Remove handler
+  else if(action == 20) // Remove handler
       {if(!MacroRecording)information();
       if(!MacroExecuting ) gw->update(0);
       }
-  else if(ret == 3)
-      mypaint->update(event->getDrawingType()); 
-  else if(ret == 4) //3d drawings
+  else if(action == 3)
+      mypaint->update(drawingType); 
+  else if(action == 4) //3d drawings
       graphgl->update(); 
-  else if(ret == 5) //symetrie
+  else if(action == 5) //symetrie
       {graphgl->update(); 
       graphsym->update();
       }
   // cases 6-7-8 we need a canvas with the current graph loaded
-  else if(ret == 6)
+  else if(action == 6)
       {gw->update();gw->Spring();}
-  else if(ret == 7)
+  else if(action == 7)
       {gw->update();gw->SpringPreservingMap();}
-  else if(ret == 8)
+  else if(action == 8)
       {gw->update();gw->SpringJacquard();}
 
+  //cases 10 create a png 11 create a ps
+  else if(action == 10)
+      png();
+  else if(action == 11)
+      print();
+ 
   blockInput(false);
   double TimeG = timer.elapsed()/1000.;
   if(!MacroLooping && !MacroRecording && !ServerExecuting)
@@ -377,9 +359,123 @@ int pigaleWindow::postHandler(QCustomEvent *ev)
           if(debug())Twait((const char *)getErrorString()); 
           }
       }
-  return ret;
+  return action;
   }
+/************************************************************/
+PigaleThread::PigaleThread(QObject *parent) 
+    : QThread (parent)
+  {restart = false;
+  abort = false;
+  }
+PigaleThread::~PigaleThread()
+  {mutex.lock();
+  abort = true;
+  condition.wakeOne();
+  mutex.unlock();
+  wait();
+  }
+void PigaleThread:: run(int action,int N,int N1,int N2,int M,int delay)
+  {QMutexLocker locker(&mutex);
+  this->action   =  action;
+  this->N  = N;
+  this->N1 = N1;
+  this->N2 = N2;
+  this->M  = M;
+  this->delay = delay;
+  if(!isRunning()) 
+      start();
+  else 
+      {restart = true;
+      condition.wakeOne();
+      }
+  }
+void PigaleThread::run()
+  {int ret,saveType,drawingType;
+  ret = saveType = drawingType = 0;
+  for(;;)
+      {mutex.lock();
+      int action = this->action;
+      int N      = this->N;
+      int N1     = this->N1;
+      int N2     = this->N2;
+      int M      = this->M;
+      delay      = this->delay; 
+      mutex.unlock();
 
+      if(abort)return;
+      if(action)
+          {//mw->pigaleReady = false;
+          //cout <<"thread:"<<(const char*)mw->getActionString(action)<<endl;
+          mw->timer.start();
+          
+          if(action < A_AUGMENT_END)
+              ret = AugmentHandler(mw->GC,action);
+          else if(action < A_EMBED_END)
+              ret = EmbedHandler(mw->GC,action,drawingType);
+          else if(action < A_GRAPH_END)
+              {ret = DualHandler(mw->GC,action); 
+              saveType = 1;
+              }
+          else if(action < A_REMOVE_END)
+              {ret = RemoveHandler(mw->GC,action);
+              saveType = 2;
+              }
+          else if(action < A_GENERATE_END)
+              {ret = GenerateHandler(mw->GC,action,N1,N2,M);
+              saveType = 1;
+              }
+          else if(action < A_ALGO_END)
+              ret = AlgoHandler(mw->GC,action,N);
+          else if(action < A_ORIENT_END)
+              {ret = OrientHandler(mw->GC,action);
+              ShowOrientation() = true;
+              }
+           else if(action == A_TRANS_GET_CGRAPH || action == A_INPUT_READ_GRAPH)
+               {mw->publicLoad(mw->GraphIndex1);
+               ret = 2;
+               }
+           else if(action == A_TRANS_SEND_PNG)
+               ret = 10;
+           else if(action == A_TRANS_SEND_PS)
+               ret = 11;
+          // post an event to execute the graphics
+          handlerEvent *e = new handlerEvent(ret,drawingType,saveType);
+          QApplication::postEvent(mw,e);
+          }
 
-
-
+      mutex.lock();
+      if(!restart) condition.wait(&mutex);
+      restart = false;
+      mutex.unlock();
+      // ne s'execute que quand: condition.wakeOne();
+      if(!action)continue;
+      
+      if(mw->ServerExecuting)// will execute only when posthandler has finished
+          {if(getError())
+              {mw->threadServer->writeClientEvent(":ERROR "+getErrorString()+" : "+mw->getActionString(action));
+              setError();
+              mw->threadServer->writeClientEvent("!!");
+              }
+          else
+              {if(action ==  A_TRANS_SEND_PNG)
+                  {mw->threadServer->lockMutex();
+                  mw->threadServer->Png();
+                  mw->threadServer->unlockMutex();
+                  }
+              else if(action ==  A_TRANS_SEND_PS)
+                  {mw->threadServer->lockMutex();
+                  mw->threadServer->Ps();
+                  mw->threadServer->unlockMutex();
+                  }
+              else
+                  {mw->threadServer->lockMutex();
+                  mw->threadServer->writeClientEvent(QString("!%1 S").arg(mw->getActionString(action)));
+                  mw->threadServer->unlockMutex();
+#ifdef TDEBUG              
+                  //cout <<"      -> end thread:"<<(const char*)mw->getActionString(action)<<endl;
+#endif
+                  }
+              }
+          }
+      }
+  }

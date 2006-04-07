@@ -17,12 +17,19 @@
 #include <qradiobutton.h>
 #include <qmenubar.h>
 #include <QT/Action_def.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
+//#include <QMouseEvent>
+#include <Q3HBoxLayout>
+//#include <QLabel>
+#include <qlabel.h>
+#include <Q3GridLayout>
 #include <TAXI/Tsvector.h>
 #include <TAXI/graph.h>
 
-class QVBoxLayout; 
-class QHBoxLayout; 
-class QGridLayout; 
+class Q3VBoxLayout; 
+class Q3HBoxLayout; 
+class Q3GridLayout; 
 class QLabel;
 class QLineEdit;
 class QRadioButton;
@@ -44,7 +51,7 @@ class Graph_Properties : public QWidget
 
 public:
   Graph_Properties( QWidget* parent = 0,QMenuBar *menu = 0,
-		    const char* name = 0,WFlags fl = 0 );
+		    const char* name = 0,Qt::WFlags fl = 0 );
   ~Graph_Properties();
  
   void update(GraphContainer & GC,bool print = true);
@@ -91,10 +98,7 @@ private:
   bool _updateMenu;
   int ns,nt,dmin,dmax;
   bool S,P,A,B,R,C1,C2,C3,T,Outer,Serie,MaxBi;
-  void allowAction(int action,bool condition)
-      {allow[action] = condition;
-      if(_updateMenu)menu->setItemEnabled(action,condition);
-      }
+  void allowAction(int action,bool condition);
 };
 
 #endif // GRAPH_PROPERTIES_H

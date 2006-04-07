@@ -13,7 +13,18 @@
 #include <QT/pigalePaint.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
-#include <qpaintdevicemetrics.h> 
+#include <q3paintdevicemetrics.h> 
+//Added by qt3to4:
+//#include <QWheelEvent>
+//#include <QPixmap>
+#include <qpixmap.h>
+// #include <QPaintEvent>
+#include <Q3PointArray>
+// #include <QHideEvent>
+// #include <QKeyEvent>
+// #include <QShowEvent>
+// #include <QResizeEvent>
+// #include <QMouseEvent>
 
 void DrawPolrec(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -133,7 +144,7 @@ void DrawPolyline(QPainter *p,pigalePaint *paint)
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
   QPen pn = p->pen();pn.setWidth(2);
-  QPointArray bez(4);
+  Q3PointArray bez(4);
 
   for (tedge ee=1; ee<= G.ne(); ee++)
       {if (Ebend[ee] != Tpoint(-1, -1)) 
@@ -160,7 +171,7 @@ void DrawCurves(QPainter *p,pigalePaint *paint)
   int m = G.ne(); 
   int n = G.nv(); 
   QPen pn = p->pen();pn.setWidth(2);
-  QPointArray bez(7);
+  Q3PointArray bez(7);
 
   for (tedge ee=1; ee<=m; ee++)
     {if (Epoint2[ee]!=Tpoint(0,0)) {
@@ -443,8 +454,10 @@ pigalePaint::~pigalePaint()
 pigalePaint::pigalePaint(QWidget *parent, const char *name,pigaleWindow *f):
     QWidget(parent,name),mw(f),isHidden(true)
   {index = -1;
-  setBackgroundColor(Qt::white);
-  setFocusPolicy(QWidget::ClickFocus); 
+  QPalette Palette;
+  Palette.setColor(QColorGroup::Window,Qt::white);
+  setPalette(Palette,TRUE);
+  setFocusPolicy(Qt::ClickFocus); 
   }
 void pigalePaint::print(QPrinter* printer)
   { QString FileName="";
@@ -466,7 +479,7 @@ void pigalePaint::print(QPrinter* printer)
       }
     else if(!printer->setup(this)) return;
     { QPainter pp(printer);
-      QPaintDeviceMetrics pdm(printer);
+      Q3PaintDeviceMetrics pdm(printer);
       int nx = width();
       int ny = height();
       double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
@@ -486,7 +499,7 @@ void pigalePaint::png()
   qApp->processEvents();
   QString FileName;
   if(!mw->ServerExecuting)
-      {FileName = QFileDialog::
+      {FileName = Q3FileDialog::
       getSaveFileName(mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")
@@ -500,12 +513,13 @@ void pigalePaint::png()
   }
 void pigalePaint::drawIt(QPainter *p)
   {if(index < 0)return;
+  p->eraseRect(geometry());
   (*DrawFunctions[index].f)(p,this);
   }
 void pigalePaint::update()
   {update(index,false);}
 void pigalePaint::update(int i,bool newDrawing)
-  {setBackgroundColor(Qt::white);
+  {//setBackgroundColor(Qt::white);
   zoom = 1;
   index = i;
   if(newDrawing) // copy the graph
@@ -527,10 +541,17 @@ void pigalePaint::update(int i,bool newDrawing)
 #endif
   mw->tabWidget->showPage(this);
   }
+#include <qstyle.h>
 void pigalePaint::paintEvent(QPaintEvent * e)
   {if(isHidden)return;
   QWidget::paintEvent(e);
   QPainter p(this);
+ //  QStylePainter p(this);
+//   //QStyleOptionFocusRect option(1);
+//   QStyleOption option(1);
+//   option.init(this);
+//   option.backgroundColor = palette().color(QPalette::Background);
+//   style().drawPrimitive(QStyle::PE_FrameFocusRect,&option,p,this);
   drawIt(&p);
   }
 void pigalePaint::showEvent(QShowEvent*)
@@ -566,9 +587,7 @@ void pigalePaint::keyPressEvent(QKeyEvent *k)
       xtr += posClick.x() - to_x(xx0);
       ytr += to_y(yy0) -  posClick.y();
       }
-  setBackgroundColor(Qt::white);
-  QPainter p(this);
-  drawIt(&p);
+  repaint(geometry());
   }
 void pigalePaint::wheelEvent(QWheelEvent *event)
   {//event->accept();
@@ -578,9 +597,7 @@ void pigalePaint::wheelEvent(QWheelEvent *event)
   xscale *= zoom ;yscale *= zoom;
   xtr += posClick.x() - to_x(xx0);
   ytr += to_y(yy0) -  posClick.y();
-  setBackgroundColor(Qt::white);
-  QPainter p(this);
-  drawIt(&p);
+  repaint(geometry());
   }
 void pigalePaint::mousePressEvent(QMouseEvent *event)
   {posClick = event->pos();
@@ -590,9 +607,7 @@ void pigalePaint::mouseMoveEvent(QMouseEvent *event)
   int dy = event->pos().y() - posClick.y();
   posClick = event->pos();
   xtr += dx;  ytr -= dy;
-  setBackgroundColor(Qt::white);
-  QPainter p(this);
-  drawIt(&p);
+  repaint(geometry());
   }
 int pigalePaint::to_x(double x)
   {return (int)(x*xscale + xtr +.5);
@@ -658,7 +673,7 @@ void pigalePaint::DrawTriangle(QPainter *p,Tpoint &p1,Tpoint &p2,Tpoint &p3,int 
   {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   pb.setColor(color[bound(col,1,16)]);p->setBrush(pb);
-  QPointArray vertices(3);
+  Q3PointArray vertices(3);
   vertices[0] = QPoint((int)to_x(p1.x()),(int)to_y(p1.y()));
   vertices[1] = QPoint((int)to_x(p2.x()),(int)to_y(p2.y()));
   vertices[2] = QPoint((int)to_x(p3.x()),(int)to_y(p3.y()));

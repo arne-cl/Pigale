@@ -12,6 +12,9 @@
 #ifndef _GRAPH_SYM_H_INCLUDED_
 #define _GRAPH_SYM_H_INCLUDED_
 #include <qwidget.h>
+//Added by qt3to4:
+//#include <QResizeEvent>
+#include <qevent.h>
 
 class GraphSymPrivate;
 class pigaleWindow; 

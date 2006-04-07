@@ -9,47 +9,56 @@
 **
 *****************************************************************************/
 
-#include "gprop.h"
-#include "pigaleWindow.h"
-#include <QT/Misc.h>
 
-#include <qvariant.h>   // first for gcc 2.7.2
+
+#include <qvariant.h>  
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qlayout.h>
+#include <Q3VBoxLayout>
+//#include <QMouseEvent>
+#include <qevent.h>
+#include <Q3HBoxLayout>
+//#include <QApplication>
+#include <qapplication.h>
 
 
-
+#include "pigaleWindow.h"
+#include <QT/Misc.h>
+#include "gprop.h"
 Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
-				   ,const char* name,WFlags fl)
+				   ,const char* name,Qt::WFlags fl)
     : QWidget( parent,name,fl)
     ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END,1),_updateMenu(true)
+//,menu(menubar),allow(0, A_ORIENT_END,1),_updateMenu(true)
   {if(!name)setName("Graph_Properties");
+  pigaleWindow * mw = (pigaleWindow*)qApp->mainWidget();
+  MaxNSlow = mw->MaxNS;  MaxNDisplay = mw->MaxND;
   setMinimumHeight(180); 
   //marge,spacing
-  QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
+  Q3VBoxLayout* MainLayout = new Q3VBoxLayout(this,5,2,"MainLayout"); 
 
-  QHBoxLayout *TxtLayout = new QHBoxLayout(0,0,0,"TxtLayout"); 
-  QHBoxLayout *Layout_NM = new QHBoxLayout(0,0,0,"Layout_NM");
-  QHBoxLayout *LayoutDegrees = new QHBoxLayout(0,0,0,"LayoutDegrees");
-  QHBoxLayout *LayoutAllButtons = new QHBoxLayout(0,8,10,"LayoutAllButtons");
+  Q3HBoxLayout *TxtLayout = new Q3HBoxLayout(0,0,0,"TxtLayout"); 
+  Q3HBoxLayout *Layout_NM = new Q3HBoxLayout(0,0,0,"Layout_NM");
+  Q3HBoxLayout *LayoutDegrees = new Q3HBoxLayout(0,0,0,"LayoutDegrees");
+  Q3HBoxLayout *LayoutAllButtons = new Q3HBoxLayout(0,8,10,"LayoutAllButtons");
   
   MainLayout->addLayout(TxtLayout);
   MainLayout->addLayout(Layout_NM);
   MainLayout->addLayout(LayoutDegrees);
   MainLayout->addLayout(LayoutAllButtons);
   
-  QVBoxLayout *LayoutLeftButtons  = new QVBoxLayout(0,0,0,"LayoutLeftButtons"); 
-  QVBoxLayout *LayoutRightButtons = new QVBoxLayout(0,0,0,"LayoutP");
+  Q3VBoxLayout *LayoutLeftButtons  = new Q3VBoxLayout(0,0,0,"LayoutLeftButtons"); 
+  Q3VBoxLayout *LayoutRightButtons = new Q3VBoxLayout(0,0,0,"LayoutP");
   LayoutAllButtons->addLayout(LayoutLeftButtons);
   LayoutAllButtons->addLayout(LayoutRightButtons);
 
   QLabel*TextLabel3 = new QLabel(this,"TextLabel3");
   TextLabel3->setText(tr("<b>Graph Properties</b>"));
   TextLabel3->setTextFormat(Qt::RichText);
-  TextLabel3->setAlignment(int(QLabel::AlignCenter));
+  TextLabel3->setAlignment(int(Qt::AlignCenter));
   TxtLayout->addWidget(TextLabel3);
   
   QLabel*TextLabel1 = new QLabel(this,"TextLabel1");
@@ -130,18 +139,13 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
 
 RoRadioButton::RoRadioButton(QWidget * parent,const char * name)
     :QRadioButton(parent,name)
-  {}
+  {setAutoExclusive(false); 
+  }
 void RoRadioButton::mousePressEvent(QMouseEvent* e)
-  {
-#if QT_VERSION >= 300
-  e->accept();
-#endif
+  {e->accept();
   }
 void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
-  {
-#if QT_VERSION >= 300
-  e->accept();
-#endif
+  {e->accept();
   }
 Graph_Properties::~Graph_Properties()
   { }
@@ -159,7 +163,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
       setError(-1,"vin[0] or cir[0] or acir[0] != 0");
       }
-  DebugPrintf("START INFO: n = %d m = %d Name:%s",G.nv(),G.ne(),~title());
+  if(debug())DebugPrintf("START INFO: n = %d m = %d Name:%s",G.nv(),G.ne(),~title());
 #endif
   
   int nloops = G.RemoveLoops();
@@ -282,7 +286,9 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_ORIENT_SCHNYDER,!SMALL && P && S &C1);  //planar schnyder
   allowAction(A_ORIENT_BIPOLAR,(G.nv() > 1) && P && C2);//bipolar plan
   allowAction(A_ORIENT_BIPOLAR_NP,(G.nv() > 1) && C2);  //bipolar 
-
+#ifdef TDEBUG
+  if(debug())DebugPrintf("END INFO %d\n",print);
+#endif
   if(!print)return;  
   // Modify the buttons
   RBSimple->setChecked(S);
@@ -348,4 +354,12 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   //if(g)Tprintf("Genus of the current map: %d",g);
   if(A & C1) Tprintf("Acyclic: %d sources,%d sinks",ns,nt);
   //Tprintf("extbrin:%d %d (index)",G.vin[G.extbrin()](),G.vin[-G.extbrin()]());
+  }
+void Graph_Properties::allowAction(int action,bool condition)
+  {allow[action] = condition;
+  pigaleWindow *mw = (pigaleWindow*)qApp->mainWidget();
+  if(_updateMenu && mw->menuIntAction.contains(action))
+      //{mw->menuIntAction[action]-> setEnabled(condition);
+      {mw->menuIntAction[action]-> setVisible(condition);
+      }
   }

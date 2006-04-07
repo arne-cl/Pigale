@@ -27,36 +27,39 @@
 
 
 int InitPigaleServer(pigaleWindow *w)
-  {PigaleServer  *server = new PigaleServer(w,qApp);
-  if(!server->ok())
+  {PigaleServer  *server = new PigaleServer(w);
+  server->setProxy(QNetworkProxy::NoProxy);
+  if(!server->isListening ())
       {Tprintf("Server: Init failed");
       return -1;
       }
   else
-      Tprintf("Server: Init");
+      Tprintf("Server using port%d",server->serverPort());
   return 0;
   }
-
-//PigaleServer:public QServerSocket 
-PigaleServer::PigaleServer(pigaleWindow *w,QObject* parent):
-    QServerSocket(4242,1,parent),mw(w),nconnections(0)
-    { }
-void PigaleServer::newConnection(int socket)
+PigaleServer::PigaleServer(pigaleWindow *_mw)
+    :QTcpServer(_mw),mw(_mw)
+  {listen(QHostAddress::Any,4242); 
+  nconnections = 0;
+  setMaxPendingConnections(1);
+  }
+void PigaleServer::incomingConnection(int socketDescriptor)
   {if(nconnections == 0)
-      {clientsocket = new ClientSocket(socket,mw,this,qApp);
-      nconnections = 1;
+      {ClientSocket *thread = new ClientSocket(mw,this,socketDescriptor);
+      connect(thread, SIGNAL(finished()),thread,SLOT(deleteLater()));
+      mw->threadServer = thread;
       mw->NewGraph(); 
       mw->postMessageClear();
       Tprintf("Server: New connection %d",mw->ServerClientId);
       mw->ServerExecuting = true;      mw->blockInput(true);
       }
   else
-      {QSocket *so =  new QSocket(qApp);
-      so->setSocket(socket);
+      {QTcpSocket *socket =  new QTcpSocket();
+      socket->setSocketDescriptor(socketDescriptor);
       QTextStream cli;
-      cli.setDevice(so);
+      cli.setDevice(socket);
       cli << ":Server Busy"<<endl;
-      so->close();
+      socket->close();
       }
   }
 void PigaleServer::OneClientClosed()
@@ -65,160 +68,286 @@ void PigaleServer::OneClientClosed()
   nconnections = 0;
   mw->ServerExecuting = false;   mw->blockInput(false);
   }
-
-//ClientSocket: thread reading and writing on a socket
-ClientSocket::ClientSocket(int sock,pigaleWindow *p,PigaleServer *server,QObject *parent,const char *name) :
-    QSocket(parent,name),sdebug(0),mw(p)
-  {connect(this,SIGNAL(readyRead()),SLOT(readClient()));
-  connect(this,SIGNAL(connectionClosed()),SLOT(deleteLater()));
-  connect(this,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
+/**********************************************************/
+// thread
+ClientSocket::ClientSocket(pigaleWindow *_mw,PigaleServer *server,int socketDescriptor)
+    :QThread(_mw),mw(_mw),sdebug(0),line(0)
+//{socket =  new QTcpSocket(this);
+  {socket =  new QTcpSocket(_mw);
+  connect(socket,SIGNAL(readyRead()),SLOT(readClient()));
+  connect(socket,SIGNAL(connectionClosed()),SLOT(deleteLater()));
+  connect(socket,SIGNAL(connectionClosed()),server,SLOT(OneClientClosed()));
+  connect(this,SIGNAL(error(int,const QString &)),this,SLOT(errorReport(int,const QString &)));
   connect(this,SIGNAL(logText(const QString&)),SLOT(writeServer(const QString&)));
-  setSocket(sock);
-  cli.setDevice(this);
-  clo.setDevice(this);
-  start();
-  mw->ServerClientId = prId = sock;
-  cli << ":Server Ready"<<endl;
-  cli << "!" << endl;
+
+  if(!socket->setSocketDescriptor(socketDescriptor))
+      cout<<"SocketError:"<<socket->error()<<" "<<(const char *) socket->errorString()<<endl;
+  mw->ServerClientId = prId = socketDescriptor;
+  Reading = restart = abort = false;
+  clo.setDevice(socket);   clo.setVersion(QDataStream::Qt_4_0);
+  writeClientEvent( ":Server Ready");
+  writeClientEvent( "!Server Ready C");
+  }
+ClientSocket::~ClientSocket()
+  {mutex.lock();
+  abort = true;
+  condition.wakeOne();
+  mutex.unlock();
+  wait();  
+  delete socket;
   }
 void ClientSocket::ClientClosed()
   {mw->ServerExecuting = false;
   mw->blockInput(false);
   mw->close();
-#ifndef _WINDOWS
   terminate();
-#endif
   wait();
   }
+void ClientSocket::errorReport(int socketError, const QString &message)
+  {cout <<"Error:"<<socketError<<" "<<(const char *)message<<endl;
+  }
+void ClientSocket::lockMutex()
+  {mutex.lock();
+  }
+void ClientSocket::unlockMutex()
+  {mutex.unlock();
+  }
 void ClientSocket::writeServer(const QString& msg)
-  {T_STD cout << msg;  
+  {cout << (const char *)msg;  
+  }
+void ClientSocket::writeClientEvent(QString str)
+  {writeEvent *event = new writeEvent(str);
+  QApplication::postEvent(this,event);
+  }
+void ClientSocket::writeClientEvent(char * buf,uint size)
+  {writeBufEvent *event = new writeBufEvent(buf,size);
+  QApplication::postEvent(this,event);
+  }
+void ClientSocket::writeClient(QString str)
+  {Reading = true;
+  QWriteLocker locker(&lock);
+  QString t = str+'\n'; 
+  clo.writeRawData((const char *)t,t.length()); 
+  socket->waitForBytesWritten(-1); 
+  Reading = false;
+  }
+void ClientSocket::writeClient(char * buff,uint size)
+  {Reading = true;
+  QWriteLocker locker(&lock);
+  clo.writeBytes(buff,size);
+  if(socket->state() != QAbstractSocket::ConnectedState)cout<<"Not connected"<<endl;
+  socket->waitForBytesWritten(-1);  
+  delete [] buff;
+  Reading = false;
+  }
+uint ClientSocket::readBuffer(char * &buffer)
+  {Reading=true;
+  mutex.lock();
+  QReadLocker locker(&lock);
+  quint32 size = 0; 
+  uint nb = 0;
+  while((nb = socket->bytesAvailable()) < (int)sizeof(quint32))
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {setError(-1,"client not connected");mutex.unlock();Reading=false;return 0;}
+      else socket->waitForReadyRead(10);
+      }
+  clo >>  size;
+  if(size <= 0){setError(-1,"empty file");mutex.unlock();Reading=false;return 0;}
+
+  buffer  = new char[size+1];
+  char *pbuff = buffer;
+  while((nb = socket->bytesAvailable()) < size)
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {setError(-1,"client not connected");mutex.unlock();Reading=false;return 0;}
+      else socket->waitForReadyRead(10);
+      }
+  clo.readRawData(pbuff,nb);
+  mutex.unlock();
+  Reading=false;
+  return size;
+  }
+QString  ClientSocket::readLine()
+  {QReadLocker locker(&lock);
+  uint len;  char * buffer = NULL;
+  clo.readBytes(buffer,len);
+  QString str(buffer); str = str.trimmed();
+  delete [] buffer;
+  return str;
   }
 void ClientSocket::readClient()
-  {run();
-  }
-void ClientSocket::run()
-  {while (canReadLine())
-      {QString str = cli.readLine();
-      //cout << "received:" <<str<<":"<<endl;
-      if(str.at(0) == '#')
-          {cli << "!" << str << endl;
-          }
-      else if(str.at(0) == '!')
-          {cli << ":END OF FILE" << endl;
-          cli << "!!" << endl;
-          }
-      else if(str.at(0) == '|')
-          {cli << ":QUIT" << endl;
-          cli << "!|" << endl;
-          }
-      else 
-          xhandler(str);
+  {if(Reading)return;
+  if(!socket->canReadLine())return;
+  QMutexLocker locker(&mutex);
+ if(!isRunning()) 
+     start();
+  else 
+      {restart = true;
+      condition.wakeOne();
       }
   }
-void ClientSocket::customEvent( QCustomEvent * e )
-  {if(e->type() == CLIENT_EVENT) 
+void ClientSocket::run()
+  {while(socket->state() == QAbstractSocket::ConnectedState && socket->canReadLine())
+      {if(abort)return;
+      QString str = readLine();
+      //if(str.size() == 0){cout<<"Empty line"<<endl;continue;}
+      if(str.size() == 0)continue;
+      ++line;
+      if(str.at(0) == '#')
+          {writeClientEvent("!"+str);
+          }
+      else if(str.at(0) == '!')
+          {writeClientEvent(":END OF FILE");
+          writeClientEvent("!!");
+          }
+      else if(str.at(0) == '|')
+          {writeClientEvent(":QUIT");
+          writeClientEvent("!|");
+          }
+      else 
+          {textEvent *event = new textEvent(str);
+          QApplication::postEvent(this,event);
+          //xhandler(str);
+          }
+      mutex.lock();
+      if(!restart) condition.wait(&mutex);
+      restart = false;
+      mutex.unlock();
+      }
+  }
+bool ClientSocket::event(QEvent * ev)
+  {if(ev->type() >=  QEvent::User)
+      {customEvent(ev);
+      return TRUE;
+      }
+  return TRUE;
+  }
+void ClientSocket::customEvent(QEvent * e )
+  {if(e->type() == (int)CLIENT_EVENT) 
     {clientEvent  *event  =  (clientEvent  *)e;
-    handlerInput(event->getAction(),event-> getParamString());
+    e->accept();
+    handlerInput(event->getAction(),event->getParamString());
+    }
+  else if(e->type() == (int)WRITE_EVENT) 
+    {writeEvent  *event  =  (writeEvent  *)e;
+    e->accept();
+    writeClient(event->getString());
+    }
+  else if(e->type() == (int)WRITEB_EVENT) 
+    {writeBufEvent  *event  =  (writeBufEvent  *)e;
+    e->accept();
+    writeClient(event->getPtr(),event->getSize());
+    }
+  else if(e->type() == (int)TEXT_EVENT) 
+    {textEvent  *event  =  (textEvent  *)e;
+    e->accept();
+    xhandler(event->getString());
     }
   }
-
 void ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.find(PARAM_SEP);
   QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
-  Tprintf("%s ",(const char *)dataAction);
- // call the right handler
-  //cout <<dataAction<<" action:"<<beg<<" ->"<<action<<endl;
+  if(!action)return;
+  if(sdebug)Tprintf("%s ",(const char *)dataAction);
+  // call the right handler
+#ifdef TDEBUG
+  //cout <<"line:"<<line<<" "<< (const char *)dataAction<<endl;
+#endif
   if(action == 0)
-     setError( UNKNOWN_COMMAND,"unknown command");
+      setError( UNKNOWN_COMMAND,"action:0 !!");
   else if(action > A_INFO && action < A_INFO_END)
       handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
-      {clientEvent *event = new clientEvent(action,dataParam);
-      QApplication::postEvent(this,event);
+      {if(action ==  A_INPUT_READ_GRAPH)
+          {if(readServerGraph(dataParam) == 0);return;
+          }
+      else
+          {clientEvent *event = new clientEvent(action,dataParam);
+          QApplication::postEvent(this,event);
+          }
       }
   else if(action > A_AUGMENT && action < A_TEST_END)
       {if(mw->graph_properties->actionAllowed(action))
-          mw->handler(action);
-      else 
-          {//cout <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
-          cli <<":ACTION NOT ALLOWED:"<<mw->getActionString(action)<< endl;
+          {mw->handler(action); // when finished pigale will write to the client
+          return;
           }
+      else 
+          writeClientEvent(":ACTION NOT ALLOWED:"+mw->getActionString(action));
       }
   else if (action > A_PROP_DEFAULT && action < A_PROP_DEFAULT_END)
       {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
       if(fields.count() != 3)
           {setError(WRONG_PARAMETERS,"Bad number of parameters");
-          cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
+          writeClientEvent(":ERROR "+getErrorString()+"action: "+mw->getActionString(action));
           setError();
-          cli << "!" << endl;
+          writeClientEvent(QString("!%1 P").arg(action));
           return;
           }
       bool ok =true;
       int setnum = fields[0].toInt(&ok); if (ok && (setnum<0 || setnum>2)) ok=false;
       if(!ok)setError(WRONG_PARAMETERS,"Wrong set number");
       PSet *set=(PSet *)0;
-      switch(setnum) {
-      case 0:
-	set=&mw->GC.Set(tvertex());
-	break;
-      case 1:
-	set=&mw->GC.Set(tedge());
-	break;
-      case 2:
-	set=&mw->GC.Set(tbrin());
-	break;
-      }
+      switch(setnum) 
+          {case 0:
+              set=&mw->GC.Set(tvertex());
+              break;
+          case 1:
+              set=&mw->GC.Set(tedge());
+              break;
+          case 2:
+              set=&mw->GC.Set(tbrin());
+              break;
+          }
       int pnum=fields[1].toInt(&ok); if (ok && (pnum<0 || pnum > 255)) ok=false;
       if(!ok)setError(WRONG_PARAMETERS,"Wrong property number");
       switch(action)
          {case A_PROP_DEF_SHORT:
              {Prop<short> x(*set,pnum);
-	       x.definit(fields[2].toShort(&ok));
-	     }
-	     break;
-	 case A_PROP_DEF_INT:
+             x.definit(fields[2].toShort(&ok));
+             }
+             break;
+         case A_PROP_DEF_INT:
              {Prop<int> x(*set,pnum);
-	       x.definit(fields[2].toInt(&ok));
-	     }
-	     break;
-	 default:
+             x.definit(fields[2].toInt(&ok));
+             }
+             break;
+         default:
              setError( UNKNOWN_COMMAND,"unknown command");
-	     ok=true;
-	 }
+             ok=true;
+         }
       if(!ok)setError(WRONG_PARAMETERS,"Wrong second parameter");
       }
   else if(action > A_TRANS && action < A_TRANS_END)
-      {if(action == A_TRANS_SEND_PNG) 
-          // send a png
-          Png();
-      else if(action == A_TRANS_SEND_PS) 
-          PS();
+      {if(action == A_TRANS_SEND_PNG || action ==  A_TRANS_SEND_PS)
+          {//++mw->ServerClientId;//to debug
+          mw->handler(action);return;
+          }
       else if(action == A_TRANS_GET_CGRAPH) 
-          // get a graph form client and read a record
+          // get a graph form client, read a record and display it
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
           int index = 1;
           bool ok =true;
           if(fields.count() > 1)index = fields[1].toInt(&ok);
           if(!ok)setError(WRONG_PARAMETERS,"Wrong parameters");
           else   readClientGraph(index);
+          if(!getError())return;
           }
       else  if(action == A_TRANS_SEND_GRAPH_SAVE) 
           // save the graph and send it to the client
           {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
           if(fields.count() > 1)
               setError(WRONG_PARAMETERS,"Wrong parameters");
-          else sendSaveGraph( fields[0]);
+          else sendSaveGraph(fields[0]);
           }
       }
   else if(action > A_SET_GEN && action < A_SET_GEN_END)
       {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
-    if(fields.count() < 1)
+      if(fields.count() < 1)
           {setError(WRONG_PARAMETERS,"Missing  parameter");
-          cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
+          writeClientEvent(":ERROR "+ getErrorString()+ "action:"+mw->getActionString(action));
           setError();
-          cli << "!" << endl;
+          writeClientEvent(QString("!%1 G").arg(action));
           return;
           }
       bool ok =true;
@@ -244,154 +373,128 @@ void ClientSocket::xhandler(const QString& dataAction)
               }
       }
   else if(action == SERVER_DEBUG)
-      sdebug = 1;
+      {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+      if(fields.count() != 1)
+          setError(WRONG_PARAMETERS,"Bad number of parameters");
+      else
+          {bool ok =true;
+          int setnum = fields[0].toInt(&ok); 
+          if(!ok)setError(WRONG_PARAMETERS,"Wrong parameter");
+          else sdebug = setnum;
+          }
+      }
   else
       setError( UNKNOWN_COMMAND,"unknown command");
   
   if(getError())
-      cli <<  ":ERROR "<< getErrorString() << "action: " <<mw->getActionString(action) <<endl;
-  setError();
-  cli << "!" << endl;
-  }
-uint ClientSocket::readBuffer(char  *  &buffer)
-  {uint size = 0;
-  uint nb;
-  while((nb = bytesAvailable()) < 4)waitForMore(10);
-  clo >>  size;
-  if(size <= 0)return 0;
-  uint size0 = 0;
-  buffer  = new char[size+1];
-  int retry = 0;
-  uint nread = 0;
-  char *pbuff = buffer;
-  while(nread  < size)
-      {waitForMore(10);  // in millisec
-      nb = bytesAvailable();
-      if(nb == 0)
-          {if(++retry > 1000) {setError(-1,"Timeout");  cli << ":Server: receiving graph TIMEOUT" << endl; return 0; }
-          continue;
-          }
-      retry = 0;
-      if(nb > size-nread)nb = size-nread;
-      nread += nb;
-      clo.readRawBytes(pbuff,nb);
-      pbuff += nb;
-      if(nread >= size0 && sdebug)
-          {int percent = (int)(nread*100./size + .5);
-          size0 = nread + size/10; // we write when at least 10% more  is read
-           if(sdebug)cli << QString(":Server:%1 % (%2 / %3)").arg(percent).arg(nread).arg(size) << endl;
-          Tprintf(" %d % (%d)",percent,size);
-          }
+      {writeClientEvent(":ERROR "+ getErrorString()+" action: "+mw->getActionString(action));
+      writeClientEvent("!!");
+      abort = true;
+      setError();
+      return;
       }
-  return size;
+  writeClientEvent(QString("!%1 C").arg(mw->getActionString(action)));
+#ifdef TDEBUG
+  //cout <<"      -> end client:"<<(const char*)mw->getActionString(action)<<endl;
+#endif
   }
 void ClientSocket::readClientGraph(int indexRemoteGraph)
-  {if(sdebug)cli << ":Server: receiving graph" << endl;
-  char *buffer = NULL;
+  {char *buffer = NULL;
   uint size = readBuffer(buffer);
-  if(size == 0) {delete [] buffer;setError(READ_ERROR,"empty file");return;}
+  if(getError()){delete [] buffer;return;}
   QString  GraphFileName;
   GraphFileName.sprintf("/tmp/graph%d.tmp",mw->ServerClientId);
   GraphFileName = universalFileName(GraphFileName);
-  Tprintf("Receiving graph ->%s",(const char *)GraphFileName);
   QFile file(GraphFileName);
   file.remove();
-  file.open(IO_ReadWrite);
+  file.open(QIODevice::ReadWrite);
   QDataStream stream(&file);
-  stream.writeRawBytes(buffer,size);
+  stream.writeRawData(buffer,size);
   file.close();
-  delete [] buffer;
-  if(sdebug)cli << QString(":GOT %1:%2 bytes").arg(GraphFileName).arg(size) << endl;
   mw->InputFileName = GraphFileName;
-  if(mw->publicLoad(indexRemoteGraph) < 0)setError(READ_ERROR,"could not read file");
+  mw->GraphIndex1 = indexRemoteGraph;
+  mw->handler(A_TRANS_GET_CGRAPH);
   }
-void ClientSocket::readServerGraph(QString &dataParam)
-  {// Read a graph on the server side
-  QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+int ClientSocket::readServerGraph(QString &dataParam)
+  {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
+  int nfield = (int)fields.count();
+  if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return -1;}
+  bool ok = true;
   int num = 1;
-  bool ok;
-  if(fields.count() > 1)num = fields[1].toInt(&ok);
-  if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
-  if(mw->publicLoad(num) < 0)setError(READ_ERROR,"coud not read file");
+  if(nfield > 1)
+      {num = fields[1].toInt(&ok);
+      if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return -1;}
+      }
+  mw->InputFileName = universalFileName(fields[0]);
+  mw->GraphIndex1 = num;
+  mw->handler(A_INPUT_READ_GRAPH);
+  return 0;
   }
 void ClientSocket::sendSaveGraph(const QString &FileName)
   {QString graphFileName = QString("/tmp/%1").arg(FileName);
- graphFileName = universalFileName(graphFileName);
+  graphFileName = universalFileName(graphFileName);
   mw->publicSave(graphFileName);
   QFileInfo fi = QFileInfo(graphFileName);
   uint size = fi.size();
   if(size == 0)
       {setError(-1,"no graph file");return;}
   else if(sdebug)
-      cli << ":SENDING:" << FileName << endl;
+      writeClientEvent(":SENDING:"+FileName);
   QFile file(graphFileName);
-  file.open(IO_ReadWrite);
+  file.open(QIODevice::ReadWrite);
   QDataStream stream(&file);
   char *buff = new char[size];
-  stream.readRawBytes(buff,size); 
-  cli <<"!GRAPH;"<<FileName << endl;
-  clo.writeBytes(buff,size);
-  delete [] buff;
+  stream.readRawData(buff,size); 
+  writeClientEvent("!GRAPH;"+FileName);
+  writeClientEvent(buff,size);
   file.remove();
   }
 void ClientSocket::Png()
-  {mw->png();
-  QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
+  {QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
   PngFileName = universalFileName(PngFileName);
+  msleep(100);
   QFileInfo fi = QFileInfo(PngFileName);
   uint size = fi.size();
   if(size == 0)
-      {setError(-1,"no png file");return ;}
-  else if(sdebug)
-      cli << ":SENDING:" << PngFileName << endl;
-  
+      {writeClientEvent(QString(":ERROR:%1 not found").arg(PngFileName));
+      writeClientEvent("!!");return;
+      }
   QFile file(PngFileName);
-  file.open(IO_ReadWrite);
+  file.open(QIODevice::ReadWrite);
   QDataStream stream(&file);
   char *buff = new char[size];
-  stream.readRawBytes(buff,size); 
-  cli <<"!PNG" << endl;
-  clo.writeBytes(buff,size);
-  delete [] buff;
+  stream.readRawData(buff,size); 
+  writeClientEvent("!PNGREADY");
+  writeClientEvent(buff,size);
   file.remove();
   }
-void ClientSocket::PS()
-  {mw->print();
-  QString PsFileName =  QString("/tmp/server%1.ps").arg(mw->ServerClientId);
+void ClientSocket::Ps()
+  {QString PsFileName =  QString("/tmp/server%1.ps").arg(mw->ServerClientId);
   PsFileName = universalFileName(PsFileName);
   QFileInfo fi = QFileInfo(PsFileName);
   uint size = fi.size();
   if(size == 0)
-    {setError(-1,"no ps file"); return ;}
-  else if(sdebug)
-      cli << ":SENDING:" << PsFileName << endl;
-  
+      {writeClientEvent(":ERROR: NO PS FILE");
+      writeClientEvent("!!");return;
+      }
   QFile file(PsFileName);
-  file.open(IO_ReadWrite);
+  file.open(QIODevice::ReadWrite);
   QDataStream stream(&file);
   char *buff = new char[size];
-  stream.readRawBytes(buff,size); 
-  cli <<"!PS" << endl;
-  clo.writeBytes(buff,size);
-  delete [] buff;
+  stream.readRawData(buff,size); 
+  writeClientEvent("!PSREADY");
+  writeClientEvent(buff,size);
   file.remove();
   }
 void ClientSocket::handlerInput(int action,const QString& dataParam)
+// actions graphiques -> called by event. les updates devraient etre faits par handler (id NewGraph)
   {QStringList fields = QStringList::split(PARAM_SEP,dataParam);
   QString msg;
   int nfield = (int)fields.count();
-  bool ok;
+  bool ok = true;
+  //cout << "handlerInput:-"<<(const char*)dataParam<<"- "<<nfield<<" field"<<endl;
   switch(action)
-      {case A_INPUT_READ_GRAPH:
-          {if(nfield == 0){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
-          mw->InputFileName = universalFileName(fields[0]);
-           int num = 1;
-           if(nfield > 1)num = fields[1].toInt(&ok);
-           if(!ok){setError(WRONG_PARAMETERS,"Wrong parameters");return;}
-           if(mw->publicLoad(num) < 0){setError(READ_ERROR,"read error");return;}
-           }
-           break;
-      case  A_INPUT_NEW_GRAPH:
+      {case  A_INPUT_NEW_GRAPH:
           mw->NewGraph();
           break;
       case A_INPUT_NEW_VERTEX:
@@ -436,73 +539,77 @@ void ClientSocket::handlerInfo(int action)
   mw->graph_properties->updateMenu(false);
   mw->information();
   Graph_Properties *inf = mw->graph_properties;
-  cli  << mw->getActionString(action) << ":";
   switch(action)
       {case A_INFO_N:
-           cli << G.nv() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(G.nv()));
            break;
       case A_INFO_M:
-            cli << G.ne() << endl;
+            writeClientEvent(mw->getActionString(action)+QString(":%1").arg(G.ne()));
             break;
       case A_INFO_SIMPLE:
-          cli << inf->Simple() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Simple()));
           break;
       case A_INFO_PLANAR:
-          cli << inf->Planar() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Planar()));
           break;
       case A_INFO_OUTER_PLANAR:
-          cli << inf->OuterPlanar() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->OuterPlanar()));
           break;
       case A_INFO_SERIE_PAR:
-          cli << inf->SeriePlanar() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->SeriePlanar()));
           break;
       case A_INFO_MAX_PLANAR:
-          cli << inf->Triangulation() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Triangulation()));
           break;
       case A_INFO_BIPAR:
-          cli << inf->Biparti() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Biparti()));
           break;
       case A_INFO_MAX_BIPAR:
-          cli << inf->MaxBiparti() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->MaxBiparti()));
           break;
       case A_INFO_REGULIER:
-          cli << inf->Regular() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Regular()));
           break;
       case A_INFO_CON1:
-          cli << inf->Con1() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Con1()));
           break;
       case A_INFO_CON2:
-          cli << inf->Con2() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Con2()));
           break;
       case A_INFO_CON3:
-          cli << inf->Con3() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->Con3()));
           break;
       case A_INFO_MIN_D:
-          cli << inf->DegreeMin() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->DegreeMin()));
           break;
       case A_INFO_MAX_D:
-          cli << inf->DegreeMax() << endl;
+          writeClientEvent(mw->getActionString(action)+QString(":%1").arg(inf->DegreeMax()));
           break;
       case A_INFO_COORD:
           {if(!G.Set(tvertex()).exist(PROP_COORD)) 
-              {setError(WRONG_PARAMETERS,"NO COORDS");return;}
+              {setError(WRONG_PARAMETERS,"NO COORDS");
+              lock.unlock();
+              return;
+              }
           Prop<Tpoint> coord(G.Set(tvertex()),PROP_COORD);
-          cli << endl;
+          writeClientEvent(mw->getActionString(action)+":");
           for(tvertex v = 1;v <= G.nv();v++)
-              cli << coord[v].x() <<" "<< coord[v].y() << endl;
+              writeClientEvent(QString("%1 %2").arg(coord[v].x()).arg(coord[v].y()));
           }
           break;
       case A_INFO_VLABEL:
           {if(!G.Set(tvertex()).exist(PROP_LABEL))
-              {setError(WRONG_PARAMETERS,"NO LABEL");return;}
+              {setError(WRONG_PARAMETERS,"NO LABEL");
+              return;
+              }
           Prop<long> label(G.Set(tvertex()),PROP_LABEL);
-          cli << endl;
+          writeClientEvent(mw->getActionString(action)+":");
           for(tvertex v = 1;v <= G.nv();v++)
-              cli << label[v] << endl;
+              writeClientEvent(QString("%1").arg(label[v]));
           }
           break;
       default:
-          setError( UNKNOWN_COMMAND,"unknown command");
+          writeClientEvent(mw->getActionString(action)+":unknown command");
           break;
       }
   }

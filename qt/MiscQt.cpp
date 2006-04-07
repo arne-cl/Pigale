@@ -15,12 +15,12 @@
 #include <TAXI/Tmessage.h>
 
 #if QT_VERSION < 300
-#undef QTextEdit
-#include <qtextview.h>
-#define QTextEdit QTextView
+#undef Q3TextEdit
+#include <q3textview.h>
+#define Q3TextEdit Q3TextView
 #else
-#include <qtextedit.h>
-#include <qtextbrowser.h>
+#include <q3textedit.h>
+#include <q3textbrowser.h>
 #endif
 
 #include <qtabwidget.h> 

@@ -12,30 +12,28 @@
 #ifndef MYWINDOW_H 
 #define MYWINDOW_H
 
+#include <qnamespace.h>
 #include <qglobal.h>
+#include <qmutex.h>
+#include <qthread.h>
+#include <QtNetwork>
+#include <qwaitcondition.h>
+#include <qactiongroup.h>      
+#include <qtoolbar.h>
 #include <qmainwindow.h>
-#include <qpopupmenu.h>
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qmap.h>
 #include <qevent.h> 
 #include <qtimer.h>
-#include <qthread.h> 
-
-#include <Pigale.h> 
-
-#if QT_VERSION < 300
-#undef QTextEdit
-#include <qtextview.h>
-#define QTextEdit QTextView
-#if _WIN32
-#include <qtextbrowser.h>
-#endif
-#else
+#include <qevent.h>
+#include <qcoreevent.h>
 #include <qtextedit.h>
 #include <qtextbrowser.h>
 #include <qsettings.h>
-#endif
+#include <qtextstream.h>
+#include <Pigale.h> 
+
 
 
 class QTextEdit;
@@ -46,6 +44,7 @@ class GraphSym;
 class Graph_Properties;
 class Mouse_Actions;
 class pigalePaint;
+class ClientSocket;
 class QTabWidget;
 class QSpinBox;
 class QCheckBox;
@@ -57,18 +56,27 @@ class QProgressBar;
 class QLineEdit;
 class QPalette;
 
+
 class PigaleThread : public QThread 
-{private:
-  int   action; 
+{Q_OBJECT
+
+private:
+  QMutex mutex;
+  QWaitCondition condition;
+  bool restart;
+  bool abort;
+  int action; 
   int N,N1,N2,M;
   int delay;
- public:
-  PigaleThread( unsigned int stackSize = 0 ) 
-      : QThread (stackSize)
-      { }
-  virtual void run();
+public:
+  PigaleThread(QObject *parent = 0) ;
+  ~PigaleThread();
   void run(int action,int N = 0,int N1 = 0,int N2 = 0,int M = 0,int delay = 0);
   pigaleWindow *mw;
+signals:
+  void handlerSignal(int ret,int drawingType,int saveType);
+protected:
+  void run();
 };
 
 class pigaleWindow: public QMainWindow 
@@ -81,11 +89,10 @@ private slots:
   void reload();
   void next();
   int save(bool askTitle = true);
-  //void save_ascii();
   void saveAs();
   void deleterecord();
   void switchInputOutput();
-  void macroHandler(int action);
+  void macroHandler(QAction *);
   void macroPlay();
   void about();
   void aboutQt();
@@ -96,26 +103,34 @@ private slots:
   void UndoClear();
   void UndoEnable(bool enable);
   void LoadSettings();
-  void SaveSettings();
-  void SetPigaleColors();
   void SetPigaleFont();
   void keyPressEvent(QKeyEvent *k);
   void settingsHandler(int action);
   void initServer();
+  void seedEdited(const QString & t);
   void spinN1Changed(int val);
   void spinN2Changed(int val);
   void spinMChanged(int val);
+  void EditPigaleColors();
+  void SetPigaleColorsProfile1(); 
+  void SetPigaleColorsProfile2(); 
 private:
+  int setId(QAction *action,int Id);
+  void AllowAllMenus();
   void mapActionsInit();
   int  macroLoad(QString FileName);
   void macroRecord(int action);
   void ParseArguments(); 
   void Message(QString s);
-  int postHandler(QCustomEvent *ev);
   void UndoInit();
   void initMenuTest();
+  int postHandler(QEvent *ev);
+  void UpdatePigaleColors();
 public slots:
- void putOnTop(); 
+  int postHandler(int ret,int drawingType,int saveType);
+  void handler(QAction *action);
+  void SaveSettings();
+  void SetDocumentPath();
   void banner();
   void timerWait();
   void UndoSave();
@@ -129,7 +144,8 @@ public:
   pigaleWindow();
   ~pigaleWindow();
   void whenReady();
-  void customEvent( QCustomEvent * e );
+  bool event(QEvent * e);
+  void customEvent( QEvent * e );
   void postMessage(const QString &msg);
   void postWait(const QString &msg);
   void postMessageClear();
@@ -143,10 +159,14 @@ public:
   int publicLoad(int pos);
   int publicSave(QString filename);
   void setUserMenu(int i, const QString &txt);
-  void  setShowOrientation(bool val);
+  void setShowOrientation(bool val);
   int  getResultHandler(int value = 0);
+  int getId(QAction *action);
 public:
-  QToolButton *left,*right,*redo,*undoL,*undoR,*undoS;
+  QActionGroup *menuActions;
+  QMap<int,QAction*> menuIntAction;
+  //QAction *leftAct,*rightAct,*redoAct,*undoLAct,*undoRAct,*undoSAct;
+  QAction *undoLAct,*undoRAct,*undoSAct;
   QTextEdit *messages;
   QProgressBar *progressBar;
   pigalePaint *mypaint;
@@ -168,28 +188,27 @@ public:
   int ServerClientId;
   QTime timer;
   int Gen_N1,Gen_N2,Gen_M;
+  ClientSocket *threadServer;
+  int MaxNS,MaxND;
+  int GraphIndex1;
 private:
   PigaleThread pigaleThread;
   QToolBar *tb;
-#if QT_VERSION >= 300 || _WINDOWS
   QTextBrowser *browser;
-#endif
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
+  QCheckBox *box1,*box2,*box3,*box4,*box5,*box6,*box7,*box8,*box9,*box10,*box11;
   LineEditNum *macroLine;
   QLineEdit *seedEdit;
- QPopupMenu *userMenu; 
+  QWidget *gSettings;
+  QMenu *userMenu; 
   QPrinter *printer;
   QString DirFileMacro;
   QString MacroFileName;
-  int GraphIndex1,GraphIndex2,*pGraphIndex,UndoIndex,UndoMax;
-  // settings
+  int *pGraphIndex,GraphIndex2,UndoIndex,UndoMax;
   QString DirFileDoc;
- 
   int pigaleWindowInitYsize,pigaleWindowInitXsize;
-  int macroRepeat,macroMul;
-  int MaxNS,MaxND;
+  int macroRepeat;
   int PrinterOrientation,PrinterColorMode;
-  //
   bool IsUndoEnable;
   bool MacroRecording;
   bool MacroLooping;

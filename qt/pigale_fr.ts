@@ -116,6 +116,10 @@
         <source>Ext Face/extbrin</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Label/Reset all</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>pigalePaint</name>
@@ -162,6 +166,10 @@
     <message>
         <source>Polrec</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>Triangle contact</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -303,7 +311,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Thick edges</source>
-        <translation>Arêtes &amp;épaisses</translation>
+        <translation type="obsolete">Arêtes &amp;épaisses</translation>
     </message>
     <message>
         <source>E&amp;mbed</source>
@@ -355,7 +363,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Find &amp;Kuratowski</source>
-        <translation>Trouver &amp;Kuratowski</translation>
+        <translation type="obsolete">Trouver &amp;Kuratowski</translation>
     </message>
     <message>
         <source>Find &amp;Cotree Critical</source>
@@ -363,7 +371,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Color red  non critical edges </source>
-        <translation>Arêtes non critiques en rouge</translation>
+        <translation type="obsolete">Arêtes non critiques en rouge</translation>
     </message>
     <message>
         <source>Max.Planar (simple graph) Fast</source>
@@ -371,7 +379,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Max.Planar (simple graph) Slow </source>
-        <translation>&amp;Max. Planaire (lent)</translation>
+        <translation type="obsolete">&amp;Max. Planaire (lent)</translation>
     </message>
     <message>
         <source>Use &amp;Geometric Map</source>
@@ -399,7 +407,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Number of classes: </source>
-        <translation>Nombre de classes:</translation>
+        <translation type="obsolete">Nombre de classes:</translation>
     </message>
     <message>
         <source>&amp;Partition</source>
@@ -411,7 +419,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Show orientation</source>
-        <translation>&amp;Montrer Orientation</translation>
+        <translation type="obsolete">&amp;Montrer Orientation</translation>
     </message>
     <message>
         <source>&amp;Orient all edges</source>
@@ -431,15 +439,15 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Planar &amp;3-Con.</source>
-        <translation>Planaire &amp;3-Con.</translation>
+        <translation type="obsolete">Planaire &amp;3-Con.</translation>
     </message>
     <message>
         <source>Planar &amp;Biparti</source>
-        <translation>Planaire &amp;Biparti</translation>
+        <translation type="obsolete">Planaire &amp;Biparti</translation>
     </message>
     <message>
         <source>Planar &amp;Schnyder</source>
-        <translation>Planaire &amp;Schnyder</translation>
+        <translation type="obsolete">Planaire &amp;Schnyder</translation>
     </message>
     <message>
         <source>B&amp;ipolarOrient Planar</source>
@@ -515,7 +523,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Bipartite cubic 3-connected (M))</source>
-        <translation>Biparti cubique 3-connexe (M)</translation>
+        <translation type="obsolete">Biparti cubique 3-connexe (M)</translation>
     </message>
     <message>
         <source>&amp;Grid (N1,N2)</source>
@@ -535,7 +543,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Erase multiple edges</source>
-        <translation>Effacer arêtes multiples</translation>
+        <translation type="obsolete">Effacer arêtes multiples</translation>
     </message>
     <message>
         <source>Seed</source>
@@ -543,7 +551,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Change Seed</source>
-        <translation>Changer germe</translation>
+        <translation type="obsolete">Changer germe</translation>
     </message>
     <message>
         <source>Start recording</source>
@@ -575,7 +583,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation># Répétitions:</translation>
+        <translation type="obsolete"># Répétitions:</translation>
     </message>
     <message>
         <source>Repeat macro</source>
@@ -583,47 +591,47 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;UserMenu</source>
-        <translation>Menu &amp;Utilisateur</translation>
+        <translation type="obsolete">Menu &amp;Utilisateur</translation>
     </message>
     <message>
         <source>&amp;Debug</source>
-        <translation>&amp;Debug</translation>
+        <translation type="obsolete">&amp;Debug</translation>
     </message>
     <message>
         <source>&amp;Undo Enable</source>
-        <translation>&amp;Permettre annulation</translation>
+        <translation type="obsolete">&amp;Permettre annulation</translation>
     </message>
     <message>
         <source>&amp;Random Seed</source>
-        <translation>&amp;Germe aléatoire</translation>
+        <translation type="obsolete">&amp;Germe aléatoire</translation>
     </message>
     <message>
         <source>&amp;Pigale Colors</source>
-        <translation>Couleurs de &amp;Pigale</translation>
+        <translation type="obsolete">Couleurs de &amp;Pigale</translation>
     </message>
     <message>
         <source>Limit number of vertices</source>
-        <translation>Nombre limite de sommets</translation>
+        <translation type="obsolete">Nombre limite de sommets</translation>
     </message>
     <message>
         <source>for slow algorithms</source>
-        <translation>pour algos lents</translation>
+        <translation type="obsolete">pour algos lents</translation>
     </message>
     <message>
         <source>Slow algorithms: </source>
-        <translation>Algos lents:</translation>
+        <translation type="obsolete">Algos lents:</translation>
     </message>
     <message>
         <source>for displaying graph</source>
-        <translation>pour affichage graphe</translation>
+        <translation type="obsolete">pour affichage graphe</translation>
     </message>
     <message>
         <source>Display: </source>
-        <translation>Affichage:</translation>
+        <translation type="obsolete">Affichage:</translation>
     </message>
     <message>
         <source>&amp;Vertex show</source>
-        <translation>Affichage &amp;Sommets</translation>
+        <translation type="obsolete">Affichage &amp;Sommets</translation>
     </message>
     <message>
         <source>Index</source>
@@ -639,23 +647,23 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Embed Options</source>
-        <translation>Options &amp;Plongement</translation>
+        <translation type="obsolete">Options &amp;Plongement</translation>
     </message>
     <message>
         <source>Schnyder: &amp;Rect</source>
-        <translation>Schnyder: &amp;Rect</translation>
+        <translation type="obsolete">Schnyder: &amp;Rect</translation>
     </message>
     <message>
         <source>Schnyder: &amp;Longest Face</source>
-        <translation>Schnyder: Face la plus &amp;Longue</translation>
+        <translation type="obsolete">Schnyder: Face la plus &amp;Longue</translation>
     </message>
     <message>
         <source>Schnyder: &amp;Color Edges</source>
-        <translation>Schnyder: &amp;Colorier Arêtes</translation>
+        <translation type="obsolete">Schnyder: &amp;Colorier Arêtes</translation>
     </message>
     <message>
         <source>&amp;Distance Options</source>
-        <translation>Options &amp;Distance</translation>
+        <translation type="obsolete">Options &amp;Distance</translation>
     </message>
     <message>
         <source>Czekanovski-Dice</source>
@@ -691,7 +699,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation>&amp;Aide</translation>
+        <translation type="obsolete">&amp;Aide</translation>
     </message>
     <message>
         <source>&amp;Polar</source>
@@ -723,7 +731,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>What is ?</source>
-        <translation>Qu&apos;est-ce ?</translation>
+        <translation type="obsolete">Qu&apos;est-ce ?</translation>
     </message>
     <message>
         <source>About &amp;Qt...</source>
@@ -759,7 +767,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Seconds: </source>
-        <translation>Secondes: </translation>
+        <translation type="obsolete">Secondes: </translation>
     </message>
     <message>
         <source>&amp;Documentation path</source>
@@ -843,7 +851,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Make Connected (vertex) </source>
-        <translation>Rendre Connexe (sommet)</translation>
+        <translation type="obsolete">Rendre Connexe (sommet)</translation>
     </message>
     <message>
         <source>Make &amp;2-Connected a planar graph (edge)</source>
@@ -860,7 +868,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Make a PLANAR graph 2-connected
  adding edges with a minimal degree increase</source>
-        <translation>Rendre 2-connexe un graphe planaire\n
+        <translation type="obsolete">Rendre 2-connexe un graphe planaire\n
 en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
@@ -885,11 +893,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Quadrangulate a PLANAR  bipartite graph</source>
-        <translation>Quadranguler un graphe biparti planaire</translation>
+        <translation type="obsolete">Quadranguler un graphe biparti planaire</translation>
     </message>
     <message>
         <source>Show arrows</source>
-        <translation>Montrer les flèches</translation>
+        <translation type="obsolete">Montrer les flèches</translation>
     </message>
     <message>
         <source>&amp;Init server</source>
@@ -928,20 +936,329 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Double Occurrence &amp;Cir (BFS)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Values</source>
-        <translation>Valeurs</translation>
+        <translation type="obsolete">Valeurs</translation>
     </message>
     <message>
         <source>Edit Values</source>
-        <translation>Editer </translation>
+        <translation type="obsolete">Editer </translation>
     </message>
     <message>
         <source>Show the extbrin</source>
-        <translation>Montrer le brin extérieur</translation>
+        <translation type="obsolete">Montrer le brin extérieur</translation>
+    </message>
+    <message>
+        <source>Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertex label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max N display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max N slow algorithms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graph Generators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Macro Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delay (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repeat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of classes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open a new graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Save...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save the graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Print...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print the graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Png...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Information...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous graph...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous graph (tgf file)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reload graph</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next graph...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next graph (tgf file)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Undo...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Undo last action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Undo save...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Undo save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Redo...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Redo last action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Macro...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play the macro</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make &amp;Connected (vertex)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make a PLANAR graph 2-connected
+ adding edges ( minimal degree increase)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quadrangulate a PLANAR  bipartite grap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;FPP Fary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>fpp_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Schnyder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>schnyder_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Schnyder &amp;V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Co&amp;nvex Drawing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cd_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Convex Compact Dra&amp;wing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ccd_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Tutte</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tutte &amp;Circle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>tutte_circle_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double Occurrence &amp;Cir (&amp;BFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;R Triangle Contact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>springPM_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jacquard_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sprin&amp;g</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spring_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>embed3d_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>embed3dSchnyder_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>dual_g_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>G&amp;eometric Angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>angle_g_txt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Find &amp;Kuratowski</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color red  non critical edges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Max.Planar (simple graph) Slow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bipartite cubic 3-connected (M)</source>
+        <translation type="unfinished">Biparti cubique 2-connexe (M) {3-?}</translation>
+    </message>
+    <message>
+        <source>&amp;Macro</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;User menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test &amp;1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test &amp;2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test &amp;3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pigale colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Pigale Colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Gray profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Yellow profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Qt4 Pigale Editor </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

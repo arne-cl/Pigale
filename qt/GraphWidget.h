@@ -12,6 +12,8 @@
 #ifndef _GRAPH_WIDGET_H_INCLUDED_
 #define _GRAPH_WIDGET_H_INCLUDED_
 #include <qwidget.h>
+//Added by qt3to4:
+//#include <QResizeEvent>
 
 class GraphWidgetPrivate;
 class pigaleWindow; 

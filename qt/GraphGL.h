@@ -20,8 +20,13 @@
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <qcheckbox.h>
-#include <qhbuttongroup.h>
+//hub #include <qhbuttongroup.h>
 #include <qradiobutton.h>
+//Added by qt3to4:
+//#include <QResizeEvent>
+#include <qevent.h>
+//hub
+//#include <Q3HButtonGroup>
 
 class GraphGLPrivate;
 class pigaleWindow; 

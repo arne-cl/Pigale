@@ -1,5 +1,17 @@
-HEADERS = pigaleWindow.h
-SOURCES = CanvasGrid.cpp \
+include(../pigale.inc)
+TEMPLATE = app
+INCLUDEPATH = ../incl;../incl/TAXI;../incl/QT 
+HEADERS = pigaleWindow.h \
+    ClientSocket.h \
+    glcontrolwidget.h \
+    gprop.h \
+    GraphGL.h \
+    GraphSym.h \
+    GraphWidget.h \
+    LineEditNum.h \
+    mouse_actions.h 
+SOURCES = main.cpp \
+    CanvasGrid.cpp \
     CanvasItem.cpp \
     CanvasSpring.cpp \
     ClientSocket.cpp \
@@ -24,5 +36,38 @@ SOURCES = CanvasGrid.cpp \
     Settings.cpp \
     Test.cpp
 
+
+CONFIG += qt thread $$MODE warn_off
+CONFIG(debug, debug|release)  {
+    TARGET = pigale_debug
+    DEFINES += TDEBUG
+    unix:OBJECTS_DIR = ./.odb
+    unix:LIBS += -L $$DISTPATH/lib -ltgraph_debug
+    }else {
+    TARGET = pigale
+    unix:OBJECTS_DIR = ./.opt
+    unix:LIBS += -L $$DISTPATH/lib -ltgraph
+    }
+unix:LIBS +=$$LIBGLUT
+QT += qt3support opengl network xml
+MOC_DIR = .moc
+
+#Translations
 TRANSLATIONS    = pigale_fr.ts 
-TARGET		= pigale
+translation.commands  =  $$MQTDIR/bin/lrelease pigale.pro
+QMAKE_EXTRA_TARGETS += translation
+distdir.commands =
+QMAKE_EXTRA_TARGETS += distdir
+
+#Installation
+DESTDIR=$$DISTPATH/bin
+translations.files = pigale_fr.qm qt_fr.qm
+translations.path = $$DISTPATH/translations
+#INSTALLS += target translations
+INSTALLS += translations
+
+#Distribution
+DISTDIR=..
+DISTFILES += gnumakefile
+
+message(creating $$TARGET using QT version $$[QT_VERSION] ($$OBJECTS_DIR))

@@ -1,5 +1,5 @@
 /****************************************************************************
-** $Id: graphml.cpp,v 1.3 2005/12/22 13:36:14 hbonnin Exp $
+** $Id: graphml.cpp,v 1.4 2006/04/07 15:39:12 hbonnin Exp $
 **
 ** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
 **
@@ -13,6 +13,9 @@
 #include <qwindowdefs.h> 
 #include <qmap.h>
 #include <QT/graphml.h>
+//Added by qt3to4:
+//#include <QTextStream>
+#include <qtextstream.h>
 #include <config.h> 
 
 MLKEY(V, PROP_COORD, Tpoint, "Coordinates");
@@ -140,7 +143,7 @@ static QString xlabel(GraphAccess &G,tvertex v)
 int  Taxi_FileIOGraphml::Save(GraphAccess& G,tstring fname)
   {
     QFile xmlFile(~fname);
-    if (!xmlFile.open(IO_WriteOnly))
+    if (!xmlFile.open(QIODevice::WriteOnly))
       return 1;
     QTextStream stream( &xmlFile );
     Prop1<tstring> title(G.Set(),PROP_TITRE);

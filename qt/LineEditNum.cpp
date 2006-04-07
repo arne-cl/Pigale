@@ -10,13 +10,14 @@
 *****************************************************************************/
 
 #include "LineEditNum.h"
+
 #define MULT 100
 LineEditNum::LineEditNum(QWidget * parent, const char * name)
     :QLineEdit(parent,name),num(1),mul(1)
   {}
 void LineEditNum::display()
-  { int i = (mul == 0) ? 1 : mul*MULT;
-  QLineEdit::setText(QString("(x%1) %2 %3").arg(i).arg(prefix).arg(prod));
+  {int i = (mul == 0) ? 1 : mul*MULT;
+  QLineEdit::setText(QString("(%1x%2) %3").arg(i).arg(num).arg(prod));
   }
 void LineEditNum::setNum(int  i)
   {num = i;

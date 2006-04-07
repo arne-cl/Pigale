@@ -70,8 +70,8 @@ double pgcd(double a, double b,double precision)
 
 void GraphEditor::showGrid(bool showgrid)
   {if(!canvas())return;
-  QCanvasItemList list = gwp->canvas->allItems();
-  QCanvasItemList::Iterator it = list.begin();
+  Q3CanvasItemList list = gwp->canvas->allItems();
+  Q3CanvasItemList::Iterator it = list.begin();
   if(showgrid)
       for (; it != list.end(); ++it)
 	  {if((int)(*it)->rtti() == line_rtti)(*it)->show();}
@@ -82,8 +82,8 @@ void GraphEditor::showGrid(bool showgrid)
   }
 void GraphEditor::clearGrid()
   {if(!canvas() || !GridDrawn)return;
-  QCanvasItemList list = gwp->canvas->allItems();
-  QCanvasItemList::Iterator it = list.begin();
+  Q3CanvasItemList list = gwp->canvas->allItems();
+  Q3CanvasItemList::Iterator it = list.begin();
   for (; it != list.end(); ++it)
       {if((int)(*it)->rtti() == line_rtti)
 	  if(*it)delete *it;

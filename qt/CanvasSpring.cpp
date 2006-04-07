@@ -136,7 +136,7 @@ void GraphEditor::Spring()
 	      //nodeitem[v]->moveTo(G.vcoord[v]);
 	      }
 	  else
-	      {nodeitem[v]->SetColor(red);++n_red;}
+	      {nodeitem[v]->SetColor(Qt::red);++n_red;}
 	  nodeitem[v]->moveTo(G.vcoord[v]);
 	  canvas()->update();
 	  }
@@ -144,7 +144,8 @@ void GraphEditor::Spring()
       stop = (n_red == G.nv())? stop+1 : 0;
       if(stop)force *= .9;
       if(dep < .25 || stop == 4)break;
-      qApp->processEvents(1);
+      //hub qApp->processEvents(1);
+      qApp->processEvents();
       //if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       if(key_pressed == Qt::Key_Escape)break;
       // Compute bounds ro adapt the expand factor (should not be too strong)
@@ -175,7 +176,11 @@ void GraphEditor::SpringPreservingMap(bool draw)
 /*
 t current tanslation of v0
 */
-  {GeometricGraph & G = *(gwp->pGG);
+  {
+#ifdef TDEBUG
+  if(debug())DebugPrintf("Spring PM\n");
+#endif
+  GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
   pigaleWindow *mw = gwp->mywindow;
@@ -185,8 +190,8 @@ t current tanslation of v0
       Normalise();
       }
   else
-      {mw->progressBar->setTotalSteps(G.nv());
-      mw->progressBar->setProgress(0);
+      {mw->progressBar->setRange(0,G.nv());
+      mw->progressBar->setValue(0);
       mw->progressBar->show();
       }
   DoNormalise = true;
@@ -213,7 +218,8 @@ t current tanslation of v0
       degree[v] = G.Degree(v);
 
   for(iter = 1;iter <= niter;iter++)
-      {t=Tpoint(0,0);
+      {//if((iter%50) == 0)cout<<"iter:"<<iter<<"  "<<niter<<endl;
+      t=Tpoint(0,0);
       if(iter > 100)force *= .99;
       else if(iter > 200)force *= .98;
       // Compute mean length of edges
@@ -344,13 +350,13 @@ t current tanslation of v0
               if (dx > 30./n || dy > 30./n)
                   {if (draw) nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
               else
-                  {if (draw) nodeitem[v0]->SetColor(red);
+                  {if (draw) nodeitem[v0]->SetColor(Qt::red);
                   ++n_red;
                   }
               if (draw) nodeitem[v0]->moveTo(G.vcoord[v0],3.);
               }
           else
-              { if (draw) nodeitem[v0]->SetColor(blue);
+              { if (draw) nodeitem[v0]->SetColor(Qt::blue);
               ++n_red;
               }
           }
@@ -360,7 +366,7 @@ t current tanslation of v0
           QApplication::postEvent(mw,event);
           }
       else
-          {mw->progressBar->setProgress(n_red);
+          {mw->progressBar->setValue(n_red);
           qApp->processEvents(); // absolutely needed
           }
       if(iter%2 == 0 && draw)canvas()->update();
@@ -393,6 +399,9 @@ t current tanslation of v0
 #ifdef  VERSION_ALPHA 
   if(debug())
       Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
+#endif
+#ifdef TDEBUG
+     if(debug())DebugPrintf("    END Spring PM\n");
 #endif
   }
 
@@ -1019,7 +1028,7 @@ int GraphEditor::SpringJacquard()
           if (extvertex[v] && deplacement<0.01)
               {blockedvertex[v] = true;
               nonblocked--;
-	      nodeitem[v]->SetColor(red);
+	      nodeitem[v]->SetColor(Qt::red);
               }
           }
       // size_and_center(centre,*this);
@@ -1035,10 +1044,11 @@ int GraphEditor::SpringJacquard()
 	      nodeitem[v]->SetColor(color[G.vcolor[v]]);
 	      }
 	  else
-	      {nodeitem[v]->SetColor(red);++n_red;}
+	      {nodeitem[v]->SetColor(Qt::red);++n_red;}
 	  }      
       if(n_red > (2*G.nv())/3)break;
-      qApp->processEvents(1);
+      //hub qApp->processEvents(1);
+      qApp->processEvents();
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
       canvas()->update(); 
       }

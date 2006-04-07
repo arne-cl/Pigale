@@ -15,8 +15,8 @@
 #include <TAXI/Tgf.h>
 #include <QT/Misc.h> 
 #include <qstatusbar.h>
-#include <qtoolbar.h>
-#include <qfiledialog.h>
+#include <q3toolbar.h>
+#include <q3filedialog.h>
 #include <qinputdialog.h> 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -39,7 +39,7 @@ void pigaleWindow::load()
       if(filter.contains(extension))selfilter=filter;
       }
     formats += "All (*)";
-    QString FileName = QFileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
+    QString FileName = Q3FileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
                                                     "load dialog",tr("Choose a file to open"),&selfilter);
     //setError();
     if(!FileName.isEmpty())
@@ -79,19 +79,22 @@ void pigaleWindow::load()
       }
   }
 int pigaleWindow::publicLoad(int pos)
+// Only called by the server
   {QFileInfo fi(InputFileName);
   QString m;
    if(!fi.exists() || fi.size() == 0)
        {m = QString("file -%1- does not exist").arg(InputFileName);
-       if(!ServerBusy)statusBar()->message(m,2000);
+       //if(!ServerBusy)statusBar()->message(m,2000);
        LogPrintf("%s\n",(const char *)m);
+       setError(-1,"Non existing file");
        return -1;
       } 
    int i = IO_WhoseIs((const char *)InputFileName);
    if(i < 0) 
        {m = QString("%1: unrecognized format").arg(InputFileName);
-     if(!ServerBusy)statusBar()->message(m,2000);
+       //if(!ServerBusy)statusBar()->message(m,2000);
      LogPrintf("%s\n",(const char *)m);
+     setError(-1,"unrecognized format");
      return -1;
      }
    InputDriver = i;
@@ -102,7 +105,7 @@ int pigaleWindow::publicLoad(int pos)
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
   if(IO_Read(i,GC,(const char *)InputFileName,NumRecords,*pGraphIndex) != 0)
       {m = QString("Could not read:%1").arg(InputFileName);
-      if(!ServerBusy)statusBar()->message(m,2000);
+      //if(!ServerBusy)statusBar()->message(m,2000);
       LogPrintf("%s\n",(const char *)m);
       return -2;
       }
@@ -110,8 +113,9 @@ int pigaleWindow::publicLoad(int pos)
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   UndoSave();
-  if(!ServerBusy)banner();
-  information(); gw->update();
+  //if(!ServerBusy)banner();
+  //information(); 
+  //gw->update();
   return *pGraphIndex;
   }
 int pigaleWindow::load(int pos)
@@ -212,7 +216,7 @@ void pigaleWindow::saveAs()
 	formats += filter;
 	if (i==0) selfilter=filter;
       }
-    QString FileName = QFileDialog::getSaveFileName(fi.filePath(),formats.join(";;"),this,
+    QString FileName = Q3FileDialog::getSaveFileName(fi.filePath(),formats.join(";;"),this,
                                                     "save dialog",tr("Choose a filename to save under"),
                                                     &selfilter);
     if(FileName.isEmpty())return;

@@ -18,12 +18,20 @@
 #include <QT/GLWindow.h>
 #include <QT/Misc.h>
 #include <QT/pigaleQcolors.h>
+//Added by qt3to4:
+// #include <QPaintEvent>
+// #include <QHideEvent>
+#include <Q3Frame>
+// #include <QShowEvent>
+#include <Q3HBoxLayout>
+// #include <QResizeEvent>
+#include <Q3VBoxLayout>
 #include <TAXI/netcut.h>
 
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qapplication.h>
 
 #ifndef _WINDOWS
@@ -60,7 +68,7 @@ class GraphGLPrivate
   QCheckBox* bt_label;
   QCheckBox* bt_color;
   QSlider *Slider;
-  QHButtonGroup* bt_group;
+  Q3HButtonGroup* bt_group;
   pigaleWindow *mw;
   RnEmbedding *pSG;
   GraphContainer *pGC;
@@ -89,11 +97,11 @@ void GraphGL::png()
 
 int GraphGL::update()
   {if(!d->is_init)
-      {QVBoxLayout* vb = new QVBoxLayout(this,2,0);
+      {Q3VBoxLayout* vb = new Q3VBoxLayout(this,2,0);
       d->editor = new GLWindow(d,this);
       vb->addWidget(d->editor);
-      QHBoxLayout* hb = new QHBoxLayout(vb);
-      QHBoxLayout* hb2 = new QHBoxLayout(vb);
+      Q3HBoxLayout* hb = new Q3HBoxLayout(vb);
+      Q3HBoxLayout* hb2 = new Q3HBoxLayout(vb);
       d->Slider = new QSlider(Qt::Horizontal,this,"Slider");
       d->Slider->setMinValue(2);d->Slider->setMaxValue(100);d->Slider->setValue(2);
       d->Slider->setMaximumHeight(10);
@@ -111,8 +119,9 @@ int GraphGL::update()
       spin_Vertex->setValue((int)d->vertex_width*5); spin_Vertex->setPrefix("Vw: ");
       hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
 
-      d->bt_group = new QHButtonGroup(this);
-      d->bt_group->setFrameShape(QFrame::NoFrame); 
+      d->bt_group = new Q3HButtonGroup(this);
+      //d->bt_group->setFrameShape(Q3Frame::NoFrame); 
+      //hub d->bt_group->setFrameShape(Q3GroupBox::DummyFrame); 
       d->bt_group->setPalette(d->mw->LightPalette);
       d->bt_group->setMaximumHeight(30); 
 #ifndef _WINDOWS
@@ -233,44 +242,10 @@ GLWindow::~GLWindow()
   }
 
 void GLWindow::png()
-  {qApp->processEvents();
-  pigaleWindow  *mw = (pigaleWindow*)qApp->mainWidget () ;
-  QPoint p = mw->pos();
-  if(mw->ServerExecuting)
-      {//mw->putOnTop();qApp->processEvents();
-      QPoint p0(0,0);
-#ifdef _WINDOWS
-      mw->reparent(0,WDestructiveClose |WStyle_StaysOnTop,p0,true);
-#else
-      mw->reparent(0,WDestructiveClose |WStyle_StaysOnTop| WX11BypassWM,p0,true);
-#endif
-      mw->wait(100);
-      }
-
-  QPixmap pixmap = QPixmap::grabWindow(this->winId(),2);
-  qApp->processEvents();
-  if(mw->ServerExecuting)mw->reparent(0,WDestructiveClose ,p,true);
-
-  /*#include <qimage.h>
-    #define GAMMA 2.2
-  QImage image  = pixmap.convertToImage(); 
-  for(int i = 0; i < image.width();i++)
-      for(int j = 0; j < image.height();j++)
-          {QRgb pix = image.pixel(i,j);
-          QColor col =  QColor(pix);
-          int  h,s,v;
-          col.getHsv (h,s, v);
-          double lum = v/255.;
-          lum = pow(1.- pow(lum,GAMMA),1./GAMMA);
-          col.setHsv(h,s,(int)(lum*255.));
-          pix = col.pixel();
-          image.setPixel(i,j,pix);
-          }
-  pixmap.convertFromImage(image,0); 
-  */
+  {QPixmap pixmap = renderPixmap(); 
   QString FileName;
   if(!glp->mw->ServerExecuting)
-      {FileName = QFileDialog::
+      {FileName = Q3FileDialog::
       getSaveFileName(glp->mw->DirFilePng,"Images(*.png)",this);
       if(FileName.isEmpty())return; 
       if(QFileInfo(FileName).extension(false) != (const char *)"png")
@@ -301,6 +276,9 @@ void GLWindow::initializeGL()
 #ifdef HAVE_LIBGLUT
   CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
 #endif
+  //hub
+  if(object){makeCurrent();glDeleteLists(object,1);}
+  object = load(false);
   }
 void GLWindow::initialize(bool init) 
   {if(!is_init){is_init=true;initializeGL();return;}
@@ -363,9 +341,9 @@ GLuint GLWindow::load(bool init)
 
  glLineWidth(1.0);
  glBegin(GL_LINES);
- qglColor(red);   glVertex3f(.0,.0,.0);   glVertex3f(.25,0.,0.);
- qglColor(green); glVertex3f(.0,.0,.0);   glVertex3f(.0,.25,0.);
- qglColor(blue);  glVertex3f(.0,.0,.0);   glVertex3f(.0,0.,.25);
+ qglColor(Qt::red);   glVertex3f(.0,.0,.0);   glVertex3f(.25,0.,0.);
+ qglColor(Qt::green); glVertex3f(.0,.0,.0);   glVertex3f(.0,.25,0.);
+ qglColor(Qt::blue);  glVertex3f(.0,.0,.0);   glVertex3f(.0,0.,.25);
  glEnd();
  glEndList();
  return list;
@@ -558,12 +536,10 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   if(t.isEmpty())return;
   int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t));
   if(t.length() == 1)len *= 2;
-  qglColor(red);
+  qglColor(Qt::red);
   glPushMatrix();
   glPushMatrix();
   glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
-  //xm=.003
-  //double xm = .9*size/CharSize;
   double xm = .9*size*2/len;
   glScalef(xm,xm*1.2,1);
   drawText(GLUT_STROKE_ROMAN,(const char *)t);
@@ -577,13 +553,14 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glTranslatef(x-size*.85,y+size*.8,z-size*1.01);
   glScalef(xm,xm*1.2,1);
   glRotatef(180., 1.0, 0.0, 0.0 );
+  
   drawText(GLUT_STROKE_ROMAN,(const char *)t);
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
   
   //Third cube face
-  qglColor(blue);
+  qglColor(Qt::blue);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
@@ -596,7 +573,7 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glPopMatrix();
 
   //Fourth cube face
-  qglColor(blue);
+  qglColor(Qt::blue);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
@@ -609,7 +586,7 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glPopMatrix();
 
   //Fith cube face
-  qglColor(black);
+  qglColor(Qt::black);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
@@ -622,7 +599,7 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glPopMatrix();
 
   //Sith cube face
-  qglColor(yellow);
+  qglColor(Qt::yellow);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
@@ -640,5 +617,16 @@ void GLWindow::drawText(void * font,const char *txt)
   }
 #else
 void GLWindow::drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
-  {}
+  {QFont fnt = QFont("sans");
+  fnt.setPixelSize(20);
+  QString t =  getVertexLabel(glp->GC(),v);
+  if(t.isEmpty())return;
+  qglColor(Qt::red);
+  glPushMatrix();
+  glPushMatrix();
+  glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
+  renderText(.0,.0,.0,t,fnt);
+  glPopMatrix();
+  glPopMatrix();
+  }
 #endif

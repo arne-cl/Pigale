@@ -9,10 +9,12 @@
  **
  *****************************************************************************/
 
-#include <QT/Handler.h>
+
 #include <QT/Action_def.h>
 #include "pigaleWindow.h" 
 #include <QT/Misc.h>
+#include <QT/Handler.h>
+
 void BFSOrientTree(TopologicalGraph &G, tvertex v0);
 
 // Those handlers return:
@@ -230,7 +232,9 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
   int err = 0;
   drawing = 0;
   switch(action)
-      {case A_EMBED_SCHNYDER_E:ret = 1;
+      {case A_EMBED:
+          return 2;  //only used by the server (Information+gw->update)
+      case A_EMBED_SCHNYDER_E:ret = 1;
           err = G.Schnyder(0);
           if(err)Tprintf("ret=%d",err);
           break;
@@ -542,5 +546,6 @@ int GenerateHandler(GraphContainer &GCC,int action,int n1_gen,int n2_gen,int m_g
       }
   else {setError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}
   delete GC;
+
   return 2;
   }
