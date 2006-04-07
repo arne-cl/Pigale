@@ -256,6 +256,7 @@ public :
     int MaxPlanar();
     int MaxPlanar(svector<bool> &mark);
     int Planarity(tbrin b0 = 1);
+    int NewPlanarity(tbrin b0 = 1);
     int CotreeCritical(int &ret);
     int CotreeCritical(svector<bool> &mark);
     int KCotreeCritical(int &);
@@ -263,6 +264,7 @@ public :
     int Kuratowski(svector<bool> &mark);
     int KKuratowski();
     int TestPlanar();
+    int TestNewPlanar();
     int TestPlanar2();
     // in Jacquard.cpp
     GraphContainer * Vis_a_vis_Graph();

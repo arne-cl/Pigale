@@ -90,8 +90,11 @@ struct _LrSort {
 inline tedge treein(tvertex v) {return tedge(v()-1);}
 inline tvertex treetarget(tedge e) {return tvertex(e()+1);}
 void LralgoSort(int n,int m, svector<tvertex> &vin, const _Bicon &Bicon ,const svector<tvertex> &low,_LrSort &LrSort);
+void NewLralgoSort(int n,int m, svector<tvertex> &vin, const _Bicon &Bicon ,const svector<tvertex> &low,_LrSort &LrSort);
 int lralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSort &LrSort, _Hist &Hist,bool OnlyTest=false);
+int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _LrSort &LrSort, _Hist &Hist,bool OnlyTest=false);
 int fastlralgo(int n,int m, svector<tvertex> &vin,const _Bicon &Bicon, _LrSort &LrSort, _FastHist &Hist);
+int Newfastlralgo(int n,int m, svector<tvertex> &vin,const _Bicon &Bicon, _LrSort &LrSort);
 
 #ifdef PRIVATE
 #ifndef NLRALGO_H
@@ -336,6 +339,151 @@ private :
   int Cover(const tedge &cv) // ik = pile -1
       {return((vin[cv]<vin[PrevTwin().ltop()]) 
 	      && (vin[-cv]!=vin[-PrevTwin().ltop()]));}
+};
+
+/***********************************************************************************/
+class _NewFastTwit {
+
+  svector<int> ForkStack;
+  int _topfork;
+   
+public :
+  int _current;
+  int _fork;
+  int isnotplanar;
+  svector<_twin> tw;
+  svector<tvertex> &vin;
+  svector<tedge> Link;
+  jmp_buf env;
+
+public :
+	 
+  _NewFastTwit(int ne,int nv, svector<tvertex> &_vin) :
+    ForkStack(0,nv),_topfork(0),_current(0),_fork(0),isnotplanar(0),tw(0,ne),vin(_vin),Link(0,ne)
+    { ForkStack[0]=0;
+      tw.SetName("tw_NewFast:lralgo.h");
+      ForkStack.SetName("ForkStack_NewFast:lralgo.h");
+      Link.SetName("link_NewFast:lralgo.h");
+      tw[0].lbot()=tw[0].ltop()=tw[0].rbot()=tw[0].rtop()=0;
+      Link.clear();
+      }
+
+  ~_NewFastTwit() {}
+
+  _twin & Twin() {return tw[_current];}           // twin courrant
+  _twin & PrevTwin() {return tw[_current-1];}     // twin precedent
+  _twin & FirstTwin() {return tw[_fork+1];}       // premier twin
+  _twin & Twin1(){return tw[ForkStack[_topfork-1]+1];}
+  int planar() {return !isnotplanar;}
+  void PopFork()  {_current=_fork;_fork=ForkStack[--_topfork]; }
+  void NewFork()  { ForkStack[++_topfork]= _fork = _current; }
+  void NewTwin(const tedge &ej)
+      {_current++; 
+      Twin().lbot() = Twin().ltop() = ej;
+      Twin().rbot() = Twin().rtop() = 0;
+      }
+  void Deletion(tvertex vi);
+  void Fusion(tedge ej);
+  void Thin();
+  void Thick();
+
+private :
+  void FuseTo(tvertex vi);
+  void FusePrev(int side);
+  void SetNonPlanar() {isnotplanar=1; longjmp(env,1);}
+#ifdef TDEBUG
+  void Print();
+#endif
+};
+/***********************************************************************************/
+class _NewTwit
+{
+  tvertex _forkvertex;   //vertex 
+  svector<tvertex> ForkLink;
+  svector<int> ForkNumTwin;
+public :
+  int _current;
+  int _fork;         //twin
+  int _erase_pile;
+  int isnotplanar;
+  svector<_twin> tw;
+  svector<tvertex> &vin;
+
+  _Hist &Hist;
+
+public :
+
+  _NewTwit(int ne,int nv, svector<tvertex> &_vin, _Hist &rHist) :
+      _forkvertex(0),ForkLink(0,nv),ForkNumTwin(0,nv),
+      _current(0),_fork(0),_erase_pile(0),isnotplanar(0),
+      tw(0,ne),vin(_vin),Hist(rHist)
+      {ForkNumTwin[0] = 0; ForkLink[0] = 0;
+      tw.SetName("tw _Twit:lralgo.h");
+      ForkLink.SetName("ForkLink:lralgo.h");
+      ForkNumTwin.SetName("ForkNumTwin:lralgo.h");
+      tw[0].lbot()=tw[0].ltop()=tw[0].rbot()=tw[0].rtop()=0;
+      }
+  _NewTwit(DFSGraph &G, _Hist &rHist) :
+      _forkvertex(0),ForkLink(0,G.nv()),ForkNumTwin(0,G.nv()),
+      _current(0),_fork(0),_erase_pile(0),isnotplanar(0),tw(0,G.ne()),
+      vin(G.nvin),Hist(rHist)
+      {ForkNumTwin[0] = 0; ForkLink[0] = 0;
+      tw.SetName("tw _Twit:lralgo.h");
+      ForkLink.SetName("ForkLink:lralgo.h");
+      ForkNumTwin.SetName("ForkNumTwin:lralgo.h");
+      tw[0].lbot()=tw[0].ltop()=tw[0].rbot()=tw[0].rtop()=0;
+      }
+
+  ~_NewTwit() {}
+
+  _twin & Twin() {return tw[_current];}           // twin courantt
+  _twin & PrevTwin() {return tw[_current-1];}     // twin precedent
+  _twin & NextTwin() {return tw[_current+1];}     // twin precedent
+  _twin & FirstTwin() {return tw[_fork+1];}       // premier twin
+  _twin & ForkTwin() {return tw[_fork];}          // twin fork
+  int planar() {return !isnotplanar;}
+  void NextFork()
+      {_forkvertex = ForkLink[_forkvertex];
+      _fork = ForkNumTwin[_forkvertex];
+      }
+  void NewFork(tvertex v)
+      {ForkLink[v] = _forkvertex;
+      ForkNumTwin[v] = _current;
+      _forkvertex = v;
+      _fork = _current;
+      }
+  void GotoFirstTwin()
+      { _current = _fork+1;}
+  void NewTwin(const tedge &ej)
+      {_current++;
+      Twin().lbot() = Twin().ltop() = ej;
+      Twin().rbot() = Twin().rtop() = 0;
+      }
+  int FirstLink() {return (_current == _fork+1);}
+  void Deletion(tvertex vi);
+  void Fusion(tedge ej);
+  void Thin(tedge ej);
+  void Thick();
+
+private :
+  int DeleteLeft(tvertex vi);
+  int DeleteRight(tvertex vi);
+  void Fuse(tedge ej);
+  void Efnp(tedge ej);
+  void Align(tedge je,int flipin,tedge ej);
+  void Flick();
+  void Mflip();
+  void Drop();
+  int side_flip(const tedge &rtp,const tedge &lbt,const tedge &cv)
+      {return(vin[rtp]<=vin[lbt]  && vin[rtp] == vin[cv]);}
+  tedge Couve() // Toujours kk+1
+      {tedge l = FirstTwin().lbot();
+      tedge r = FirstTwin().rbot();
+      tedge e = l;
+      if(!l || (r() &&  vin[r]< vin[l]))e = r;
+      return e;
+      }
+
 };
 
 #endif

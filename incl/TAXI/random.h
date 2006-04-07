@@ -13,10 +13,12 @@
 #define RANDOM_H 
 
 bool & randomEraseMultipleEdges(); // if set to true generators generate simple graphs
+bool & randomUseGeneratedCir();    // if set to true planar generators generate the cir
 long & randomSetSeed();            // set the seed of the random generator 
 bool & randomSeed();               // wether program should start with a random seed
 void randomInitSeed();             // called once, when program  start
 void randomStart();                // called when needed randoms number
 void randomEnd();                  // save a new seed
-long randomGet(long range);        // returns an integer >= 1 && <= range   
+long randomGet(long range);        // returns an integer >= 1 && <= range  
+void randomShuffle(svector<int> &tab); // randomly permuts the elements of tab
 #endif
