@@ -42,11 +42,13 @@ CONFIG(debug, debug|release)  {
     TARGET = pigale_debug
     DEFINES += TDEBUG
     unix:OBJECTS_DIR = ./.odb
-    unix:LIBS += -L $$DISTPATH/lib -ltgraph_debug
+    unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
+#    unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
     }else {
     TARGET = pigale
     unix:OBJECTS_DIR = ./.opt
-    unix:LIBS += -L $$DISTPATH/lib -ltgraph
+    unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
+#    unix:LIBS += $$DISTPATH/lib/libtgraph.a
     }
 unix:LIBS +=$$LIBGLUT
 QT += qt3support opengl network xml

@@ -8,12 +8,19 @@ CPU=
 OPT=opt
 
 #libray paths
-MQTDIR=$(QTDIR)
-UNIXLIB =  -L$(MQTDIR)/lib -lqt-mt   
+#MQTDIR=/usr/lib/qt4
+MQTDIR=/usr/local/Trolltech/Qt-4.1.1
+
+UNIXLIB =  -L$(MQTDIR)/lib -lQt3Support -lQtGui -lQtXml -lQtCore -lQtOpenGL -L/usr/X11R6/lib -lglut -lGL -lGLU 
+UNIXLIB += -lpng -lSM -lICE -lz -lXi -lXrender -lXrandr -lXcursor -lXinerama -lfreetype -lfontconfig -lXext -lX11 -lm -ldl -lpthread
+
+
 #include paths
-IFLAGS =  -I$(MQTDIR)/include 
+IFLAGS =  -idirafter$(MQTDIR)/include
+IFLAGS +=  -idirafter$(MQTDIR)/include/Qt
+IFLAGS += -idirafter$(MQTDIR)/include/Qt3Support 
+#IFLAGS += -idirafter$(MQTDIR)/include/QtTest
 IFLAGS += -I$(PIGALEPATH)/incl
-DFLAGS = -I$(PIGALEPATH)/incl
 #awk 
 AWK=awk
 ####################### END EDITING #########################
@@ -29,17 +36,22 @@ MMOC=$(MQTDIR)/bin/moc
 .SUFFIXES:.cpp .o .obj .opt .dbg
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC) $(CPU)
+#CFLAGSopt +=  -Wall -Wpointer-arith  -pipe
 CFLAGSopt +=  -Wall -Wpointer-arith -Werror  -pipe
 CFLAGSopt +=  -fomit-frame-pointer 
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
 CFLAGSopt +=  -DQT_THREAD_SUPPORT 
+CFLAGSopt +=  -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_QT3SUPPORT_LIB -DQT3_SUPPORT -DQT_SHARED
+CFLAGSopt +=  -D_QT4_
 
 #DEBUGGING OPTIONS
 CFLAGSdbg  =  -g -Wall $(PIC) $(CPU)
-CFLAGSdbg +=  -Wpointer-arith -Werror -pipe
+CFLAGSdbg +=  -Wpointer-arith -pipe
 CFLAGSdbg +=  -DTDEBUG
 CFLAGSdbg +=  -DQT -DVERSION_$(NVERSION)
 CFLAGSdbg +=  -DQT_THREAD_SUPPORT 
+CFLAGSdbg +=  -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_QT3SUPPORT_LIB -DQT3_SUPPORT -DQT_SHARED
+CFLAGSdbg +=  -D_QT4_
 
 CFLAGS  = $(CFLAGS$(OPT))
 VPATH   = ./.obj
@@ -75,5 +87,4 @@ nodepend:
 .PHONY: md all
 # DO NOT DELETE
 
-client.opt: client.h ../incl/config.h ../incl/QT/clientEvent.h
-client.opt: ../incl/QT/Action_def.h ../incl/TAXI/Tbase.h
+client.dbg: client.h

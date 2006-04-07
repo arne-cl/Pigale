@@ -57,6 +57,7 @@ SOURCES =\
 
 
 CONFIG += qt thread $$MODE
+#CONFIG += static
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
     DEFINES += TDEBUG
@@ -70,4 +71,4 @@ distdir.commands =
 QMAKE_EXTRA_TARGETS += distdir
 DESTDIR=$$DISTPATH/lib
 
-message(creating $$TARGET ($$OBJECTS_DIR))
+message(creating the librayry $$TARGET version:$$VERSION ($$OBJECTS_DIR))

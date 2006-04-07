@@ -12,12 +12,10 @@
 #ifndef CLIENT_H 
 #define CLIENT_H
 #include <config.h>
-#include <qsocket.h>
 #include <qapplication.h>
 #include <qevent.h>
-#include <qvbox.h>
-#include <qhbox.h>
-#include <qtextview.h>
+#include "qboxlayout.h"
+#include <qtextedit.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -27,11 +25,14 @@
 #include <qfileinfo.h>
 #include <qthread.h>
 #include <qmutex.h>
-#include <qptrstack.h>
+#include <qstack.h>
 #include <qdir.h> 
 #include <QT/clientEvent.h> 
 #include <QT/Action_def.h>
+#include <qevent.h>
 #include <TAXI/Tbase.h> 
+#include <QtNetwork>
+#include <qreadwritelock.h>
 
 /* 
 In the input:
@@ -60,14 +61,15 @@ public:
   Client* pclient; 
 };
 
-class Client : public QVBox 
+//class Client : public Q3VBox 
+class Client : public QWidget
 {Q_OBJECT
 public:
-  Client( const QString &host, Q_UINT16 port);
+  Client( const QString &host, quint16 port);
   ~Client(){}
   void sendToServer(QString& str);
-  void writeToClient(QString str);
-  void customEvent(QCustomEvent * e );
+  bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
+  void debug(bool b);
   void exit( );
 
 private slots:
@@ -81,26 +83,33 @@ private slots:
   void stop();
 
 public:
-  QSocket *socket;
-  int ActionsToDo;
-  bool dbg;
   int ChangeActionsToDo(int delta);
-  QPtrStack<QString > stack;
+  void writeClient(QString str);
+  QStack<QString > stack;
 
 private:
   int sendToServerGraph(QString &str);
   uint readBuffer(char *  &buff);
+  void writeServer(QString str);
+  void writeServer(char * buff,quint32 size);
+  
+  bool event(QEvent * ev);
+  void customEvent(QEvent * e );
+  QTcpSocket *socket;
+  int ActionsToDo;
+  bool dbg;
+ 
+  
   QMutex mutex;
-  QTextStream cls;
+  QReadWriteLock lock;
   QDataStream clo;
-  QTextView *infoText;
+  QTextEdit *infoText;
   QLineEdit *inputText;
   threadRead ThreadRead;
   int numFiles;
 
 public:
-  bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
-  void debug(bool b);
+
 };
 
 
