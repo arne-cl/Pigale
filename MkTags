@@ -3,5 +3,6 @@ rm -f TAGS
 
 etags -a -C tgraph/*.cpp
 etags -a -C qt/*.cpp
+etags -a -C qt/*.h
 etags -a -C incl/TAXI/*.h
 etags -a -C incl/QT/*.h

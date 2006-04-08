@@ -1,6 +1,7 @@
 include(../pigale.inc)
 TEMPLATE = lib
 INCLUDEPATH = ../incl;../incl/TAXI
+DEPENDPATH = ../incl/TAXI
 SOURCES =\
     3-ConOrientTriang.cpp\
     3-ConShelling1.cpp\
@@ -57,7 +58,10 @@ SOURCES =\
 
 
 CONFIG += qt thread $$MODE
-#CONFIG += static
+contains(ENABLE_STATIC,"yes") {
+ CONFIG += static
+}
+
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
     DEFINES += TDEBUG
@@ -71,4 +75,8 @@ distdir.commands =
 QMAKE_EXTRA_TARGETS += distdir
 DESTDIR=$$DISTPATH/lib
 
-message(creating the librayry $$TARGET version:$$VERSION ($$OBJECTS_DIR))
+contains(ENABLE_STATIC,"yes") {
+  message(creating the static library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
+}else{
+  message(creating the library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
+}

@@ -1,6 +1,7 @@
 include(../pigale.inc)
 TEMPLATE = app
 INCLUDEPATH = ../incl;../incl/TAXI;../incl/QT 
+DEPENDPATH = ../incl
 HEADERS = pigaleWindow.h \
     ClientSocket.h \
     glcontrolwidget.h \
@@ -10,6 +11,7 @@ HEADERS = pigaleWindow.h \
     GraphWidget.h \
     LineEditNum.h \
     mouse_actions.h 
+
 SOURCES = main.cpp \
     CanvasGrid.cpp \
     CanvasItem.cpp \
@@ -42,22 +44,37 @@ CONFIG(debug, debug|release)  {
     TARGET = pigale_debug
     DEFINES += TDEBUG
     unix:OBJECTS_DIR = ./.odb
-    unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
-#    unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
+    contains(ENABLE_STATIC,"yes")   {
+      unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
+      }else {
+      unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
+      }
     }else {
     TARGET = pigale
     unix:OBJECTS_DIR = ./.opt
-    unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
-#    unix:LIBS += $$DISTPATH/lib/libtgraph.a
+    contains(ENABLE_STATIC,"yes") 
+      {
+      unix:LIBS += $$DISTPATH/lib/libtgraph.a
+      }else {
+      unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
+      }
     }
 unix:LIBS +=$$LIBGLUT
 QT += qt3support opengl network xml
 MOC_DIR = .moc
 
+#awk
+awk.depends = ../incl/QT/Action_def.h FORCE
+awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
+QMAKE_EXTRA_TARGETS += awk
+
+
 #Translations
 TRANSLATIONS    = pigale_fr.ts 
 translation.commands  =  $$MQTDIR/bin/lrelease pigale.pro
 QMAKE_EXTRA_TARGETS += translation
+
+#needed by ../makefile
 distdir.commands =
 QMAKE_EXTRA_TARGETS += distdir
 
@@ -72,4 +89,10 @@ INSTALLS += translations
 DISTDIR=..
 DISTFILES += gnumakefile
 
-message(creating $$TARGET using QT version $$[QT_VERSION] ($$OBJECTS_DIR))
+
+depends += awk
+contains(ENABLE_STATIC,"yes") {
+  message(creating $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+}else {
+  message(creating $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+}

@@ -11,6 +11,7 @@ else
 fi
 AC_DEFINE_UNQUOTED(PACKAGE_PATH,"$PPATH",Path to Pigale root directory)
 AC_SUBST(PPATH)
+AC_SUBST(enable_static)
 
 dnl Checks target processor
 AC_CANONICAL_SYSTEM
@@ -32,6 +33,7 @@ AH_TOP([
 AH_BOTTOM([#endif])
 
 AC_DISABLE_STATIC
+
 AC_PROG_LIBTOOL
 
 dnl Checks for programs.
@@ -91,7 +93,7 @@ echo QT4DIR=$QT4DIR
 echo glut:$LIBS
 echo install:$PPATH
 echo cpu:$host_cpu
-echo cpu:$target_cpu
+echo static:$enable_static
 AC_PROG_INSTALL
 AC_CONFIG_FILES([ pigale.inc ])
 AC_OUTPUT(

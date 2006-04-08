@@ -4,6 +4,8 @@ VERSION= @LIB_VERSION@
 LIBGLUT = @LIBS@
 MODE = @DEBUG@
 DISTPATH = @PPATH@
+AWK = @AWK@
+ENABLE_STATIC = @enable_static@
 
 unix {
      QMAKE_CXXFLAGS_RELEASE += @CPU@ -O3 -fomit-frame-pointer 
