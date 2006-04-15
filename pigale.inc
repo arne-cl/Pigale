@@ -5,7 +5,7 @@ LIBGLUT = -lglut
 MODE = release
 DISTPATH = /home/pigale/pigale
 AWK = gawk
-ENABLE_STATIC = yes
+ENABLE_STATIC = no
 
 unix {
      QMAKE_CXXFLAGS_RELEASE += -march=i686 -O3 -fomit-frame-pointer 

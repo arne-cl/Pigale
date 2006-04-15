@@ -30,18 +30,24 @@
 #include <qprinter.h>
 #include <qdir.h>
 #include <qtextcodec.h>
-
 #include <qstyle.h>
 #include <qstylefactory.h>
-//#include <q3textedit.h>
 #include <qsettings.h>
 #include <qmessagebox.h>
 #include <qtextstream.h>
 #include <Q3FileDialog>
-#ifdef _WINDOWS
+
+#include "GraphGL.h"
+#include "GraphSym.h"
+
+#if _WIN32
+#undef PACKAGE_PATH
+#define PACKAGE_PATH ".."
+#elif _WINDOWS
 #undef PACKAGE_PATH
 #define PACKAGE_PATH "c:\\Program Files\\Pigale"
 #endif
+
 
 void pigaleWindow::SetDocumentPath()
   {QString StartDico = (DirFileDoc.isEmpty()) ? "." : DirFileDoc;
@@ -126,8 +132,8 @@ void pigaleWindow:: SaveSettings()
   setting.writeEntry("/pigale/colors/GreenBackground g",g);
   setting.writeEntry("/pigale/colors/GreenBackground b",b);
   // Font
-  setting.writeEntry("/pigale/font/family",this->font().family());
-  setting.writeEntry("/pigale/font/size",this->font().pointSize());
+  setting.writeEntry("/pigale/font/family",QApplication::font().family());
+  setting.writeEntry("/pigale/font/size",QApplication::font().pointSize());
   }
 
 void pigaleWindow::LoadSettings()
@@ -179,6 +185,7 @@ void pigaleWindow::LoadSettings()
   fontSize = setting.readNumEntry("/pigale/font/size",fontSize);
   QFont font = QFont(family,fontSize);
   QApplication::setFont(font,true);
+  setFont(font,true);
 }
 
 
@@ -190,15 +197,24 @@ void pigaleWindow::EditPigaleColors()
 void pigaleWindow::UpdatePigaleColors()
   {QPalette Palette = QApplication::palette();
   Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
+  Palette.setColor(QColorGroup::Dark,QColor(Qt::black));
   Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));
   Palette.setColor(QColorGroup::Button    ,QColor(QColorDialog::customColor(2)));
-  QApplication::setPalette(Palette);
-  this->setPalette(Palette,TRUE);
+  
   LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
-  gSettings->setPalette(LightPalette); 
+  LightPalette.setColor(QColorGroup::Dark,QColor(Qt::black));
+  LightPalette.setColor(QColorGroup::ButtonText,QColor(Qt::darkGreen));
+  LightPalette.setColor(QColorGroup::WindowText,QColor(Qt::black));
+  
+  QApplication::setPalette(Palette);  setPalette(Palette,TRUE);
+  graph_properties->setPalette(Palette); 
+  gSettings->setPalette(LightPalette); gSettings->setAutoFillBackground(true); 
   mouse_actions->setPalette(LightPalette,TRUE);
   tabWidget->setPalette(LightPalette,TRUE);
+  graphgl->setPalette(Palette);
+  graphsym->setPalette(Palette);
+  graphsym->setBackgroundColor(QColor(Qt::white));
   statusBar()->setBackgroundColor(QColor(QColorDialog::customColor(1)));
   }
 void pigaleWindow::SetPigaleColorsProfile1() //gray
@@ -250,16 +266,6 @@ int GetPigaleColors()
 void InitPigaleColors()
   {// Set the colors of tha application
   GetPigaleColors();
-//   if(GetPigaleColors() == -1)
-//       {QColor BackgroundColor  = QColor(170,187,203);
-//       QColor Base = QColor(248,238,224);
-//       QColor LightBackgroundColor = QColor(180,210,241);
-//       QColor GreenBackgroundColor = QColor(165,210,180);
-//       QColorDialog::setCustomColor(0,BackgroundColor.rgb()); 
-//       QColorDialog::setCustomColor(1,Base.rgb()); 
-//       QColorDialog::setCustomColor(2,LightBackgroundColor.rgb()); 
-//       QColorDialog::setCustomColor(3,GreenBackgroundColor.rgb()); 
-//       }
   QPalette Palette = QApplication::palette();
   Palette.setColor(QColorGroup::Background,QColor(QColorDialog::customColor(0)));
   Palette.setColor(QColorGroup::Base      ,QColor(QColorDialog::customColor(1)));

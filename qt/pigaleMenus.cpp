@@ -135,8 +135,7 @@ pigaleWindow::pigaleWindow()
   // Init random generator
   randomInitSeed();
   // Define some colors
-  LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
-  LightPalette.setColor(QColorGroup::Base,QColor(QColorDialog::customColor(1)));
+  setAutoFillBackground(true);
   // Create a printer
   printer = new QPrinter; //(QPrinter::HighResolution);
   if(PrinterOrientation == QPrinter::Portrait)
@@ -151,7 +150,7 @@ pigaleWindow::pigaleWindow()
 
   // Widgets
   QWidget *mainWidget = new QWidget(this,"mainWidget");
-
+  mainWidget->setAutoFillBackground(true);
   setCentralWidget(mainWidget);
   QDesktopWidget *desktop = QApplication::desktop();
   bool bigScreen = (desktop->height() >= 830); // min 785x830 ou 785x610
@@ -161,31 +160,31 @@ pigaleWindow::pigaleWindow()
   tabWidget = new  QTabWidget();
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
-  tabWidget->setPalette(LightPalette);
+  //tabWidget->setAutoFillBackground(true);
   mypaint =  new pigalePaint(0,"mypaint",this);
   gw = new  GraphWidget(0,"graphwidget",this);
   graphgl  = new GraphGL(0,"graphgl",this);
-  graphgl->setPalette(LightPalette);
+  graphgl->setAutoFillBackground(true);
   graphsym = new GraphSym(0,"graphsym",this);
-
+  graphsym->setAutoFillBackground(true);
   tabWidget->addTab(gw,tr("Graph Editor"));
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
- 
+  
   browser = new QTextBrowser(0);
   tabWidget->addTab(browser,tr("User Guide")); 
   QPalette bop(QColorDialog::customColor(3));
   browser->setPalette(bop);
+  browser->setAutoFillBackground(true);
   
   /* genealogy:
    mainWindow -> mainWidget -> rtabWidget
    rtabWidget -> ?? -> gInfo
   */
-  QTabWidget  *rtabWidget = new  QTabWidget();  
-  gSettings = new QWidget();
-  gSettings->setPalette(LightPalette); gSettings->setAutoFillBackground(true);  
-  QWidget * gInfo = new QWidget();                
+  QTabWidget  *rtabWidget = new  QTabWidget(); 
+  gSettings = new QWidget();  gSettings->setAutoFillBackground(true);  
+  QWidget * gInfo = new QWidget(); gInfo->setAutoFillBackground(true);               
   rtabWidget->setMaximumWidth(300);  rtabWidget->setMinimumWidth(300);
   leftLayout->addWidget(rtabWidget,2);
   rtabWidget->addTab(gInfo,tr("Information"));
@@ -199,9 +198,9 @@ pigaleWindow::pigaleWindow()
   messages->setReadOnly(true);
   //graph_properties
   graph_properties = new Graph_Properties(gInfo,menuBar(),"graph_properties");
+  graph_properties->setAutoFillBackground(true); 
   //mouse_action
   mouse_actions = new Mouse_Actions(gInfo,"mouseactions",0,gw);
-  mouse_actions->setPalette(LightPalette);
   mouse_actions->setAutoFillBackground(true); 
  
   rightLayout->addMultiCellWidget(messages,1,1,1,2);
@@ -727,6 +726,7 @@ pigaleWindow::pigaleWindow()
       QUrl url = QUrl("manual.html");
       browser->setSource(url);
       }
+  UpdatePigaleColors();    
   qApp->processEvents();
   initMenuTest();
   if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
@@ -773,6 +773,7 @@ void pigaleWindow::SetPigaleFont()
   QFont font = QFontDialog::getFont( &ok, this->font(), this );
   if(!ok)return;
   QApplication::setFont(font,true);
+  setFont(font,true);
  }
 void pigaleWindow::showLabel(int show)
   {int _show = ShowVertex();
