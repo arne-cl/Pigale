@@ -1,5 +1,24 @@
-include(../pigale.inc)
 TEMPLATE = app
+
+win32 {
+      ENABLE_STATIC=yes
+      MQTDIR=C:\Qt\4.1.2\
+      MODE = release
+      ENABLE_STATIC=yes
+      DISTPATH=g:\pigale4\Pigale
+      DESTDIR=$$DISTPATH/bin
+      MOC_DIR = moc
+      DEFINES += _WIN32
+      win32:LIBS += -Wl,-rpath ../glut -L../glut -l glut32 
+      message(configuring for Windows in $$DISTPATH)
+      } else {
+      include(../pigale.inc)
+      unix:LIBS +=$$LIBGLUT
+      MOC_DIR = .moc
+      DESTDIR=$$DISTPATH/bin
+      message(configuring for Linux in $$DESTDIR)
+      }
+
 INCLUDEPATH = ../incl;../incl/TAXI;../incl/QT 
 DEPENDPATH = ../incl
 HEADERS = pigaleWindow.h \
@@ -38,61 +57,68 @@ SOURCES = main.cpp \
     Settings.cpp \
     Test.cpp
 
-
 CONFIG += qt thread $$MODE warn_off
-CONFIG(debug, debug|release)  {
+
+CONFIG(debug, debug|release) {
     TARGET = pigale_debug
     DEFINES += TDEBUG
-    unix:OBJECTS_DIR = ./.odb
-    contains(ENABLE_STATIC,"yes")   {
-      unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
-      }else {
-      unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
-      }
-    }else {
+    contains(ENABLE_STATIC,"yes")  {
+          #message(debug static)	
+          unix:OBJECTS_DIR = ./.odb
+          win32:OBJECTS_DIR = ./odb
+          unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
+          win32:LIBS +=../tgraph/release/libtgraph.a 
+          }  else  {
+	  #message(debug dynamic)	
+          unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
+          win32:LIBS += -Wl,-rpath ../tgraph/release -L../tgraph/$$Mode -l tgraph 
+          }
+    } else {
     TARGET = pigale
     unix:OBJECTS_DIR = ./.opt
-    contains(ENABLE_STATIC,"yes") 
-      {
-      unix:LIBS += $$DISTPATH/lib/libtgraph.a
-      }else {
-      unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
-      }
+    win32:OBJECTS_DIR = ./opt
+    contains(ENABLE_STATIC,"yes")  {
+        #message(opt static)
+        unix:LIBS += $$DISTPATH/lib/libtgraph.a
+        win32:LIBS +=../tgraph/release/libtgraph.a 
+        } else  {
+        #message(opt dynamic)
+        unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
+        win32:LIBS += -Wl,-rpath ../tgraph/$$release -L../tgraph/release -l tgraph 
+        }
     }
-unix:LIBS +=$$LIBGLUT
+
 QT += qt3support opengl network xml
-MOC_DIR = .moc
 
-#awk
-awk.depends = ../incl/QT/Action_def.h FORCE
-awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
-QMAKE_EXTRA_TARGETS += awk
-
-
-#Translations
-TRANSLATIONS    = pigale_fr.ts 
-translation.commands  =  $$MQTDIR/bin/lrelease pigale.pro
-QMAKE_EXTRA_TARGETS += translation
-
-#needed by ../makefile
-distdir.commands =
-QMAKE_EXTRA_TARGETS += distdir
-
-#Installation
-DESTDIR=$$DISTPATH/bin
-translations.files = pigale_fr.qm qt_fr.qm
-translations.path = $$DISTPATH/translations
-#INSTALLS += target translations
-INSTALLS += translations
-
-#Distribution
-DISTDIR=..
-DISTFILES += gnumakefile
+unix {
+      DESTDIR=.
+      # awk
+      awk.depends = ../incl/QT/Action_def.h FORCE
+      awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
+      QMAKE_EXTRA_TARGETS += awk
+      # Translations
+      TRANSLATIONS    = pigale_fr.ts 
+      translation.commands  =  $$MQTDIR/bin/lrelease pigale.pro
+      QMAKE_EXTRA_TARGETS += translation
+      # needed by ../makefile
+      distdir.commands =
+      QMAKE_EXTRA_TARGETS += distdir
+      # Installation
+      translations.files = pigale_fr.qm qt_fr.qm
+      translations.path = $$DISTPATH/translations
+      INSTALLS += translations
+      # Distribution
+      DISTDIR=..
+      DISTFILES += gnumakefile
+      depends += awk
+      message(extra target $$QMAKE_EXTRA_TARGETS) 
+}
 
 
-depends += awk
 contains(ENABLE_STATIC,"yes") {
   message(creating $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
-}else {
+  #message(using libraries:$$LIBS)
+} else {
   message(creating $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+  #message(using libraries:$$LIBS)
 }
