@@ -29,6 +29,11 @@
 //#include <QStyle>
 #include <qstyle.h>
 
+#ifdef _WIN32
+#undef PACKAGE_PATH
+#define PACKAGE_PATH ".."
+#endif
+
 void InitPigaleColors();
 
 int main(int argc,char * argv[])
@@ -39,7 +44,7 @@ int main(int argc,char * argv[])
   // Set the colors of tha application
   InitPigaleColors();
   //Translations
-#ifdef _WINDOWS
+#ifdef _WINDOWS 
   QString transDict= QString(".")+ QDir::separator();
 #else
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();

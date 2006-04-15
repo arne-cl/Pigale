@@ -1,5 +1,18 @@
-include(../pigale.inc)
 TEMPLATE = lib
+
+win32 {
+MQTDIR=C:\Qt\4.1.2\
+MODE = release
+ENABLE_STATIC=yes
+DISTPATH=g:\pigale4\Pigale
+ENABLE_STATIC=yes
+DEFINES += MINGW _WINDOWS
+DESTDIR=.
+ }else{
+include(../pigale.inc)
+}
+
+
 INCLUDEPATH = ../incl;../incl/TAXI
 DEPENDPATH = ../incl/TAXI
 SOURCES =\
@@ -62,18 +75,22 @@ contains(ENABLE_STATIC,"yes") {
  CONFIG += static
 }
 
+
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
     DEFINES += TDEBUG
     unix:OBJECTS_DIR = ./.odb
+    win32:OBJECTS_DIR = ./odb
     }else {
     TARGET = tgraph
     unix:OBJECTS_DIR = ./.opt
+    win32:OBJECTS_DIR = ./opt
     }
-
-distdir.commands =
-QMAKE_EXTRA_TARGETS += distdir
-DESTDIR=$$DISTPATH/lib
+unix {
+     distdir.commands =
+     QMAKE_EXTRA_TARGETS += distdir
+     DESTDIR=$$DISTPATH/lib
+}
 
 contains(ENABLE_STATIC,"yes") {
   message(creating the static library $$TARGET version:$$VERSION ($$OBJECTS_DIR))

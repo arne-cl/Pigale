@@ -26,10 +26,10 @@ Should always be possible to restore 1
 */
 
 //static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
-#ifndef _WINDOWS
-static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
-#else
+#if _WINDOWS || _WIN32
 static char undofile[L_tmpnam] = "_undo.tgf" ;
+#else
+static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
 #endif
 
 void pigaleWindow::UndoInit()
