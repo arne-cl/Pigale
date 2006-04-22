@@ -12,28 +12,15 @@
 #ifndef GRAPH_PROPERTIES_H
 #define GRAPH_PROPERTIES_H
 
-#include <qvariant.h>
-#include <qwidget.h>
 #include <qradiobutton.h>
 #include <qmenubar.h>
+#include <qwidget.h>
+#include <qlineedit.h>
 #include <QT/Action_def.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
-//#include <QMouseEvent>
-#include <Q3HBoxLayout>
-//#include <QLabel>
-#include <qlabel.h>
-#include <Q3GridLayout>
 #include <TAXI/Tsvector.h>
 #include <TAXI/graph.h>
 
-class Q3VBoxLayout; 
-class Q3HBoxLayout; 
-class Q3GridLayout; 
-class QLabel;
-class QLineEdit;
-class QRadioButton;
- 
+class pigaleWindow;
 
 class RoRadioButton : public QRadioButton
 { 
@@ -93,6 +80,7 @@ public slots:
   void MaxNDisplayChanged(int i);
 
 private:
+  pigaleWindow * mw; 
   QMenuBar *menu;
   svector<bool> allow;
   bool _updateMenu;

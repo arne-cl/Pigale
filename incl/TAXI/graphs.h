@@ -178,20 +178,22 @@ public :
     bool DebugCir();
     int NumberOfConnectedComponents()
         {svector<int> comp(1,nv()); return BFS(comp);}
-    int DFS(svector<tvertex> &nvin,svector<tbrin> &tb, svector<int>
-            &dfsnum, const tbrin &b0=tbrin(1)) 
-        {cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
-        const svector<tbrin> &rcir = cir;
-        int ret=me().GDFS(rcir,nvin,tb,dfsnum);
-        cir[0] = 0; cir[acir[0]] = b0; acir[0] = 0;
-        return ret;
-        }
-    int DFS(svector<tvertex> &nvin,const tbrin &b0=tbrin(1))
-        {int n = nv();
-        svector<tbrin> tb(0,n);
-        svector<int> dfsnum(0,n);
-        return DFS(nvin,tb,dfsnum,b0);
-        }
+    int DFS(svector<tvertex> &nvin,svector<tbrin> &tb, svector<int> &dfsnum,tbrin b0 = tbrin(1));
+    int DFS(svector<tvertex> &nvin,tbrin b0 = tbrin(1));
+//     int DFS(svector<tvertex> &nvin,svector<tbrin> &tb, svector<int>
+//             &dfsnum, const tbrin &b0=tbrin(1)) 
+//         {cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
+//         const svector<tbrin> &rcir = cir;
+//         int ret=me().GDFS(rcir,nvin,tb,dfsnum);
+//         cir[0] = 0; cir[acir[0]] = b0; acir[0] = 0;
+//         return ret;
+//         }
+//     int DFS(svector<tvertex> &nvin,const tbrin &b0=tbrin(1))
+//         {int n = nv();
+//         svector<tbrin> tb(0,n);      tb.SetName("DFS:tb");
+//         svector<int> dfsnum(0,n);    dfsnum.SetName("DFS:dfsnum");
+//         return DFS(nvin,tb,dfsnum,b0);
+//         }
     // in DFS.cpp
     int DFSRenum(svector<tvertex> &nvin, svector<tedge> &ie,tbrin b0=tbrin(1));
     

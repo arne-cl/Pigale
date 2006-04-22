@@ -30,14 +30,7 @@
 #include <q3paintdevicemetrics.h> 
 #include <qapplication.h> 
 #include <qinputdialog.h> 
-//Added by qt3to4:
-// #include <QWheelEvent>
-// #include <QPaintEvent>
-// #include <QHideEvent>
-// #include <QKeyEvent>
-// #include <QShowEvent>
-// #include <QResizeEvent>
-// #include <QMouseEvent>
+
 
 //A QCanvasView is widget which provides a view of a QCanvas
 GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent,const char* name, Qt::WFlags f)

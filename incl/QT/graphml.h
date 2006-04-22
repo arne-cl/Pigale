@@ -1,8 +1,6 @@
 #ifndef XGRAPHML_H
 #define XGRAPHML_H   
 
-
-
 #include <qxml.h>
 
 #if QT_VERSION >= 0x40000

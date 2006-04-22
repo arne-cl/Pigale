@@ -111,6 +111,7 @@ private slots:
   void spinN1Changed(int val);
   void spinN2Changed(int val);
   void spinMChanged(int val);
+  void spinDelayChanged(int val);
   void EditPigaleColors();
   void SetPigaleColorsProfile1(); 
   void SetPigaleColorsProfile2(); 
@@ -160,7 +161,7 @@ public:
   int publicSave(QString filename);
   void setUserMenu(int i, const QString &txt);
   void setShowOrientation(bool val);
-  int  getResultHandler(int value = 0);
+  int &  getResultHandler();
   int getId(QAction *action);
 public:
   QActionGroup *menuActions;
@@ -191,6 +192,7 @@ public:
   ClientSocket *threadServer;
   int MaxNS,MaxND;
   int GraphIndex1;
+  int pigaleThreadRet;
 private:
   PigaleThread pigaleThread;
   QToolBar *tb;
@@ -210,11 +212,16 @@ private:
   int macroRepeat;
   int PrinterOrientation,PrinterColorMode;
   bool IsUndoEnable;
+  svector<int> MacroActions;
+  bool EditNeedUpdate;
+  bool InfoNeedUpdate;
+  int MacroNumActions;
   bool MacroRecording;
   bool MacroLooping;
   bool MacroExecuting;
   bool MacroWait;
   bool MacroPlay;
+  int _key;
   bool Server;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActionsString;

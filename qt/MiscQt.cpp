@@ -120,7 +120,7 @@ QColor Desaturate(QColor & col)
 class QtGraphDebug : public GraphDebug 
 { public:
   QtGraphDebug() {GraphDebug::gd=this;}
-  void DrawGraph(Graph &G) {}
+  void DrawGraph(Graph &) {}
   void DrawGraph()
     {if(!mw)return;
     mw->postDrawG();

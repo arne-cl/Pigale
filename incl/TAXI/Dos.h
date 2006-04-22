@@ -89,7 +89,7 @@ public:
     //             0 si v = w (ou erreur)
     int GetSide(tvertex v,tvertex w,tbrin b0)
         {tedge ev=treein[v].GetEdge();
-        tedge ew=treein[v].GetEdge();
+        tedge ew=treein[w].GetEdge();
         int iv1=OldToNew(Index(First(ev)),b0);
         int iv2=OldToNew(Index(Second(ev)),b0);
         int iw1=OldToNew(Index(First(ew)),b0);

@@ -15,7 +15,7 @@
 
 class GraphDebug {
  public:
-  virtual void DrawGraph(Graph &G) {}
+  virtual void DrawGraph(Graph &) {}
   virtual void DrawGraph(void) {}
   virtual int wait(const char *) {return 0;}
   virtual void clear(void) {}

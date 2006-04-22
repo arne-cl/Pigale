@@ -104,6 +104,10 @@ pigaleWindow::pigaleWindow()
     ,MacroExecuting(false),MacroPlay(false),Server(false)
     
   {setError();// Initialize Error
+  // Macros
+  MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
+  MacroNumActions = 0;
+  _key = 0;
 #ifdef _WINDOWS
    initGraphDebug();// as the compiler does not initialize static ...
 #endif
@@ -223,6 +227,7 @@ pigaleWindow::pigaleWindow()
   connect(spin_M,SIGNAL(valueChanged(int)),SLOT(spinMChanged(int)));
   // Macro
   macroSpin = new QSpinBox(0,60,1,0,"macroDelaySpin");  macroSpin->setValue(pauseDelay());
+  connect(macroSpin,SIGNAL(valueChanged(int)),SLOT(spinDelayChanged(int)));
   macroLine = new LineEditNum(0,"macroLineEditNum");
   int macroMul = macroRepeat/100;
   int macroNum = macroMul ? macroRepeat/(macroMul*100) : macroRepeat;
@@ -525,7 +530,7 @@ pigaleWindow::pigaleWindow()
   action->setWhatsThis(tr(tutte_circle_txt));
   setId(action,A_EMBED_TUTTE_CIRCLE);
  embed->addSeparator();
-#if VERSION_ALPHA
+#ifdef VERSION_ALPHA
   action = embed->addAction(tr("Double Occurrence (&DFS)")); 
   setId(action, A_EMBED_POLREC_DFS);
 #endif
@@ -533,7 +538,7 @@ pigaleWindow::pigaleWindow()
   setId(action, A_EMBED_POLREC_DFSLR);  
   action = embed->addAction(tr("Double Occurrence (&BFS)")); 
   setId(action, A_EMBED_POLREC_BFS);
-#if VERSION_ALPHA
+#ifdef VERSION_ALPHA
   action = embed->addAction(tr("Double Occurrence &Cir (&BFS)")); 
   setId(action, A_EMBED_POLAR);
 #endif
@@ -552,7 +557,7 @@ pigaleWindow::pigaleWindow()
   action = embed->addAction(xmanIcon,tr("Spring (Map &Preserving)")); 
   action->setWhatsThis(tr(springPM_txt));  
   setId(action,A_EMBED_SPRING_PM);
-#if VERSION_ALPHA
+#ifdef VERSION_ALPHA
   action = embed->addAction(xmanIcon,tr("Spring Planar")); 
   action->setWhatsThis(tr(jacquard_txt));  
   setId(action,A_EMBED_JACQUARD);
@@ -677,14 +682,14 @@ pigaleWindow::pigaleWindow()
  
 
   //Resize
-#if TDEBUG
+#ifdef TDEBUG
   setCaption(tr("Qt4 Pigale Editor ")+PACKAGE_VERSION+" "+tr("Debug Mode"));
 #else
   setCaption(tr("Qt4 Pigale Editor ")+PACKAGE_VERSION);
 #endif
 
   resize(pigaleWindowInitXsize,pigaleWindowInitYsize);
-  QRect rect_status(0,0,pigaleWindowInitXsize/2,30);
+  QRect rect_status(0,0,pigaleWindowInitXsize*2/3,30);
   progressBar->setGeometry(rect_status); 
   
   QPalette Palette1; 
@@ -761,6 +766,8 @@ void pigaleWindow::spinN2Changed(int val)
   {Gen_N2 = val;}
 void pigaleWindow::spinMChanged(int val)
   {Gen_M = val;}
+void pigaleWindow::spinDelayChanged(int val)
+  {pauseDelay() = val;}
 void  pigaleWindow::distOption(int use)
   {useDistance() = use;
   }

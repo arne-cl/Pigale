@@ -12,7 +12,7 @@
 
 #ifndef _TIME_H_INCLUDED_
 #define _TIME_H_INCLUDED_
-#if (__GNUC__)
+#if defined(__GNUC__)
 #include <sys/time.h>
 
 class Timer

@@ -1,5 +1,5 @@
 /****************************************************************************
-** $Id: graphml.cpp,v 1.4 2006/04/07 15:39:12 hbonnin Exp $
+** $Id: graphml.cpp,v 1.5 2006/04/22 18:36:54 hbonnin Exp $
 **
 ** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
 **
@@ -85,7 +85,7 @@ int Taxi_FileIOGraphml::GetNumRecords(tstring fname)
     return n;
   }
 
-tstring Taxi_FileIOGraphml::Title(tstring fname,int index)
+tstring Taxi_FileIOGraphml::Title(tstring fname,int)
   {
     GraphmlReaderInfo &xreader= *new GraphmlReaderInfo();
     if (!CallParse(fname,xreader)) return "???";

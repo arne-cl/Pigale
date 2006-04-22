@@ -18,13 +18,8 @@
 #include <QT/GLWindow.h>
 #include <QT/Misc.h>
 #include <QT/pigaleQcolors.h>
-//Added by qt3to4:
-// #include <QPaintEvent>
-// #include <QHideEvent>
 #include <Q3Frame>
-// #include <QShowEvent>
 #include <Q3HBoxLayout>
-// #include <QResizeEvent>
 #include <Q3VBoxLayout>
 #include <TAXI/netcut.h>
 
@@ -53,7 +48,11 @@ class GraphGLPrivate
       editor = 0;
       idelay = 1;
       edge_width = 2.;  // -> *2 
+#ifdef HAVE_LIBGLUT
       vertex_width = 1.;// -> *5
+#else
+      vertex_width = .4;// -> *5
+#endif
       }
   ~GraphGLPrivate()
       {delete editor; delete pSG; delete pGC;}
@@ -175,11 +174,7 @@ int GraphGL::update()
   //if (res!=0) return res;
   d->bt_facet->setEnabled(d->embed().facets);
   d->mw->tabWidget->showPage(this);
-#if QT_VERSION < 300
-  d->mw->tabWidget->changeTab(this,"3-d Embedding");
-#else
   d->mw->tabWidget->setTabLabel(this,"3-d Embedding");
-#endif
   spin_X->setMinValue(0);   spin_Y->setMinValue(0);   spin_Z->setMinValue(0);
   spin_X->setMaxValue(d->embed().dmax);  spin_Y->setMaxValue(d->embed().dmax);  spin_Z->setMaxValue(d->embed().dmax);
   spin_X->setValue(1);  spin_Y->setValue(2);  spin_Z->setValue(3);
@@ -198,7 +193,7 @@ void GraphGL::Reload()
   {//if Qt < 3.0 Reload(int i =0) does not work
   d->editor->initialize(false);
   }
-void GraphGL::Reload(int i)
+void GraphGL::Reload(int )
   {//if(i == 0){d->editor->initialize(false);return;}
   RnEmbedding &em = d->embed();
   int i1 = spin_X->value(); i1 = Min(i1,em.dmax);
@@ -323,15 +318,20 @@ GLuint GLWindow::load(bool init)
   glEnd();
   glColor3f(1.,1.,.0);
   if(WithFaces)loadFaces();
+  double dss = ds;
+#ifndef HAVE_LIBGLUT
+  dss = .025/2;
+#endif
+  drawCube(.0,.0,.0, .5*dss);
 
-  drawCube(.0,.0,.0, .5*ds);
   if(glp->bt_color->isChecked())
       for(tvertex  v = 1;v <= G.nv();v++)
-          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds,color[G.vcolor[v]]);
+          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),dss,color[G.vcolor[v]]);
   else
       for(tvertex  v = 1;v <= G.nv();v++)
-          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
+          drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),dss);
   
+
   if(glp->bt_label->isChecked())
       {glLineWidth(1.0);
       for(tvertex  v = 1;v <= G.nv();v++)
@@ -388,6 +388,9 @@ void GLWindow::animate()
   if(glp->rX)xRot -= 1.5;
   if(glp->rY)yRot -= 1.5;
   if(glp->rZ)zRot -= 1.5;
+//   if(glp->rX){xRot -= 1.5;yRot = zRot = .0;}
+//   if(glp->rY){yRot -= 1.5;zRot = xRot = .0;}
+//   if(glp->rZ){zRot -= 1.5;yRot = xRot = .0;}
   updateGL();
   }
 void GLWindow::paintGL()
@@ -396,7 +399,7 @@ void GLWindow::paintGL()
   glLoadIdentity();
   transform();
   glCallList(object);
-//   cout <<"x:"<< xRot <<" y:"<<yRot<<" z:"<<zRot<<endl;
+  //cout <<"x:"<< xRot <<" y:"<<yRot<<" z:"<<zRot<<endl;
 //   cout << "z: "<<zTrans<<endl;
   }
 void GLWindow::paintEvent(QPaintEvent *e)
@@ -431,6 +434,7 @@ void GLWindow::resizeGL(int w,int h)
   }
 void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {GLfloat sat = .1  ;
+
   glColor3f(sat,sat,1.);
   glBegin(GL_POLYGON);//bas
   glVertex3f(x-size,y-size,z-size);
@@ -618,13 +622,14 @@ void GLWindow::drawText(void * font,const char *txt)
 #else
 void GLWindow::drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {QFont fnt = QFont("sans");
-  fnt.setPixelSize(20);
+  fnt.setStyleStrategy(QFont::OpenGLCompatible); 
+  fnt.setPixelSize(14);
   QString t =  getVertexLabel(glp->GC(),v);
   if(t.isEmpty())return;
   qglColor(Qt::red);
   glPushMatrix();
   glPushMatrix();
-  glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
+  glTranslatef(x+size*.7,y,z);//glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
   renderText(.0,.0,.0,t,fnt);
   glPopMatrix();
   glPopMatrix();

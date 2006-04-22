@@ -28,12 +28,12 @@ class Taxi_FileIO;
 class Taxi_FileIO {
  public:
   static void reg(Taxi_FileIO *,int where=-1);
-  virtual int IsMine(tstring fname) {return 0;}
-  virtual int Save(GraphAccess& G,tstring fname) {return -1;}
-  virtual int Read(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex) {return -1;}
-  virtual tstring Title(tstring fname, int index) {return "No title";};
-  virtual int GetNumRecords(tstring fname) {return 1;}
-  virtual int DeleteRecord(tstring fname,int index) {return -1;}
+  virtual int IsMine(tstring ) {return 0;}
+  virtual int Save(GraphAccess& ,tstring ) {return -1;}
+  virtual int Read(GraphContainer& ,tstring ,int& ,int& ) {return -1;}
+  virtual tstring Title(tstring , int ) {return "No title";};
+  virtual int GetNumRecords(tstring ) {return 1;}
+  virtual int DeleteRecord(tstring ,int ) {return -1;}
   virtual int Capabilities(void) { return 0;}
   virtual const char *Name(void) {return "No Name";}
   virtual const char *Ext(void) {return "";}
@@ -110,7 +110,7 @@ class Taxi_FileIO_ASCII : public Taxi_FileIO
   {NumRecords=1; GraphIndex=1; return ReadGraphAscii(G,fname);}
   //int GetNumRecords(tstring fname) {return 1;}
   //int DeleteRecord(tstring fname,int index) {return -1;}
-  tstring Title(tstring fname, int index) {return ReadAsciiGraphTitle(fname);};
+  tstring Title(tstring fname, int ) {return ReadAsciiGraphTitle(fname);};
   int Capabilities(void) { return TAXI_FILE_MINI;}
   const char *Name(void) {return "Ascii file";}
   const char *Ext(void) {return "txt";}

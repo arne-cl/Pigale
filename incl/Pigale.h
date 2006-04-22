@@ -67,4 +67,8 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
 GraphContainer *GenerateRandomOuterplanarGraph(int n);
 GraphContainer *GenerateRandomOuterplanarGraph(int n,int m);
 
+// random
+void shuffleCir(TopologicalGraph &G);
+
+
 #endif

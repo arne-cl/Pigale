@@ -34,13 +34,6 @@
 
 #include <TAXI/Tgf.h> 
 
-static TSArray<int> MacroActions(0,4);
-//static TSArray<int> ,MacroEwidth(0,4);
-//static TSArray<short> MacroVcolor(0,4),MacroEcolor(0,4);
-static int MacroNumActions = 0;
-bool EditNeedUpdate;
-bool InfoNeedUpdate;
-static int key = 0;
 
 class eventEater : public QObject
 {public:
@@ -50,7 +43,7 @@ protected:
   bool eventFilter(QObject *o,QEvent *e);
 };
 
-bool eventEater::eventFilter(QObject *o,QEvent *e)
+bool eventEater::eventFilter(QObject *,QEvent *e)
   {if(e->type() == QEvent::MouseButtonPress) return TRUE; // eat event
     return FALSE;
     }
@@ -59,14 +52,14 @@ int & pauseDelay()
   return delay;
   }
 void pigaleWindow::keyPressEvent(QKeyEvent *k)
-  {key = k->key();
+  {_key = k->key();
 //   qDebug("pigaleWindow::hasFocus %d",hasFocus());
 //   qDebug("pigaleWindow::key_pressed=%d",k->key());
   }
 int pigaleWindow::getKey()
-  {int key0 = key;
+  {int key0 = _key;
   if(key0 == Qt::Key_Escape && MacroLooping)MacroLooping = false;
-  key = 0;
+  _key = 0;
   return key0;
   }
 void pigaleWindow::blockInput(bool t)
@@ -93,7 +86,7 @@ void pigaleWindow::blockInput(bool t)
 void pigaleWindow::timerWait()
   {MacroWait = false;
   }
-void pigaleWindow::wait(int millisec)
+void pigaleWindow::wait(int millisec)// not used
   {MacroWait = true;
   QTimer::singleShot(millisec,this,SLOT(timerWait()));
   do
@@ -154,7 +147,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
   QTime t0;
   QString msg0,msg1;
   int repeat0,record;
-  int event = qaction->data().toInt();
+  int event = getId(qaction);
   switch(event)
       {case 1://start recording
           if(debug())LogPrintf("\nRecord macro\n");
@@ -270,7 +263,7 @@ void pigaleWindow::macroPlay()
 //  MacroExecuting = true => handler does not update of the editor
   {if(MacroNumActions == 0)return;
   blockInput(true);
-  if(!MacroLooping){postMessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
+  if(!MacroLooping){postMessageClear();DebugPrintf("\nPlay macro:%d actions\n",MacroNumActions);}
   int ret_handler = 0,action;
   EditNeedUpdate =  InfoNeedUpdate = true;
   MacroExecuting = true;
@@ -279,19 +272,32 @@ void pigaleWindow::macroPlay()
   // Load next graph 
   if(MacroActions[1] < A_GENERATE || MacroActions[1] >  A_GENERATE_END)
       load(1); 
-  
   for(int record = 1;record <= MacroNumActions;++record)
       {action = MacroActions[record];
-      //macroDefColors(record);
-      if(action != A_PAUSE && !graph_properties->actionAllowed(action))
-          {if(debug()) LogPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
+      if(action != A_PAUSE && action < A_TEST && !graph_properties->actionAllowed(action))
+          {if(debug())
+              {DebugPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
+              InfoNeedUpdate = false; // do not hide the error message 
+              blockInput(false);
+              return;
+              }
           ++record;continue;
           }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
       // Execute the macro
       handler(action);
-      ret_handler = getResultHandler();
-      if(ret_handler == 1)
+      if(action ==  A_PAUSE)
+          {do
+              {qApp->processEvents();
+              if(getKey() == Qt::Key_Escape)break;
+              }while(MacroWait);
+          continue;
+          }
+      while((ret_handler = getResultHandler()) == -999)
+          qApp->processEvents();
+      if(ret_handler == 0)
+          InfoNeedUpdate = EditNeedUpdate = false;
+      else if(ret_handler == 1)
           InfoNeedUpdate = true;
       else if(ret_handler == 2)
           InfoNeedUpdate = EditNeedUpdate = true;
@@ -315,9 +321,6 @@ void pigaleWindow::macroPlay()
           InfoNeedUpdate = false; // do not hide the error message
           break;
           }
-      do
-          {qApp->processEvents();
-          }while(MacroWait);
       }
 
   MacroWait = MacroExecuting = false;

@@ -19,8 +19,11 @@ win32 {
       message(configuring for Linux in $$DESTDIR)
       }
 
-INCLUDEPATH = ../incl;../incl/TAXI;../incl/QT 
+
+QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
+INCLUDEPATH = ../incl
 DEPENDPATH = ../incl
+
 HEADERS = pigaleWindow.h \
     ClientSocket.h \
     glcontrolwidget.h \
@@ -57,19 +60,18 @@ SOURCES = main.cpp \
     Settings.cpp \
     Test.cpp
 
-CONFIG += qt thread $$MODE warn_off
+CONFIG += qt thread $$MODE
 
 CONFIG(debug, debug|release) {
     TARGET = pigale_debug
     DEFINES += TDEBUG
+    unix:OBJECTS_DIR = ./.odb
+    win32:OBJECTS_DIR = ./odb
+    message(qt: $$QMAKE_CXXFLAGS_DEBUG)
     contains(ENABLE_STATIC,"yes")  {
-          #message(debug static)	
-          unix:OBJECTS_DIR = ./.odb
-          win32:OBJECTS_DIR = ./odb
           unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
           win32:LIBS +=../tgraph/release/libtgraph.a 
           }  else  {
-	  #message(debug dynamic)	
           unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
           win32:LIBS += -Wl,-rpath ../tgraph/release -L../tgraph/$$Mode -l tgraph 
           }
@@ -77,12 +79,11 @@ CONFIG(debug, debug|release) {
     TARGET = pigale
     unix:OBJECTS_DIR = ./.opt
     win32:OBJECTS_DIR = ./opt
+    message(qt: $$QMAKE_CXXFLAGS_RELEASE)
     contains(ENABLE_STATIC,"yes")  {
-        #message(opt static)
         unix:LIBS += $$DISTPATH/lib/libtgraph.a
         win32:LIBS +=../tgraph/release/libtgraph.a 
         } else  {
-        #message(opt dynamic)
         unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
         win32:LIBS += -Wl,-rpath ../tgraph/$$release -L../tgraph/release -l tgraph 
         }

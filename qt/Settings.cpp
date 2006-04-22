@@ -40,10 +40,10 @@
 #include "GraphGL.h"
 #include "GraphSym.h"
 
-#if _WIN32
+#ifdef _WIN32
 #undef PACKAGE_PATH
 #define PACKAGE_PATH ".."
-#elif _WINDOWS
+#elif defined(_WINDOWS)
 #undef PACKAGE_PATH
 #define PACKAGE_PATH "c:\\Program Files\\Pigale"
 #endif
@@ -162,7 +162,7 @@ void pigaleWindow::LoadSettings()
   SchnyderColor() = setting.readBoolEntry("/pigale/embed/schnyder color",false);
   useDistance() = setting.readNumEntry("/pigale/embed/distance dist",4);
   // Macro
-  pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",5);
+  pauseDelay() = setting.readNumEntry("/pigale/macro/macroDelay macroDelay",1);
   macroRepeat = setting.readNumEntry("/pigale/macro/macroRepeat macroRepeat",100);
   // Generator
   Gen_N1 = setting.readNumEntry("/pigale/generate/gen N1",10);

@@ -6,7 +6,6 @@ MODE = release
 DISTPATH = /home/pigale/pigale
 AWK = gawk
 ENABLE_STATIC = no
+QMAKE_CXXFLAGS_RELEASE =  -march=i686
 
-unix {
-     QMAKE_CXXFLAGS_RELEASE += -march=i686 -O3 -fomit-frame-pointer 
-}
+

@@ -6,7 +6,6 @@ MODE = @DEBUG@
 DISTPATH = @PPATH@
 AWK = @AWK@
 ENABLE_STATIC = @enable_static@
+QMAKE_CXXFLAGS_RELEASE =  @CPU@
 
-unix {
-     QMAKE_CXXFLAGS_RELEASE += @CPU@ -O3 -fomit-frame-pointer 
-}
+

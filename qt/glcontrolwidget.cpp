@@ -82,15 +82,18 @@ void GLControlWidget::mouseMoveEvent( QMouseEvent *e )
   oldPos = e->pos();
   double rx = dx / width();
   double ry = dy / height();
-
+  
+  //bool Shift    =  e->modifiers() == Qt::ShiftModifier;
   if(e->state() == Qt::LeftButton)
       setRotationImpulse(ry,rx,0);
+  else if(e->state() == (Qt::LeftButton | Qt::ShiftButton ))
+      setRotationImpulse(0,ry,rx);
   else if(e->state() == Qt::RightButton)
       setRotationImpulse(ry,0,rx);
+  // translations
   else if( e->state() == Qt::MidButton )
       setTranslationImpulse(rx,ry,0);
-  //else if( e->state() == (LeftButton | RightButton ))
-  else if( e->state() == (Qt::MidButton | Qt::ShiftButton ))
+  else if( e->state() == (Qt::MidButton | Qt::ShiftButton ) || (Qt::RightButton | Qt::ShiftButton ))
       setTranslationImpulse(rx,0,ry );
   }
 void GLControlWidget::wheelEvent(QWheelEvent *e)

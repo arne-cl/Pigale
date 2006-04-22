@@ -19,21 +19,19 @@ inline double abs(double x) {if(x>=0) return x; else return -x;}
 static int Test1(GraphContainer &GC,int &drawing);
 static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
-#if VERSION_ALPHA
+
 void pigaleWindow:: initMenuTest()
   {
-  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x) ");
+#ifdef VERSION_ALPHA
+  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (100x) ");
   setUserMenu(2,"1000xNewPlanarity");
   setUserMenu(3,"Test planarity algos");
-  }
 #else
-void pigaleWindow:: initMenuTest()
-  {
-  setUserMenu(1,"1000xTestPlanar");
-  setUserMenu(2,"1000xTestPlanar2");
+  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x)");
+  setUserMenu(2,"1000xTesNewtPlanarity");
   setUserMenu(3,"Properties");
-  }
 #endif
+  }
 int Test(GraphContainer &GC,int action,int &drawing)
   {//cout <<"test:"<<action<<endl;
   if(debug())DebugPrintf("Executing Test:%d",action);
@@ -44,51 +42,34 @@ int Test(GraphContainer &GC,int action,int &drawing)
   if(debug())DebugPrintf("    END executing Test:%d",action);
   return ret;
   }
-/******************************************************************************************************/
-/******************************************************************************************************/
-#if VERSION_ALPHA
 
-void shuffleCir(TopologicalGraph &G)
-  {for(tvertex v = 1; v < G.nv();v++)
-      {int degree = G.Degree(v);
-      if(degree < 3)continue;
-      svector<int> tab(degree);
-      tbrin e0 = G.pbrin[v];
-      tbrin e = e0;
-      int d = 0;
-      do
-          {tab[d++] = e();
-          }while((e = G.cir[e]) != e0);
-      randomShuffle(tab);
-      for(d = 0;d < degree-1;d++)
-          G.cir[tab[d]] = (tbrin)tab[d+1];
-      G.cir[tab[degree-1]] = (tbrin)tab[0];
-      G.pbrin[v] = (tbrin)tab[0];
-      }
-  // Compute acir
-  for(tbrin b = -G.ne(); b<= G.ne(); b++)
-      G.acir[G.cir[b]] = b;
-  }
 int Test1(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-  shuffleCir(G);
+  {drawing = 0;
+  TopologicalGraph G(GC);
   QTime timer;timer.start();
-  for(int i = 0;i < 1000;i++)G.TestPlanar();
-  double Time1 = timer.elapsed()/1000.;
-  //cout <<"Time1: "<<Time<<endl;
+  for(int i = 0;i < 100;i++){shuffleCir(G);G.TestPlanar();}
+  double Time1 = timer.elapsed(); // millisec
+  if(Time1 < 10)
+      {Tprintf("too short time to measure");
+      return 0;
+      }
   timer.start();
-  for(int i = 0;i < 1000;i++)G.TestNewPlanar();
-  double Time2 = timer.elapsed()/1000.;
-  //cout <<"Time2: "<<Time<<endl;
-  cout<<"%: "<<100 - 100*Time2/Time1 <<endl;
+  for(int i = 0;i < 100;i++){shuffleCir(G);G.TestNewPlanar();}
+  double Time2 = timer.elapsed();
+  Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
   return 0;
   }
 int Test2(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
   shuffleCir(G);
   for(int i = 0;i < 1000;i++)G.TestNewPlanar();
+  drawing = 0;
   return 0;
   }
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+#ifdef VERSION_ALPHA
 int Test3(GraphContainer &GC,int &drawing)
   {drawing = 0;
   TopologicalGraph G(GC);
@@ -112,16 +93,6 @@ int Test3(GraphContainer &GC,int &drawing)
   return 2;
   }
 #else 
-int Test1(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-  for(int i = 0;i < 1000;i++)G.TestPlanar();
-  return 0;
-  }
-int Test2(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
-  for(int i = 0;i < 1000;i++)G.TestPlanar2();
-  return 0;
-  }
 
 int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.

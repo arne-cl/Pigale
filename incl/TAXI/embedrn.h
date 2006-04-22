@@ -86,7 +86,7 @@ struct RnEmbeddingPtr
 {
   RnEmbedding *ptr;
   RnEmbeddingPtr() : ptr(0) {}
-  RnEmbeddingPtr(const RnEmbeddingPtr &p) : ptr(0) {} // no copy!
+  RnEmbeddingPtr(const RnEmbeddingPtr &) : ptr(0) {} // no copy!
   ~RnEmbeddingPtr() { if (ptr!=0) delete ptr;}
 };
 T_STD  ostream& operator <<(T_STD  ostream &os,const RnEmbeddingPtr &x);
