@@ -15,6 +15,19 @@
 #include <TAXI/bicon.h>
 #include <TAXI/color.h>
 
+int TopologicalGraph::DFS(svector<tvertex> &nvin,svector<tbrin> &tb,svector<int> &dfsnum,tbrin b0) 
+  {cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
+  const svector<tbrin> &rcir = cir;
+  int ret=me().GDFS(rcir,nvin,tb,dfsnum);
+  cir[0] = 0;  cir[acir[0]] = b0; acir[0] = 0; // restitute cir
+  return ret;
+  }
+int TopologicalGraph:: DFS(svector<tvertex> &nvin,tbrin b0)
+  {int n = nv();
+  svector<tbrin> tb(0,n);      tb.SetName("DFS:tb");
+  svector<int> dfsnum(0,n);    dfsnum.SetName("DFS:dfsnum");
+  return DFS(nvin,tb,dfsnum,b0);
+  }
 int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   {if(debug())DebugPrintf("Executing Graph:GDFSRenum");
   Prop<tbrin> iel (PE(),PROP_LABEL);
@@ -184,8 +197,8 @@ void Graph::PrepDFS(svector<tbrin> &cir,tbrin b0)
   int i;
   int n = nv();
   int m = ne();
-  svector<tbrin> pb(0,n); pb.clear();
-  svector<tbrin> db(0,n);
+  svector<tbrin> pb(0,n); pb.clear(); pb.SetName("DFS:PrepDFS:pb");
+  svector<tbrin> db(0,n); db.SetName("DFS:PrepDFS:db");
 
   for (i=1; i<=m; i++)
       {
@@ -211,8 +224,8 @@ int TopologicalGraph::DFSRenum(svector<tvertex> &nvin, svector<tedge> &ie, tbrin
   if(m < 1)return 0;
   tvertex v;
   cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
-  svector<tbrin> tb(0,n); tb.clear();
-  svector<int> dfsnum(0,n);
+  svector<tbrin> tb(0,n); tb.clear(); tb.SetName("DFS:DFSRenum:tb");
+  svector<int> dfsnum(0,n); dfsnum.SetName("DFS:DFSRenum:dfsnum");
 
   nvin[0]=0;
   tbrin b=b0;

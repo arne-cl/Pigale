@@ -172,7 +172,7 @@ void pigaleWindow::LoadSettings()
   randomUseGeneratedCir() = setting.readBoolEntry("/pigale/generate/gen UseGeneratedCir",true);
   //DirFile 
   DirFilePng = setting.readEntry("/pigale/png dir",".");
-  DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",".");
+  DirFileMacro = setting.readEntry("/pigale/macro/macroDir macroDir",QString(PACKAGE_PATH)+QDir::separator()+"macro");
   InputFileName = setting.readEntry("/pigale/TgfFile input",
                                     QString(QString(PACKAGE_PATH)+ QDir::separator() + "tgf"+QDir::separator()+ "a.tgf"));
   OutputFileName = setting.readEntry("/pigale/TgfFile output",InputFileName);

@@ -196,8 +196,8 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = tgraph qt ClientServer
-EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h incl/QT/*.h qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/gnumakefile qt/pigale_fr.ts qt/pigale_fr.qm gnumakefile ClientServer/*.h ClientServer/*.cpp ClientServer/gnumakefile ClientServer/client.pro ClientServer/Clientdata.txt gnumakefile runqmake.sh Doxyfile tgraph/*.cpp tgraph/tgraph.pro  tgraph/propname.awk 
-nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*)
+EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h incl/QT/*.h qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/gnumakefile qt/pigale_fr.ts qt/pigale_fr.qm gnumakefile ClientServer/*.h ClientServer/*.cpp ClientServer/gnumakefile ClientServer/client.pro ClientServer/Clientdata.txt gnumakefile runqmake.sh Doxyfile tgraph/*.cpp tgraph/tgraph.pro  tgraph/*.awk tgraph/gnumakefile macro/maxPlanar4Connex.mc
+nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*) macro/maxPlanar4Connex.mc
 all: all-recursive
 
 .SUFFIXES:
@@ -406,7 +406,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/incl $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
+	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/incl $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/macro $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

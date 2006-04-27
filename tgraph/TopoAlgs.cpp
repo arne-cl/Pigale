@@ -78,9 +78,9 @@ int TopologicalGraph::Simplify()
   int n = RemoveLoops();
   if(!ne()){Prop1<int> simple(Set(),PROP_SIMPLE);return n;}
   
-  svector<tedge>link(0,ne()); link.clear();
-  svector<tedge>top1(1,nv()); top1.clear();
-  svector<tedge>top2(1,nv()); top2.clear();
+  svector<tedge>link(0,ne()); link.clear(); link.SetName("TG:Simplify:link");
+  svector<tedge>top1(1,nv()); top1.clear(); top1.SetName("TG:Simplify:top1");
+  svector<tedge>top2(1,nv()); top2.clear(); top2.SetName("TG:Simplify:top2");
   tvertex u,v,w;
   tedge e,e0,next;
   //First sort with respect to biggest label
@@ -166,9 +166,9 @@ bool TopologicalGraph::CheckSimple()
   if(debug())DebugPrintf("Executing CheckSimple");
   if(!CheckNoLoops())return false;
   
-  svector<tedge>link(1,ne()); link.clear();
-  svector<tedge>top1(1,nv()); top1.clear();
-  svector<tedge>top2(1,nv()); top2.clear();
+  svector<tedge>link(1,ne()); link.clear(); link.SetName("CheckSimple:link");
+  svector<tedge>top1(1,nv()); top1.clear(); top1.SetName("CheckSimple:link");
+  svector<tedge>top2(1,nv()); top2.clear(); top2.SetName("CheckSimple:link");
   tvertex u,v,w;
   tedge e,next;
   //First sort with respect to biggest label
@@ -209,8 +209,7 @@ int TopologicalGraph::BFS(svector<int> &comp)
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
-  svector<tvertex> stack(1,nv());
-  stack.SetName("stack");
+  svector<tvertex> stack(1,nv()); stack.SetName("TG:BFS:stack");
   int rank =0;
   int max_rank = 0;
   tvertex v0 = 1;
@@ -247,8 +246,8 @@ int TopologicalGraph::MakeConnectedVertex()
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
-  svector<tvertex> stack(1,nv()); stack.SetName("stack");
-  svector<tvertex> comp(0,nv()+1); comp.clear(); comp.SetName("Comp");
+  svector<tvertex> stack(1,nv()); stack.SetName("TP:stack");
+  svector<tvertex> comp(0,nv()+1); comp.clear(); comp.SetName("TP:Comp");
   int rank =0;
   int max_rank = 0;
   tvertex v0 = 1;
@@ -314,8 +313,8 @@ int TopologicalGraph::MakeConnected(bool mark_cc)
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
-  svector<tvertex> stack(1,nv()); stack.SetName("stack");
-  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("Comp");
+  svector<tvertex> stack(1,nv()); stack.SetName("TP:makecon:stack");
+  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("TP:makecon:Comp");
   int rank =0;
   int max_rank = 0;
   tvertex v0 = 1;
@@ -360,8 +359,8 @@ int TopologicalGraph::ColorConnectedComponents()
   tvertex v,w;
   tbrin b,b0;
   int ncc = 0;
-  svector<tvertex> stack(1,nv()); stack.SetName("stack");
-  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("Comp");
+  svector<tvertex> stack(1,nv()); stack.SetName("TP:color:stack");
+  svector<tvertex> comp(0,nv()); comp.clear(); comp.SetName("TP:color:Comp");
   Prop<short> vcolor(Set(tvertex()),PROP_COLOR);
   int rank =0;
   int max_rank = 0;
@@ -722,7 +721,7 @@ int TopologicalGraph::_VertexQuadrangulate(bool First)
   {svector<tbrin> & Fpbrin = ComputeFpbrin();
   Prop<short> vcolor(Set(tvertex()),PROP_COLOR);
   svector<tbrin> vertexbrin(1,nv()); 
-  vertexbrin.SetName("vertexbrin");
+  vertexbrin.SetName("TP:vertexbrin");
   vertexbrin.clear();
   //vertexbrin is used not to add multiple edges
   tvertex v,v0;
@@ -916,11 +915,11 @@ bool ExtendAcyclic(TopologicalGraph &G, int &ns, int &nt)
   int n=G.nv();
   int m=G.ne();
   if (m==0) return true;
-  svector<int> din(1,n);
-  svector<int> d0(1,n);
-  svector<tvertex> stack(1,n);
-  svector<tvertex> other_stack(1,n);
-  svector<bool> done(1,n); done.clear();
+  svector<int> din(1,n);                     din.SetName("TG:Extend:din");
+  svector<int> d0(1,n);                      d0.SetName("TG:Extend:d0");
+  svector<tvertex> stack(1,n);               stack.SetName("TG:Extend:stack");
+  svector<tvertex> other_stack(1,n);         other_stack.SetName("TG:Extend:other_stack");
+  svector<bool> done(1,n); done.clear();     done.SetName("TG:Extend:done");
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED);
   Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); reoriented.clear();
 
@@ -992,8 +991,8 @@ bool TopologicalGraph::TopSort(svector<tbrin> &topin, svector<tvertex> &order, b
 // It is intended for acyclic digraphs.
 // It computes a "dependence tree" -> topin=last incoming brin.
   {if(debug())DebugPrintf("TopSort");
-  svector<int> din(1,nv());
-  svector<tvertex> queue(1,nv());
+  svector<int> din(1,nv());        din.SetName("TG:TopSort:din");
+  svector<tvertex> queue(1,nv());  queue.SetName("TG:TopSort:queue");
   int qstart=1; int qend=1;
   int num=0;
   tbrin b,b0;
@@ -1101,7 +1100,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
           AG.DeleteVertex(v);
 
   // Compute InDegrees
-  svector<int> InDegrees(1,AG.nv());
+  svector<int> InDegrees(1,AG.nv());   InDegrees.SetName("TG:3conSub:InDegree");
   for(v = 1; v <= AG.nv();v++)InDegrees[v] = AG.InDegree(v);
     
   // Find the face lacking 4 incoming edges 
@@ -1148,9 +1147,9 @@ bool TopologicalGraph::CheckSubdivTriconnected()
 struct _tricon_angle
 {
   TopologicalGraph & G;
-  svector<char> dedge;
-  svector<bool> angle_mark;
-  svector<tedge> elist;
+  svector<char> dedge;         
+  svector<bool> angle_mark;     
+  svector<tedge> elist;         
   tedge elist_bot,elist_top;
 
   _tricon_angle(TopologicalGraph & GG) 
@@ -1162,7 +1161,9 @@ struct _tricon_angle
       {char tmp;
       tbrin b;
       tedge e;
-        
+      dedge.SetName("TG:dedge");
+      angle_mark.SetName("TG:angle_mark");
+      elist.SetName("TG:elist");
       angle_mark.clear();
       elist_bot=elist_top=0;
       for (b=1; b<=G.ne(); b++)
@@ -1248,7 +1249,7 @@ bool TopologicalGraph::CheckTriconnected()
   if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing CheckTriconnected");
   int nsinks;
-  svector<bool> save_oriented(0,ne());
+  svector<bool> save_oriented(0,ne());   save_oriented.SetName("TG:save_oriented");
   Prop<bool> oriented(Set(tedge()),PROP_ORIENTED,false);
   save_oriented.Tswap(oriented);
   tbrin first = 1;
@@ -1462,7 +1463,7 @@ void SortCir(TopologicalGraph &G, svector<tbrin> &ncir, svector<tbrin>
   tbrin b,b0,bb;
   int ec;
   int n=G.nv();
-  svector<tbrin> top(0,ncolore); top.clear();
+  svector<tbrin> top(0,ncolore); top.clear();   top.SetName("TG:SortCir:top");
   ncir.clear();
   for (v=n; v>0; --v)
     {b=b0=G.acir[G.pbrin[v]]; // will end with pbrin

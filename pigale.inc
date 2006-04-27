@@ -3,9 +3,9 @@ MQTDIR = /usr/local/Trolltech/Qt-4.1.2
 VERSION= 1.3.0
 LIBGLUT = -lglut 
 MODE = release
-DISTPATH = /home/pigale/pigale
+DISTPATH = /home/pigale/PigaleDist
 AWK = gawk
-ENABLE_STATIC = no
+ENABLE_STATIC = yes
 QMAKE_CXXFLAGS_RELEASE =  -march=i686
 
 

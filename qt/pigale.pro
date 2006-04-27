@@ -5,22 +5,22 @@ win32 {
       MQTDIR=C:\Qt\4.1.2\
       MODE = release
       ENABLE_STATIC=yes
-      DISTPATH=g:\pigale4\Pigale
+      DISTPATH=g:\pigale\Pigale
       DESTDIR=$$DISTPATH/bin
       MOC_DIR = moc
       DEFINES += _WIN32
       win32:LIBS += -Wl,-rpath ../glut -L../glut -l glut32 
-      message(configuring for Windows in $$DISTPATH)
+      QMAKE_CXXFLAGS_WARN_ON =  -Wall -Wextra 
       } else {
       include(../pigale.inc)
       unix:LIBS +=$$LIBGLUT
       MOC_DIR = .moc
+      QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
       DESTDIR=$$DISTPATH/bin
-      message(configuring for Linux in $$DESTDIR)
       }
 
 
-QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
+
 INCLUDEPATH = ../incl
 DEPENDPATH = ../incl
 
@@ -67,10 +67,10 @@ CONFIG(debug, debug|release) {
     DEFINES += TDEBUG
     unix:OBJECTS_DIR = ./.odb
     win32:OBJECTS_DIR = ./odb
-    message(qt: $$QMAKE_CXXFLAGS_DEBUG)
+    #message(qt: $$QMAKE_CXXFLAGS_DEBUG)
     contains(ENABLE_STATIC,"yes")  {
           unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
-          win32:LIBS +=../tgraph/release/libtgraph.a 
+          win32:LIBS +=../tgraph/debug/libtgraph_debug.a 
           }  else  {
           unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
           win32:LIBS += -Wl,-rpath ../tgraph/release -L../tgraph/$$Mode -l tgraph 
@@ -79,7 +79,7 @@ CONFIG(debug, debug|release) {
     TARGET = pigale
     unix:OBJECTS_DIR = ./.opt
     win32:OBJECTS_DIR = ./opt
-    message(qt: $$QMAKE_CXXFLAGS_RELEASE)
+    #message(qt: $$QMAKE_CXXFLAGS_RELEASE)
     contains(ENABLE_STATIC,"yes")  {
         unix:LIBS += $$DISTPATH/lib/libtgraph.a
         win32:LIBS +=../tgraph/release/libtgraph.a 
@@ -108,18 +108,22 @@ unix {
       translations.files = pigale_fr.qm qt_fr.qm
       translations.path = $$DISTPATH/translations
       INSTALLS += translations
+      # Installation bin
+      exec.files = $$TARGET
+      exec.path =  $$DISTPATH/bin
+      INSTALLS += exec
       # Distribution
       DISTDIR=..
       DISTFILES += gnumakefile
       depends += awk
-      message(extra target $$QMAKE_EXTRA_TARGETS) 
+      #message(extra target $$QMAKE_EXTRA_TARGETS) 
 }
 
 
 contains(ENABLE_STATIC,"yes") {
-  message(creating $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+  message(configuring $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
   #message(using libraries:$$LIBS)
 } else {
-  message(creating $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+  message(configuring $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
   #message(using libraries:$$LIBS)
 }

@@ -1,20 +1,26 @@
 TEMPLATE = lib
 
 win32 {
-MQTDIR=C:\Qt\4.1.2\
-MODE = release
-ENABLE_STATIC=yes
-DISTPATH=g:\pigale4\Pigale
-ENABLE_STATIC=yes
-DEFINES += MINGW _WINDOWS
-DESTDIR=.
- }else{
-include(../pigale.inc)
+      MQTDIR=C:\Qt\4.1.2\
+      MODE = release
+      ENABLE_STATIC=yes
+      DISTPATH=g:\pigale\Pigale
+      ENABLE_STATIC=yes
+      DEFINES += MINGW _WINDOWS
+      DESTDIR=.
+      QMAKE_CXXFLAGS_WARN_ON =  -Wall -Wextra
+      message(Windows $$DISTPATH)
+      }else{
+      include(../pigale.inc)
+      QMAKE_CXXFLAGS_WARN_ON = -pedantic -ansi -Werror -Wall -Wextra
+      QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
+      message(Linux $$DISTPATH)
 }
 
 
-INCLUDEPATH = ../incl;../incl/TAXI
-DEPENDPATH = ../incl/TAXI
+INCLUDEPATH = ../incl
+DEPENDPATH = ../incl
+
 SOURCES =\
     3-ConOrientTriang.cpp\
     3-ConShelling1.cpp\
@@ -81,11 +87,14 @@ CONFIG(debug, debug|release)  {
     DEFINES += TDEBUG
     unix:OBJECTS_DIR = ./.odb
     win32:OBJECTS_DIR = ./odb
+    #message(tgraph: $$QMAKE_CXXFLAGS_DEBUG)
     }else {
     TARGET = tgraph
     unix:OBJECTS_DIR = ./.opt
     win32:OBJECTS_DIR = ./opt
+    #message(tgraph: $$QMAKE_CXXFLAGS_RELEASE)
     }
+
 unix {
      distdir.commands =
      QMAKE_EXTRA_TARGETS += distdir
@@ -93,7 +102,7 @@ unix {
 }
 
 contains(ENABLE_STATIC,"yes") {
-  message(creating the static library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
+  message(configuring the static library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
 }else{
-  message(creating the library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
+  message(configuring the library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
 }

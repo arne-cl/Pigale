@@ -175,7 +175,7 @@ tvertex TopologicalGraph::BissectEdge(const tedge &e)
       }
   return v;
   }
-tedge TopologicalGraph::NewEdge(const tvertex &vv1,const tvertex &vv2,tedge e0)
+tedge TopologicalGraph::NewEdge(const tvertex &vv1,const tvertex &vv2,tedge )
 // insertion "quelconque"
   {tedge e;
   tvertex v1=vv1, v2=vv2;
@@ -470,7 +470,9 @@ bool TopologicalGraph::DebugCir()
       tbrin b0 = pbrin[v];
       tbrin b = b0;
       do 
-          {if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
+          {if(cir[b] == 0){DebugPrintf("DC cir[%d] = 0",b());return false;}
+          if(acir[b] == 0){DebugPrintf("DC acir[%d] = 0",b());return false;}
+          if(!cir.InRange(b())){DebugPrintf("DC cir not in range b=%d",b());return false;}
           if(!acir.InRange(cir[b]())){DebugPrintf("DC acir not in range b=%d",b());return false;}
           if(vin[b]!=v){DebugPrintf("DC vin[b]=%d v=%d b=%d degree=%d",vin[b](),v(),b(),degree);return false;}
           if(vin[-b]==v){DebugPrintf("DC %d is a loop at v=%d",b(),v());return false;}

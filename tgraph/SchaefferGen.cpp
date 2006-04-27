@@ -429,7 +429,7 @@ pm_edge *pmNextSeed(void)
 /******************************/
 /* this function initialize the random generator */
 /******************************/
-int pmInitRND(pmMethod *Meth){
+int pmInitRND(pmMethod *){
   //srand48(Meth->seed); printvf("# Seed: %ld\n",Meth->seed);
   return(PMTRUE);
 }
@@ -2678,7 +2678,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
 	  }
       }
   
-  if(debug())LogPrintf("<(%ld)%d",randomSetSeed(),n_ask);
   Sizes.v = n_ask; 
   //if(!pmInitRND(&Meth))return NULL;
   if(!pmSetParameters(&Sizes,&Meth))return NULL;
@@ -2686,7 +2685,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   if(!pmExtendMemory(&Sizes,&Meth,&Mem,0))return NULL;
   Map.i=0;
   if(!pmPlanMap(&Sizes,&Meth,&Mem,&Map))return NULL;
-  if(debug())LogPrintf(":");
   //Output transform
   if(Outp.transform)
       {pmBicolorFaces(Map.root);
@@ -2714,16 +2712,16 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   char seed_txt[20];
   sprintf(seed_txt,"_%ld",randomSetSeed());
   title() = t;  title() += seed_txt;
-  Prop<tvertex> vin(GC.Set(tbrin()),PROP_VIN); vin[0]=0;               vin.SetName("vin");
-  Prop<tbrin> cir(GC.Set(tbrin()),PROP_CIR); cir[0]=0;                     cir.SetName("cir"); 
-  Prop<tbrin> acir(GC.Set(tbrin()),PROP_ACIR); acir[0]=0;              acir.SetName("acir"); 
-  Prop<tbrin> pb(GC.Set(tvertex()),PROP_PBRIN); pb.clear();        pb.SetName("pbrin");  
+  Prop<tvertex> vin(GC.Set(tbrin()),PROP_VIN); vin[0]=0;           vin.SetName("GEN:vin");
+  Prop<tbrin> cir(GC.Set(tbrin()),PROP_CIR); cir[0]=0;             cir.SetName("GEN:cir"); 
+  Prop<tbrin> acir(GC.Set(tbrin()),PROP_ACIR); acir[0]=0;          acir.SetName("GEN:acir"); 
+  Prop<tbrin> pb(GC.Set(tvertex()),PROP_PBRIN); pb.clear();        pb.SetName("GEN:pbrin");  
   Prop1<int> maptype(GC.Set(),PROP_MAPTYPE);
   maptype() = PROP_MAPTYPE_ARBITRARY;
   Prop1<tbrin> extbrin(GC.Set(),PROP_EXTBRIN); extbrin()=1;
-  Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);         vcoord.SetName("GEN:vcoord");         
+  Prop<long> vlabel(GC.PV(),PROP_LABEL);           vlabel.SetName("GEN:vlabel");
+  Prop<long> elabel(GC.PE(),PROP_LABEL);           elabel.SetName("GEN:elabel");
   // compute the labels and coordinates
   vlabel[0]=0;
   double angle = 2.*acos(-1.)/n;
@@ -2776,7 +2774,6 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   // construct pbrin
   for (b=-m; b<=m; b++)
     if ((b!=0) && (pb[vin[b]]==0)) pb[vin[b]]=b;
-
   pmFreeMap(&Map);
   randomEnd();
 
@@ -2793,12 +2790,12 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
       erased = TG.Simplify();
   else if(loops)
       erased = TG.RemoveLoops();
-  
-   if(randomUseGeneratedCir())
+  if(debug())LogPrintf("<GEN:(%ld) n:%d m:%d erased:%d>\n",randomSetSeed(),TG.nv(),TG.ne(),erased);
+  if(randomUseGeneratedCir())
        {if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
        else TG.planarMap() = 1;
        }
-  if(debug())LogPrintf("%d:%d %d>GENERATOR\n",TG.nv(),TG.ne(),erased);
+  
   return &GC;
   }
 

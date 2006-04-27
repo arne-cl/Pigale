@@ -69,7 +69,7 @@ void InvertSomeCir(TopologicalGraph &G, svector<bool> &Invert)
   }
 
 double ComputeCotreeHeights(DoubleOccurenceSequence &Dos, svector<double> &h,
-                            svector<int> &level, int lmax)
+                            svector<int> &level, int )
   {int m=Dos.m;
   int i;
   tbrin b;

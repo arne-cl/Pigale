@@ -23,7 +23,7 @@ static int Test3(GraphContainer &GC,int &drawing);
 void pigaleWindow:: initMenuTest()
   {
 #ifdef VERSION_ALPHA
-  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (100x) ");
+  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x) ");
   setUserMenu(2,"1000xNewPlanarity");
   setUserMenu(3,"Test planarity algos");
 #else
@@ -47,14 +47,14 @@ int Test1(GraphContainer &GC,int &drawing)
   {drawing = 0;
   TopologicalGraph G(GC);
   QTime timer;timer.start();
-  for(int i = 0;i < 100;i++){shuffleCir(G);G.TestPlanar();}
+  for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestPlanar();}
   double Time1 = timer.elapsed(); // millisec
   if(Time1 < 10)
       {Tprintf("too short time to measure");
       return 0;
       }
   timer.start();
-  for(int i = 0;i < 100;i++){shuffleCir(G);G.TestNewPlanar();}
+  for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestNewPlanar();}
   double Time2 = timer.elapsed();
   Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
   return 0;

@@ -12,7 +12,8 @@
 
 #include <TAXI/Tbase.h>
 #include <TAXI/Tsvector.h>
-#ifdef _WINDOWS
+#include <TAXI/graphs.h>
+#if defined(_WINDOWS) || defined(_WIN32)
 #define srand48 srand
 #define lrand48 rand
 #endif
@@ -65,4 +66,25 @@ void randomShuffle(svector<int> &tab)
      }
  randomEnd();
  }
+void shuffleCir(TopologicalGraph &G)
+  {for(tvertex v = 1; v < G.nv();v++)
+      {int degree = G.Degree(v);
+      if(degree < 3)continue;
+      svector<int> tab(degree);
+      tbrin e0 = G.pbrin[v];
+      tbrin e = e0;
+      int d = 0;
+      do
+          {tab[d++] = e();
+          }while((e = G.cir[e]) != e0);
+      randomShuffle(tab);
+      for(d = 0;d < degree-1;d++)
+          G.cir[tab[d]] = (tbrin)tab[d+1];
+      G.cir[tab[degree-1]] = (tbrin)tab[0];
+      G.pbrin[v] = (tbrin)tab[0];
+      }
+  // Compute acir
+  for(tbrin b = -G.ne(); b<= G.ne(); b++)
+      G.acir[G.cir[b]] = b;
+  }
 

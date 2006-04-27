@@ -12,26 +12,11 @@
 /* Define to 1 if you have the <GL/glut.h> header file. */
 #define HAVE_GL_GLUT_H 1
 
-/* Define to 1 if you have the <GL/gl.h> header file. */
-#define HAVE_GL_GL_H 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
-/* Define to 1 if you have the `GL' library (-lGL). */
-#define HAVE_LIBGL 1
-
-/* Define to 1 if you have the `GLU' library (-lGLU). */
-#define HAVE_LIBGLU 1
-
 /* Define to 1 if you have the `glut' library (-lglut). */
 #define HAVE_LIBGLUT 1
-
-/* Define to 1 if you have the `Xi' library (-lXi). */
-#define HAVE_LIBXI 1
-
-/* Define to 1 if you have the `Xmu' library (-lXmu). */
-#define HAVE_LIBXMU 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -67,25 +52,22 @@
 #define PACKAGE_NAME "pigale"
 
 /* Path to Pigale root directory */
-#define PACKAGE_PATH "/home/pigale"
+#define PACKAGE_PATH "/home/pigale/PigaleDist"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "pigale 1.2.15"
+#define PACKAGE_STRING "pigale 1.3.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "Public Implementation of a Graph Library and Editor"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.2.15"
-
-/* Qt Thread Support */
-#define QT_THREAD_SUPPORT 1
+#define PACKAGE_VERSION "1.3.2"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.2.15"
+#define VERSION "1.3.2"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

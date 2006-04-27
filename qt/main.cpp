@@ -28,7 +28,10 @@
 #include <QT/Misc.h>
 //#include <QStyle>
 #include <qstyle.h>
-
+#include <config.h>
+#ifdef HAVE_LIBGLUT
+#include <GL/glut.h>
+#endif
 #ifdef _WIN32
 #undef PACKAGE_PATH
 #define PACKAGE_PATH ".."
@@ -41,6 +44,9 @@ int main(int argc,char * argv[])
   QApplication::setDesktopSettingsAware(false);
 
   QApplication app(argc,argv);
+#ifdef HAVE_LIBGLUT
+  glutInit(&argc,argv);
+#endif
   // Set the colors of tha application
   InitPigaleColors();
   //Translations

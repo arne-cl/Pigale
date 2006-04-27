@@ -23,9 +23,9 @@
 int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
 // after DFS
   {int p=0;
-  svector<tedge>link(1,m); link.clear();
-  svector<tedge>top1(1,n); top1.clear();
-  svector<tedge>top2(1,n); top2.clear();
+  svector<tedge>link(1,m); link.clear(); link.SetName("Planar:link");
+  svector<tedge>top1(1,n); top1.clear(); top1.SetName("Planar:top1");
+  svector<tedge>top2(1,n); top2.clear(); top2.SetName("Planar:top2");
   tvertex u,v,w;
   tedge e,next;
   //First sort with respect to biggest label
@@ -72,9 +72,9 @@ int TopologicalGraph::Planarity(tbrin b0)
 #ifdef TDEBUG
   if(debug())DebugPrintf("n=%d m=%d",n,m);
 #endif
-  svector<tvertex> nvin(-m,m);
+  svector<tvertex> nvin(-m,m); nvin.SetName("Planarity:nvin");
   svector<tvertex> &low = *new svector<tvertex>(0,n);
-  svector<tbrin> xcir;
+  svector<tbrin> xcir; xcir.SetName("Planarity:xcir");
   xcir = cir;
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
@@ -151,7 +151,11 @@ int TopologicalGraph::TestPlanar()
   int m_origin = m;
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
   if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
-  svector<tvertex> nvin(-m,m);nvin.SetName("nvin TestPlanar");
+#ifdef TDEBUG
+  if(!DebugCir())
+      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+#endif
+  svector<tvertex> nvin(-m,m); nvin.SetName("TestPlanar:nvin");
   // DFS calls GDFS after some initializations
 
   if(!DFS(nvin)) //Not connected graph
@@ -164,12 +168,13 @@ int TopologicalGraph::TestPlanar()
       }
   else
       Prop1<int>is_connected(Set(),PROP_CONNECTED);
+
   if(m - n < 3)
       {Prop1<int> isplanar(Set(),PROP_PLANAR);
       return 1;
       }
   if(Set().exist(PROP_SIMPLE) && m > 3*n - 6)return 0;
-  svector<tvertex> low(0,n);low.SetName("low TestPlanar");
+  svector<tvertex> low(0,n);low.SetName("TestPlanar:low");
   _Bicon Bicon(n);
   if(bicon(n,m,nvin,Bicon,low))
       Prop1<int> isbicon(Set(),PROP_BICONNECTED);
@@ -182,8 +187,6 @@ int TopologicalGraph::TestPlanar()
   if(debug())DebugPrintf("    END TopologicalGraph:TestPlanar");
   return ret;
   }
-
-
 int TopologicalGraph::NewPlanarity(tbrin b0)
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::NewPlanarity");
@@ -199,9 +202,9 @@ int TopologicalGraph::NewPlanarity(tbrin b0)
 #ifdef TDEBUG
   if(debug())DebugPrintf("n=%d m=%d",n,m);
 #endif
-  svector<tvertex> nvin(-m,m);
+  svector<tvertex> nvin(-m,m);  nvin.SetName("NewPlanarity:nvin");
   svector<tvertex> &low = *new svector<tvertex>(0,n);
-  svector<tbrin> xcir;
+  svector<tbrin> xcir;          xcir.SetName("NewPlanarity:xcir");
   xcir = cir;
   xcir[0] = b0; xcir[acir[b0]] = 0;
   if(!GDFSRenum(xcir,nvin)) // Error
@@ -277,10 +280,13 @@ int TopologicalGraph::TestNewPlanar()
   int n = nv();
   int m_origin = m;
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
+#ifdef TDEBUG
+  if(!DebugCir())
+      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+#endif
   if(debug())DebugPrintf("Executing TopologicalGraph:NewTestPlanar");
-  svector<tvertex> nvin(-m,m);nvin.SetName("nvin TestPlanar");
+  svector<tvertex> nvin(-m,m);nvin.SetName("TestNewPlanar:nvin");
   // DFS calls GDFS after some initializations
-
   if(!DFS(nvin)) //Not connected graph
       {MakeConnected();
       m = ne();
@@ -291,6 +297,7 @@ int TopologicalGraph::TestNewPlanar()
       }
   else
       Prop1<int>is_connected(Set(),PROP_CONNECTED);
+
   if(m - n < 3)
       {Prop1<int> isplanar(Set(),PROP_PLANAR);
       return 1;
@@ -308,7 +315,6 @@ int TopologicalGraph::TestNewPlanar()
   if(debug())DebugPrintf("    END TopologicalGraph:NewTestPlanar");
   return ret;
   }
-
 int TopologicalGraph::TestPlanar2()
   {if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar2");
   GraphContainer DFSContainer;
@@ -326,7 +332,7 @@ int TopologicalGraph::TestPlanar2()
       for(tedge e = m; e() > m_origin;--e)
           DeleteEdge(e);
       }
-        
+
   if(m - n < 3) return 1;
 
   if(Set().exist(PROP_SIMPLE) && m > 3*n - 6)

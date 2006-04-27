@@ -26,7 +26,7 @@
 #include <qpixmap.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <q3filedialog.h>
+#include <q3filedialog.h> 
 #include <qapplication.h>
 
 #ifndef _WINDOWS
