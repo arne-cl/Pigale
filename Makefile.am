@@ -1,5 +1,15 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = tgraph qt ClientServer
-EXTRA_DIST=Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h incl/QT/*.h qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/gnumakefile qt/pigale_fr.ts qt/pigale_fr.qm gnumakefile ClientServer/*.h ClientServer/*.cpp ClientServer/gnumakefile ClientServer/client.pro ClientServer/Clientdata.txt gnumakefile runqmake.sh Doxyfile tgraph/*.cpp tgraph/tgraph.pro  tgraph/*.awk tgraph/gnumakefile macro/maxPlanar4Connex.mc
+SUBDIRS = tgraph  freeglut qt ClientServer
+EXTRA_DIST  = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css 
+EXTRA_DIST += tgf/*.tgf tgf/*.txt tgf/*.graphml 
+EXTRA_DIST += incl/*.h incl/TAXI/*.h incl/QT/*.h incl/GL/*.h 
+EXTRA_DIST += qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/pigale_fr.ts qt/pigale_fr.qm  
+EXTRA_DIST += ClientServer/*.h ClientServer/*.cpp ClientServer/client.pro ClientServer/Clientdata.txt 
+EXTRA_DIST += runqmake.sh Doxyfile macro/maxPlanar4Connex.mc
+EXTRA_DIST += tgraph/*.cpp tgraph/tgraph.pro  tgraph/*.awk tgraph/gnumakefile0 
+EXTRA_DIST += tgraph/tgraph-VisualC++-7.vcproj tgraph/tgraph-VisualC++-8.vcproj
+EXTRA_DIST += freeglut/*.c freeglut/*.h freeglut/freeglut.pro freeglut/COPYING
+EXTRA_DIST += UsingTgraph/main.cpp UsingTgraph/ex.pro UsingTgraph/ex.vcproj UsingTgraph/Readme.txt
+EXTRA_DIST += wpigale.inc wqmake.bat wset.bat wmake.bat
 datadir = $(prefix)
 nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*) macro/maxPlanar4Connex.mc

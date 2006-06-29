@@ -195,8 +195,21 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = tgraph qt ClientServer
-EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h incl/QT/*.h qt/icones qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/gnumakefile qt/pigale_fr.ts qt/pigale_fr.qm gnumakefile ClientServer/*.h ClientServer/*.cpp ClientServer/gnumakefile ClientServer/client.pro ClientServer/Clientdata.txt gnumakefile runqmake.sh Doxyfile tgraph/*.cpp tgraph/tgraph.pro  tgraph/*.awk tgraph/gnumakefile macro/maxPlanar4Connex.mc
+SUBDIRS = tgraph  freeglut qt ClientServer
+EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css \
+	tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h \
+	incl/QT/*.h incl/GL/*.h qt/icones qt/*.h qt/*.cpp \
+	qt/Action.awk qt/pigale.pro qt/pigale_fr.ts qt/pigale_fr.qm \
+	ClientServer/*.h ClientServer/*.cpp ClientServer/client.pro \
+	ClientServer/Clientdata.txt runqmake.sh Doxyfile \
+	macro/maxPlanar4Connex.mc tgraph/*.cpp tgraph/tgraph.pro \
+	tgraph/*.awk tgraph/gnumakefile0 \
+	tgraph/tgraph-VisualC++-7.vcproj \
+	tgraph/tgraph-VisualC++-8.vcproj freeglut/*.c freeglut/*.h \
+	freeglut/freeglut.pro freeglut/COPYING UsingTgraph/main.cpp \
+	UsingTgraph/ex.pro UsingTgraph/ex.vcproj \
+	UsingTgraph/Readme.txt wpigale.inc wqmake.bat wset.bat \
+	wmake.bat
 nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*) macro/maxPlanar4Connex.mc
 all: all-recursive
 
@@ -406,7 +419,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/incl $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/macro $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
+	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/UsingTgraph $(distdir)/freeglut $(distdir)/incl $(distdir)/incl/GL $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/macro $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

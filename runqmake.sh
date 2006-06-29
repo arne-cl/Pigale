@@ -7,5 +7,6 @@ fi
 
 QMAKE=$QT4DIR/bin/qmake
 ${QMAKE} -o tgraph/Makefile  tgraph/tgraph.pro
+${QMAKE} -o freeglut/Makefile  freeglut/freeglut.pro
 ${QMAKE} -o qt/Makefile  qt/pigale.pro
 ${QMAKE} -o ClientServer/Makefile  ClientServer/client.pro

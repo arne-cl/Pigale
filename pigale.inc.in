@@ -1,7 +1,6 @@
 MQTDIR = @QT4DIR@
 #version of the library
 VERSION= @LIB_VERSION@
-LIBGLUT = @LIBS@
 MODE = @DEBUG@
 DISTPATH = @PPATH@
 AWK = @AWK@
