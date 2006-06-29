@@ -79,11 +79,13 @@ private slots:
   void socketConnected();
   void socketConnectionClosed();
   void socketClosed();
-  void socketError(int e);
+  void socketError(QAbstractSocket::SocketError e);
   void stop();
 
 public:
   int ChangeActionsToDo(int delta);
+  void writeServerEvent(QString str);
+  void writeServerEvent(char * buf,uint size);
   void writeClient(QString str);
   QStack<QString > stack;
 

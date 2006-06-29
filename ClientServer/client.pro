@@ -1,14 +1,8 @@
 TEMPLATE = app
 
 win32 {
-      ENABLE_STATIC=yes
-      MQTDIR=C:\Qt\4.1.2\
-      MODE = release
-      ENABLE_STATIC=yes
-      DISTPATH=g:\pigale\Pigale
-      DESTDIR=$$DISTPATH/bin
+      include(..\wpigale.inc)
       MOC_DIR = moc
-      DEFINES += _WIN32
       } else {
       include(../pigale.inc)
       MOC_DIR = .moc
@@ -24,7 +18,7 @@ DEPENDPATH = ../incl
 HEADERS = client.h 
 SOURCES = client.cpp
 
-CONFIG += qt thread $$MODE
+CONFIG += qt thread $$MODE 
 
 CONFIG(debug, debug|release)  {
     TARGET = client_debug
@@ -44,13 +38,13 @@ distdir.commands =
 QMAKE_EXTRA_TARGETS += distdir
  
 QT += qt3support network 
+DESTDIR=.
+   
+#Installation
+target.path = $$DISTPATH/bin	
+data.files =ClientData.txt
+data.path = $$DISTPATH/bin
+INSTALLS += target data
 
-unix {
-      DESTDIR=.
-      #Installation
-      exec.files=$$TARGET
-      exec.path = $$DISTPATH/bin
-      INSTALLS += exec
-}      
 
 message(configuring $$TARGET using QT version $$[QT_VERSION] ($$OBJECTS_DIR))

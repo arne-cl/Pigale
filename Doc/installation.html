@@ -48,7 +48,8 @@ for sourceforge -->
 <h1 class="c1"><b>Compilation and Installation</b></h1>
 
     <p>This package includes the source files of a stand alone library <b>tgraph</b>, 
-      the editor <b>pigale</b> and the  <b>client</b> program .<br>
+      the editor <b>pigale</b> and the  <b>client</b> program 
+       and the souces of the <b>freeglut </b>library<br>
       The editor and the client use  the <b>Qt4</b> toolkit and  
       the <b>OpenGL</b> libraries for the 3-dimensional drawings.
       <br> (Versions prior to 1.3 uses <b>Qt3</b>).
@@ -64,15 +65,10 @@ for sourceforge -->
       <li><b>OpenGL</b> : Mesa3D-3.4. 
 	<a href="http://www.Mesa3D.org">(Mesa 3D home page)</a></li>
 
-      <li> <b>glut</b> library (used to display text in  the 3<sup>d </sup>drawings),
-         <a href= "http://www.opengl.org/resources/libraries/glut.html"> 
-          (OpenGl)</a> or <a href="http://freeglut.sourceforge.net/">(freeglut)</a></li>
+      <li> <b>freeglut</b> library (used to display text in  the 3<sup>d </sup>drawings),
+          <a href="http://freeglut.sourceforge.net/">(freeglut)</a></li>
 
     </ul>
-<p>
-The glut library is only used to display vertex labels int the 3<sup>d </sup>drawings.<br>
-If you do not have that library, text is displayed using  Qt but it does not work properly with some graphic cards.
-</p>
 
 
 <h2 class="c1"><b>Linux</b></h2>
@@ -117,31 +113,23 @@ Pigale uses GNU <b><tt>configure</tt></b> for the compilation and installation c
     </p> 
       <ul>
       <li> <b>gcc</b> compiler in the MinGW environment<a href="http://www.mingw.org"> MinGW</a>,</li>
-      <li> <b> Qt-4.1.2</b> toolkit <a href="http://www.trolltech.com/download/qt/windows.html">
+      <li> <b> Qt-4.1.X</b> toolkit <a href="http://www.trolltech.com/download/qt/windows.html">
           Qt  download page </a> (where you may also download MinGW),</li>
-      <li> <b>OpenGL</b> libraries which are included in Windows,</li>
-      <li> <b>glut</b> libraries.</li>
       </ul>
-    To compile Pigale from the sources, you should edit the following files (mostly the variable DISPATH) 
+    To compile Pigale from the sources (version >= 1.3.3):
     <ul>
-    <li><b>tgraph.pro</b></li> 
-    <li><b>pigale.pro</b> check the line:<br> 
-        <small><tt>win32:LIBS += -Wl,-rpath ../glut -L../glut -l glut32 </small></tt> </li>
-    <li><b>client.pro</b></li>
-    <li><b>config.h</b> comment if necessary the line:<br> 
-        <tt><small>#define HAVE_LIBGLUT 1</small></tt></li>
- </ul>
-    </p><p>
-    Then to create the Makefiles run:
-      <ul>
-    <li><tt><b>qmake -spec win32-gcc tgraph.pro</tt></b> in the repertory <b>tgraph</b></li>
-    <li><tt><b>qmake -spec win32-gcc pigale.pro</tt></b> in the repertory <b>qt</b></li>
-    <li><tt><b>qmake -spec win32-gcc client.pro</tt></b> in the repertory <b>ClientServer</b></li>
+      <li> edit    <b>wpigale.inc</b> 
+        (to precise your <b>Qt</b> installation repertory and pigale prefix), </li>
+    <li> run <tt><b>wqmake.bat</b></tt> to create the Makefiles,</li>
+    <li> run <tt><b>wmake.bat install</b></tt>.</li>
         </ul>
-     </p><p>
-      Finally run <tt><b>make</tt></b> in  <b>tgraph</b>, <b>qt</b> and <b>ClientServer</b>.
-      <br>(the arborescence of repertories should be as described in the Linux paragraph).
-      </p>
+    The installation creates the same repertories as under Linux.
+    <h4 class="c1"> <b>Warning</b></h4>
+      While compiling and installing, you should not have a <b>sh.exe</b> in your path.
+    <h4 class="c1"> <b>Using tgraph with Microsoft Visual C++</b></h4>
+    In the repertory <b>tgraph</b>,
+      the file <b>tgraph-VisualC++-</b>X<b>.vcproj</b>  can be used to create the <b>tgraph.lib</b> library.
+
     <hr>
     <table>
       <tr><td><IMG SRC="./icones/mail.gif" ALT="mail logo"></td>
@@ -151,7 +139,7 @@ Pigale uses GNU <b><tt>configure</tt></b> for the compilation and installation c
          Patrice Ossona de Mendez</a></address></td>
       </tr></table>
     <hr><!-- hhmts start -->
-Last modified: Thu Apr 27 19:41:06 CEST 2006
+Last modified: Wed Jun 28 17:16:49 CEST 2006
 <!-- hhmts end -->
 </body>
 

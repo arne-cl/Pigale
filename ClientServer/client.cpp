@@ -50,7 +50,7 @@ Client::Client(const QString &host, quint16 port)
   connect(socket,SIGNAL(connected()),SLOT(socketConnected()));
   connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
-  connect(socket,SIGNAL(error(int)),SLOT(socketError(int)));
+  connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),SLOT(socketError(QAbstractSocket::SocketError)));
   // connect to the server
   infoText->append("Trying to connect to the server" );
   inputText->setFocus();
@@ -83,13 +83,13 @@ void Client::closeConnection()
        socketClosed();
   stop();
   }
-void Client::socketError(int e)
+void Client::socketError(QAbstractSocket::SocketError e)
   {if(e == QAbstractSocket::ConnectionRefusedError)
       infoText->append(QString("Connection refused"));
   else if(e  == QAbstractSocket::HostNotFoundError) 
       infoText->append(QString("Host not found"));           
-  else
-      infoText->append(QString("A read from the socket failed"));
+//   else
+//       infoText->append(QString("A read from the socket failed"));
   }
 bool Client::event(QEvent * ev)
   {if(ev->type() >=  QEvent::User)
@@ -99,18 +99,36 @@ bool Client::event(QEvent * ev)
   return FALSE;
   }
 void Client:: customEvent(QEvent * e ) 
-  {if( e->type() != (int)TEXT_EVENT ) return;
-  textEvent *event  =  (textEvent  *)e;
-  infoText->append(event->getString());
-  infoText->ensureCursorVisible();
+  {if( e->type() == (int)TEXT_EVENT )
+      {textEvent *event  =  (textEvent  *)e;
+      infoText->append(event->getString());
+      infoText->ensureCursorVisible();
+      }
+  else if( e->type() == (int)WRITE_EVENT )
+      {writeEvent *event  =  (writeEvent  *)e;
+      writeServer(event->getString());
+      }
+  else if(e->type() == (int)WRITEB_EVENT) 
+    {writeBufEvent  *event  =  (writeBufEvent  *)e;
+    writeServer(event->getPtr(),event->getSize());
+    }
   }
 void Client::writeClient(QString str)
   {textEvent *e = new textEvent(str);
   QApplication::postEvent(this,e);
   }
+void Client::writeServerEvent(QString str)
+  {writeEvent *e = new writeEvent(str);
+  QApplication::postEvent(this,e);
+  }
+void Client::writeServerEvent(char * buf,uint size)
+  {writeBufEvent *event = new writeBufEvent(buf,size);
+  QApplication::postEvent(this,event);
+  }
 void Client::writeServer(QString str)
   {QWriteLocker locker(&lock);
   QString t = str+'\n';
+  //cout<<"writeServer:"<<(const char*)str<<endl;
   clo.writeBytes(t.toAscii(),t.length()); 
   socket->waitForBytesWritten(-1); 
   }
@@ -118,9 +136,6 @@ void Client::writeServer(char * buff,quint32 size)
   {QWriteLocker locker(&lock);
   clo.writeBytes(buff,size);
   socket->waitForBytesWritten(-1); 
-//   qint64 towrite;
-//   while((towrite = socket->bytesToWrite()) != 0)
-//       {cout<<"wb:"<<size<<"/"<<towrite<<endl;sleep(0);}
   delete [] buff;
   }
 /*******************************************************/
@@ -129,7 +144,6 @@ int Client::ChangeActionsToDo(int delta)
   mutex.lock();
   i=(ActionsToDo += delta);
   mutex.unlock();
-
 
   if(delta == 0)return i;
 
@@ -154,7 +168,7 @@ void Client:: debug(bool b)
   QString str = QString("S_DEBUG;%1").arg(b);
   sendToServer(str);
   }
-void Client::sendToServer()
+void Client::sendToServer() // only for intercative action
   {if(socket->state() != QAbstractSocket::ConnectedState)return;
   QString str = inputText->text();
   sendToServer(str);
@@ -164,7 +178,7 @@ void Client::sendToServer(QString &str)
   {if(str.at(0) == '#' || str.at(0) == '!') //split str -> 1 command per line if not a comment
       {stack.push(str);
       ChangeActionsToDo(1);
-      writeServer(str);
+      writeServerEvent(str);
       return;
       }
   QStringList fields = QStringList::split(ACTION_SEP,str);//not qt4
@@ -176,8 +190,8 @@ void Client::sendToServer(QString &str)
       else
           {stack.push(fields[i]);
           ChangeActionsToDo(1);
-           writeServer(fields[i]);
-           }
+          writeServerEvent(fields[i]);
+          }
       }
   }
 int Client::sendToServerGraph(QString &data)
@@ -195,13 +209,13 @@ int Client::sendToServerGraph(QString &data)
   ChangeActionsToDo(1);
   quint32 size = fi.size();
   if(debug()) writeClient(QString("Client sending:%1 %2 bytes").arg(GraphFileName).arg(size));
-  writeServer(data);
+  writeServerEvent(data);
   QFile file(GraphFileName);
   file.open(QIODevice::ReadOnly);
   QDataStream stream(&file);
   char *buff = new char[size];
   stream.readRawData(buff,size); 
-  writeServer(buff,size);
+  writeServerEvent(buff,size);
   return 0;
   }
 uint Client::readBuffer(char*  &buffer)
@@ -318,10 +332,8 @@ void threadRead::run()
       while(pclient->ChangeActionsToDo(0) > 0)
           {msleep(10);// milliseconds
           if(++retry %200 == 0 && pclient->debug())
-              {//QString action = pclient->stack.top(); 
               pclient->writeClient(QString("Waiting %1s (%2:%3)").arg(retry/100)
                   .arg(pclient->stack.top()).arg(pclient->ChangeActionsToDo(0)));
-              }
           }
       str = stream.readLine(); 
       QChar ch = str.at(0);
