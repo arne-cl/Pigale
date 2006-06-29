@@ -32,6 +32,7 @@
 #include <qtextbrowser.h>
 #include <qsettings.h>
 #include <qtextstream.h>
+#include <QCloseEvent>
 #include <Pigale.h> 
 
 
@@ -55,6 +56,7 @@ class LineEditNum;
 class QProgressBar;
 class QLineEdit;
 class QPalette;
+class PigaleServer;
 
 
 class PigaleThread : public QThread 
@@ -71,6 +73,7 @@ private:
 public:
   PigaleThread(QObject *parent = 0) ;
   ~PigaleThread();
+  void stop();
   void run(int action,int N = 0,int N1 = 0,int N2 = 0,int M = 0,int delay = 0);
   pigaleWindow *mw;
 signals:
@@ -141,6 +144,8 @@ public slots:
   void png();
   int  handler(int action);
   void NewGraph();
+protected:
+  void closeEvent(QCloseEvent *event);
 public:
   pigaleWindow();
   ~pigaleWindow();
@@ -195,6 +200,7 @@ public:
   int pigaleThreadRet;
 private:
   PigaleThread pigaleThread;
+  PigaleServer  *server;
   QToolBar *tb;
   QTextBrowser *browser;
   QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;

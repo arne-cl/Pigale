@@ -21,8 +21,10 @@
 #endif
 
 
-enum Event {
+enum UserEvents {
 	CLIENT_EVENT = USER_EVENT,
+	SERVER_INIT_EVENT,
+	SERVER_READY_EVENT,
 	TEXT_EVENT,
 	WRITE_EVENT,
 	WRITEB_EVENT,
@@ -34,12 +36,11 @@ enum Event {
 	BANNER_EVENT
 };
 
-#ifdef _QT4_
 class clientEvent : public QEvent
     {public:
       clientEvent( int action,QString  param)
-          :  QEvent(QEvent::User),value( action ),str(param)
-          {t = CLIENT_EVENT;}
+          : QEvent((QEvent::Type)CLIENT_EVENT),value(action),str(param)
+          {}
       QString getParamString() const { return str; }
       int getAction() const { return value; }
     private:
@@ -47,11 +48,25 @@ class clientEvent : public QEvent
       QString str;
     };
 
+class serverInitEvent : public QEvent
+    {public:
+      serverInitEvent()
+          :  QEvent((QEvent::Type)(SERVER_INIT_EVENT))
+          {}
+    };
+
+class serverReadyEvent : public QEvent
+    {public:
+      serverReadyEvent()
+          : QEvent((QEvent::Type)SERVER_READY_EVENT)
+          {}
+    };
+
 class textEvent : public QEvent
     {public:
       textEvent( QString  txt)
-          : QEvent(QEvent::User),str(txt)  
-          {t=TEXT_EVENT;}
+          : QEvent((QEvent::Type) TEXT_EVENT),str(txt)  
+          {}
       QString getString() const { return str; }
     private:
       QString str;
@@ -60,8 +75,8 @@ class textEvent : public QEvent
 class writeEvent : public QEvent
     {public:
       writeEvent( QString  txt)
-          : QEvent(QEvent::User),str(txt)  
-          {t = WRITE_EVENT;}
+          : QEvent((QEvent::Type) WRITE_EVENT),str(txt)  
+       {}
       QString getString() const { return str; }
     private:
       QString str;
@@ -70,8 +85,8 @@ class writeEvent : public QEvent
 class writeBufEvent : public QEvent
     {public:
       writeBufEvent(char * _ptr,uint _size)
-          : QEvent(QEvent::User),ptr(_ptr),size(_size)  
-          {t = WRITEB_EVENT;}
+          : QEvent((QEvent::Type) WRITEB_EVENT),ptr(_ptr),size(_size) 
+          {} 
       char * getPtr() const { return ptr; }
       uint   getSize() const { return size; }
     private:
@@ -82,8 +97,8 @@ class writeBufEvent : public QEvent
 class bannerEvent : public QEvent
     {public:
       bannerEvent( QString  txt)
-          : QEvent(QEvent::User),str(txt)  
-          {t = BANNER_EVENT;}
+          : QEvent((QEvent::Type) BANNER_EVENT),str(txt)  
+          {}
       QString getString() const { return str; }
     private:
       QString str;
@@ -92,8 +107,8 @@ class bannerEvent : public QEvent
 class waitEvent : public QEvent
     {public:
       waitEvent( QString  txt)
-          : QEvent(QEvent::User),str(txt)  
-          {t = WAIT_EVENT;}
+          : QEvent((QEvent::Type) WAIT_EVENT),str(txt)  
+          {}
       QString getString() const { return str; }
     private:
       QString str;
@@ -102,8 +117,9 @@ class waitEvent : public QEvent
 class handlerEvent : public QEvent
     {public:
       handlerEvent( int action,int drawingType,int saveType)
-          :  QEvent(QEvent::User),_action( action ),_drawingType(drawingType),_saveType(saveType)  
-          {t=HANDLER_EVENT;}
+          : QEvent((QEvent::Type) HANDLER_EVENT),_action( action ),_drawingType(drawingType)
+          ,_saveType(saveType)  
+          {}
       int type(){return HANDLER_EVENT;}
       int getAction() const { return _action; }
       int getDrawingType() const { return _drawingType; }
@@ -122,104 +138,16 @@ action == -1  close
 */
     {public:
       progressEvent( int action,int step = 0)
-          :  QEvent(QEvent::User),_action( action ),_step(step)  
-          {t = PROGRESS_EVENT;}
+          : QEvent((QEvent::Type) PROGRESS_EVENT),_action( action ),_step(step)  
+          {}
       int getAction() const { return _action; }
       int getStep() const { return _step; }
     private:
       int _action;
       int _step;
     };
-#else
 
-class clientEvent : public QCustomEvent
-    {public:
-      clientEvent( int action,QString  param)
-          : QCustomEvent(CLIENT_EVENT), value( action ),str(param)  {}
-       QString getParamString() const { return str; }
-        int getAction() const { return value; }
-    private:
-      int value;
-      QString str;
-    };
 
-class textEvent : public QCustomEvent
-    {public:
-      textEvent( QString  txt)
-          : QCustomEvent(TEXT_EVENT),str(txt)  {}
-       QString getString() const { return str; }
-    private:
-      QString str;
-    };
-
-class writeEvent : public QCustomEvent
-    {public:
-      writeEvent( QString  txt)
-          : QCustomEvent(WRITE_EVENT),str(txt)  {}
-       QString getString() const { return str; }
-    private:
-      QString str;
-    };
-
-class writeBufEvent : public QCustomEvent
-    {public:
-      writeBufEvent(char * _ptr,uint _size)
-          : QCustomEvent(WRITEB_EVENT),ptr(_ptr),size(_size)  {}
-       char * getPtr() const { return ptr; }
-       uint   getSize() const { return size; }
-    private:
-      char *ptr;
-      uint size;
-    };
-
-class bannerEvent : public QCustomEvent
-    {public:
-      bannerEvent( QString  txt)
-          : QCustomEvent(BANNER_EVENT),str(txt)  {}
-       QString getString() const { return str; }
-    private:
-      QString str;
-    };
-
-class waitEvent : public QCustomEvent
-    {public:
-      waitEvent( QString  txt)
-          : QCustomEvent(WAIT_EVENT),str(txt)  {}
-       QString getString() const { return str; }
-    private:
-      QString str;
-    };
-
-class handlerEvent : public QCustomEvent
-    {public:
-      handlerEvent( int action,int drawingType,int saveType)
-          : QCustomEvent(HANDLER_EVENT), _action( action ),_drawingType(drawingType),_saveType(saveType)  {}
-        int getAction() const { return _action; }
-        int getDrawingType() const { return _drawingType; }
-        int getSaveType() const { return _saveType; }
-    private:
-      int _action;
-      int _drawingType;
-      int _saveType;
-    };
-
-class progressEvent : public QCustomEvent
-/*
-action == 0   init step
-action == 1   show step
-action == -1  close
-*/
-    {public:
-      progressEvent( int action,int step = 0)
-          : QCustomEvent(PROGRESS_EVENT ), _action( action ),_step(step)  {}
-        int getAction() const { return _action; }
-        int getStep() const { return _step; }
-    private:
-      int _action;
-      int _step;
-    };
-
-#endif
 #endif
 
 

@@ -32,9 +32,8 @@
 #include <QT/pigaleCanvas.h> 
 #include <QT/clientEvent.h>
 
-
 int Test(GraphContainer &GC,int action,int & drawing);
-int InitPigaleServer(pigaleWindow *w);
+void UndoErase();
 
 void pigaleWindow::whenReady()
   {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
@@ -43,7 +42,15 @@ void pigaleWindow::whenReady()
 void pigaleWindow::initServer()
   {ServerClientId = 0;
   NewGraph(); 
-  InitPigaleServer(this);
+  server = new PigaleServer(this);
+  server->setProxy(QNetworkProxy::NoProxy);
+  threadServer = 0;
+  if(!server->isListening ())
+      {Tprintf("Server: Init failed");
+      cout <<"Server: Init failed"<<endl;
+      }
+  else
+      Tprintf("Server using port%d",server->serverPort());
   showMinimized();
   }
 bool pigaleWindow::event(QEvent * ev)
@@ -51,12 +58,16 @@ bool pigaleWindow::event(QEvent * ev)
       {customEvent(ev);
       return TRUE;
       }
-  if(ev->type() >=  QEvent::QEvent::KeyPress)
+  if(ev->type() == QEvent::Close)
+      {QCloseEvent *ec = new QCloseEvent::QCloseEvent();
+      closeEvent(ec);
+      return TRUE;
+      }
+  if(ev->type() >=  QEvent::KeyPress)
       {QKeyEvent *k = (QKeyEvent *)ev;
       keyPressEvent(k);
       return TRUE;
       }
-  //qDebug("event:%d",(int)ev->type());
   return FALSE;
   }
 void pigaleWindow::customEvent(QEvent * ev)
@@ -65,6 +76,7 @@ void pigaleWindow::customEvent(QEvent * ev)
       {case  TEXT_EVENT:
           {textEvent *event  =  (textEvent  *)ev;
           Message(event->getString());
+          //cout<<"mw:"<<(const char *)event->getString()<<endl;
           }
           break;
       case CLEARTEXT_EVENT:
@@ -351,11 +363,15 @@ PigaleThread::PigaleThread(QObject *parent)
   abort = false;
   }
 PigaleThread::~PigaleThread()
+  {stop();
+  }
+void PigaleThread::stop()
   {mutex.lock();
   abort = true;
   condition.wakeOne();
   mutex.unlock();
   wait();
+  //cout<<"stop computing thread"<<endl;
   }
 void PigaleThread:: run(int action,int N,int N1,int N2,int M,int delay)
   {QMutexLocker locker(&mutex);
@@ -387,8 +403,7 @@ void PigaleThread::run()
 
       if(abort)return;
       if(action)
-          {
-          //cout <<"thread:"<<(const char*)mw->getActionString(action)<<endl;
+          {//cout <<"thread:"<<(const char*)mw->getActionString(action)<<endl;
           mw->timer.start();
           
           if(action < A_AUGMENT_END)
@@ -426,10 +441,11 @@ void PigaleThread::run()
           // post an event to execute the graphics
           mw->pigaleThreadRet = ret;
           handlerEvent *e = new handlerEvent(ret,drawingType,saveType);
+          mutex.lock();
           QApplication::postEvent(mw,e);
           }
-      
-      mutex.lock();
+      else
+          mutex.lock();
       if(!restart) condition.wait(&mutex);
       restart = false;
       mutex.unlock();
@@ -444,25 +460,17 @@ void PigaleThread::run()
               {mw->threadServer->writeClientEvent(":ERROR "+getErrorString()+" : "+mw->getActionString(action));
               setError();
               mw->threadServer->writeClientEvent("!!");
+              mw->threadServer->serverReady();
               }
           else
               {if(action ==  A_TRANS_SEND_PNG)
-                  {mw->threadServer->lockMutex();
                   mw->threadServer->Png();
-                  mw->threadServer->unlockMutex();
-                  }
               else if(action ==  A_TRANS_SEND_PS)
-                  {mw->threadServer->lockMutex();
                   mw->threadServer->Ps();
-                  mw->threadServer->unlockMutex();
-                  }
               else
-                  {mw->threadServer->lockMutex();
-                  mw->threadServer->writeClientEvent(QString("!%1 S").arg(mw->getActionString(action)));
-                  mw->threadServer->unlockMutex();
-#ifdef TDEBUG              
+                  {mw->threadServer->writeClientEvent(QString("!%1 S").arg(mw->getActionString(action)));
                   //cout <<"      -> end thread:"<<(const char*)mw->getActionString(action)<<endl;
-#endif
+                  mw->threadServer->serverReady();
                   }
               }
           }

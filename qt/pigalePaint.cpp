@@ -13,18 +13,8 @@
 #include <QT/pigalePaint.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
-#include <q3paintdevicemetrics.h> 
-//Added by qt3to4:
-//#include <QWheelEvent>
-//#include <QPixmap>
 #include <qpixmap.h>
-// #include <QPaintEvent>
 #include <Q3PointArray>
-// #include <QHideEvent>
-// #include <QKeyEvent>
-// #include <QShowEvent>
-// #include <QResizeEvent>
-// #include <QMouseEvent>
 
 void DrawPolrec(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -460,38 +450,37 @@ pigalePaint::pigalePaint(QWidget *parent, const char *name,pigaleWindow *f):
   setFocusPolicy(Qt::ClickFocus); 
   }
 void pigalePaint::print(QPrinter* printer)
-  { QString FileName="";
-    QString OldFileName="";
-    bool outf=false;
-    QPrinter::Orientation orient=QPrinter::Portrait;
-    QPrinter::ColorMode cm=QPrinter::Color;
-    if(index < 0)return;
-    if(mw->ServerExecuting)
-      { FileName = QString("/tmp/server%1.ps").arg(mw->ServerClientId);
-	orient=printer->orientation();
-	cm=printer->colorMode();
-	printer->setOrientation(QPrinter::Portrait);
-	printer->setColorMode(QPrinter::Color);
-	OldFileName=printer->outputFileName();
-	printer->setOutputFileName(FileName);
-	outf=printer->outputToFile();
-	printer->setOutputToFile(true);
+  {QString FileName="";
+  QString OldFileName="";
+  bool outf=false;
+  QPrinter::Orientation orient=QPrinter::Portrait;
+  QPrinter::ColorMode cm=QPrinter::Color;
+  if(index < 0)return;
+  if(mw->ServerExecuting)
+      {FileName = QString("/tmp/server%1.ps").arg(mw->ServerClientId);
+      orient=printer->orientation();
+      cm=printer->colorMode();
+      printer->setOrientation(QPrinter::Portrait);
+      printer->setColorMode(QPrinter::Color);
+      OldFileName=printer->outputFileName();
+      printer->setOutputFileName(FileName);
+      outf=printer->outputToFile();
+      printer->setOutputToFile(true);
       }
-    else if(!printer->setup(this)) return;
-    { QPainter pp(printer);
-      Q3PaintDeviceMetrics pdm(printer);
-      int nx = width();
-      int ny = height();
-      double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
-      printer->setResolution((int)(scale*printer->resolution()+.5));
-      drawIt(&pp);
-    }
-    if(mw->ServerExecuting)
-      {
-	printer->setOrientation(orient); 
-	printer->setColorMode(cm);
-	printer->setOutputFileName(OldFileName);
-	printer->setOutputToFile(outf);
+  else if(!printer->setup(this)) return;
+  
+//   int nx = width();
+//   int ny = height();
+//   double scale = Max((double)nx/(double) printer->width(),(double)ny/(double)printer->height());
+//   printer->setResolution((int)(scale*printer->resolution()+.5));
+  QPainter pp(printer);
+  drawIt(&pp);
+
+  if(mw->ServerExecuting)
+      {printer->setOrientation(orient); 
+      printer->setColorMode(cm);
+      printer->setOutputFileName(OldFileName);
+      printer->setOutputToFile(outf);
       }
   }
 void pigalePaint::png()
@@ -534,11 +523,7 @@ void pigalePaint::update(int i,bool newDrawing)
   xtr0 = xtr  =  - xmin*xscale + border;
   yscale0 = yscale = Wy_max/(ymax - ymin);
   ytr0 = ytr  =   - ymin*yscale +border;
-#if QT_VERSION < 300
-  mw->tabWidget->changeTab(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
-#else
   mw->tabWidget->setTabLabel(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
-#endif
   mw->tabWidget->showPage(this);
   }
 #include <qstyle.h>
@@ -546,6 +531,7 @@ void pigalePaint::paintEvent(QPaintEvent * e)
   {if(isHidden)return;
   QWidget::paintEvent(e);
   QPainter p(this);
+  p.setRenderHint(QPainter::Antialiasing,true);
  //  QStylePainter p(this);
 //   //QStyleOptionFocusRect option(1);
 //   QStyleOption option(1);

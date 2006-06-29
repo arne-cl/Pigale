@@ -15,8 +15,7 @@
 #include <TAXI/Tgf.h>
 #include <QT/Misc.h> 
 #include <qstatusbar.h>
-#include <q3toolbar.h>
-#include <q3filedialog.h>
+#include <QFileDialog>
 #include <qinputdialog.h> 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -39,7 +38,7 @@ void pigaleWindow::load()
       if(filter.contains(extension))selfilter=filter;
       }
     formats += "All (*)";
-    QString FileName = Q3FileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
+    QString FileName = QFileDialog::getOpenFileName(fi.filePath(),formats.join(";;"),this,
                                                     "load dialog",tr("Choose a file to open"),&selfilter);
     //setError();
     if(!FileName.isEmpty())
@@ -216,7 +215,7 @@ void pigaleWindow::saveAs()
 	formats += filter;
 	if (i==0) selfilter=filter;
       }
-    QString FileName = Q3FileDialog::getSaveFileName(fi.filePath(),formats.join(";;"),this,
+    QString FileName = QFileDialog::getSaveFileName(fi.filePath(),formats.join(";;"),this,
                                                     "save dialog",tr("Choose a filename to save under"),
                                                     &selfilter);
     if(FileName.isEmpty())return;

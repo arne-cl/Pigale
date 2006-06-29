@@ -19,6 +19,7 @@
 #include "mouse_actions.h"
 #include "gprop.h"
 #include "LineEditNum.h"
+#include "ClientSocket.h"
 
 #include <QT/pigaleWindow_doc.h> 
 #include <QT/Misc.h>
@@ -92,8 +93,9 @@ int pigaleWindow::getId(QAction *action)
   }
 
 pigaleWindow::pigaleWindow()
-    :QMainWindow(0,"pigaleWindow",Qt::WDestructiveClose)
-    ,ServerExecuting(false),ServerClientId(0) // end public
+//    :QMainWindow(0,"pigaleWindow",Qt::WDestructiveClose)
+//    :QMainWindow(0, Qt::WA_DeleteOnClose)
+    :ServerExecuting(false),ServerClientId(0) // end public
     ,GraphIndex1(1)
     //start private
     ,pigaleThread(this) // ?
@@ -104,6 +106,7 @@ pigaleWindow::pigaleWindow()
     ,MacroExecuting(false),MacroPlay(false),Server(false)
     
   {setError();// Initialize Error
+  server = NULL;
   // Macros
   MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
   MacroNumActions = 0;
@@ -456,7 +459,13 @@ pigaleWindow::pigaleWindow()
   file->insertSeparator();
   file->addAction(tr("&Init server"),this, SLOT(initServer()));
   file->insertSeparator();
-  file->addAction(tr("&Quit"),qApp,SLOT(closeAllWindows()));
+  QAction * exitAct = new QAction(tr("E&xit"),this);
+  exitAct->setShortcut(tr("Ctrl+Q"));
+  exitAct->setStatusTip(tr("Exit the application"));
+  connect(exitAct, SIGNAL(triggered()),this,SLOT(close()));
+  file->addAction(exitAct);
+  //file->addAction(tr("&Quit"),this,SLOT(close()));
+  //file->addAction(tr("&Quit"),qApp,SLOT(closeAllWindows()));
 
   QMenu *augment = menuBar()->addMenu( tr("&Augment")); 
   action = augment->addAction(xmanIcon,tr("Make &Connected (edge)")); 
@@ -676,7 +685,7 @@ pigaleWindow::pigaleWindow()
   help->addSeparator();
   help->addAction(helpAct);
   help->addSeparator();
-  help->addAction(tr("About &Qt..."), this, SLOT(aboutQt()));
+  help->addAction(tr("About &Qt..."), qApp, SLOT(aboutQt()));
   help->addAction(tr("&About..."), this, SLOT(about()),Qt::Key_F1);
   //End of the menuBar():window
  
@@ -742,9 +751,29 @@ pigaleWindow::pigaleWindow()
   }
 pigaleWindow::~pigaleWindow()
   {delete printer;
-  pigaleThread.terminate();pigaleThread.wait();
+//   if(server)
+//       {server->close();
+//       cout<<"closing server"<<endl;
+//       delete server;
+//       }
+//   pigaleThread.terminate();pigaleThread.wait();
+//   UndoErase();
+//   LogPrintf("END\n");
+//   cout<<"END"<<endl;
+  }
+void pigaleWindow::closeEvent(QCloseEvent *event)
+  {
+  if(server)
+      {server->close();
+      //cout<<"closing server"<<endl;
+      //delete server;
+      }
+  
+  pigaleThread.stop();
+
   UndoErase();
   LogPrintf("END\n");
+  event->accept();
   }
 void pigaleWindow::AllowAllMenus()
   {QMapIterator<int,QAction *> i(menuIntAction);

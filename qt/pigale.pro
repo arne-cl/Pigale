@@ -1,25 +1,17 @@
 TEMPLATE = app
 
 win32 {
-      ENABLE_STATIC=yes
-      MQTDIR=C:\Qt\4.1.2\
-      MODE = release
-      ENABLE_STATIC=yes
-      DISTPATH=g:\pigale\Pigale
-      DESTDIR=$$DISTPATH/bin
+      include(../wpigale.inc)
       MOC_DIR = moc
-      DEFINES += _WIN32
-      win32:LIBS += -Wl,-rpath ../glut -L../glut -l glut32 
-      QMAKE_CXXFLAGS_WARN_ON =  -Wall -Wextra 
+      QMAKE_CXXFLAGS_WARN_ON =  -Wall 
+      DEFINES +=  __MINGW32__ _WIN32
+      DEFINES += GLUT_NO_LIB_PRAGMA	
       } else {
       include(../pigale.inc)
-      unix:LIBS +=$$LIBGLUT
       MOC_DIR = .moc
       QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
       DESTDIR=$$DISTPATH/bin
       }
-
-
 
 INCLUDEPATH = ../incl
 DEPENDPATH = ../incl
@@ -70,10 +62,10 @@ CONFIG(debug, debug|release) {
     #message(qt: $$QMAKE_CXXFLAGS_DEBUG)
     contains(ENABLE_STATIC,"yes")  {
           unix:LIBS += $$DISTPATH/lib/libtgraph_debug.a
-          win32:LIBS +=../tgraph/debug/libtgraph_debug.a 
+          win32:LIBS +=../tgraph/libtgraph_debug.a 
           }  else  {
           unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph_debug
-          win32:LIBS += -Wl,-rpath ../tgraph/release -L../tgraph/$$Mode -l tgraph 
+          win32:LIBS += -Wl,-rpath ../tgraph -L../tgraph -l tgraph_debug 
           }
     } else {
     TARGET = pigale
@@ -82,19 +74,23 @@ CONFIG(debug, debug|release) {
     #message(qt: $$QMAKE_CXXFLAGS_RELEASE)
     contains(ENABLE_STATIC,"yes")  {
         unix:LIBS += $$DISTPATH/lib/libtgraph.a
-        win32:LIBS +=../tgraph/release/libtgraph.a 
+        win32:LIBS +=../tgraph/libtgraph.a 
         } else  {
         unix:LIBS += -Wl,-rpath $$DISTPATH/lib -L$$DISTPATH/lib -l tgraph
-        win32:LIBS += -Wl,-rpath ../tgraph/$$release -L../tgraph/release -l tgraph 
+        win32:LIBS += -Wl,-rpath ../tgraph/ -L../tgraph/ -l tgraph 
         }
     }
 
-QT += qt3support opengl network xml
 
+DEFINES += FREEGLUT FREEGLUT_STATIC
+unix:LIBS += $$DISTPATH/lib/libglut.a
+win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
+
+QT += qt3support opengl network xml
+DESTDIR = .
 unix {
-      DESTDIR=.
       # awk
-      awk.depends = ../incl/QT/Action_def.h FORCE
+      awk.depends = ../incl/QT/Action_def.h
       awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
       QMAKE_EXTRA_TARGETS += awk
       # Translations
@@ -107,23 +103,38 @@ unix {
       # Installation
       translations.files = pigale_fr.qm qt_fr.qm
       translations.path = $$DISTPATH/translations
-      INSTALLS += translations
-      # Installation bin
-      exec.files = $$TARGET
-      exec.path =  $$DISTPATH/bin
-      INSTALLS += exec
+      target.path =  $$DISTPATH/bin
+      INSTALLS += target translations
       # Distribution
       DISTDIR=..
       DISTFILES += gnumakefile
-      depends += awk
-      #message(extra target $$QMAKE_EXTRA_TARGETS) 
+      PRE_TARGETDEPS = awk
 }
-
+win32 {
+      # Installation
+      target.path =  $$DISTPATH/bin
+      translations.files = pigale_fr.qm qt_fr.qm
+      translations.path = $$DISTPATH/translations
+      doc.files = ../Doc/icones/*.png ../Doc/icones/*.gif ../Doc/*.html ../Doc/*.css 
+      doc.path = $$DISTPATH/Doc
+      tgf.files = ../tgf/*.*
+      tgf.path = $$DISTPATH/tgf
+      macro.files = ../macro/*.*
+      macro.path = $$DISTPATH/macro
+      INSTALLS += target translations doc tgf macro
+      contains(DLL,"yes") {
+           dll.files = $$MQTDIR/bin/QtCore4.dll $$MQTDIR/bin/QtGui4.dll $$MQTDIR/bin/Qt3Support4.dll 
+           dll.files += $$MQTDIR/bin/QtNetwork4.dll $$MQTDIR/bin/QtOpenGL4.dll $$MQTDIR/bin/QtXml4.dll
+           dll.files += $$MQTDIR/bin/QtSql4.dll $$MQTDIR/bin/QtSvg4.dll
+           dll.files += $$MINGW//bin/mingwm10.dll
+           dll.path = $$DISTPATH/bin  
+           INSTALLS += dll
+      }
+ 
+}
 
 contains(ENABLE_STATIC,"yes") {
   message(configuring $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
-  #message(using libraries:$$LIBS)
 } else {
   message(configuring $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
-  #message(using libraries:$$LIBS)
 }

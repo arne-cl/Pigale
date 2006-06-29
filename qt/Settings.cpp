@@ -76,8 +76,9 @@ void pigaleWindow:: SaveSettings()
   setting.insertSearchPath(QSettings::Windows,"/pigale");
   setting.writeEntry("/pigale/TgfFile input",InputFileName);
   setting.writeEntry("/pigale/TgfFile output",OutputFileName);
-  setting.writeEntry("/pigale/geometry width",this->width());
-  setting.writeEntry("/pigale/geometry height",this->height());
+  setting.writeEntry("/pigale/geometry width",width());
+  setting.writeEntry("/pigale/geometry height",height());
+  setting.setValue("pos", pos());
   setting.writeEntry("/pigale/debug enable",debug());
   setting.writeEntry("/pigale/arrow enable",ShowArrow());
   setting.writeEntry("/pigale/orientation enable",ShowOrientation());
@@ -142,6 +143,8 @@ void pigaleWindow::LoadSettings()
   // Screen size
   pigaleWindowInitYsize = setting.readNumEntry("/pigale/geometry height",600);
   pigaleWindowInitXsize = setting.readNumEntry("/pigale/geometry width",800);
+  QPoint pos = setting.value("pos", QPoint(200, 200)).toPoint();
+  move(pos);
   debug() = setting.readBoolEntry("/pigale/debug enable",false);
   ShowArrow() = setting.readBoolEntry("/pigale/arrow enable",true);
   ShowOrientation() = setting.readBoolEntry("/pigale/orientation enable",true);

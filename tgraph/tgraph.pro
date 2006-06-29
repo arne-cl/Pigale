@@ -1,12 +1,7 @@
 TEMPLATE = lib
 
 win32 {
-      MQTDIR=C:\Qt\4.1.2\
-      MODE = release
-      ENABLE_STATIC=yes
-      DISTPATH=g:\pigale\Pigale
-      ENABLE_STATIC=yes
-      DEFINES += MINGW _WINDOWS
+      include(..\wpigale.inc)
       DESTDIR=.
       QMAKE_CXXFLAGS_WARN_ON =  -Wall -Wextra
       message(Windows $$DISTPATH)
@@ -76,7 +71,7 @@ SOURCES =\
     Vision.cpp
 
 
-CONFIG += qt thread $$MODE
+CONFIG = thread $$MODE
 contains(ENABLE_STATIC,"yes") {
  CONFIG += static
 }
@@ -99,6 +94,11 @@ unix {
      distdir.commands =
      QMAKE_EXTRA_TARGETS += distdir
      DESTDIR=$$DISTPATH/lib
+      # awk
+      awk.depends = ../incl/TAXI/propdef.h
+      awk.commands = $$AWK -f propname.awk ../incl/TAXI/propdef.h > PropName.cpp
+      QMAKE_EXTRA_TARGETS += awk
+      PRE_TARGETDEPS = awk
 }
 
 contains(ENABLE_STATIC,"yes") {
