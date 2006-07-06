@@ -1,27 +1,16 @@
 :D
 RC_GRAPH;../tgf/graph.txt
-VISION
+POLYLINE
 PNG
-RC_GRAPH;../tgf/a.tgf;1
-GVISION
-N
-M
+TUTTE_CIRCLE
+CURVES
 PNG
+TRIANGLE_CONTACT
+PNG
+T_CONTACT
+PNG
+RC_GRAPH;../tgf/sym.graphml
 EMBED-3d
-PNG
-FPP_FARY
-SPRING_PM
-PNG
-RC_GRAPH;../tgf/a.tgf;1
-SPRING_PM:
-PNG
-FPP_RECTI
-PNG
-EMBED-3d
-PNG
-#read an ascii file containing a graph
-RC_GRAPH;../tgf/graph.txt
-VISION
 PNG
 #create a graph
 N_GRAPH
@@ -37,26 +26,28 @@ N_E;2;4
 N_E;2;5
 N_E;3;4
 N_E;3;5
-#graph planar:
-PLAN
 TUTTE_CIRCLE
 SPRING_PM
 PNG
-#RS_SAVE_GRAPH;g.graphml;
-#generate a graph
-GEN_M;50
+#generate a  4-regular 3-connected graph
+GEN_M;30
 GEN_PLANAR_4R_3C
-N
-M
-EMBED-3d
+CCD
 PNG
-RC_GRAPH;../../tgf/a.tgf;3
-N
-M
-# and close the file
-:X
+#generate a 3-connected bipartite graph
+GEN_PLANAR_BIP_3C
+CONTACT_BIPARTI
+PNG
+POLAR
+PNG
+FPP_RECTI
+PNG
+POLREC_BFS
+PNG
 # quit
-#:! 
+:!
+# close
+#:X 
 
 
 
