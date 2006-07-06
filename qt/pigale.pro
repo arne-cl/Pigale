@@ -115,13 +115,15 @@ win32 {
       target.path =  $$DISTPATH/bin
       translations.files = pigale_fr.qm qt_fr.qm
       translations.path = $$DISTPATH/translations
-      doc.files = ../Doc/icones/*.png ../Doc/icones/*.gif ../Doc/*.html ../Doc/*.css 
+      doc.files = ../Doc/*.html ../Doc/*.css 
       doc.path = $$DISTPATH/Doc
+      ico.files = ../Doc/icones/*.png ../Doc/icones/*.gif
+      ico.path  = $$DISTPATH/Doc/icones
       tgf.files = ../tgf/*.*
       tgf.path = $$DISTPATH/tgf
       macro.files = ../macro/*.*
       macro.path = $$DISTPATH/macro
-      INSTALLS += target translations doc tgf macro
+      INSTALLS += target translations doc ico tgf macro
       contains(DLL,"yes") {
            dll.files = $$MQTDIR/bin/QtCore4.dll $$MQTDIR/bin/QtGui4.dll $$MQTDIR/bin/Qt3Support4.dll 
            dll.files += $$MQTDIR/bin/QtNetwork4.dll $$MQTDIR/bin/QtOpenGL4.dll $$MQTDIR/bin/QtXml4.dll
