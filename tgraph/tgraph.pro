@@ -95,10 +95,11 @@ unix {
      QMAKE_EXTRA_TARGETS += distdir
      DESTDIR=$$DISTPATH/lib
       # awk
-      awk.depends = ../incl/TAXI/propdef.h
+      awk.target = ../incl/TAXI/propdef.h
+      awk.depends = propname.awk
       awk.commands = $$AWK -f propname.awk ../incl/TAXI/propdef.h > PropName.cpp
       QMAKE_EXTRA_TARGETS += awk
-      PRE_TARGETDEPS = awk
+      PRE_TARGETDEPS = ../incl/TAXI/propdef.h
 }
 
 contains(ENABLE_STATIC,"yes") {
