@@ -14,11 +14,9 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/color.h>
 
-//in Schnyder.cpp
-bool & SchnyderLongestFace();
 void TutteCircle(GeometricGraph &G, tbrin FirstBrin);
 
-int EmbedTutteCircle(TopologicalGraph &G)
+int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace)
   {if(!G.CheckSimple() || !G.CheckPlanar())return -1;
   int m = G.ne();
   int n = G.nv();
@@ -29,7 +27,7 @@ int EmbedTutteCircle(TopologicalGraph &G)
     
   tbrin FirstBrin;
   int len;
-  if(SchnyderLongestFace())
+  if(schnyderLongestFace)
       {G.LongestFaceWalk(FirstBrin,len);G.extbrin() = FirstBrin;}
   else
       {FirstBrin = G.extbrin();len = G.FaceWalkLength(FirstBrin);}

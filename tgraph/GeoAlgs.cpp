@@ -18,6 +18,7 @@
 #include <TAXI/Tpoint.h>
 #include <TAXI/graphs.h>
 #include <TAXI/color.h>
+#include <TAXI/Tmessage.h>
 
 //GEOMETRICGRAPH *************************************************
 
@@ -485,11 +486,12 @@ int GeometricGraph::Tutte()
       }
   int ok;
   SMatrix Inv = M.Inverse(ok);
+  
   x = Inv * a;
   ForAllVerticesOfG(v) if (marked[v]) a[v()-1]=vcoord[v].y();
   y = Inv * a;
   ForAllVerticesOfG(v) vcoord[v] = Tpoint(x[v()-1], y[v()-1]);
-  return 1;
+  return ok;
   }
 
 void ColorPoles(GeometricGraph &G)

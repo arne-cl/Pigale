@@ -133,7 +133,7 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   if(a >= 3 && b >=3 )TG.planarMap() = -1;
   return &GC;
 }
-GraphContainer *GenerateRandomGraph(int a,int b)
+GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
   {if(debug())DebugPrintf("\nGenerateRandomGraph %d",randomSetSeed());  
   GraphContainer &GC = *new GraphContainer;
   int n = a;
@@ -167,7 +167,7 @@ GraphContainer *GenerateRandomGraph(int a,int b)
       }    
   randomEnd();
   TopologicalGraph TG(GC);
-  if(randomEraseMultipleEdges())TG.Simplify();
+  if(randomEraseMultipleEdges)TG.Simplify();
   return &GC;
 }
 ///////////////// GEN OUTERPLANAR /////////////////////////////
@@ -255,7 +255,7 @@ void gen_random(int *word, int length, int k)
 // l (input) : the length of the last branch of the well-orderly tree
 // n (input) : number of vertices of the outerplanar map
 // seed (input) : the Id of the outerplanar map. If Dyck and add_edges have been randomly generated, seed should be computed with randomSetSeed();
-GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, long seed)
+GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, long seed,bool randomEraseMultipleEdges)
 {int m =n-1;
   int k_m = 0;
   int j;
@@ -269,7 +269,7 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   char titre[256];
   sprintf(titre,"Outerplanar_%ld",seed);
   title() = titre;
-  Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
+  Prop<tvertex> vin(GC.PB(),PROP_VIN);
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
   Prop<long> vlabel(GC.PV(),PROP_LABEL);
   Prop<long> elabel(GC.PE(),PROP_LABEL);
@@ -306,16 +306,15 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
           vin[k_m] = k;
           vin[-k_m] = Stk.peep();
           Stk.push(k);
-      
-      if (k <2*n-2-i) 
-          {if (add_edges[ k()- 1 ] == 1) 
-              {e++;
-              elabel[e]=e();
-              k_m++;
-              vin[k_m] = k;
-              vin[-k_m] = P1;
+          if (k <2*n-2-i) 
+              {if (add_edges[ k()- 1 ] == 1) 
+                  {e++;
+                  elabel[e]=e();
+                  k_m++;
+                  vin[k_m] = k;
+                  vin[-k_m] = P1;
+                  }
               }
-          }
           }
       else 
           {P1 = Stk.pop();
@@ -327,31 +326,30 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
       }
   assert(k == 1);
   delete [] Dyck; delete [] add_edges;
+  GC.setsize(n,k_m); // as the graph may have less edges
   TopologicalGraph TG(GC);
-  if(randomEraseMultipleEdges())
+  if(randomEraseMultipleEdges)
       TG.Simplify();
   return &GC;
 }
 // Compute a random outerplanar map with n vertices
-GraphContainer *GenerateRandomOuterplanarGraph(int n) 
-  {int i;
-  int *add_edges = new int[n-1];
+GraphContainer *GenerateRandomOuterplanarGraph(int n,bool randomEraseMultipleEdges) 
+  {int *add_edges = new int[n-1];
   int *Dyck = new int[2*n-1];
-  int k;
-    for(k=0;k<=n-2;k++)
-        add_edges[k]=0;
-    for(k=0;k<=2*n-2;k++)
-        Dyck[k]=0;
-    long seed = randomSetSeed();
-    randomStart();
-    i = gen_i(n);
-    gen_Dyck_i(Dyck, i, 2*n-2);
-    gen_random(add_edges, n-i-1);
-    randomEnd();
-    return create_outerplanar(Dyck, add_edges, i, n, seed);
+  for(int k=0;k<=n-2;k++)
+      add_edges[k]=0;
+  for(int k=0;k<=2*n-2;k++)
+      Dyck[k]=0;
+  long seed = randomSetSeed();
+  randomStart();
+  int i = gen_i(n);
+  gen_Dyck_i(Dyck, i, 2*n-2);
+  gen_random(add_edges, n-i-1);
+  randomEnd();
+  return create_outerplanar(Dyck, add_edges, i, n, seed,randomEraseMultipleEdges);
   }
 // Compute a random outerplanar map with n vertices and m edges.
-GraphContainer *GenerateRandomOuterplanarGraph(int n,int m)
+GraphContainer *GenerateRandomOuterplanarGraph(int n,int m,bool randomEraseMultipleEdges)
   { int i,k;
   int *add_edges = new int[n-1];
   int *Dyck = new int[2*n-1];
@@ -370,7 +368,7 @@ GraphContainer *GenerateRandomOuterplanarGraph(int n,int m)
   gen_Dyck_i(Dyck, i, 2*n-2);
   gen_random(add_edges, n-i-1, m-(n-1));
   randomEnd();
-  return create_outerplanar(Dyck, add_edges, i, n, seed);
+  return create_outerplanar(Dyck, add_edges, i, n, seed,randomEraseMultipleEdges);
   }
 
 

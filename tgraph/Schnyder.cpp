@@ -16,21 +16,6 @@
 #include <TAXI/color.h>
 #include <TAXI/embedrn.h>
 
-bool & SchnyderRect()
-  {static bool _SchnyderRect = false;
-  return _SchnyderRect;
-  }
-bool & SchnyderLongestFace()
-  {static bool _SchnyderLongestFace = true;
-  return _SchnyderLongestFace;
-  }
-bool & SchnyderColor()
-  {static bool _SchnyderColor = false;
-  return _SchnyderColor;
-  }
-
-// 1: equilateral 2: to left 3: to right
-//int SchnyderShape;
 
 static void CountParents(GeometricGraph &G, short TreeColor, tbrin RootBrin,
                          svector<tvertex> &Father,svector<int> &Descendants,
@@ -112,7 +97,7 @@ svector<int> &x, svector<int>&y, svector<int> &z)
   z[v_n] = 0;
   }
 
-static void CalcXY(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
+static void CalcXY(TopologicalGraph &G, tbrin brin,svector<short> &ecolor,bool shape)
   {GeometricGraph G0(G);
 
   svector<int> x(1,G.nv(),(int)0), y(1,G.nv(),(int)0), z(1,G.nv(),(int)0);
@@ -122,27 +107,24 @@ static void CalcXY(TopologicalGraph &G, tbrin brin,svector<short> &ecolor)
   CalcXYZ(G,brin,ecolor,x,y,z);
 
   double a11, a12, a21, a22;
-  if (!SchnyderRect() == 1)          // equilateral
-  //if (SchnyderShape == 1)          // equilateral
+  if(!shape)          // equilateral
       {a11 = 1.0;
       a12 = 0.5;
       a21 = 0.0;
       a22 = pow(3.0, 0.5) / 2.0;
       }
-  /*
-  else if (SchnyderShape == 2)    // rectangle
+  else     // rectangle
       {a11 = 1.0;
       a12 = 0.0;
       a21 = 0.0;
       a22 = 1.0;
       }
-  */
-  else                           // right rectangle
-      {a11 = 1.0;
-      a12 = 1.0;
-      a21 = 0.0;
-      a22 = 1.0;
-      }
+//   else                           // right rectangle
+//       {a11 = 1.0;
+//       a12 = 1.0;
+//       a21 = 0.0;
+//       a22 = 1.0;
+//       }
 
   Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
   for (tvertex v = 1; v <= G.nv(); v++)
@@ -235,7 +217,8 @@ int TopologicalGraph::SchnyderOrient(tbrin FirstBrin)
   ForAllEdgesOfG(e) eoriented[e] = true;
   return 0;
   }
-int TopologicalGraph::Schnyder(tbrin FirstBrin)
+int TopologicalGraph::Schnyder(bool schnyderRect,bool schnyderColor,bool schnyderLongestFace
+                               ,tbrin FirstBrin)
   {if(nv() < 3)return -1;
   if(!CheckSimple())return -1;
   int OldNumEdge = ne();
@@ -243,7 +226,7 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
   if(!CheckPlanar())return -1;
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
   int len;
-  if(!FirstBrin && SchnyderLongestFace() && !MaxPlanar)
+  if(!FirstBrin && schnyderLongestFace && !MaxPlanar)
       LongestFace(FirstBrin,len);
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
@@ -251,15 +234,15 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
  //if(!MaxPlanar && TriconTriangulate())return -2; // only if triconnected
   if(!MaxPlanar && ZigZagTriangulate())return -2;
 
-  if(SchnyderColor())
+  if(schnyderColor)
       {Prop<short> ecolor(Set(tedge()),PROP_COLOR);
       SchnyderDecomp(*this,FirstBrin,ecolor);
-      CalcXY(*this,FirstBrin,ecolor);
+      CalcXY(*this,FirstBrin,ecolor,schnyderRect);
       }
   else
       {svector<short> eecolor(1,ne());
       SchnyderDecomp(*this,FirstBrin,eecolor);
-      CalcXY(*this,FirstBrin,eecolor);
+      CalcXY(*this,FirstBrin,eecolor,schnyderRect);
       }
 
   // delete the edges added by Connexity and Triangulation
@@ -267,7 +250,8 @@ int TopologicalGraph::Schnyder(tbrin FirstBrin)
   extbrin() = extOld;
   return 0;
   }
-int TopologicalGraph::SchnyderXYZ(tbrin FirstBrin,svector<int> &x,svector<int>&y,svector<int>&z)
+int TopologicalGraph::SchnyderXYZ(bool schnyderColor,bool schnyderLongestFace,
+                                  tbrin FirstBrin,svector<int> &x,svector<int>&y,svector<int>&z)
   {if(nv() < 3)return -1;
   if(!CheckSimple())return -1;
   int OldNumEdge = ne();
@@ -275,7 +259,7 @@ int TopologicalGraph::SchnyderXYZ(tbrin FirstBrin,svector<int> &x,svector<int>&y
   if(!CheckPlanar())return -1;
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
   int len;
-  if(!FirstBrin && SchnyderLongestFace() && !MaxPlanar)
+  if(!FirstBrin && schnyderLongestFace && !MaxPlanar)
       LongestFace(FirstBrin,len);
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
@@ -283,7 +267,7 @@ int TopologicalGraph::SchnyderXYZ(tbrin FirstBrin,svector<int> &x,svector<int>&y
   //if(!MaxPlanar && TriconTriangulate() && ZigZagTriangulate())return -2;
   if(!MaxPlanar && ZigZagTriangulate())return -2;
 
-  if(SchnyderColor())
+  if(schnyderColor)
       {Prop<short> ecolor(Set(tedge()),PROP_COLOR);
       SchnyderDecomp(*this,FirstBrin,ecolor);
       CalcXYZ(*this,FirstBrin,ecolor,x,y,z);
@@ -299,7 +283,8 @@ int TopologicalGraph::SchnyderXYZ(tbrin FirstBrin,svector<int> &x,svector<int>&y
   extbrin() = FirstBrin;
   return 0;
   }
-int TopologicalGraph::SchnyderV(tbrin FirstBrin)
+int TopologicalGraph::SchnyderV(bool schnyderRect,bool schnyderColor,bool schnyderLongestFace
+                                ,tbrin FirstBrin)
 // FirstBrin will be on left top
   {if(nv() < 3)return -1;
   if(!CheckSimple())return -1;
@@ -312,7 +297,7 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
 
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
   int len;
-  if(!FirstBrin && SchnyderLongestFace() && !MaxPlanar)
+  if(!FirstBrin && schnyderLongestFace && !MaxPlanar)
       LongestFace(FirstBrin,len);
   else if(FirstBrin == 0)
       {FirstBrin = extbrin();FirstBrin = -acir[FirstBrin];}
@@ -320,15 +305,15 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
   if(!MaxPlanar && VertexTriangulate())return -2;
 
 
-  if(SchnyderColor())
+  if(schnyderColor)
       {Prop<short> ecolor(Set(tedge()),PROP_COLOR);
       SchnyderDecomp(*this,FirstBrin,ecolor);
-      CalcXY(*this,FirstBrin,ecolor);
+      CalcXY(*this,FirstBrin,ecolor,schnyderRect);
       }
   else
       {svector<short> eecolor(1,ne());
       SchnyderDecomp(*this,FirstBrin,eecolor);
-      CalcXY(*this,FirstBrin,eecolor);
+      CalcXY(*this,FirstBrin,eecolor,schnyderRect);
       }
 
   // delete the edges added by Connexity and Triangulation
@@ -337,7 +322,7 @@ int TopologicalGraph::SchnyderV(tbrin FirstBrin)
   return 0;
   }
 
-int Embed3dSchnyder(TopologicalGraph &G0)
+int Embed3dSchnyder(TopologicalGraph &G0,bool schnyderLongestFace)
 {
   if(G0.nv() < 3 || G0.ne() < 2)return -1;
   if (!G0.TestPlanar() || !G0.CheckSimple()) return -1;
@@ -348,7 +333,7 @@ int Embed3dSchnyder(TopologicalGraph &G0)
   bool MaxPlanar = (G0.ne() != 3 * G0.nv() - 6) ? false : true;
   int len;
   tbrin FirstBrin = 1;
-  if(!MaxPlanar && SchnyderLongestFace())G0.LongestFace(FirstBrin,len);
+  if(!MaxPlanar && schnyderLongestFace)G0.LongestFace(FirstBrin,len);
   if(!MaxPlanar && G0.ZigZagTriangulate())return -2;
 
   // Creating a new vertex and an edge incident to it

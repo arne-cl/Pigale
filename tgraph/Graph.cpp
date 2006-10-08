@@ -45,7 +45,6 @@ void  TopologicalGraph::init()
   pbrin.clear();
   tvertex v;
   vin[0]=0;
-
   for (tbrin b = -ne(); b <= ne(); b++)
       {v = vin[b];
       if(pbrin[v] == 0)

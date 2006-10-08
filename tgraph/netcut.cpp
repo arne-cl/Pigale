@@ -53,19 +53,15 @@ static Locals *l;
   \sa EmbedRnGraph::init()
   \relates EmbedRnGraph
 */
-int & useDistance()
-  {static int _dist = 4;
-  return _dist;
-  }
 
 //! Embed the graph in \f$\mathbb{R}^{n-1}\f$ and fill the coordinates of the point in an \f$\mathbb{R}^3\f$ projection
 /*!
   \param G0 Refrence to the topologcal graph to embed
   \pre The graph should have at least 3 vertices and 2 edges
 */
-int Embed3d(TopologicalGraph &G0)
+int Embed3d(TopologicalGraph &G0,int usedDistance)
   {if(G0.nv() < 3 || G0.ne() < 2)return -1;
-  EmbedRnGraph G(G0);
+  EmbedRnGraph G(G0,usedDistance);
 
   if(!G.ok){Tprintf("DIAG ERROR (Complete Graph?)"); return -1; }
   RnEmbedding &em=*new RnEmbedding(G0.nv(),G0.nv()-1,G0.TestPlanar());
@@ -99,12 +95,12 @@ int Embed3d(TopologicalGraph &G0)
   \param NumberOfClasses Required number of classes
   \pre The graph should have at least 3 vertices and 2 edges
 */
-int split(Graph &G0,int &NumberOfClasses)
+int split(Graph &G0,int &NumberOfClasses,int usedDistance)
 // Pas de boucles ou aretes multiples
   {if(G0.nv() < 3 || G0.ne() < 2)return -1;
   int i;
   int MaxDimension = G0.nv()-1;
-  SplitGraph G(G0,NumberOfClasses,MaxDimension);
+  SplitGraph G(G0,NumberOfClasses,MaxDimension,usedDistance);
   Tprintf("#Classes:%d",G.NumberOfClasses);
  if(debug()) 
       {LogPrintf("TSPLIT");
@@ -147,7 +143,7 @@ int split(Graph &G0,int &NumberOfClasses)
 
 /******************************************************************************************/
 //! Computes a distance among the vertices of the graph and embed it in \f$\mathbb{R}^{n-1}\f$
-void EmbedRnGraph::init()
+void EmbedRnGraph::init(int usedDistance)
   {EigenValues.resize(1,nv());
   // Allocation du tableau Distances
   Distances = new double*[nv() + 1];
@@ -161,41 +157,41 @@ void EmbedRnGraph::init()
       Coords[i] = new double[nv() + 1];
 
   if(debug()) 
-      {if(useDistance() == 0)
+      {if(usedDistance == 0)
 	  DebugPrintf("Distance: Czekanovski-Dice"); 
-      else if(useDistance() == 1)
+      else if(usedDistance == 1)
 	  DebugPrintf("Distance: Bisection"); 
-      else if(useDistance() == 2)
+      else if(usedDistance == 2)
 	  DebugPrintf("Distance: Adjacence"); 
-      else if(useDistance() == 3)
+      else if(usedDistance == 3)
 	  DebugPrintf("Distance: Adjacence M"); 
-      else if(useDistance() == 4) 
+      else if(usedDistance == 4) 
 	  DebugPrintf("Distance: Laplacian"); 
-      else if(useDistance() == 5) 
+      else if(usedDistance == 5) 
 	  DebugPrintf("Distance: Q-distance");
-      else if(useDistance() == 6) 
+      else if(usedDistance == 6) 
 	  DebugPrintf("Distance: Orient");
-      else if(useDistance() == 7) 
+      else if(usedDistance == 7) 
 	  DebugPrintf("Distance: R2");
       else
 	  DebugPrintf("Distance: Czekanovski-Dice!!!!"); 
       }
   bool project = true;
-  if(useDistance() == 0)             // Czekanovski-Dice
+  if(usedDistance == 0)             // Czekanovski-Dice
       ComputeCzekanovskiDistances();            
-  else if(useDistance() == 1)        // Bisection
+  else if(usedDistance == 1)        // Bisection
       ComputeBisectDistances();
-  else if(useDistance() == 2)        // Adjacence
+  else if(usedDistance == 2)        // Adjacence
       ComputeAdjacenceDistances();
-  else if(useDistance() == 3)        // Adjacence M
+  else if(usedDistance == 3)        // Adjacence M
       ComputeAdjacenceMDistances();
-  else if(useDistance() == 4)        // Laplacian 
+  else if(usedDistance == 4)        // Laplacian 
       {ComputeLaplacianDistances();project = false;}
-  else if(useDistance() == 5)        // Q-distance 
+  else if(usedDistance == 5)        // Q-distance 
       ComputeQDistances();
-  else if(useDistance() == 6)        // Orient 
+  else if(usedDistance == 6)        // Orient 
       ComputeOrientDistances();
-  else if(useDistance() == 7)        // R2 
+  else if(usedDistance == 7)        // R2 
       ComputeR2Distances();
   else
       ComputeCzekanovskiDistances(); //Neigbour

@@ -19,11 +19,7 @@
 #define HOR_LEFT 1
 #define HOR_RIGHT 2
 
-//in Schnyder.cpp
-bool & SchnyderRect();
-bool & SchnyderLongestFace();
-//in here
-int EmbedFPP_Rect(TopologicalGraph &G);
+int EmbedFPP_Rect(TopologicalGraph &G,bool schnyderLongestFace);
 
 
 class Constraints: public TopologicalGraph
@@ -161,10 +157,10 @@ void Constraints::ComputeCoord_Rect(tvertex iv,tvertex iv1,tvertex iv2,int forme
 */
 
 
-int EmbedFPP(TopologicalGraph &G)
+int EmbedFPP(TopologicalGraph &G,bool schnyderRect,bool schnyderLongestFace)
   {if(G.nv() < 3)return -1;
   if(!G.CheckSimple())return -1;
-  if(SchnyderRect())return EmbedFPP_Rect(G);
+  if(schnyderRect)return EmbedFPP_Rect(G,schnyderLongestFace);
   int OldNumEdge = G.ne();
   PSet1  propSave(G.Set());
   G.MakeConnected();
@@ -172,7 +168,7 @@ int EmbedFPP(TopologicalGraph &G)
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin ee;
-  if(SchnyderLongestFace() && !MaxPlanar)
+  if(schnyderLongestFace && !MaxPlanar)
       {G.LongestFace(ee,len);G.extbrin() = ee;}
   else
       ee = G.extbrin();
@@ -245,7 +241,7 @@ int EmbedFPP(TopologicalGraph &G)
   return 0;
   }
 
-int EmbedFPP_Rect(TopologicalGraph &G)
+int EmbedFPP_Rect(TopologicalGraph &G,bool schnyderLongestFace)
   {int OldNumEdge = G.ne();
   PSet1  propSave(G.Set());
   G.MakeConnected();
@@ -253,7 +249,7 @@ int EmbedFPP_Rect(TopologicalGraph &G)
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin ee;
-  if(SchnyderLongestFace() && !MaxPlanar)
+  if(schnyderLongestFace && !MaxPlanar)
       {G.LongestFace(ee,len);G.extbrin() = ee;}
   else
       ee = G.extbrin();
@@ -503,7 +499,7 @@ int Recti::lrver(void)
   }
 
 
-int EmbedFPPRecti(TopologicalGraph &G)
+int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace)
   {if(G.nv() < 3)return -1;
   if(!G.CheckSimple())return -1;
   int OldNumEdge = G.ne();
@@ -513,7 +509,7 @@ int EmbedFPPRecti(TopologicalGraph &G)
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin ee;
-  if(SchnyderLongestFace() && !MaxPlanar)
+  if(schnyderLongestFace && !MaxPlanar)
       G.LongestFace(ee,len);
   else
       ee = G.extbrin();
@@ -578,7 +574,7 @@ typedef struct  {tvertex lvertex;
                 tvertex hvertex; // the highest vertex incident
                 }Tcontact;
 
-int EmbedTContact(TopologicalGraph &G)
+int EmbedTContact(TopologicalGraph &G,bool schnyderLongestFace)
   {if(debug())DebugPrintf("EmbedTContact");
   if(G.nv() < 3){if(debug())DebugPrintf(" n < 3");return -1;}
   if(!G.CheckSimple()){if(debug())DebugPrintf("not simple");return -1;}
@@ -589,7 +585,7 @@ int EmbedTContact(TopologicalGraph &G)
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin e0;
-  if(SchnyderLongestFace() && !MaxPlanar)
+  if(schnyderLongestFace && !MaxPlanar)
       G.LongestFace(e0,len);
   else
       e0 = G.extbrin();

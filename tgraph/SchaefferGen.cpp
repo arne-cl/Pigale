@@ -2565,7 +2565,8 @@ int pmFreeMap(pmMap *Map)
 
 
 //**************************************************************************
-GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
+GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity
+                                  ,bool randomEraseMultipleEdges,bool randomUseGeneratedCir)
 //n_ask must be even
   {pmSize Sizes;
   pmMethod Meth;
@@ -2778,7 +2779,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   randomEnd();
 
   // construct a topological graph
-  if(!randomUseGeneratedCir())
+  if(!randomUseGeneratedCir)
       {GC.Set(tbrin()).erase(PROP_CIR); GC.Set(tbrin()).erase(PROP_ACIR);
       GC.Set(tvertex()).erase(PROP_PBRIN);
       }
@@ -2786,12 +2787,12 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity)
   TopologicalGraph TG(GC);
   int erased  = 0;
   if(!loops){Prop1<int> numloops(TG.Set(),PROP_NLOOPS);numloops() = 0;}
-  if(randomEraseMultipleEdges() && multiple)
+  if(randomEraseMultipleEdges && multiple)
       erased = TG.Simplify();
   else if(loops)
       erased = TG.RemoveLoops();
   if(debug())LogPrintf("<GEN:(%ld) n:%d m:%d erased:%d>\n",randomSetSeed(),TG.nv(),TG.ne(),erased);
-  if(randomUseGeneratedCir())
+  if(randomUseGeneratedCir)
        {if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
        else TG.planarMap() = 1;
        }
