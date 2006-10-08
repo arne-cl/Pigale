@@ -3,14 +3,14 @@
     <name>GLWindow</name>
     <message>
         <source>Choose a file to save under</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir un fichier pour sauver</translation>
     </message>
 </context>
 <context>
     <name>GraphSym</name>
     <message>
         <source>Choose a file to save under</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir un fichier pour sauver</translation>
     </message>
 </context>
 <context>
@@ -104,7 +104,7 @@
     </message>
     <message>
         <source>Show grid</source>
-        <translation>Montrer Grille</translation>
+        <translation>Afficher Grille</translation>
     </message>
     <message>
         <source>Force G</source>
@@ -112,7 +112,7 @@
     </message>
     <message>
         <source>Undo G</source>
-        <translation>Undo G</translation>
+        <translation>Annuler G</translation>
     </message>
     <message>
         <source>Z +</source>
@@ -128,11 +128,11 @@
     </message>
     <message>
         <source>Ext Face/extbrin</source>
-        <translation type="unfinished"></translation>
+        <translation>Ext Face/extbrin</translation>
     </message>
     <message>
         <source>Label/Reset all</source>
-        <translation type="unfinished"></translation>
+        <translation>Label/Recalculer</translation>
     </message>
 </context>
 <context>
@@ -151,7 +151,7 @@
     </message>
     <message>
         <source>Contact</source>
-        <translation>Contact</translation>
+        <translation>Contact de segments</translation>
     </message>
     <message>
         <source>Polar</source>
@@ -183,11 +183,11 @@
     </message>
     <message>
         <source>Triangle contact</source>
-        <translation type="unfinished"></translation>
+        <translation>Contact de triangles</translation>
     </message>
     <message>
         <source>Choose a file to save under</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir un fichier pour sauver</translation>
     </message>
 </context>
 <context>
@@ -202,7 +202,7 @@
     </message>
     <message>
         <source>&amp;Save</source>
-        <translation>&amp;Sauver</translation>
+        <translation>Enregistrer &amp;S</translation>
     </message>
     <message>
         <source>&amp;Open</source>
@@ -210,7 +210,7 @@
     </message>
     <message>
         <source>Save &amp;as ...</source>
-        <translation>Sauver so&amp;us ...</translation>
+        <translation type="obsolete">Enregistrer sous...</translation>
     </message>
     <message>
         <source>Save Asc&amp;ii</source>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>&amp;Delete current record</source>
-        <translation>&amp;Effacer l&apos;enregistrement courant</translation>
+        <translation type="obsolete">&amp;Effacer l&apos;enregistrement courant</translation>
     </message>
     <message>
         <source>S&amp;witch Input/Output files</source>
-        <translation>&amp;Permuter entrée-sortie</translation>
+        <translation type="obsolete">&amp;Permuter entrée-sortie</translation>
     </message>
     <message>
         <source>&amp;Print</source>
@@ -277,7 +277,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;ZigZag Triangulate</source>
-        <translation>Triangulation par &amp;ZigZag</translation>
+        <translation>Trianguler par &amp;ZigZag</translation>
     </message>
     <message>
         <source>Triangulate a PLANAR graph by adding edges</source>
@@ -289,11 +289,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Optimally triangulate a PLANAR graph by adding edges</source>
-        <translation>Traingulation optimale d&apos;un graphe planaire (minimisation des degrès)</translation>
+        <translation>Triangulation optimale d&apos;un graphe planaire (minimisation des degrès)</translation>
     </message>
     <message>
         <source>Vertex &amp;Quadrangulate</source>
-        <translation>&amp;Quadrangulation par ajout de sommets</translation>
+        <translation>&amp;Quadranguler par ajout de sommets</translation>
     </message>
     <message>
         <source>Quadrangulate a planar bipartite graph</source>
@@ -341,7 +341,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>FPP Visi&amp;bility</source>
-        <translation>FPP Visi&amp;bilité</translation>
+        <translation type="obsolete">FPP Visi&amp;bilité</translation>
     </message>
     <message>
         <source>&amp;General Visibility</source>
@@ -361,7 +361,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Spring (Map &amp;Preserving)</source>
-        <translation>&amp;Spring (présevant la carte)</translation>
+        <translation type="obsolete">&amp;Spring (présevant la carte)</translation>
     </message>
     <message>
         <source>Spring Planar</source>
@@ -369,7 +369,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Embedding in Rn</source>
-        <translation>&amp;Plongement dans Rn</translation>
+        <translation type="obsolete">&amp;Plongement dans Rn</translation>
     </message>
     <message>
         <source>Schnyder in R3</source>
@@ -377,11 +377,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Geometric Dual</source>
-        <translation>Dual &amp;Géométrique</translation>
+        <translation type="obsolete">Dual &amp;Géométrique</translation>
     </message>
     <message>
         <source>Find &amp;Kuratowski</source>
-        <translation type="unfinished">Trouver &amp;Kuratowski</translation>
+        <translation>Trouver &amp;Kuratowski</translation>
     </message>
     <message>
         <source>Find &amp;Cotree Critical</source>
@@ -733,7 +733,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Angle</source>
-        <translation>&amp;Angle</translation>
+        <translation type="obsolete">&amp;Angle</translation>
     </message>
     <message>
         <source>&amp;Algo</source>
@@ -753,11 +753,11 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>About &amp;Qt...</source>
-        <translation>À propos &amp;Qt...</translation>
+        <translation type="obsolete">À propos &amp;Qt...</translation>
     </message>
     <message>
         <source>&amp;About...</source>
-        <translation>&amp;À propos...</translation>
+        <translation type="obsolete">&amp;À propos...</translation>
     </message>
     <message>
         <source>Planar &amp;bipartite</source>
@@ -911,7 +911,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Quadrangulate a PLANAR  bipartite graph</source>
-        <translation type="obsolete">Quadranguler un graphe biparti planaire</translation>
+        <translation>Quadranguler un graphe biparti planaire</translation>
     </message>
     <message>
         <source>Show arrows</source>
@@ -919,7 +919,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&amp;Init server</source>
-        <translation>&amp;Démarrer le serveur</translation>
+        <translation type="obsolete">&amp;Démarrer le serveur</translation>
     </message>
     <message>
         <source>Choose a file to open</source>
@@ -943,15 +943,15 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Double Occurrence (&amp;DFS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Double Occurrence (&amp;DFS)</translation>
     </message>
     <message>
         <source>Double Occurrence (&amp;LR DFS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Double Occurrence (&amp;LR DFS)</translation>
     </message>
     <message>
         <source>Double Occurrence (&amp;BFS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Double Occurrence (&amp;BFS)</translation>
     </message>
     <message>
         <source>Values</source>
@@ -967,296 +967,417 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Information</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <source>Vertex label</source>
-        <translation type="unfinished"></translation>
+        <translation>Label du sommet</translation>
     </message>
     <message>
         <source>Max N display</source>
-        <translation type="unfinished"></translation>
+        <translation>Max N visualisation</translation>
     </message>
     <message>
         <source>Max N slow algorithms</source>
-        <translation type="unfinished"></translation>
+        <translation>Max N algorithmes lents</translation>
     </message>
     <message>
         <source>Repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Répéter</translation>
     </message>
     <message>
         <source>Distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Distance</translation>
     </message>
     <message>
         <source>Number of classes</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de classes</translation>
     </message>
     <message>
         <source>&amp;New...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Nouveau</translation>
     </message>
     <message>
         <source>New graph</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nouveau graphe</translation>
     </message>
     <message>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Ouvrir...</translation>
     </message>
     <message>
         <source>Open a new graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir autre graphe</translation>
     </message>
     <message>
         <source>&amp;Save...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Sauver</translation>
     </message>
     <message>
         <source>Save the graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauver le graphe</translation>
     </message>
     <message>
         <source>&amp;Print...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Imprimer (&amp;P)</translation>
     </message>
     <message>
         <source>Print the graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimer</translation>
     </message>
     <message>
         <source>Png...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Png...</translation>
     </message>
     <message>
         <source>Save image</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauver l&apos;image</translation>
     </message>
     <message>
         <source>&amp;Information...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Information...</translation>
     </message>
     <message>
         <source>Previous graph...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Graphe précédent...</translation>
     </message>
     <message>
         <source>Previous graph (tgf file)</source>
-        <translation type="unfinished"></translation>
+        <translation>Graphe précédent (fichier tgf)</translation>
     </message>
     <message>
         <source>Reload...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Recharger...</translation>
     </message>
     <message>
         <source>Reload graph</source>
-        <translation type="unfinished"></translation>
+        <translation>Recharger</translation>
     </message>
     <message>
         <source>Next graph...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Graphe suivant...</translation>
     </message>
     <message>
         <source>Next graph (tgf file)</source>
-        <translation type="unfinished"></translation>
+        <translation>Graphe suivant (fichier tgf)</translation>
     </message>
     <message>
         <source>Undo...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Annuler...</translation>
     </message>
     <message>
         <source>Undo last action</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler dernière action</translation>
     </message>
     <message>
         <source>Undo save...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Annuler...</translation>
     </message>
     <message>
         <source>Undo save</source>
-        <translation type="unfinished"></translation>
+        <translation>Undo sauver</translation>
     </message>
     <message>
         <source>Redo...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Annuler Annuler...</translation>
     </message>
     <message>
         <source>Redo last action</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler dernière action</translation>
     </message>
     <message>
         <source>Macro...</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Macro...</translation>
     </message>
     <message>
         <source>Play the macro</source>
-        <translation type="unfinished"></translation>
+        <translation>Exécuter la macro</translation>
     </message>
     <message>
         <source>Make &amp;Connected (vertex)</source>
-        <translation type="unfinished"></translation>
+        <translation>Rendre 2-connexe (sommet) (&amp;C)</translation>
     </message>
     <message>
         <source>Make a PLANAR graph 2-connected
  adding edges ( minimal degree increase)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Quadrangulate a PLANAR  bipartite grap</source>
-        <translation type="unfinished"></translation>
+        <translation>Make a PLANAR graph 2-connected(new line)
+(sp)adding edges ( minimal degree increase)</translation>
     </message>
     <message>
         <source>&amp;FPP Fary</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;FPP Fary</translation>
     </message>
     <message>
         <source>&amp;Schnyder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schnyder</translation>
     </message>
     <message>
         <source>Schnyder &amp;V</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnyder &amp;V</translation>
     </message>
     <message>
         <source>Co&amp;nvex Drawing</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Tracé Co&amp;nvex</translation>
     </message>
     <message>
         <source>&amp;Convex Compact Dra&amp;wing</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Tracé Co&amp;nvex compact</translation>
     </message>
     <message>
         <source>&amp;Tutte</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tutte</translation>
     </message>
     <message>
         <source>Tutte &amp;Circle</source>
-        <translation type="unfinished"></translation>
+        <translation>Tutte &amp;Circle</translation>
     </message>
     <message>
         <source>&amp;R Triangle Contact</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;R Contact de triangles</translation>
     </message>
     <message>
         <source>Sprin&amp;g</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Sprin&amp;g</translation>
     </message>
     <message>
         <source>G&amp;eometric Angle</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">G&amp;eometric Angle</translation>
     </message>
     <message>
         <source>Color red  non critical edges</source>
-        <translation type="unfinished"></translation>
+        <translation>Colorier en rouge arêtes non critiques</translation>
     </message>
     <message>
         <source>&amp;Max.Planar (simple graph) Slow</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Max.Planaire (graphe simple) Lent</translation>
     </message>
     <message>
         <source>Bipartite cubic 3-connected (M)</source>
-        <translation type="unfinished">Biparti cubique 2-connexe (M) {3-?}</translation>
+        <translation>Biparti cubique 3-connexe (M)</translation>
     </message>
     <message>
         <source>&amp;Macro</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Macro</translation>
     </message>
     <message>
         <source>&amp;User menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu &amp;Utilisateur</translation>
     </message>
     <message>
         <source>Test &amp;1</source>
-        <translation type="unfinished"></translation>
+        <translation>Test &amp;1</translation>
     </message>
     <message>
         <source>Test &amp;2</source>
-        <translation type="unfinished"></translation>
+        <translation>Test &amp;2</translation>
     </message>
     <message>
         <source>Test &amp;3</source>
-        <translation type="unfinished"></translation>
+        <translation>Test &amp;3</translation>
     </message>
     <message>
         <source>&amp;Pigale colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs de &amp;Pigale</translation>
     </message>
     <message>
         <source>&amp;Edit Pigale Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Editer les couleurs de Pigale</translation>
     </message>
     <message>
         <source>&amp;Gray profile</source>
-        <translation type="unfinished"></translation>
+        <translation>profile &amp;Gris</translation>
     </message>
     <message>
         <source>&amp;Yellow profile</source>
-        <translation type="unfinished"></translation>
+        <translation>profil jaune</translation>
     </message>
     <message>
         <source>&amp;Information</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Information</translation>
     </message>
     <message>
         <source>Qt4 Pigale Editor: </source>
-        <translation type="unfinished"></translation>
+        <translation>(sp)Qt4 Pigale Editor:</translation>
     </message>
     <message>
         <source>Choose the TGF directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le répertoire TGF</translation>
     </message>
     <message>
         <source>&lt;b&gt;General settings&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Paramètres généraux&lt;/b&gt;</translation>
     </message>
     <message>
         <source>&lt;b&gt;Graph Generators&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Generateurs&lt;/b&gt;</translation>
     </message>
     <message>
         <source>&lt;b&gt;Macro Settings&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Macro&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Delay (1/10 seconds)</source>
-        <translation type="unfinished"></translation>
+        <translation>Délai (1/10 secondes)</translation>
     </message>
     <message>
         <source>Png size</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille png</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Q</translation>
     </message>
     <message>
         <source>Exit the application</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitter</translation>
     </message>
     <message>
         <source>Double Occurrence &amp;Circular (&amp;BFS)</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Double Occurrence &amp;Circular (&amp;BFS)</translation>
     </message>
     <message>
         <source>&amp;Reset Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Réinitialiser paramètres</translation>
     </message>
     <message>
         <source>Choose the documentation directory Doc</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le chemmin de la Documentation</translation>
     </message>
     <message>
         <source>I cannot find the inline manual: &lt;em&gt;manual.html&lt;/em&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Je ne trouve pas le repertoire &lt;em&gt;Doc&lt;/em&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;New</source>
+        <translation>&amp;Nouveau</translation>
+    </message>
+    <message>
+        <source>Png</source>
+        <translation>Png</translation>
+    </message>
+    <message>
+        <source>Previous graph</source>
+        <translation>Graphe précédent</translation>
+    </message>
+    <message>
+        <source>Reload</source>
+        <translation>Recharger</translation>
+    </message>
+    <message>
+        <source>Next graph</source>
+        <translation>Graphe suivant</translation>
+    </message>
+    <message>
+        <source>Undo</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Redo</source>
+        <translation>Annuler Annuler</translation>
+    </message>
+    <message>
+        <source>Macro</source>
+        <translation type="obsolete">Macro</translation>
+    </message>
+    <message>
+        <source>Save &amp;as</source>
+        <translation type="obsolete">Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>About &amp;Qt</source>
+        <translation>A propos de &amp;Qt</translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
+        <translation>&amp;A propos</translation>
+    </message>
+    <message>
+        <source>Convex Compact Dra&amp;wing</source>
+        <translation type="obsolete">Tracé convex compact</translation>
+    </message>
+    <message>
+        <source>Save as</source>
+        <translation>Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Enregistrer</translation>
+    </message>
+    <message>
+        <source>Delete current record</source>
+        <translation>Supprimer l&apos;enregistrement courant</translation>
+    </message>
+    <message>
+        <source>Switch Input/Output files</source>
+        <translation>Permuter Entrée/Sortie</translation>
+    </message>
+    <message>
+        <source>Init server</source>
+        <translation>Démarrer le serveur</translation>
+    </message>
+    <message>
+        <source>Convex Drawing</source>
+        <translation>Tracé convexe</translation>
+    </message>
+    <message>
+        <source>Convex Compact Drawing</source>
+        <translation>Tracé convexe compact</translation>
+    </message>
+    <message>
+        <source>Double Occurrence Circular (BFS)</source>
+        <translation>Double Occurrence Circular (BFS)</translation>
+    </message>
+    <message>
+        <source>FPP Visibility</source>
+        <translation>FPP Visibilité</translation>
+    </message>
+    <message>
+        <source>Spring (Map Preserving)</source>
+        <translation>Spring (Préservant la carte)</translation>
+    </message>
+    <message>
+        <source>Spring</source>
+        <translation>Spring</translation>
+    </message>
+    <message>
+        <source>Embedding in Rn</source>
+        <translation>Plongement dans Rn</translation>
+    </message>
+    <message>
+        <source>Geometric Dual</source>
+        <translation>Dual géomètrique</translation>
+    </message>
+    <message>
+        <source>Angle</source>
+        <translation>Graphe d&apos;angle</translation>
+    </message>
+    <message>
+        <source>Geometric Angle</source>
+        <translation>Graphe d&apos;angle géomètrique</translation>
+    </message>
+    <message>
+        <source>Inf Orientation 3-connex</source>
+        <translation>Inf Orientation 3-connexe</translation>
+    </message>
+    <message>
+        <source>Inf Orientation bipartite</source>
+        <translation>Inf Orientation biparti</translation>
+    </message>
+    <message>
+        <source>SchnyderOrientation</source>
+        <translation type="obsolete">Orientation de Schnyder</translation>
+    </message>
+    <message>
+        <source>Schnyder Orientation</source>
+        <translation>Orientation de Schnyder</translation>
     </message>
 </context>
 </TS>

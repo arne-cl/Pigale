@@ -20,7 +20,6 @@
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
-#include "LineEditNum.h"
 #include "ClientSocket.h"
 
 #include <QT/pigaleWindow_doc.h> 
@@ -444,64 +443,64 @@ void pigaleWindow::createToolBar()
   //ToolBar
   // NEW LOAD SAVE
   tb = new QToolBar(this);  addToolBar(tb);  tb->setMovable(true); 
-  QAction *newAct = new QAction(newIcon, tr("&New..."), this);
+  QAction *newAct = new QAction(newIcon, tr("&New"), this);
   newAct->setStatusTip(tr("New graph"));
   connect(newAct, SIGNAL(triggered()),this,SLOT(NewGraph()));
   tb->addAction(newAct);
-  QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
+  QAction *openAct = new QAction(openIcon, tr("&Open"), this);
   openAct->setStatusTip(tr("Open a new graph"));openAct->setWhatsThis(fileopen_txt);
   connect(openAct, SIGNAL(triggered()),this,SLOT(load()));
   tb->addAction(openAct);
-  QAction *saveAct = new QAction(saveIcon, tr("&Save..."), this);
+  QAction *saveAct = new QAction(saveIcon, tr("&Save"), this);
   saveAct->setStatusTip(tr("Save the graph"));
   connect(saveAct, SIGNAL(triggered()),this,SLOT(save()));
   tb->addAction(saveAct);
   // PRINT PNG
-  QAction *printAct = new QAction(printIcon, tr("&Print..."), this);
+  QAction *printAct = new QAction(printIcon, tr("&Print"), this);
   printAct->setStatusTip(tr("Print the graph"));
   connect(printAct, SIGNAL(triggered()),this,SLOT(print()));
   tb->addAction(printAct);
-  QAction *pngAct = new QAction(filmIcon, tr("Png..."), this);
+  QAction *pngAct = new QAction(filmIcon, tr("Png"), this);
   pngAct->setStatusTip(tr("Save image"));
   connect(pngAct, SIGNAL(triggered()),this,SLOT(png()));
   tb->addAction(pngAct);
   // INFO
-  QAction *infoAct = new QAction(infoIcon, tr("&Information..."), this);
+  QAction *infoAct = new QAction(infoIcon, tr("&Information"), this);
   infoAct->setStatusTip(tr("Information"));
   connect(infoAct, SIGNAL(triggered()),this,SLOT(information()));
   tb->addAction(infoAct);
   tb->addSeparator();
   // LEFT RELOAD RIGHT
-  QAction *leftAct = new QAction(leftIcon, tr("Previous graph..."), this);
+  QAction *leftAct = new QAction(leftIcon, tr("Previous graph"), this);
   leftAct->setStatusTip(tr("Previous graph (tgf file)"));leftAct->setWhatsThis(left_txt);
   connect(leftAct, SIGNAL(triggered()),this,SLOT(previous()));
   tb->addAction(leftAct);
-  QAction *reloadAct = new QAction(reloadIcon, tr("Reload..."), this);
+  QAction *reloadAct = new QAction(reloadIcon, tr("Reload"), this);
   reloadAct->setStatusTip(tr("Reload graph"));reloadAct->setWhatsThis(redo_txt);
   connect(reloadAct, SIGNAL(triggered()),this,SLOT(reload()));
   tb->addAction(reloadAct);
-  QAction *rightAct = new QAction(rightIcon, tr("Next graph..."), this);
+  QAction *rightAct = new QAction(rightIcon, tr("Next graph"), this);
   rightAct->setStatusTip(tr("Next graph (tgf file)"));rightAct->setWhatsThis(right_txt);
   connect(rightAct, SIGNAL(triggered()),this,SLOT(next()));
   tb->addAction(rightAct);
   tb->addSeparator();
   // UNDO
-  undoLAct = new QAction(undoLIcon, tr("Undo..."), this);
+  undoLAct = new QAction(undoLIcon, tr("Undo"), this);
   undoLAct->setStatusTip(tr("Undo last action"));
   connect(undoLAct, SIGNAL(triggered()),this,SLOT(Undo()));
   tb->addAction(undoLAct);
-  undoSAct = new QAction(undoSIcon, tr("Undo save..."), this);
+  undoSAct = new QAction(undoSIcon, tr("Undo save"), this);
   undoSAct->setStatusTip(tr("Undo save"));
   connect(undoSAct, SIGNAL(triggered()),this,SLOT(UndoSave()));
   tb->addAction(undoSAct);
-  undoRAct = new QAction(undoRIcon, tr("Redo..."), this);
+  undoRAct = new QAction(undoRIcon, tr("Redo"), this);
   undoRAct->setStatusTip(tr("Redo last action"));
   connect(undoRAct, SIGNAL(triggered()),this,SLOT(Redo()));
   tb->addAction(undoRAct);
   undoLAct->setEnabled(false); undoSAct->setEnabled(staticData::IsUndoEnable);undoRAct->setEnabled(false);
   tb->addSeparator();
   // MACRO
-  QAction *macroAct = new QAction(macroplayIcon, tr("Macro..."), this);
+  QAction *macroAct = new QAction(macroplayIcon, tr("Play the macro"), this);
   macroAct->setStatusTip(tr("Play the macro"));
   connect(macroAct, SIGNAL(triggered()),this,SLOT(macroPlay()));
   tb->addAction(macroAct);
@@ -523,15 +522,15 @@ void pigaleWindow::createMenus()
   file->addAction(newIcon,tr("&New Graph"),this, SLOT(NewGraph()));
   action = file->addAction(openIcon,tr("&Open"),this, SLOT(load()));
   action->setWhatsThis(fileopen_txt);
-  file->addAction(tr("Save &as ..."), this, SLOT(saveAs()));
-  file->addAction(saveIcon,tr("&Save"), this, SLOT(save()));
+  file->addAction(tr("Save as"), this, SLOT(saveAs()));
+  file->addAction(saveIcon,tr("Save"), this, SLOT(save()));
   file->addSeparator();
-  file->addAction(tr("&Delete current record"),this,SLOT(deleterecord()));
-  file->addAction(tr("S&witch Input/Output files"),this,SLOT(switchInputOutput()));
+  file->addAction(tr("Delete current record"),this,SLOT(deleterecord()));
+  file->addAction(tr("Switch Input/Output files"),this,SLOT(switchInputOutput()));
   file->addSeparator();
   file->addAction(printIcon,tr("&Print"),this, SLOT(print()));
   file->addSeparator();
-  file->addAction(tr("&Init server"),this, SLOT(initServer()));
+  file->addAction(tr("Init server"),this, SLOT(initServer()));
   file->addSeparator();
   QAction * exitAct = new QAction(tr("E&xit"),this);
   exitAct->setShortcut(tr("Ctrl+Q"));
@@ -571,11 +570,11 @@ void pigaleWindow::createMenus()
   action->setWhatsThis(tr("Optimally triangulate a PLANAR graph by adding edges"));
   action = augment->addAction(xmanIcon,tr("Vertex &Quadrangulate")); 
   setId(action,A_AUGMENT_QUADRANGULATE_V);
-  action->setWhatsThis(tr("Quadrangulate a PLANAR  bipartite grap"));
+  action->setWhatsThis(tr("Quadrangulate a PLANAR  bipartite graph"));
   augment->addSeparator();
   action = augment->addAction(xmanIcon,tr("&Bisect all edges")); 
   setId(action,A_AUGMENT_BISSECT_ALL_E);
- 
+  
   QMenu *remove = menuBar()->addMenu( tr("&Remove")); 
   action = remove->addAction(tr("&Isolated vertices")); 
   setId(action,A_REMOVE_ISOLATED_V);
@@ -599,10 +598,10 @@ void pigaleWindow::createMenus()
   action = embed->addAction(xmanIcon,tr("Schnyder &V")); 
   action->setWhatsThis(tr(schnyder_txt));
   setId(action,A_EMBED_SCHNYDER_V);
-  action = embed->addAction(xmanIcon,tr("Co&nvex Drawing")); 
+  action = embed->addAction(xmanIcon,tr("Convex Drawing")); 
   action->setWhatsThis(tr(cd_txt));
   setId(action,A_EMBED_CD);
-  action = embed->addAction(xmanIcon,tr("&Convex Compact Dra&wing")); 
+  action = embed->addAction(xmanIcon,tr("Convex Compact Drawing")); 
   action->setWhatsThis(tr(ccd_txt));
   setId(action,A_EMBED_CCD);
   embed->addSeparator();
@@ -622,12 +621,12 @@ void pigaleWindow::createMenus()
   action = embed->addAction(tr("Double Occurrence (&BFS)")); 
   setId(action, A_EMBED_POLREC_BFS);
   //#ifdef VERSION_ALPHA
-  action = embed->addAction(tr("Double Occurrence &Circular (&BFS)")); 
+  action = embed->addAction(tr("Double Occurrence Circular (BFS)")); 
   setId(action, A_EMBED_POLAR);
   //#endif
   embed->addSeparator();
   action = embed->addAction(tr("&Visibility"));   setId(action,A_EMBED_VISION);
-  action = embed->addAction(tr("FPP Visi&bility"));   setId(action,A_EMBED_FPP_RECTI);
+  action = embed->addAction(tr("FPP Visibility"));   setId(action,A_EMBED_FPP_RECTI);
   action = embed->addAction(tr("&General Visibility"));   setId(action,A_EMBED_GVISION);
   embed->addSeparator();
   action = embed->addAction(tr("&T Contact"));   setId(action,A_EMBED_T_CONTACT);
@@ -637,7 +636,7 @@ void pigaleWindow::createMenus()
   action = embed->addAction(tr("&Polyline"));   setId(action,A_EMBED_POLYLINE);
   action = embed->addAction(tr("&Curves"));   setId(action,A_EMBED_CURVES);
   embed->addSeparator();
-  action = embed->addAction(xmanIcon,tr("Spring (Map &Preserving)")); 
+  action = embed->addAction(xmanIcon,tr("Spring (Map Preserving)")); 
   action->setWhatsThis(tr(springPM_txt));  
   setId(action,A_EMBED_SPRING_PM);
 #ifdef VERSION_ALPHA
@@ -645,11 +644,11 @@ void pigaleWindow::createMenus()
   action->setWhatsThis(tr(jacquard_txt));  
   setId(action,A_EMBED_JACQUARD);
 #endif
-  action = embed->addAction(xmanIcon,tr("Sprin&g")); 
+  action = embed->addAction(xmanIcon,tr("Spring")); 
   action->setWhatsThis(tr(spring_txt));  
   setId(action,A_EMBED_SPRING);
   embed->addSeparator(); 
-  action = embed->addAction(xmanIcon,tr("&Embedding in Rn")); 
+  action = embed->addAction(xmanIcon,tr("Embedding in Rn")); 
   action->setWhatsThis(tr(embed3d_txt));  
   setId(action,A_EMBED_3d);
   action = embed->addAction(xmanIcon,tr("Schnyder in R3")); 
@@ -658,12 +657,12 @@ void pigaleWindow::createMenus()
  
   QMenu *dual = menuBar()->addMenu(tr("&Dual/Angle")); 
   action = dual->addAction(tr("&Dual"));   setId(action,A_GRAPH_DUAL);
-  action = dual->addAction(xmanIcon,tr("&Geometric Dual")); 
+  action = dual->addAction(xmanIcon,tr("Geometric Dual")); 
   action->setWhatsThis(tr(dual_g_txt));  
   setId(action,A_GRAPH_DUAL_G);
   dual->addSeparator();
-  action = dual->addAction(tr("&Angle"));   setId(action,A_GRAPH_ANGLE);
-  action = dual->addAction(xmanIcon,tr("G&eometric Angle")); 
+  action = dual->addAction(tr("Angle"));   setId(action,A_GRAPH_ANGLE);
+  action = dual->addAction(xmanIcon,tr("Geometric Angle")); 
   action->setWhatsThis(tr(angle_g_txt));  
   setId(action,A_GRAPH_ANGLE_G);
 
@@ -685,16 +684,16 @@ void pigaleWindow::createMenus()
   action = algo->addAction(tr("&Symmetry"));   setId(action,A_ALGO_SYM);
   algo->addSeparator();
   action = algo->addAction(tr("&Partition"));   setId(action, A_ALGO_NETCUT);
-
+ 
   QMenu *orient = menuBar()->addMenu(tr("&Orient")); 
   action = orient->addAction(tr("&Orient all edges"));   setId(action,A_ORIENT_E);
   action = orient->addAction(tr("&Unorient all edges"));   setId(action, A_ORIENT_NOE);
   action = orient->addAction(tr("&Color Poles"));   setId(action,A_ORIENT_SHOW);
   action = orient->addAction(tr("&ReOrient color edges"));   setId(action,A_ORIENT_SHOW);
   action = orient->addAction(tr("&Inf Orientation"));   setId(action,A_ORIENT_INF);
-  action = orient->addAction(tr("&Inf Orientation"));   setId(action,A_ORIENT_TRICON);
-  action = orient->addAction(tr("&Inf Orientation"));   setId(action,A_ORIENT_BIPAR);
-  action = orient->addAction(tr("&Inf Orientation"));   setId(action,A_ORIENT_SCHNYDER);
+  action = orient->addAction(tr("Inf Orientation 3-connex"));   setId(action,A_ORIENT_TRICON);
+  action = orient->addAction(tr("Inf Orientation bipartite"));   setId(action,A_ORIENT_BIPAR);
+  action = orient->addAction(tr("Schnyder Orientation"));   setId(action,A_ORIENT_SCHNYDER);
   action = orient->addAction(tr("B&ipolarOrient Planar"));   setId(action,A_ORIENT_BIPOLAR);
   action = orient->addAction(tr("BipolarOrient"));   setId(action,A_ORIENT_BIPOLAR_NP);
   action = orient->addAction(tr("BFS Orientation"));   setId(action,A_ORIENT_BFS);
@@ -761,8 +760,8 @@ void pigaleWindow::createMenus()
   help->addSeparator();
   help->addAction(helpAct);
   help->addSeparator();
-  help->addAction(tr("About &Qt..."), qApp, SLOT(aboutQt()));
-  help->addAction(tr("&About..."), this, SLOT(about()),Qt::Key_F1);
+  help->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
+  help->addAction(tr("&About"), this, SLOT(about()),Qt::Key_F1);
 
   initMenuTest();
   }

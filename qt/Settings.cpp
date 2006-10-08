@@ -36,7 +36,6 @@
 #define PACKAGE_PATH "c:\\Program Files\\Pigale"
 #endif
 
-
 // staticData definitions
 bool staticData::showArrow = true;
 bool staticData::showOrientation = false;
