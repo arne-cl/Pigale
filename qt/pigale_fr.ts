@@ -202,7 +202,7 @@
     </message>
     <message>
         <source>&amp;Save</source>
-        <translation>Enregistrer &amp;S</translation>
+        <translation type="obsolete">Enregistrer &amp;S</translation>
     </message>
     <message>
         <source>&amp;Open</source>
@@ -561,7 +561,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Erase multiple edges</source>
-        <translation type="obsolete">Effacer arêtes multiples</translation>
+        <translation>Effacer arêtes multiples</translation>
     </message>
     <message>
         <source>Seed</source>
@@ -915,7 +915,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Show arrows</source>
-        <translation type="obsolete">Montrer les flèches</translation>
+        <translation>Montrer les flèches</translation>
     </message>
     <message>
         <source>&amp;Init server</source>
@@ -1213,7 +1213,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>&lt;b&gt;Graph Generators&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Generateurs&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Générateurs&lt;/b&gt;</translation>
     </message>
     <message>
         <source>&lt;b&gt;Macro Settings&lt;/b&gt;</source>
@@ -1378,6 +1378,34 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <source>Schnyder Orientation</source>
         <translation>Orientation de Schnyder</translation>
+    </message>
+    <message>
+        <source>Use generated cir</source>
+        <translation>Utiliser le Cir généré</translation>
+    </message>
+    <message>
+        <source>Random seed</source>
+        <translation>Germe aléatoire</translation>
+    </message>
+    <message>
+        <source>Show orientation</source>
+        <translation>Montrer l&apos;orientation</translation>
+    </message>
+    <message>
+        <source>Show exterior edge</source>
+        <translation>Montrer brin extérieur</translation>
+    </message>
+    <message>
+        <source>Schnyder Rect</source>
+        <translation>Schnyder Rect</translation>
+    </message>
+    <message>
+        <source>Schnyder color</source>
+        <translation>Schnyder couleur</translation>
+    </message>
+    <message>
+        <source>Use longest face</source>
+        <translation type="unfinished">Utiliser face + longue</translation>
     </message>
 </context>
 </TS>
