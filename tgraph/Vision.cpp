@@ -20,7 +20,7 @@
 int BipPlanarize(TopologicalGraph &G, svector<tbrin> &topin,
                  svector<tvertex> &order, svector<tvertex> &orig,
                  tbrin bst); 
-
+ 
 // finds the leftmost tbrin at s which goes to t
 tbrin FindLeftBrin(TopologicalGraph &G, tvertex s, tvertex t)
 { int n=G.nv();
