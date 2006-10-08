@@ -9,11 +9,13 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include "LineEditNum.h"
 
 #define MULT 100
-LineEditNum::LineEditNum(QWidget * parent, const char * name)
-    :QLineEdit(parent,name),num(1),mul(1)
+LineEditNum::LineEditNum(QWidget * parent)
+    :QLineEdit(parent),num(1),mul(1)
   {}
 void LineEditNum::display()
   {int i = (mul == 0) ? 1 : mul*MULT;

@@ -9,12 +9,17 @@
 **
 *****************************************************************************/
 
+//#undef QT3_SUPPORT 
+// only needs QT3_SUPPORT for bezier
+
 #include "pigaleWindow.h"
 #include <QT/pigalePaint.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
-#include <qpixmap.h>
+
+#include <QPixmap>
 #include <Q3PointArray>
+#include <QPainter>
 
 void DrawPolrec(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
@@ -172,14 +177,8 @@ void DrawCurves(QPainter *p,pigalePaint *paint)
        bez.setPoint(4,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(5,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
        bez.setPoint(6,paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
-#if QT_VERSION >= 300
        p->drawCubicBezier(bez,0);
        p->drawCubicBezier(bez,3);
-#else
-       p->drawQuadBezier(bez,0);
-       p->drawQuadBezier(bez,3);
-       //p->drawPolyline(bez,0,7);
-#endif
        //paint->DrawRect(p,Epoint1[ee],3,3,Red);
        //paint->DrawRect(p,Epoint3[ee],3,3,Red);
      }
@@ -441,18 +440,15 @@ const int border = 20;
 
 pigalePaint::~pigalePaint()
   { }
-pigalePaint::pigalePaint(QWidget *parent, const char *name,pigaleWindow *f):
-    QWidget(parent,name),mw(f),isHidden(true)
+pigalePaint::pigalePaint(QWidget *parent,pigaleWindow *f):
+    QWidget(parent),mw(f),isHidden(true)
   {index = -1;
-  QPalette Palette;
-  Palette.setColor(QColorGroup::Window,Qt::white);
-  setPalette(Palette,TRUE);
   setFocusPolicy(Qt::ClickFocus); 
   }
 void pigalePaint::print(QPrinter* printer)
   {QString FileName="";
   QString OldFileName="";
-  bool outf=false;
+  //bool outf=false;
   QPrinter::Orientation orient=QPrinter::Portrait;
   QPrinter::ColorMode cm=QPrinter::Color;
   if(index < 0)return;
@@ -464,11 +460,12 @@ void pigalePaint::print(QPrinter* printer)
       printer->setColorMode(QPrinter::Color);
       OldFileName=printer->outputFileName();
       printer->setOutputFileName(FileName);
-      outf=printer->outputToFile();
-      printer->setOutputToFile(true);
       }
-  else if(!printer->setup(this)) return;
-  
+  else 
+      {QPrintDialog printDialog(printer,this);
+      if(printDialog.exec() != QDialog::Accepted) 
+      return;
+      }
 //   int nx = width();
 //   int ny = height();
 //   double scale = Max((double)nx/(double) printer->width(),(double)ny/(double)printer->height());
@@ -480,7 +477,7 @@ void pigalePaint::print(QPrinter* printer)
       {printer->setOrientation(orient); 
       printer->setColorMode(cm);
       printer->setOutputFileName(OldFileName);
-      printer->setOutputToFile(outf);
+//       printer->setOutputToFile(outf);
       }
   }
 void pigalePaint::png()
@@ -488,28 +485,31 @@ void pigalePaint::png()
   qApp->processEvents();
   QString FileName;
   if(!mw->ServerExecuting)
-      {FileName = Q3FileDialog::
-      getSaveFileName(mw->DirFilePng,"Images(*.png)",this);
+      {FileName = QFileDialog::
+      getSaveFileName(this,
+                      tr("Choose a file to save under"),
+                      mw->DirFilePng,
+                      "Images(*.png)");
       if(FileName.isEmpty())return; 
-      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      if(QFileInfo(FileName).suffix() != (const char *)"png")
 	  FileName += (const char *)".png";
-      mw->DirFilePng = QFileInfo(FileName).dirPath(true);
+      mw->DirFilePng = QFileInfo(FileName).absolutePath();
       }
   else
       FileName = QString("/tmp/server%1.png").arg(mw->ServerClientId);
+
   QPixmap pixmap = QPixmap::grabWidget (this); 
   pixmap.save(FileName,"PNG",0);
   }
 void pigalePaint::drawIt(QPainter *p)
   {if(index < 0)return;
-  p->eraseRect(geometry());
+  p->fillRect(geometry(),Qt::white);
   (*DrawFunctions[index].f)(p,this);
   }
 void pigalePaint::update()
   {update(index,false);}
 void pigalePaint::update(int i,bool newDrawing)
-  {//setBackgroundColor(Qt::white);
-  zoom = 1;
+  {zoom = 1;
   index = i;
   if(newDrawing) // copy the graph
       GCP = mw->GC;
@@ -523,21 +523,15 @@ void pigalePaint::update(int i,bool newDrawing)
   xtr0 = xtr  =  - xmin*xscale + border;
   yscale0 = yscale = Wy_max/(ymax - ymin);
   ytr0 = ytr  =   - ymin*yscale +border;
-  mw->tabWidget->setTabLabel(this,qApp->translate("pigalePaint",DrawFunctions[index].name));
-  mw->tabWidget->showPage(this);
+  mw->tabWidget->setTabText(mw->tabWidget->indexOf(this)
+                            ,qApp->translate("pigalePaint",DrawFunctions[index].name)); 
+  mw->tabWidget->setCurrentIndex(mw->tabWidget->indexOf(this));
   }
-#include <qstyle.h>
 void pigalePaint::paintEvent(QPaintEvent * e)
   {if(isHidden)return;
   QWidget::paintEvent(e);
   QPainter p(this);
   p.setRenderHint(QPainter::Antialiasing,true);
- //  QStylePainter p(this);
-//   //QStyleOptionFocusRect option(1);
-//   QStyleOption option(1);
-//   option.init(this);
-//   option.backgroundColor = palette().color(QPalette::Background);
-//   style().drawPrimitive(QStyle::PE_FrameFocusRect,&option,p,this);
   drawIt(&p);
   }
 void pigalePaint::showEvent(QShowEvent*)

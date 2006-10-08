@@ -11,7 +11,7 @@
 
 #ifndef LINEEDITNUM_H
 #define LINEEDTNUM_H
-#include <qlineedit.h>
+#include <QLineEdit>
 
 class LineEditNum : public QLineEdit
 { 
@@ -23,7 +23,7 @@ class LineEditNum : public QLineEdit
   QString prefix;
   void display();
  public:
-  LineEditNum(QWidget * parent, const char * name = 0);
+  LineEditNum(QWidget * parent);
   ~LineEditNum(){};
   void setPrefix(const QString &t);
   int getNum();

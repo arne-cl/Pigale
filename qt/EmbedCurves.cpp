@@ -1,14 +1,24 @@
+/****************************************************************************
+**
+** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+** All rights reserved.
+** This file is part of the PIGALE Toolkit.
+**
+** This file may be distributed under the terms of the GNU Public License
+** appearing in the file LICENSE.HTML included in the packaging of this file.
+**
+*****************************************************************************/
+
+#undef QT3_SUPPORT 
+
 #include "pigaleWindow.h" 
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
-#include <qapplication.h>
 #include "GraphWidget.h"
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 
-#ifndef _WINDOWS
 using namespace std;
-#endif
 
 int EmbedCurves(TopologicalGraph &G)
 {

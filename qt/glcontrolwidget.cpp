@@ -1,26 +1,25 @@
+
+#undef QT3_SUPPORT 
+
 #include <TAXI/Tbase.h>
 #include "glcontrolwidget.h"
-#include <qcursor.h>
-#include <qevent.h>
-#include <qtimer.h>
-//Added by qt3to4:
-#include <qevent.h>
-// #include <QMouseEvent>
-// #include <QHideEvent>
-// #include <QShowEvent>
-// #include <QWheelEvent>
-// #include <QKeyEvent>
+#include <QGLFormat>
+#include <QTimer>
+#include <QMouseEvent>
+
 /*! \file glcontrolwidget.cpp
 \ingroup qt 
 */
 
-GLControlWidget::GLControlWidget( QWidget *parent, const char *name, QGLWidget *share, Qt::WFlags f )
-: QGLWidget( parent, name, share, f ),
+GLControlWidget::GLControlWidget(QWidget *parent,QGLWidget *share)
+//    : QGLWidget(QGLFormat(QGL::SampleBuffers),parent,share),
+    : QGLWidget(parent,share),
   xRot(0),yRot(0),zRot(0),xTrans(0),yTrans(0),zTrans(-10.0),scale(5.0)
   ,animation(FALSE), wasAnimated(FALSE), delay(-1)
   {timer = new QTimer( this );
   connect( timer, SIGNAL(timeout()), SLOT(animate()) );
   setFocusPolicy(Qt::ClickFocus);
+  //cout << "samples:"<<format().sampleBuffers ()<<"-> "<<format().samples()<<endl;
   }
 void GLControlWidget::transform()
   {glTranslatef( xTrans, yTrans, zTrans );
@@ -83,18 +82,30 @@ void GLControlWidget::mouseMoveEvent( QMouseEvent *e )
   double rx = dx / width();
   double ry = dy / height();
   
-  //bool Shift    =  e->modifiers() == Qt::ShiftModifier;
-  if(e->state() == Qt::LeftButton)
-      setRotationImpulse(ry,rx,0);
-  else if(e->state() == (Qt::LeftButton | Qt::ShiftButton ))
-      setRotationImpulse(0,ry,rx);
-  else if(e->state() == Qt::RightButton)
-      setRotationImpulse(ry,0,rx);
-  // translations
-  else if( e->state() == Qt::MidButton )
-      setTranslationImpulse(rx,ry,0);
-  else if( e->state() == (Qt::MidButton | Qt::ShiftButton ) || (Qt::RightButton | Qt::ShiftButton ))
-      setTranslationImpulse(rx,0,ry );
+  bool Shift     =  e->modifiers() == Qt::ShiftModifier;
+  //bool Control   =  e->modifiers() == Qt::ControlModifier;
+
+  if(!Shift)
+      {// rotations
+      if((e->buttons() == Qt::LeftButton))
+          setRotationImpulse(ry,rx,0);
+      else if((e->buttons() == Qt::LeftButton)) // == MidBbuuton
+          setRotationImpulse(ry,0,rx);
+      else if(e->buttons() == Qt::RightButton)
+          setRotationImpulse(0,ry,rx);
+//       else if((e->buttons() == Qt::MidButton))
+//           setRotationImpulse(ry,0,rx);
+      }
+  else // translations
+      {if((e->buttons() == Qt::LeftButton))
+          setTranslationImpulse(rx,ry,0);
+      else if((e->buttons() == Qt::LeftButton))
+          setTranslationImpulse(rx,0,ry);
+      else if((e->buttons() == Qt::RightButton))
+          setTranslationImpulse(0,rx,ry);
+//       else if(e->buttons() == Qt::MidButton)
+//           setTranslationImpulse(rx,0,ry );
+      }
   }
 void GLControlWidget::wheelEvent(QWheelEvent *e)
   {e->accept();

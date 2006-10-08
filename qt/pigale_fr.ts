@@ -1,5 +1,19 @@
 <!DOCTYPE TS><TS>
 <context>
+    <name>GLWindow</name>
+    <message>
+        <source>Choose a file to save under</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GraphSym</name>
+    <message>
+        <source>Choose a file to save under</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Graph_Properties</name>
     <message>
         <source>Connected</source>
@@ -171,6 +185,10 @@
         <source>Triangle contact</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Choose a file to save under</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>pigaleWindow</name>
@@ -212,7 +230,7 @@
     </message>
     <message>
         <source>&amp;Quit</source>
-        <translation>&amp;Quitter</translation>
+        <translation type="obsolete">&amp;Quitter</translation>
     </message>
     <message>
         <source>&amp;Augment</source>
@@ -363,7 +381,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Find &amp;Kuratowski</source>
-        <translation type="obsolete">Trouver &amp;Kuratowski</translation>
+        <translation type="unfinished">Trouver &amp;Kuratowski</translation>
     </message>
     <message>
         <source>Find &amp;Cotree Critical</source>
@@ -783,7 +801,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Choose the documentation directory &lt;em&gt;Doc&lt;/em&gt;</source>
-        <translation>Choisir le répertoire de documentation: &lt;em&gt;Doc&lt;/em&gt;</translation>
+        <translation type="obsolete">Choisir le répertoire de documentation: &lt;em&gt;Doc&lt;/em&gt;</translation>
     </message>
     <message>
         <source>I cannot find the repertory &lt;b&gt;Doc&lt;br&gt;Load manually ?</source>
@@ -791,15 +809,15 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>I cannot find the inline manual&lt;em&gt;manual.html&lt;/em&gt;</source>
-        <translation>Je ne trouve pas le fichier  &lt;em&gt;manual.html&lt;/em&gt;</translation>
+        <translation type="obsolete">Je ne trouve pas le fichier  &lt;em&gt;manual.html&lt;/em&gt;</translation>
     </message>
     <message>
         <source>You should restart Pigale to get the manual loaded</source>
-        <translation>Relancer Pigale pour charger le manuel</translation>
+        <translation type="obsolete">Relancer Pigale pour charger le manuel</translation>
     </message>
     <message>
         <source>I cannot find the inline manual &lt;em&gt;manual.html&lt;/em&gt;</source>
-        <translation>Je ne trouve pas le fichier &lt;em&gt;manual.html&lt;/em&gt;</translation>
+        <translation type="obsolete">Je ne trouve pas le fichier &lt;em&gt;manual.html&lt;/em&gt;</translation>
     </message>
     <message>
         <source>Set a font</source>
@@ -956,10 +974,6 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Vertex label</source>
         <translation type="unfinished"></translation>
     </message>
@@ -969,18 +983,6 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Max N slow algorithms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Graph Generators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Macro Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delay (seconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1113,15 +1115,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>fpp_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Schnyder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>schnyder_txt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1133,15 +1127,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>cd_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Convex Compact Dra&amp;wing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ccd_txt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1153,23 +1139,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>tutte_circle_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Double Occurrence &amp;Cir (&amp;BFS)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;R Triangle Contact</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>springPM_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>jacquard_txt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1177,31 +1147,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>spring_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>embed3d_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>embed3dSchnyder_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>dual_g_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>G&amp;eometric Angle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>angle_g_txt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Find &amp;Kuratowski</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1257,7 +1203,59 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Qt4 Pigale Editor </source>
+        <source>Qt4 Pigale Editor: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the TGF directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;General settings&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Graph Generators&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Macro Settings&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delay (1/10 seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Png size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Q</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit the application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Double Occurrence &amp;Circular (&amp;BFS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Reset Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the documentation directory Doc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I cannot find the inline manual: &lt;em&gt;manual.html&lt;/em&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

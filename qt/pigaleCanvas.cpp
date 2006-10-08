@@ -20,16 +20,7 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 
-#include <qcursor.h>
-#include <qprinter.h>
-#include <qtoolbutton.h>
-#include <qpixmap.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <q3filedialog.h>
-#include <q3paintdevicemetrics.h> 
-#include <qapplication.h> 
-#include <qinputdialog.h> 
+#include <QInputDialog>
 
 
 //A QCanvasView is widget which provides a view of a QCanvas
@@ -627,10 +618,9 @@ void GraphEditor::load(bool initgrid)
   {if(!is_init)return;
   clear();// delete all items
   canvas()->update();
-  //if(debug())DebugPrintf("Graph_Editor:load:%d",(int)initgrid);
-  int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
-  if(gwp->pGG->nv() > nmaxdisplay)
-      {Tprintf("Too big graph nv= %d (>%d)",gwp->pGG->nv(),nmaxdisplay);return;}
+  //int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
+  if(gwp->pGG->nv() > staticData::MaxND)
+      {Tprintf("Too big graph nv= %d (>%d)",gwp->pGG->nv(),staticData::MaxND);return;}
   GeometricGraph & G = *(gwp->pGG);
   if(initgrid)
       {Normalise();
@@ -655,7 +645,7 @@ void GraphEditor::load(bool initgrid)
   for(tedge e = 1;e <= G.ne();e++)
       edgeitem[e] = CreateEdgeItem(e,gwp); 
 
-  if(ShowExtBrin())
+  if(staticData::ShowExtTbrin())
       {tedge e = G.extbrin().GetEdge();
       EdgeItem *edge = (G.extbrin() > 0) ? edgeitem[e]  : edgeitem[e]->opp;
       edge->SetColor(color[Green],false);
@@ -690,11 +680,10 @@ void GraphEditor::print(QPrinter *printer)
       }
     else if(!printer->setup(this)) return; 
     { QPainter pp(printer);
-      Q3PaintDeviceMetrics pdm(printer);
       int nx = gwp->canvas->width()-space-sizerect-20;
       int ny = gwp->canvas->height();
-      double scale = Max((double)nx/(double) pdm.width(),(double)ny/(double)pdm.height());
-      printer->setResolution((int)(scale*printer->resolution()+.5));
+//       double scale = Max((double)nx/(double) printer->width(),(double)ny/(double)printer->height());
+//       printer->setResolution((int)(scale*printer->resolution()+.5));
       gwp->canvas->drawArea(QRect(0,0,nx,ny),&pp,FALSE);
     }
     if(gwp->mywindow->ServerExecuting)
@@ -706,22 +695,7 @@ void GraphEditor::print(QPrinter *printer)
       }
   }
 
-void GraphEditor::png()
-  {QString FileName;
-  if(!gwp->mywindow->ServerExecuting)
-      {FileName = Q3FileDialog::
-      getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
-      if(FileName.isEmpty())return; 
-      if(QFileInfo(FileName).extension(false) != (const char *)"png")
-	  FileName += (const char *)".png";
-      gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
-      }
-  else
-      FileName = QString("/tmp/server%1.png").arg(gwp->mywindow->ServerClientId);
-  QPixmap pixmap = QPixmap::grabWidget(
-      this,2,2,gwp->canvas->width()-space-sizerect-1,gwp->canvas->height()); 
-  pixmap.save(FileName,"PNG",0);
-  }
+
 int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
   {int rtt;
   Q3CanvasItemList l=canvas()->collisions(p);
@@ -791,4 +765,25 @@ void GraphEditor::clear()
   for (; it != list.end(); ++it)
       if(*it)delete *it;
   GridDrawn = false;
+  }
+void GraphEditor::png(int size)
+  {QRect geo = geometry();
+  resize(size+space+sizerect+5,size+4);
+  load(true);
+  QString FileName;
+  if(!gwp->mywindow->ServerExecuting)
+      {FileName = QFileDialog::
+      getSaveFileName(gwp->mywindow->DirFilePng,"Images(*.png)",this);
+      if(FileName.isEmpty()){setGeometry(geo);load(true);return;}
+      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+	  FileName += (const char *)".png";
+      gwp->mywindow->DirFilePng = QFileInfo(FileName).dirPath(true);
+      }
+  else
+      FileName = QString("/tmp/server%1.png").arg(gwp->mywindow->ServerClientId);
+  QPixmap pixmap = QPixmap::grabWidget(this
+                                       ,0,0,gwp->canvas->width()-space-sizerect-1,gwp->canvas->height()); 
+  pixmap.save(FileName,"PNG",0);
+  setGeometry(geo);
+  load(true);
   }

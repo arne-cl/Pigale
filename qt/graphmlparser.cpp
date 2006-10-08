@@ -1,18 +1,20 @@
-/****************************************************************************
-** $Id: graphmlparser.cpp,v 1.1 2005/04/12 17:12:17 hbonnin Exp $
+ /****************************************************************************
 **
-** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
+** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+** All rights reserved.
+** This file is part of the PIGALE Toolkit.
 **
-** This file is part of an example program for Qt.  This example
-** program may be used, distributed and modified without limitation.
+** This file may be distributed under the terms of the GNU Public License
+** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
 
-#include  <TAXI/Tpoint.h>
-#include  <TAXI/Tbase.h>
+#undef QT3_SUPPORT
+             
+#include <TAXI/Tpoint.h>
+#include <TAXI/Tbase.h>
 #include <QT/graphml.h>
-#include <stdio.h>
-#include <qstring.h>
+#include <QString>
 
 
 bool GraphmlParser::startDocument()
@@ -54,7 +56,8 @@ bool GraphmlParser::startElement( const QString& , const QString& ,
       else if (attributes.value("for")=="node") {record_key=rnode; node_keys.insert(k,"");}
       else if (attributes.value("for")=="edge") {record_key=redge; edge_keys.insert(k,"");}
       else 
-	{ LogPrintf("no 'for' valid attributes for key (%s)\n",(const char *)attributes.value("for")); 
+          {LogPrintf("no 'for' valid attributes for key (%s)\n"
+                     ,(const char *)attributes.value("for").toAscii()); 
 	  return FALSE;
 	}
       inside=key;
@@ -63,19 +66,19 @@ bool GraphmlParser::startElement( const QString& , const QString& ,
     { k=attributes.value("key");
       if (inside==graph)
 	if (!graph_keys.contains(k)) 
-	  { LogPrintf("Graph key %s not declared\n",(const char *)k);
+	  { LogPrintf("Graph key %s not declared\n",(const char *)k.toAscii());
 	    return FALSE;
 	  }
 	else top.data.insert(k, graph_keys[k]);
       else if (inside==node)
 	if (!node_keys.contains(k))
-	  { LogPrintf("Node key %s not declared\n",(const char *)k);
+	  { LogPrintf("Node key %s not declared\n",(const char *)k.toAscii());
 	    return FALSE;
 	  }
 	else current.data.insert(k, node_keys[k]);
       else if (inside==edge)
 	if (!edge_keys.contains(k))
-	  { LogPrintf("Edge key %s not declared\n",(const char *)k);
+	  { LogPrintf("Edge key %s not declared\n",(const char *)k.toAscii());
 	    return FALSE;
 	  }
 	else current.data.insert(k, edge_keys[k]);
@@ -83,7 +86,7 @@ bool GraphmlParser::startElement( const QString& , const QString& ,
   else if (qName=="default") ;
   else {level++; full_skip=true;}
   if (!recognized) 
-    { LogPrintf("<graphml> tag not found before %s\n",(const char *)qName);
+    { LogPrintf("<graphml> tag not found before %s\n",(const char *)qName.toAscii());
       return FALSE;
     }
   return TRUE;
@@ -103,23 +106,23 @@ bool GraphmlParser::endElement( const QString&, const QString& , const QString& 
   else if (qName=="default") ;
   else if (qName=="graphml") ;
   else 
-    { LogPrintf("Unskipped unknown tag %s closed\n", (const char *)qName);
+    { LogPrintf("Unskipped unknown tag %s closed\n", (const char *)qName.toAscii());
       return FALSE;
     }
   return TRUE;
 }
 
 bool GraphmlParser::characters ( const QString & ch )
-{  QString _data = ch.simplifyWhiteSpace();
+{  QString _data = ch.simplified();
   if (level>0) return TRUE;
   if (_data.length()>0) 
     if (inside==key)
       { if ((record_key==rgraph) || (record_key==rall))
-	  graph_keys.insert(k,_data,TRUE);
+	  graph_keys.insert(k,_data);
 	if ((record_key==rnode) || (record_key==rall))
-	  node_keys.insert(k,_data,TRUE);
+	  node_keys.insert(k,_data);
 	if ((record_key==redge) || (record_key==rall))
-	  edge_keys.insert(k,_data,TRUE);
+	  edge_keys.insert(k,_data);
       }
     else if (record_data) 
       if (inside==node || inside==edge) current.data.insert(k,_data);

@@ -9,29 +9,13 @@
 **
 *****************************************************************************/
 
-#include <qapplication.h>
+#undef QT3_SUPPORT
+
 #include "pigaleWindow.h" 
 #include "GraphWidget.h" 
 #include <TAXI/Tmessage.h>
 
-#if QT_VERSION < 300
-#undef Q3TextEdit
-#include <q3textview.h>
-#define Q3TextEdit Q3TextView
-#else
-#include <q3textedit.h>
-#include <q3textbrowser.h>
-#endif
 
-#include <qtabwidget.h> 
-#include <qstatusbar.h> 
-#include <qcolor.h> 
-#include <qtextstream.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qstring.h>
-#include <qmessagebox.h>
-#include <qdir.h> 
 
 static pigaleWindow* mw;
 pigaleWindow* GetpigaleWindow()
@@ -52,26 +36,32 @@ QString  getErrorString()
       m.sprintf("Error:%d in %s:%d",getError(),getErrorFile(),getErrorLine());
   return m;
   }
+
+/*
 bool & ShowOrientation()
   {static bool showorientation = false;
   return showorientation;
   }
+
 bool & ShowArrow()
   {static bool showarrow= true;
   return showarrow;
   }
+
 bool & ShowExtBrin()
   {static bool showextbrin= false;
   return showextbrin;
   }
+
 int & ShowVertex()
 // -3:nothing -2:index else:prop
   {static int _show = 0; 
   return _show;
   }
+*/
 QString getVertexLabel(GraphContainer &GC,tvertex v)
   {QString t;
-  int prop = ShowVertex();
+  int prop = staticData::ShowVertex();
   if(prop == -3)
        t = "";
   else if(prop == -2)
@@ -92,11 +82,11 @@ QString getVertexLabel(GraphContainer &GC,tvertex v)
   }
 QColor OppCol(QColor & col)
   {int hue,sat,val;
-  col.hsv(&hue,&sat,&val);
+  col.getHsv(&hue,&sat,&val);
   val = (val <= 192) ? 255 : 0;
   col.setHsv((hue+180)%360,sat/2,val); 
   /*
-  int r,g,b;
+   int r,g,b;
   col.rgb(&r,&g,&b);
   r = (r > 128) ? 0 : 255;
   g = (g > 128) ? 0 : 255;
@@ -107,7 +97,7 @@ QColor OppCol(QColor & col)
   }
 QColor Desaturate(QColor & col)
   {int hue,sat,val;
-  col.hsv(&hue,&sat,&val);
+  col.getHsv(&hue,&sat,&val);
   int val0 = 192;
   val = val0 +(int)(val*((double)(255.-val0)/255.));
   QColor col1;

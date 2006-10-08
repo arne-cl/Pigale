@@ -11,10 +11,9 @@
 
 #ifndef _GRAPH_SYM_H_INCLUDED_
 #define _GRAPH_SYM_H_INCLUDED_
-#include <qwidget.h>
-//Added by qt3to4:
-//#include <QResizeEvent>
-#include <qevent.h>
+
+#include <QWidget>
+#include <QEvent>
 
 class GraphSymPrivate;
 class pigaleWindow; 
@@ -24,10 +23,10 @@ class GraphSym : public QWidget
 {
   Q_OBJECT
 public:
-  GraphSym( QWidget *parent=0, const char *name=0,pigaleWindow* mw=0);
+  GraphSym( QWidget *parent,pigaleWindow* mw);
   ~GraphSym();
   void print(QPrinter *printer);
-  void png();
+  void png(int size);
 
 public slots:
   int update();

@@ -9,12 +9,17 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include <config.h>
-#include <qstatusbar.h>
-#include <qfontdialog.h> 
-#include <qmessagebox.h>
-#include <qprogressbar.h>
-#include <qtextedit.h>
+
+#include <QProgressBar>
+#include <QDesktopWidget>
+#include <QTextEdit>
+#include <QMessageBox>
+#include <QStatusBar>
+
+
 #include "ClientSocket.h"
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -22,7 +27,7 @@
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
-#include "LineEditNum.h"
+
 #include <TAXI/Tgf.h>
 #include <QT/Misc.h> 
 #include <QT/Handler.h>
@@ -54,7 +59,8 @@ void pigaleWindow::initServer()
   showMinimized();
   }
 bool pigaleWindow::event(QEvent * ev)
-  {if(ev->type() >=  QEvent::User)
+  {
+  if(ev->type() >=  QEvent::User)
       {customEvent(ev);
       return TRUE;
       }
@@ -84,7 +90,7 @@ void pigaleWindow::customEvent(QEvent * ev)
           break;
       case BANNER_EVENT:
           {bannerEvent *event  =  (bannerEvent  *)ev;
-          statusBar()->message(event->getString());
+          statusBar()->showMessage(event->getString());
           }
           break;
       case WAIT_EVENT:
@@ -120,14 +126,14 @@ void pigaleWindow::customEvent(QEvent * ev)
   }
 void pigaleWindow::banner()
   {QString msg;  
-    int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName);
-    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName);
+  int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName.toAscii());
+    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName.toAscii());
     msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
-	    ,(const char *)InputFileName
-	    ,*pGraphIndex,NumRecords
-	    ,(const char *)OutputFileName
-	    ,NumRecordsOut
-	    ,UndoIndex,UndoMax);
+                ,(const char *)InputFileName.toAscii()
+                ,*pGraphIndex,NumRecords
+                ,(const char *)OutputFileName.toAscii()
+                ,NumRecordsOut
+                ,UndoIndex,UndoMax);
   bannerEvent *e = new bannerEvent(msg);
   QApplication::postEvent(this,e);
   }
@@ -136,21 +142,25 @@ void pigaleWindow::postMessage(const QString &msg)
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postMessageClear()
-  {QCustomEvent *e = new QCustomEvent(CLEARTEXT_EVENT);
+  {clearTextEvent *e = new clearTextEvent();
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postWait(const QString &msg)
   {waitEvent *e = new waitEvent(msg);
   QApplication::postEvent(this,e);
   }
- void pigaleWindow::postDrawG()
-  {QCustomEvent *e = new QCustomEvent(DRAWG_EVENT);
+void pigaleWindow::postDrawG()
+  {drawgEvent *e = new drawgEvent();
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::Message(QString s)
   {messages->append(s);
   messages->ensureCursorVisible();
   } 
+void pigaleWindow::showInfoTab()
+  {// index is 0
+  rtabWidget->setCurrentIndex(rtabWidget->indexOf(gInfo));
+  }
 void pigaleWindow::mapActionsInit()
   {int na = (int)(sizeof(Actions)/sizeof(_Action));
   for(int i = 0;i < na;i++)
@@ -188,43 +198,46 @@ void pigaleWindow::information()
   graph_properties->update(GC,!MacroExecuting && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
-  {switch(action)
-      {case A_SET_PAUSE_DELAY:
-          pauseDelay() = macroSpin->value();
-          return;
+  {// only called when a checkbox is clicked
+  // but could be called from the server
+  switch(action)
+      {
+//       case A_SET_PAUSE_DELAY:
+//           staticData::PauseDelay() = macroSpin->value();
+//           return;
       case A_SET_DEBUG:
           debug() = !debug();
           return;
       case  A_SET_SCH_RECT:
-          SchnyderRect() = !SchnyderRect();
+          staticData::SchnyderRect() = !staticData::SchnyderRect();
           return;
       case A_SET_LFACE:
-          SchnyderLongestFace() = !SchnyderLongestFace();
+          staticData::SchnyderLongestFace() = !staticData::SchnyderLongestFace();
           return;
       case A_SET_SCH_COLOR:
-          SchnyderColor() =! SchnyderColor();
+          staticData::SchnyderColor() =!staticData::SchnyderColor();
           return;
       case A_SET_ERASE_MULT:
-          randomEraseMultipleEdges() = !randomEraseMultipleEdges();
+          staticData::RandomEraseMultipleEdges() = !staticData::RandomEraseMultipleEdges();
           return;
       case A_SET_GEN_CIR:
-          randomUseGeneratedCir() = !randomUseGeneratedCir();
+          staticData::RandomUseGeneratedCir() = !staticData::RandomUseGeneratedCir();
           return;
       case A_SET_RANDOM_SEED:
-          randomSeed() = !randomSeed();
+          staticData::RandomSeed() = !staticData::RandomSeed();
           return;
       case A_SET_UNDO:
-          IsUndoEnable = !IsUndoEnable;
-          UndoEnable(IsUndoEnable);
+          staticData::IsUndoEnable = !staticData::IsUndoEnable;
+          UndoEnable(staticData::IsUndoEnable);
           return;
       case A_SET_ORIENT:
-          ShowOrientation() = !ShowOrientation();
+          staticData::ShowOrientation() = !staticData::ShowOrientation();
           break;
       case A_SET_ARROW:
-          ShowArrow() = !ShowArrow();
+          staticData::ShowArrow() = !staticData::ShowArrow();
           break;
       case A_SET_EXTBRIN:
-          ShowExtBrin() = !ShowExtBrin();
+          staticData::ShowExtTbrin() = !staticData::ShowExtTbrin();
           break;
       }
   // update the editor
@@ -244,7 +257,7 @@ int pigaleWindow::handler(int action)
       {//pauseDelay() = macroSpin->value();
       qApp->processEvents();
       MacroWait = true;
-      QTimer::singleShot(1000*pauseDelay(),this,SLOT(timerWait()));
+      QTimer::singleShot(100*staticData::macroDelay,this,SLOT(timerWait()));
       return 0;
       }
   if(action < A_AUGMENT_END)
@@ -263,10 +276,10 @@ int pigaleWindow::handler(int action)
       }
   else if(action < A_GENERATE_END)
       {UndoClear();UndoSave();
-      pigaleThread.run(action,0,Gen_N1,Gen_N2,Gen_M);
+      pigaleThread.run(action,0,staticData::Gen_N1,staticData::Gen_N2,staticData::Gen_M);
       }
   else if(action < A_ALGO_END)
-      pigaleThread.run(action,spin_N->value());
+      pigaleThread.run(action,staticData::nCut);
   else if(action < A_ORIENT_END)
       pigaleThread.run(action);
   else if(action < A_TEST_END)
@@ -308,7 +321,7 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
       UndoTouch(false);
 
   // In case we called the orienthandler
-  box6->setCheckState(ShowOrientation() ? Qt::Checked : Qt::Unchecked);
+  chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
   if(action == 1)
       {if(!MacroExecuting )gw->update();}
   else if(action == 2)
@@ -346,8 +359,8 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   if(!MacroLooping && !MacroRecording && !ServerExecuting)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
-          {Tprintf("Handler Error:%s",(const char *)getErrorString());
-          if(debug())Twait((const char *)getErrorString()); 
+          {Tprintf("Handler Error:%s",(const char *)getErrorString().toAscii());
+          if(debug())Twait((const char *)getErrorString().toAscii()); 
           }
       }
   return action;
@@ -426,7 +439,7 @@ void PigaleThread::run()
               ret = AlgoHandler(mw->GC,action,N);
           else if(action < A_ORIENT_END)
               {ret = OrientHandler(mw->GC,action);
-              ShowOrientation() = true;
+              staticData::ShowOrientation() = true;
               }
           else if(action < A_TEST_END)
               ret = Test(mw->GC,action - A_TEST,drawingType);

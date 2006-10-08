@@ -11,9 +11,8 @@
 
 #ifndef _GRAPH_WIDGET_H_INCLUDED_
 #define _GRAPH_WIDGET_H_INCLUDED_
-#include <qwidget.h>
-//Added by qt3to4:
-//#include <QResizeEvent>
+
+#include <QWidget>
 
 class GraphWidgetPrivate;
 class pigaleWindow; 
@@ -27,7 +26,7 @@ public:
   ~GraphWidget();
   int init();
   void print(QPrinter *printer);
-  void png();
+  void png(int size);
 public slots:
   void update(int compute=1);
 //   void zoom();

@@ -18,10 +18,7 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include <QT/grid.h>
-#include <qtabwidget.h>
-//Added by qt3to4:
 #include <Q3PointArray>
-//#include <QResizeEvent>
 
 static QBrush *tb = 0;
 static QPen *tp = 0;
@@ -75,9 +72,9 @@ void GraphWidget::print(QPrinter *printer)
   {if(!d->is_init)return;
   d->editor->print(printer);
   }
-void GraphWidget::png()
+void GraphWidget::png(int size)
   {if(!d->is_init)return;
-  d->editor->png();
+  d->editor->png(size);
   }
 void GraphWidget::Spring()
   {if(!d->is_init)return;
@@ -315,7 +312,7 @@ Q3PointArray ArrowItem::areaPoints () const
   {return refresh;
   }
 void ArrowItem::drawShape ( QPainter & p )
-  {if(!ShowArrow())return;
+  {if(!staticData::ShowArrow())return;
 //   p.drawLine(pts[0],pts[1]);  p.drawLine(pts[0],pts[2]);
   p.drawPolygon(pts);
   //tp->setWidth(1);  setPen(*tp);  p.drawPolyline(refresh);
@@ -358,7 +355,7 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   tp->setColor(col);tp->setWidth(G.ewidth[e]);
   EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
   // second EdgeItem
-  if(ShowOrientation() && eoriented[e])
+  if(staticData::ShowOrientation() && eoriented[e])
       {edge0->arrow->show();
       tp->setColor(Desaturate(col));
       }
@@ -408,7 +405,7 @@ void EdgeItem::SetColor(QColor c,bool both)
   tp->setColor(c);tp->setWidth(G.ewidth[e]);
   setPen(*tp);
   if(lower && both)
-      {if(eoriented[this->e] && ShowOrientation())
+      {if(eoriented[this->e] && staticData::ShowOrientation())
           opp->SetColor(Desaturate(c));
       else
           opp->SetColor(c);

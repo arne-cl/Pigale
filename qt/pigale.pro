@@ -6,11 +6,12 @@ win32 {
       QMAKE_CXXFLAGS_WARN_ON =  -Wall 
       DEFINES +=  __MINGW32__ _WIN32
       DEFINES += GLUT_NO_LIB_PRAGMA	
+      DESTDIR=$$DISTPATH/bin
       } else {
       include(../pigale.inc)
       MOC_DIR = .moc
       QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-      DESTDIR=$$DISTPATH/bin
+      DESTDIR=.
       }
 
 INCLUDEPATH = ../incl
@@ -23,7 +24,6 @@ HEADERS = pigaleWindow.h \
     GraphGL.h \
     GraphSym.h \
     GraphWidget.h \
-    LineEditNum.h \
     mouse_actions.h 
 
 SOURCES = main.cpp \
@@ -39,7 +39,6 @@ SOURCES = main.cpp \
     graphmlparser.cpp \
     GraphSym.cpp \
     Handler.cpp \
-    LineEditNum.cpp \
     Macro.cpp \
     MiscQt.cpp \
     mouse_actions.cpp \
@@ -87,16 +86,23 @@ unix:LIBS += $$DISTPATH/lib/libglut.a
 win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 
 QT += qt3support opengl network xml
-DESTDIR = .
+#unix::DESTDIR = .
+#win32:DESTDIR = $$DISTPATH/bin
 unix {
       # awk
+      awk.target = ../incl/QT/Action.h
       awk.depends = ../incl/QT/Action_def.h
       awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
       QMAKE_EXTRA_TARGETS += awk
       # Translations
       TRANSLATIONS    = pigale_fr.ts 
-      translation.commands  =  $$MQTDIR/bin/lrelease pigale.pro
-      QMAKE_EXTRA_TARGETS += translation
+      translation.target = $$TRANSLATIONS
+      translation.depends = $$HEADERS $$SOURCES
+      translation.commands  =  $$MQTDIR/bin/lupdate pigale.pro 
+      translationUp.target = pigale_fr.qm 
+      translationUp.depends = $$TRANSLATIONS
+      translationUp.commands  =  $$MQTDIR/bin/lrelease -verbose $$TRANSLATIONS
+      QMAKE_EXTRA_TARGETS += translation translationUp 
       # needed by ../makefile
       distdir.commands =
       QMAKE_EXTRA_TARGETS += distdir
@@ -108,7 +114,7 @@ unix {
       # Distribution
       DISTDIR=..
       DISTFILES += gnumakefile
-      PRE_TARGETDEPS = awk
+      PRE_TARGETDEPS = pigale_fr.qm ../incl/QT/Action.h
 }
 win32 {
       # Installation

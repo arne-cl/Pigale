@@ -12,18 +12,13 @@
 #ifndef MOUSE_ACIONS_H
 #define MOUSE_ACIONS_H
 
-#include <qwidget.h>
-#include <qlayout.h>
-#include <qvariant.h>   // first for gcc 2.7.2
-#include <q3buttongroup.h>
-#include <qradiobutton.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qcheckbox.h>
-#include <qlcdnumber.h>
-#include <qslider.h>
-//Added by qt3to4:
-//#include <QMouseEvent>
+#include <QGroupBox>
+#include <QLayout>
+#include <QSlider>
+#include <QLCDNumber>
+#include <QRadioButton>
+#include <QPushButton>
+#include <QCheckBox>
 
 class GraphWidget;
 class GraphGL;
@@ -36,13 +31,13 @@ class Mouse_Actions : public QWidget
     Q_OBJECT
 
 public:
-  Mouse_Actions(QWidget* parent = 0,const char* name = 0,Qt::WFlags fl = 0
-		,GraphWidget* gw=0);
+  Mouse_Actions(QWidget* parent,GraphWidget* gw);
   ~Mouse_Actions();
   
   void contentsMousePressEvent(QMouseEvent* e);
 
-  Q3ButtonGroup* ButtonGroup1;
+  //Q3ButtonGroup* ButtonGroup1;
+  QGroupBox* ButtonGroup1;
   QRadioButton* ButtonAddV;
   QRadioButton* ButtonAddE;
   QRadioButton* ButtonDel;
@@ -65,5 +60,4 @@ public:
 private slots:
   void valueChanged(int i);
 };
-int GetMouseAction_1();
 #endif 

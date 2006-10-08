@@ -1,22 +1,20 @@
-/****************************************************************************
-** $Id: graphml.cpp,v 1.5 2006/04/22 18:36:54 hbonnin Exp $
+ /****************************************************************************
 **
-** Copyright (C) 1992-2000 Trolltech AS.  All rights reserved.
+** Copyright (C) 2001 Hubert de Fraysseix, Patrice Ossona de Mendez.
+** All rights reserved.
+** This file is part of the PIGALE Toolkit.
 **
-** This file is part of an example program for Qt.  This example
-** program may be used, distributed and modified without limitation.
+** This file may be distributed under the terms of the GNU Public License
+** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
 
-#include <qfile.h>
-#include <qxml.h>
-#include <qwindowdefs.h> 
-#include <qmap.h>
-#include <QT/graphml.h>
-//Added by qt3to4:
-//#include <QTextStream>
-#include <qtextstream.h>
+#undef QT3_SUPPORT
+
 #include <config.h> 
+#include <QT/graphml.h>
+
+
 
 MLKEY(V, PROP_COORD, Tpoint, "Coordinates");
 MLKEY(V, PROP_COLOR, short, "Color");
@@ -39,7 +37,7 @@ void GraphmlReader::ProcessNode(int v)
       if (current.data.contains(key_tab[ind].id()))
 	{ (*(key_tab[ind].init))(GA);
 	  PAccess pa=(*(key_tab[ind].access))(GA);
-	  pa.vp->fromstr(pa.v,v,(const char *)current.data[key_tab[ind].id()]);
+	  pa.vp->fromstr(pa.v,v,(const char *)current.data[key_tab[ind].id()].toAscii());
 	}
     }
 }
@@ -51,7 +49,7 @@ void GraphmlReader::ProcessEdge(int e)
       if (current.data.contains(key_tab[ind].id()))
 	{ (*(key_tab[ind].init))(GA);
 	  PAccess pa=(*(key_tab[ind].access))(GA);
-	  pa.vp->fromstr(pa.v,e,(const char *)current.data[key_tab[ind].id()]);
+	  pa.vp->fromstr(pa.v,e,(const char *)current.data[key_tab[ind].id()].toAscii());
 	}
     }
 }
@@ -91,7 +89,7 @@ tstring Taxi_FileIOGraphml::Title(tstring fname,int)
     if (!CallParse(fname,xreader)) return "???";
     QString title=xreader.Title();
     delete &xreader;
-    return (const char *)title;
+    return (const char *)title.toAscii();
   }
 
 int Taxi_FileIOGraphml::Read(GraphContainer& G,tstring fname,int& NR,int& index)
@@ -115,11 +113,11 @@ int Taxi_FileIOGraphml::Read(GraphContainer& G,tstring fname,int& NR,int& index)
 	version=inforeader.Version();
 	delete &inforeader2;
       }
-    if (version!="") LogPrintf("Graphml: Pigale version=%s\n",(const char *)version);
+    if (version!="") LogPrintf("Graphml: Pigale version=%s\n",(const char *)version.toAscii());
     G.clear();
     G.setsize(nv,ne);
     Prop1<tstring> Gtitle(G.Set(),PROP_TITRE);
-    Gtitle() = tstring((const char *)title);
+    Gtitle() = tstring((const char *)title.toAscii());
     GraphmlReader &graphreader=*new GraphmlReader(G,index);
     if (!CallParse(fname,graphreader)) return 1;
     return 0;

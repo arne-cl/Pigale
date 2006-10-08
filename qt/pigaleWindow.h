@@ -12,32 +12,33 @@
 #ifndef MYWINDOW_H 
 #define MYWINDOW_H
 
-#include <qnamespace.h>
-#include <qglobal.h>
-#include <qmutex.h>
-#include <qthread.h>
+#include <QApplication>
+#include <QPrinter>
+#include <QFileDialog>
+#include <QPrintDialog>
+#include <QTabWidget>
+#include <QThread>
 #include <QtNetwork>
-#include <qwaitcondition.h>
-#include <qactiongroup.h>      
-#include <qtoolbar.h>
-#include <qmainwindow.h>
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qmap.h>
-#include <qevent.h> 
-#include <qtimer.h>
-#include <qevent.h>
-#include <qcoreevent.h>
-#include <qtextedit.h>
-#include <qtextbrowser.h>
-#include <qsettings.h>
-#include <qtextstream.h>
 #include <QCloseEvent>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QAction>
+#include <QMainWindow>
+#include <QDateTime>
+#include <QString>
+#include <QMap>
+#include <QEvent>
+#include <QTimer>
+#include <QSettings>
+#include <QTextStream>
+
+
 #include <Pigale.h> 
+#include <QT/staticData.h>
 
-
-
+class QHBoxLayout;
 class QTextEdit;
+class QTextBrowser;
 class pigaleWindow;
 class GraphWidget;
 class GraphGL;
@@ -114,11 +115,27 @@ private slots:
   void spinN1Changed(int val);
   void spinN2Changed(int val);
   void spinMChanged(int val);
+  void spinNChanged(int val);
+  void spinRepeatChanged(int val);
   void spinDelayChanged(int val);
+  void spinPNGChanged(int val);
+  void spinMaxNSChanged(int i);
+  void spinMaxNDChanged(int i);
   void EditPigaleColors();
   void SetPigaleColorsProfile1(); 
   void SetPigaleColorsProfile2(); 
+  void SaveSettings();
+  void ResetSettings();
+  void SetDocumentationPath();
 private:
+  void initPigale();
+  void CheckDocumentationPath(); 
+  void createMenus();
+  void createToolBar();
+  void createLayout(QWidget *mainWidget);
+  void createRightLayout(QHBoxLayout * leftLayout);
+  void createPageInfo(QWidget *gInfo);
+  void createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayout);
   int setId(QAction *action,int Id);
   void AllowAllMenus();
   void mapActionsInit();
@@ -133,8 +150,6 @@ private:
 public slots:
   int postHandler(int ret,int drawingType,int saveType);
   void handler(QAction *action);
-  void SaveSettings();
-  void SetDocumentPath();
   void banner();
   void timerWait();
   void UndoSave();
@@ -146,12 +161,13 @@ public slots:
   void NewGraph();
 protected:
   void closeEvent(QCloseEvent *event);
+  void customEvent( QEvent * e );
+  bool event(QEvent * e);
 public:
   pigaleWindow();
   ~pigaleWindow();
   void whenReady();
-  bool event(QEvent * e);
-  void customEvent( QEvent * e );
+  void showInfoTab();
   void postMessage(const QString &msg);
   void postWait(const QString &msg);
   void postMessageClear();
@@ -171,9 +187,7 @@ public:
 public:
   QActionGroup *menuActions;
   QMap<int,QAction*> menuIntAction;
-  //QAction *leftAct,*rightAct,*redoAct,*undoLAct,*undoRAct,*undoSAct;
-  QAction *undoLAct,*undoRAct,*undoSAct;
-  QTextEdit *messages;
+  QAction *undoLAct,*undoRAct,*undoSAct; 
   QProgressBar *progressBar;
   pigalePaint *mypaint;
   QTabWidget *tabWidget;
@@ -190,43 +204,31 @@ public:
   int InputDriver;
   int OutputDriver;
   bool ServerExecuting;
-  bool ServerBusy;
   int ServerClientId;
   QTime timer;
-  int Gen_N1,Gen_N2,Gen_M;
   ClientSocket *threadServer;
-  int MaxNS,MaxND;
   int GraphIndex1;
   int pigaleThreadRet;
 private:
   PigaleThread pigaleThread;
   PigaleServer  *server;
+  QTextEdit *messages;
   QToolBar *tb;
   QTextBrowser *browser;
-  QSpinBox *spin_N1,*spin_N2,*spin_M,*spin_N,*spin_MaxNS,*spin_MaxND,*macroSpin;
-  QCheckBox *box1,*box2,*box3,*box4,*box5,*box6,*box7,*box8,*box9,*box10,*box11;
-  LineEditNum *macroLine;
-  QLineEdit *seedEdit;
-  QWidget *gSettings;
+  QTabWidget *rtabWidget;
+  QCheckBox *chkOrient;
+  QWidget *gInfo,*gSettings;
   QMenu *userMenu; 
   QPrinter *printer;
   QString DirFileMacro;
   QString MacroFileName;
   int *pGraphIndex,GraphIndex2,UndoIndex,UndoMax;
   QString DirFileDoc;
-  int pigaleWindowInitYsize,pigaleWindowInitXsize;
-  int macroRepeat;
   int PrinterOrientation,PrinterColorMode;
-  bool IsUndoEnable;
   svector<int> MacroActions;
-  bool EditNeedUpdate;
-  bool InfoNeedUpdate;
+  bool EditNeedUpdate,InfoNeedUpdate;
   int MacroNumActions;
-  bool MacroRecording;
-  bool MacroLooping;
-  bool MacroExecuting;
-  bool MacroWait;
-  bool MacroPlay;
+  bool MacroRecording,MacroLooping,MacroExecuting,MacroWait,MacroPlay;
   int _key;
   bool Server;
   typedef QMap<int,QString> IntStringMap;

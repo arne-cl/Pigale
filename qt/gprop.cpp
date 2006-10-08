@@ -9,131 +9,123 @@
 **
 *****************************************************************************/
 
-#include <qvariant.h>  
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qlayout.h>
-#include <qboxlayout.h>
-#include <qlabel.h>
-#include <qevent.h>
-#include <qapplication.h>
+#undef QT3_SUPPORT
 
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include "gprop.h"
 
-Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar
-				   ,const char* name,Qt::WFlags fl)
-    : QWidget( parent,name,fl)
-    ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END,1),_updateMenu(true)
-  {if(!name)setName("Graph_Properties");
-  mw = (pigaleWindow*)qApp->mainWidget();
-  MaxNSlow = mw->MaxNS;  MaxNDisplay = mw->MaxND;
-  setMinimumHeight(180); 
-  //marge,spacing
-  QVBoxLayout* MainLayout = new QVBoxLayout(this,5,2,"MainLayout"); 
+#include <QBoxLayout>
+#include <QLabel>
 
-  QHBoxLayout *TxtLayout = new QHBoxLayout(0,0,0,"TxtLayout"); 
-  QHBoxLayout *Layout_NM = new QHBoxLayout(0,0,0,"Layout_NM");
-  QHBoxLayout *LayoutDegrees = new QHBoxLayout(0,0,0,"LayoutDegrees");
-  QHBoxLayout *LayoutAllButtons = new QHBoxLayout(0,8,10,"LayoutAllButtons");
+Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar,pigaleWindow * _mw)
+    : QWidget(parent)
+    ,menu(menubar),allow( A_AUGMENT, A_ORIENT_END,1),_updateMenu(true)
+  {mw= _mw;
+  //mw = (pigaleWindow*)qApp->mainWidget();
+  //MaxNSlow = staticData::MaxNS;  MaxNDisplay = staticData::MaxND;
+  setMinimumHeight(180); 
+  QVBoxLayout* MainLayout = new QVBoxLayout(this); 
+  QHBoxLayout *TxtLayout = new QHBoxLayout(); 
+  QHBoxLayout *Layout_NM = new QHBoxLayout();
+  QHBoxLayout *LayoutDegrees = new QHBoxLayout();
+  QHBoxLayout *LayoutAllButtons = new QHBoxLayout();
+  //QHBoxLayout *LayoutAllButtons = new QHBoxLayout(0,8,10,"LayoutAllButtons");
   
   MainLayout->addLayout(TxtLayout);
   MainLayout->addLayout(Layout_NM);
   MainLayout->addLayout(LayoutDegrees);
   MainLayout->addLayout(LayoutAllButtons);
   
-  QVBoxLayout *LayoutLeftButtons  = new QVBoxLayout(0,0,0,"LayoutLeftButtons"); 
-  QVBoxLayout *LayoutRightButtons = new QVBoxLayout(0,0,0,"LayoutP");
+  QVBoxLayout *LayoutLeftButtons  = new QVBoxLayout(); 
+  QVBoxLayout *LayoutRightButtons = new QVBoxLayout();
   LayoutAllButtons->addLayout(LayoutLeftButtons);
   LayoutAllButtons->addLayout(LayoutRightButtons);
 
-  QLabel*TextLabel3 = new QLabel(this,"TextLabel3");
+  QLabel*TextLabel3 = new QLabel(this);
   TextLabel3->setText(tr("<b>Graph Properties</b>"));
   TextLabel3->setTextFormat(Qt::RichText);
-  TextLabel3->setAlignment(int(Qt::AlignCenter));
+  TextLabel3->setAlignment(Qt::AlignCenter);
   TxtLayout->addWidget(TextLabel3);
   
-  QLabel*TextLabel1 = new QLabel(this,"TextLabel1");
+  QLabel*TextLabel1 = new QLabel(this);
   TextLabel1->setText("N:  ");
   Layout_NM->addWidget(TextLabel1);
-  LE_N = new QLineEdit(this,"LE_N");
+  LE_N = new QLineEdit(this);
   LE_N->setMaximumSize(QSize(60,32767));
   LE_N->setText("0");
   Layout_NM->addWidget(LE_N);
-  QLabel *TextLabel1_2 = new QLabel(this,"TextLabel1_2");
+  QLabel *TextLabel1_2 = new QLabel(this);
   TextLabel1_2->setText("M:  ");
   Layout_NM->addWidget(TextLabel1_2);
-  LE_M = new QLineEdit(this,"LE_M");
+  LE_M = new QLineEdit(this);
   LE_M->setMaximumSize(QSize(60,32767));
   LE_M->setText("0");
   Layout_NM->addWidget(LE_M);
   LE_M->setReadOnly(true);  LE_N->setReadOnly(true);
   
-  QLabel* TextLabelMin = new QLabel(this,"TextLabelMin");
+  QLabel* TextLabelMin = new QLabel(this);
   TextLabelMin->setText("Min:");
   LayoutDegrees->addWidget(TextLabelMin);
-  LE_Min = new QLineEdit(this,"LE_Min");
+  LE_Min = new QLineEdit(this);
   LE_Min->setMaximumSize(QSize(60,32767));
   LE_Min->setText("0");
   LayoutDegrees->addWidget(LE_Min);
-  QLabel* TextLabelMax = new QLabel(this,"TextLabelMax");
+  QLabel* TextLabelMax = new QLabel(this);
   TextLabelMax->setText("Max:");
   LayoutDegrees->addWidget(TextLabelMax);
-  LE_Max = new QLineEdit(this,"LE_Max");
+  LE_Max = new QLineEdit(this);
   LE_Max->setMaximumSize(QSize(60,32767));
   LE_Max->setText("0");
   LayoutDegrees->addWidget(LE_Max);
   LE_Min->setReadOnly(true);  LE_Max->setReadOnly(true);
 
   //***************************************************
-  RBConnected = new RoRadioButton(this,"RBConnected");
+  RBConnected = new RoRadioButton(this);
   RBConnected->setText(tr("Connected"));
   RBConnected->setChecked(TRUE);
   LayoutLeftButtons->addWidget(RBConnected);
 
-  RB2Connected = new RoRadioButton(this,"RB2Connected");
+  RB2Connected = new RoRadioButton(this);
   RB2Connected->setText(tr("2-Connected"));
   LayoutLeftButtons->addWidget(RB2Connected);
 
-  RB3Connected = new RoRadioButton(this,"RB3Connected");
+  RB3Connected = new RoRadioButton(this);
   RB3Connected->setText(tr("3-Connected"));
   LayoutLeftButtons->addWidget(RB3Connected);
 
-  RBBipartite = new RoRadioButton(this,"RBBipartite");
+  RBBipartite = new RoRadioButton(this);
   RBBipartite->setText(tr("Bipartite"));
   LayoutLeftButtons->addWidget(RBBipartite);
 
-  RBAcyclic = new RoRadioButton(this,"RBAcyclic");
+  RBAcyclic = new RoRadioButton(this);
   RBAcyclic->setText(tr("Acyclic"));
   LayoutLeftButtons->addWidget(RBAcyclic);
 
   //********************************************
-  RBPlanar = new RoRadioButton(this,"RBPlanar");
+  RBPlanar = new RoRadioButton(this);
   RBPlanar->setText(tr("Planar"));
   LayoutRightButtons->addWidget(RBPlanar);
 
-  RBMxPlanar = new RoRadioButton(this,"RBMxPlanar");
+  RBMxPlanar = new RoRadioButton(this);
   RBMxPlanar->setText(tr("Triangulation"));
   LayoutRightButtons->addWidget(RBMxPlanar);
 
-  RBOuPlanar = new RoRadioButton(this,"RBOuPlanar");
+  RBOuPlanar = new RoRadioButton(this);
   RBOuPlanar->setText(tr("Out. planar"));
   LayoutRightButtons->addWidget(RBOuPlanar);
 
-  RBSerie = new RoRadioButton(this,"RBSerie");
+  RBSerie = new RoRadioButton(this);
   RBSerie->setText(tr("Series-//"));
   LayoutRightButtons->addWidget(RBSerie);
 
-  RBSimple = new RoRadioButton(this,"Simple");
+  RBSimple = new RoRadioButton(this);
   RBSimple->setText(tr("Simple"));
   LayoutRightButtons->addWidget(RBSimple);
   }
 
-RoRadioButton::RoRadioButton(QWidget * parent,const char * name)
-    :QRadioButton(parent,name)
+RoRadioButton::RoRadioButton(QWidget * parent)
+    :QRadioButton(parent)
   {setAutoExclusive(false); 
   }
 void RoRadioButton::mousePressEvent(QMouseEvent* e)
@@ -144,12 +136,7 @@ void RoRadioButton::mouseReleaseEvent(QMouseEvent* e)
   }
 Graph_Properties::~Graph_Properties()
   { }
-void Graph_Properties::MaxNSlowChanged(int i)
-  {MaxNSlow = i;
-  }
-void Graph_Properties::MaxNDisplayChanged(int i)
-  {MaxNDisplay = i;
-  }
+
 void Graph_Properties::update(GraphContainer & GC,bool print)
   {GeometricGraph G(GC);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
@@ -209,8 +196,8 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 
   //Modify the enable menus
   //For slow programs or display
-  bool NotBigS = (G.nv() > MaxNSlow ) ? false : true;
-  bool NotBigD = (G.nv() > MaxNDisplay) ? false : true;
+  bool NotBigS = (G.nv() > staticData::MaxNS ) ? false : true;
+  bool NotBigD = (G.nv() > staticData::MaxND) ? false : true;
   allowAction(A_EMBED_3d,G.nv() > 3 && NotBigD);                   //Rn embedding
   allowAction(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
   allowAction(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition
@@ -250,7 +237,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   allowAction(A_EMBED_CD,!SMALL && S && P && C3 && NotBigD);         //Convex 
   allowAction(A_EMBED_POLYLINE,!SMALL && S && P && NotBigD);         //Polyline
   allowAction(A_EMBED_TUTTE_CIRCLE,!SMALL && P && S && NotBigD);     //Tutte Circle 
-  allowAction(A_EMBED_TUTTE,!SMALL && P && NotBigD);                 //Tutte
+  allowAction(A_EMBED_TUTTE,!SMALL && P && C3 && NotBigD);           //Tutte
   allowAction(A_EMBED_VISION,(!SMALL || G.ne() >= 1) && P && NotBigD);//Vision
 #ifndef VERSION_ALPHA
   allowAction(A_EMBED_GVISION,(!SMALL || G.ne() > 1)  && NotBigD);//GVision
@@ -290,7 +277,8 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 #ifdef TDEBUG
   if(debug())DebugPrintf("END INFO %d\n",print);
 #endif
-  if(!print)return;  
+  if(!print)return; 
+  mw->showInfoTab();
   // Modify the buttons
   RBSimple->setChecked(S);
   RBPlanar->setChecked(P);
@@ -329,7 +317,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Tprintf("Name:%s",~title());
 
-  if(getError())DebugPrintf("ERROR:%s",(const char *)getErrorString());
+  if(getError())DebugPrintf("ERROR:%s",(const char *)getErrorString().toAscii());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;

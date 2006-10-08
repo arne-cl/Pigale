@@ -19,8 +19,8 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 #include <QT/clientEvent.h>
-#include <qapplication.h> 
-#include <qprogressbar.h>
+
+#include <QProgressBar>
 
 #ifndef _WINDOWS
 using namespace std;

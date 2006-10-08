@@ -9,30 +9,20 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include "pigaleWindow.h"
 #include "GraphSym.h"
 #include <QT/SymWindow.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
 
-#include <qtabwidget.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qcheckbox.h>
-#include <qprinter.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <q3filedialog.h>
-#include <qapplication.h>
-//Added by qt3to4:
-//#include <QPixmap>
-#include <qpixmap.h>
-// #include <QPaintEvent>
-// #include <QHideEvent>
-// #include <QShowEvent>
-#include <Q3HBoxLayout>
-// #include <QResizeEvent>
-#include <Q3VBoxLayout>
+
+
+#include <QPushButton>
+#include <QCheckBox>
+#include <QBoxLayout>
+#include <QPainter>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -692,8 +682,8 @@ class GraphSymPrivate
 };
 //*****************************************************
 
-GraphSym::GraphSym(QWidget *parent,const char *name,pigaleWindow *mw)
-    : QWidget( parent, name )
+GraphSym::GraphSym(QWidget *parent,pigaleWindow *mw)
+    : QWidget(parent)
   {d = new GraphSymPrivate;
   d->pGC = new GraphContainer;
   d->mw = mw;
@@ -703,17 +693,18 @@ GraphSym::~GraphSym()
 
 int GraphSym::update()
   {if(!d->is_init)
-      {Q3VBoxLayout* vb = new Q3VBoxLayout(this,2,2);
-      d->editor = new SymWindow(d,this,"SymWindow");
+      {QVBoxLayout* vb = new QVBoxLayout(this);
+      vb->setMargin(2);
+      d->editor = new SymWindow(d,this);
       vb->addWidget(d->editor);
-      Q3HBoxLayout* hb = new Q3HBoxLayout(vb,60);
+      QHBoxLayout* hb = new QHBoxLayout();    vb->addLayout(hb);
       QPushButton* bt_next = new QPushButton( "Next",this);
-
+      bt_next->setMaximumWidth(60);
       d->bt_fact = new QCheckBox( "Fact",this);           
       d->bt_opt = new QCheckBox( "Opt",this);
       d->bt_sym = new QCheckBox( "Sym Lab",this);
-
       hb->addWidget(bt_next); 
+      hb->insertSpacing(1,300);
       hb->addWidget(d->bt_fact);
       hb->addWidget(d->bt_opt);
       hb->addWidget(d->bt_sym);
@@ -753,61 +744,63 @@ int GraphSym::update()
   int Rotation_23 = EqualEigenVal_23 ? ComputeRotation(G,2,3,theta_23) :0;
   if(Rotation)Tprintf("Probable Rotation (1-2) of order:%d",Rotation);
   if(Rotation_23)Tprintf("Probable Rotation (2-3) of order:%d",Rotation_23);
+  d->mw->tabWidget->setTabText(d->mw->tabWidget->indexOf(this),"Symetrie");
+  d->mw->tabWidget->setCurrentIndex(d->mw->tabWidget->indexOf(this));
 
-  d->mw->tabWidget->showPage(this);
-#if QT_VERSION < 300
-  d->mw->tabWidget->changeTab(this,"Symetrie");
-#else
-  d->mw->tabWidget->setTabLabel(this,"Symetrie");
-#endif
   d->editor->FindSym();
   if(!d->editor->sym)Tprintf("No symetrie found");  
   return 0;
   }
 void GraphSym::print(QPrinter *printer)
-  { QString FileName="";
-    QString OldFileName="";
-    bool outf=false;
-    QPrinter::Orientation orient=QPrinter::Portrait;
-    QPrinter::ColorMode cm=QPrinter::Color;
-    if(!d->is_init)return;
-    if(d->mw->ServerExecuting)
-      { FileName = QString("/tmp/server%1.ps").arg(d->mw->ServerClientId);
-	orient=printer->orientation();
-	cm=printer->colorMode();
-	printer->setOrientation(QPrinter::Portrait);
-	printer->setColorMode(QPrinter::Color);
-	OldFileName=printer->outputFileName();
-	printer->setOutputFileName(FileName);
-	outf=printer->outputToFile();
-	printer->setOutputToFile(true);
+  {QString FileName="";
+  QString OldFileName="";
+  QPrinter::Orientation orient=QPrinter::Portrait;
+  QPrinter::ColorMode cm=QPrinter::Color;
+  if(!d->is_init)return;
+  if(d->mw->ServerExecuting)
+      {FileName = QString("/tmp/server%1.ps").arg(d->mw->ServerClientId);
+      orient=printer->orientation();
+      cm=printer->colorMode();
+      printer->setOrientation(QPrinter::Portrait);
+      printer->setColorMode(QPrinter::Color);
+      OldFileName=printer->outputFileName();
+      printer->setOutputFileName(FileName);
       }
-    else if(!printer->setup(this)) return;
-    d->editor->print(printer);
-    if(d->mw->ServerExecuting)
-      {
-	printer->setOrientation(orient); 
-	printer->setColorMode(cm);
-	printer->setOutputFileName(OldFileName);
-	printer->setOutputToFile(outf);
+  else 
+      {QPrintDialog printDialog(printer,this);
+      if(printDialog.exec() != QDialog::Accepted) 
+          return;
+      }
+
+  d->editor->print(printer);
+  if(d->mw->ServerExecuting)
+      {printer->setOrientation(orient); 
+      printer->setColorMode(cm);
+      printer->setOutputFileName(OldFileName);
       }
   }
 
-void GraphSym::png()
-  {qApp->processEvents();
+void GraphSym::png(int size)
+  {QRect geo = d->editor->geometry();
+  d->editor->resize(size,size);
+  qApp->processEvents();
   QString FileName;
   if(!d->mw->ServerExecuting)
-      {FileName = Q3FileDialog::
-      getSaveFileName(d->mw->DirFilePng,"Images(*.png)",this);
+      {FileName = QFileDialog::
+      getSaveFileName(this,
+                      tr("Choose a file to save under"),
+                      d->mw->DirFilePng,
+                      "Images(*.png)");
       if(FileName.isEmpty())return; 
-      if(QFileInfo(FileName).extension(false) != (const char *)"png")
+      if(QFileInfo(FileName).suffix() != (const char *)"png")
 	  FileName += (const char *)".png";
-      d->mw->DirFilePng = QFileInfo(FileName).dirPath(true);
+      d->mw->DirFilePng = QFileInfo(FileName).absolutePath();
       }
   else
       FileName = QString("/tmp/server%1.png").arg(d->mw->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (d->editor); 
   pixmap.save(FileName,"PNG");
+  d->editor->setGeometry(geo);
   }
 void GraphSym::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize(); 
@@ -832,8 +825,8 @@ void GraphSym::Next()
   {d->editor->FindSym();
   }
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-SymWindow::SymWindow(GraphSymPrivate *g,QWidget * parent,const char * name)
-    : QWidget( parent, name ),gsp(g),is_init(false),isHidden(true)
+SymWindow::SymWindow(GraphSymPrivate *g,QWidget * parent)
+    : QWidget(parent),gsp(g),is_init(false),isHidden(true)
  {}
 void SymWindow::showEvent(QShowEvent*)
   {isHidden = false;}
@@ -948,32 +941,34 @@ void SymWindow::DrawSym()
   if(!gsp->Factorial)RestaureCoords(G);
   else FillCoords(G,axe1,axe2,1);
   Normalise();
-  setBackgroundColor(Qt::white);
-  QPainter p(this);
-  update(&p);
+  //setBackgroundColor(Qt::white);
+  repaint(geometry());
+ //  QPainter p(this);
+//   update(&p);
   }
 void SymWindow::update(QPainter *p)
   {GeometricGraph & G = *(gsp->pGG);
-  //QPainter p(this);
   QPen pn = p->pen();
   QPoint ps,pt;
   QString t;
   QFont font;
+
+  p->fillRect(geometry(),Qt::white);
   if(gsp->Factorial)//draw axes with labels
       {pn.setColor(color[Grey2]);pn.setWidth(3); p->setPen(pn);
-      ps = QPoint(0,this->height()-(int)ytr); pt = QPoint(this->width(),this->height()-(int)ytr);
+      ps = QPoint(0,height()-(int)ytr); pt = QPoint(width(),this->height()-(int)ytr);
       p->drawLine(ps,pt);
       pn.setWidth(1); p->setPen(pn);
-      ps = QPoint((int)xtr,0); pt = QPoint((int)xtr,this->height());
+      ps = QPoint((int)xtr,0); pt = QPoint((int)xtr,height());
       p->drawLine(ps,pt);
       //draw labels
-      font = QFont("sans",14);
+      font = QFont("sans",10);
       p->setFont(font);
       pn.setColor(color[Violet]);p->setPen(pn);
       t.sprintf("(%d)",axe1);
-      drawText(this->width()-18,this->height()-(int)ytr-3,t);//hor
+      p->drawText(QPoint(width()-18,height()-(int)ytr-3),t);//hor
       t.sprintf("(%d)",axe2);
-      drawText((int)xtr+5,15,t); //ver
+      p->drawText(QPoint((int)xtr+5,15),t); //ver
       }
   //Draw edges
   for(tedge e = 1; e <= G.ne();e++)
@@ -1006,21 +1001,21 @@ void SymWindow::update(QPainter *p)
       p->drawText(rect,Qt::AlignCenter,t);
       }
   }
+#define border 30
 void SymWindow::Normalise()
   {if(!is_init)return;
   GeometricGraph & G = *(gsp->pGG);
   int n = G.nv();
-  double x_min = 15;
-  double x_max = this->width() -15;
-  double y_min = 15;
-  double y_max = this->height() - 15;
+  double x_min = border;
+  double x_max = width() -border;
+  double y_min = border;
+  double y_max = height() - border;
   double min_used_x,max_used_x,min_used_y,max_used_y;
-  fs = (int)((double)QMIN(this->width(),this->height())/50.); 
+  fs = (int)((double)Min(width(),height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   max_used_x = min_used_x = xcoord[1]; 
   max_used_y = min_used_y = ycoord[1];
-  int i;
-  for (i = 2;i <= n;i++)
+  for(int i = 2;i <= n;i++)
       {min_used_x = Min(min_used_x,xcoord[i]);
       max_used_x = Max(max_used_x,xcoord[i]);
       min_used_y = Min(min_used_y,ycoord[i]);
@@ -1044,7 +1039,7 @@ void SymWindow::Normalise()
       {ymul = 1.;
       ytr = (y_max + y_min)/2.-min_used_y;
       }
-  for (i = 1;i <= n;i++)
+  for(int i = 1;i <= n;i++)
       {xcoord[i] = xmul*xcoord[i] + xtr;
        ycoord[i] = ymul*ycoord[i] + ytr;
       }

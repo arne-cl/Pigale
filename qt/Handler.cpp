@@ -9,6 +9,7 @@
  **
  *****************************************************************************/
 
+#undef QT3_SUPPORT 
 
 #include <QT/Action_def.h>
 #include "pigaleWindow.h" 
@@ -174,7 +175,7 @@ int AlgoHandler(GraphContainer &GC,int action,int nn)
           break;
       case A_ALGO_NETCUT: // Netcut
           G.Simplify();
-          ret = split(G,nn);
+          ret = split(G,nn,staticData::UseDistance());
           break;
       case A_ALGO_GEOMETRIC_CIR:
           if(G.ComputeGeometricCir() == 0)
@@ -186,7 +187,7 @@ int AlgoHandler(GraphContainer &GC,int action,int nn)
           Tprintf("LR-algo map");
           break;
       case A_ALGO_SYM://symetrie
-          ret = Embed3d(G);
+          ret = Embed3d(G,staticData::UseDistance());
           if(ret >=0)return 5;
           return 5;
           break;
@@ -235,15 +236,17 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
       {case A_EMBED:
           return 2;  //only used by the server (Information+gw->update)
       case A_EMBED_SCHNYDER_E:ret = 1;
-          err = G.Schnyder(0);
+          err = G.Schnyder(staticData::SchnyderRect(),staticData::SchnyderColor()
+                           ,staticData::SchnyderLongestFace(),0);
           if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_SCHNYDER_V:ret = 1;
-          err = G.SchnyderV(0);
+          err = G.SchnyderV(staticData::SchnyderRect(),staticData::SchnyderColor()
+                            ,staticData::SchnyderLongestFace(),0);
           if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_FPP:ret = 1;
-          err = EmbedFPP(G);
+          err = EmbedFPP(G,staticData::SchnyderRect(),staticData::SchnyderLongestFace());
           if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_CD:ret = 1;
@@ -255,7 +258,7 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_TUTTE_CIRCLE:ret = 1;
-          EmbedTutteCircle(G);
+          EmbedTutteCircle(G,staticData::SchnyderLongestFace());
           break;
       case A_EMBED_TUTTE:ret = 1;
           G0.Tutte();
@@ -293,7 +296,7 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           drawing = 4;
           break;
       case A_EMBED_FPP_RECTI:ret = 3;
-          err = EmbedFPPRecti(G);
+          err = EmbedFPPRecti(G,staticData::SchnyderLongestFace());
           drawing = 1;
           break;
       case A_EMBED_GVISION:ret = 3;
@@ -302,7 +305,7 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           drawing = 2;
           break;
       case A_EMBED_T_CONTACT:ret = 3;
-          err = EmbedTContact(G);
+          err = EmbedTContact(G,staticData::SchnyderLongestFace());
           if(err)Tprintf("T-Contact err=%d",err);
           drawing = 5;
           break;
@@ -312,10 +315,10 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           drawing = 9;
           break;
       case A_EMBED_3d:ret = 4; //Embed3d
-          err = Embed3d(G);
+          err = Embed3d(G,staticData::UseDistance());
           break;
       case A_EMBED_3dSCHNYDER:ret = 4; //Embed3d
-          err = Embed3dSchnyder(G);
+          err = Embed3dSchnyder(G,staticData::SchnyderLongestFace());
           break;
       case  A_EMBED_SPRING :ret = 6;
           break;
@@ -489,53 +492,66 @@ int GenerateHandler(GraphContainer &GCC,int action,int n1_gen,int n2_gen,int m_g
           GC = GenerateCompleteBiGraph(n1_gen,n2_gen);
           break;
       case  A_GENERATE_RANDOM:
-          GC = GenerateRandomGraph(n1_gen,m_gen);
+          GC = GenerateRandomGraph(n1_gen,m_gen,staticData::RandomEraseMultipleEdges());
           break;
           // Schaeffer generator
       case A_GENERATE_P:
-          GC = GenerateSchaeffer(m_gen,1,1);
+          GC = GenerateSchaeffer(m_gen,1,1,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_2C:
-          GC = GenerateSchaeffer(m_gen,1,2);
+          GC = GenerateSchaeffer(m_gen,1,2,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_3C:
-          GC = GenerateSchaeffer(m_gen,1,3);
+          GC = GenerateSchaeffer(m_gen,1,3,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_3R_2C:
-          GC = GenerateSchaeffer(m_gen,3,2);
+          GC = GenerateSchaeffer(m_gen,3,2,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_3R_3C:
-          GC = GenerateSchaeffer(m_gen,3,3);
+          GC = GenerateSchaeffer(m_gen,3,3,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_3R_D4C:
-          GC = GenerateSchaeffer(m_gen,3,4);
+          GC = GenerateSchaeffer(m_gen,3,4,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_4R_C:
-          GC = GenerateSchaeffer(m_gen,4,2);
+          GC = GenerateSchaeffer(m_gen,4,2,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_4R_2C:
-          GC = GenerateSchaeffer(m_gen,4,4);
+          GC = GenerateSchaeffer(m_gen,4,4,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_4R_3C:
-          GC = GenerateSchaeffer(m_gen,4,6);
+          GC = GenerateSchaeffer(m_gen,4,6,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_4R_BIP:
-          GC = GenerateSchaeffer(m_gen,4,0);
+          GC = GenerateSchaeffer(m_gen,4,0,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_BIP:
-          GC = GenerateSchaeffer(m_gen,2,1);
+          GC = GenerateSchaeffer(m_gen,2,1,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_BIP_2C:
-          GC = GenerateSchaeffer(m_gen,2,2);
+          GC = GenerateSchaeffer(m_gen,2,2,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case A_GENERATE_P_BIP_3C:
-          GC = GenerateSchaeffer(m_gen,2,3);
+          GC = GenerateSchaeffer(m_gen,2,3,staticData::RandomEraseMultipleEdges()
+                                 ,staticData::RandomUseGeneratedCir());
           break;
       case  A_GENERATE_P_OUTER_N:
-          GC = GenerateRandomOuterplanarGraph(n1_gen);
+          GC = GenerateRandomOuterplanarGraph(n1_gen,staticData::RandomEraseMultipleEdges());
           break;
       case  A_GENERATE_P_OUTER_NM:
-          GC = GenerateRandomOuterplanarGraph(n1_gen, m_gen);
+          GC = GenerateRandomOuterplanarGraph(n1_gen, m_gen,staticData::RandomEraseMultipleEdges());
           break;
       default:
           return 0;

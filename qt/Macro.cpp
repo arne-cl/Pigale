@@ -9,30 +9,22 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h" 
-#include "LineEditNum.h"
 #include "gprop.h"
 #include <QT/Misc.h> 
 #include <QT/Action_def.h>  
-#include <qapplication.h> 
-#include <qspinbox.h> 
-#include <qslider.h> 
-#include <qprogressbar.h>
-#include <qmenubar.h> 
-#include <q3toolbar.h> 
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <q3filedialog.h>
-#include <qinputdialog.h> 
-#include <qtabwidget.h> 
-#include <qtabbar.h> 
-#include <qcursor.h> 
-#include <qmessagebox.h> 
-#include <qtextstream.h>
-
 #include <TAXI/Tgf.h> 
+
+
+#include <QApplication>
+#include <QProgressBar>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSpinBox>
 
 
 class eventEater : public QObject
@@ -46,19 +38,14 @@ protected:
 bool eventEater::eventFilter(QObject *,QEvent *e)
   {if(e->type() == QEvent::MouseButtonPress) return TRUE; // eat event
     return FALSE;
-    }
-int & pauseDelay()
-  {static int delay;
-  return delay;
   }
+
 void pigaleWindow::keyPressEvent(QKeyEvent *k)
   {_key = k->key();
-//   qDebug("pigaleWindow::hasFocus %d",hasFocus());
-//   qDebug("pigaleWindow::key_pressed=%d",k->key());
+  if(_key == Qt::Key_Escape)MacroLooping = MacroWait = false;
   }
 int pigaleWindow::getKey()
   {int key0 = _key;
-  if(key0 == Qt::Key_Escape && MacroLooping)MacroLooping = false;
   _key = 0;
   return key0;
   }
@@ -72,11 +59,7 @@ void pigaleWindow::blockInput(bool t)
   if(!EventEater)EventEater = new eventEater();
   if(t)
       {qApp->installEventFilter(EventEater);
-#if QT_VERSION >= 300
       qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
-#else
-      qApp->setOverrideCursor(QCursor(Qt::WaitCursor));	
-#endif
       }
   else 
       {qApp->removeEventFilter(EventEater);
@@ -113,7 +96,7 @@ int pigaleWindow::macroLoad(QString FileName)
   if(str == "Macro Version:1")
       stream.readLine();
   else if(str != "Macro Version:2")
-      {Tprintf("Wrong Macro File -%s-",(const char *)str);return -1;}
+      {Tprintf("Wrong Macro File -%s-",(const char *)str.toAscii());return -1;}
   if(stream.atEnd())return -1;
   MacroNumActions = 0;
   int action;
@@ -121,8 +104,8 @@ int pigaleWindow::macroLoad(QString FileName)
       {str = stream.readLine();
       action = getActionInt(str);
       if(action < 99 || action > A_TEST_END)
-          {Tprintf("Unknown action:%s",(const char *)str);continue;}
-      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str);
+          {Tprintf("Unknown action:%s",(const char *)str.toAscii());continue;}
+      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str.toAscii());
       MacroActions(++MacroNumActions) = action;
       }
   return 0;
@@ -132,7 +115,7 @@ void pigaleWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = getActionString(action);
-  Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action);
+  Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action.toAscii());
 //   GeometricGraph G(GC);
 //   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
 //   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
@@ -140,7 +123,8 @@ void pigaleWindow::macroRecord(int action)
   }
 
 void pigaleWindow::macroHandler(QAction *qaction)
-  {int repeat = macroLine->getVal();
+  {//int repeat = macroLine->getVal();
+  int repeat = staticData::macroRepeat;
   int i;
   unsigned j;
   double Time;
@@ -177,7 +161,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
 #else
           msg0 = "Macro started";
 #endif
-          DebugPrintf("%s",(const char *)msg0); 
+          DebugPrintf("%s",(const char *)msg0.toAscii()); 
           t0.restart();
           repeat0 = (repeat == 0) ? 1000 : repeat;
           progressBar->setRange(0,repeat0);
@@ -190,8 +174,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
               macroPlay();
               progressBar->setValue(i);
               qApp->processEvents();
-              // !MacroLooping if an error had occurred
-              if(!MacroLooping || getKey() == Qt::Key_Escape)break;
+              if(!MacroLooping)break;
               }
           progressBar->hide();
           MacroLooping = MacroExecuting = MacroWait = false;
@@ -205,8 +188,8 @@ void pigaleWindow::macroHandler(QAction *qaction)
           if(EditNeedUpdate)gw->update(-1);
           if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
           DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
-          Tprintf("%s",(const char *)msg0); 
-          DebugPrintf("%s",(const char *)msg1); 
+          Tprintf("%s",(const char *)msg0.toAscii()); 
+          DebugPrintf("%s",(const char *)msg1.toAscii()); 
           if(!getError())
               DebugPrintf("END PLAY OK iter:%d",j);
           else
@@ -219,16 +202,18 @@ void pigaleWindow::macroHandler(QAction *qaction)
       case 6:// display
           postMessageClear();
           for(record = 1;record <= MacroNumActions;record++)
-              {Tprintf("Action (%d/%d):%s",record,MacroNumActions
-                       ,(const char *)getActionString(MacroActions[record]));
-              }
+              Tprintf("Action (%d/%d):%s",record,MacroNumActions
+                       ,(const char *)getActionString(MacroActions[record]).toAscii());
           break;
       case 7://save
-          {QString FileName = Q3FileDialog::getSaveFileName(DirFileMacro,"Macros (*.mc)",this);
+          {QString FileName = QFileDialog::getSaveFileName(this
+                                                           ,tr("Choose a filename to save under")
+                                                           ,DirFileMacro
+                                                           ,"Macros (*.mc)");
           if(FileName.isEmpty())break;
-          if(QFileInfo(FileName).extension(false) != (const char *)"mc")
+          if(QFileInfo(FileName).suffix() != (const char *)"mc")
               FileName += (const char *)".mc";
-          DirFileMacro = QFileInfo(FileName).dirPath(true);
+          DirFileMacro = QFileInfo(FileName).absolutePath();
           QFileInfo fi = QFileInfo(FileName);
           if(fi.exists())
               {int rep = QMessageBox::warning(this,"Pigale Editor"
@@ -238,17 +223,20 @@ void pigaleWindow::macroHandler(QAction *qaction)
                                               ,QMessageBox::Cancel);
               if(rep == 2)break;
               } 
-          FILE *out = fopen((const char *)FileName,"wt");
+          FILE *out = fopen((const char *)FileName.toAscii(),"wt");
           fprintf(out,"Macro Version:2\n");
           for(record = 1;record <= MacroNumActions;record++)
-              fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]));
+              fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]).toAscii());
           fclose(out);
           }
           break;
       case 8:// read
-          {QString FileName = Q3FileDialog:: getOpenFileName(DirFileMacro,"Macro files(*.mc)",this);
+          {QString FileName = QFileDialog:: getOpenFileName(this
+                                                            ,tr("Choose a file to open")
+                                                            ,DirFileMacro
+                                                            ,"Macro files(*.mc)");
           postMessageClear();
-          DirFileMacro = QFileInfo(FileName).dirPath(true);
+          DirFileMacro = QFileInfo(FileName).absolutePath();
           if(macroLoad(FileName) == -1)break;
           MacroWait = false;
           }
@@ -256,7 +244,6 @@ void pigaleWindow::macroHandler(QAction *qaction)
       default:
           break;
       }
-  pauseDelay() = macroSpin->value();
   }
 
 void pigaleWindow::macroPlay()
@@ -276,20 +263,20 @@ void pigaleWindow::macroPlay()
       {action = MacroActions[record];
       if(action != A_PAUSE && action < A_TEST && !graph_properties->actionAllowed(action))
           {if(debug())
-              {DebugPrintf("%s:initial conditons not satisfied\n",(const char *)getActionString(action));
+              {DebugPrintf("%s:initial conditons not satisfied\n"
+                           ,(const char *)getActionString(action).toAscii());
               InfoNeedUpdate = false; // do not hide the error message 
               blockInput(false);
               return;
               }
           ++record;continue;
           }
-      if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action));
+      if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action).toAscii());
       // Execute the macro
       handler(action);
       if(action ==  A_PAUSE)
           {do
               {qApp->processEvents();
-              if(getKey() == Qt::Key_Escape)break;
               }while(MacroWait);
           continue;
           }
@@ -315,7 +302,7 @@ void pigaleWindow::macroPlay()
               }
           }
       if(getError())
-          {DebugPrintf("MACRO %s",(const char *)getErrorString());
+          {DebugPrintf("MACRO %s",(const char *)getErrorString().toAscii());
           setError();
           MacroWait = MacroLooping = false;
           InfoNeedUpdate = false; // do not hide the error message

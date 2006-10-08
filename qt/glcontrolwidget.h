@@ -1,18 +1,9 @@
 #ifndef GLCONTROLWIDGET_H
 #define GLCONTROLWIDGET_H
-/*! \file glcontrolwidget.h
-\ingroup qt */
 
-#include <qgl.h> 
-//Added by qt3to4:
+#include <QGLWidget> 
+#include <QEvent>
 
-#include <qevent.h>
-// #include <QMouseEvent>
-// #include <QHideEvent>
-// #include <QShowEvent>
-// #include <QWheelEvent>
-// #include <QKeyEvent>
-//! This class handles the user inputs to perform rotations, translations and zoom.
 /*! This class handles the user inputs to perform rotations, translations and zoom.
   It derives from  QGLWidget, the Qt class allowing OpenGL operations
  */
@@ -21,7 +12,7 @@ class GLControlWidget : public QGLWidget
     Q_OBJECT
 
 public:
-  GLControlWidget(QWidget *parent,const char *name = 0,QGLWidget *share = 0,Qt::WFlags f = 0);
+  GLControlWidget(QWidget *parent,QGLWidget *share = 0);
   //! apply geometric transform as defined by the translation, rotation and scale values
   virtual void transform();
 public slots:

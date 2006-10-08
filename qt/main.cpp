@@ -18,54 +18,61 @@
     email                : hf@ehess.fr
  ***************************************************************************/
 
+#undef QT3_SUPPORT
 
 #include <config.h>
-#include <qapplication.h>
-#include <qtextcodec.h> 
-#include <qtranslator.h>
-#include <qdir.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
-//#include <QStyle>
-#include <qstyle.h>
-#include <config.h>
-#ifdef HAVE_LIBGLUT
-#include <GL/glut.h>
+#include <GL/freeglut.h>
+
+#include <QApplication>
+#include <QTranslator>
+#include <QGLFormat>
+
+#ifdef SPLASHSCREEN
+#include <QSplashScreen>>
 #endif
+
 #ifdef _WIN32
 #undef PACKAGE_PATH
 #define PACKAGE_PATH ".."
 #endif
 
-void InitPigaleColors();
 
 int main(int argc,char * argv[])
-  {//QApplication::setStyle(new QWindowsStyle);
-  QApplication::setDesktopSettingsAware(false);
-
-  QApplication app(argc,argv);
-#ifdef HAVE_LIBGLUT
+  {QApplication app(argc,argv);
+  QApplication::setDesktopSettingsAware(true);
+  //QApplication::setStyle("motif");
+#ifdef SPLASHSCREEN
+  QPixmap pixmap(500,500);
+  pixmap.fill(Qt::lightGray);
+  QSplashScreen *splash = new QSplashScreen(pixmap);
+  splash->show();
+  splash->showMessage("LOADING PIGALE ...",Qt::AlignCenter,Qt::black);
+#endif
+  // glut,openGL
   glutInit(&argc,argv);
-#endif
-  // Set the colors of tha application
-  InitPigaleColors();
+  QGLFormat fmt;
+  fmt.setSampleBuffers(true);
+  QGLFormat::setDefaultFormat(fmt);
+
   //Translations
-#ifdef _WINDOWS 
-  QString transDict= QString(".")+ QDir::separator();
-#else
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
-#endif
   // translation file for Qt
-  QTranslator qt( 0 );
-  qt.load(QString("qt_") + QTextCodec::locale(),transDict);
+  QTranslator qt(0);
+  QString locale = QLocale::system().name();
+  qt.load(QString("qt_") + locale,transDict);
   app.installTranslator( &qt );
   // translation file for application strings
-  QTranslator myapp( 0 );
-
-  myapp.load( QString("pigale_" ) + QTextCodec::locale(),transDict);
+  QTranslator myapp(0);
+  myapp.load( QString("pigale_" ) + locale,transDict);
   app.installTranslator( &myapp );
   pigaleWindow *mw = new pigaleWindow();
   mw->show();
   app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));
+#ifdef SPLASHSCREEN
+  splash->finish(mw);
+  delete splash;
+#endif
   return app.exec();
   }

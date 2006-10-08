@@ -1,4 +1,7 @@
-#include <qapplication.h>
+
+
+#undef QT3_SUPPORT
+
 #include "GraphWidget.h"
 #include "pigaleWindow.h"
 #include <QT/Action_def.h> 
@@ -6,9 +9,7 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/GraphWidgetPrivate.h>
 
-#ifndef _WINDOWS
 using namespace std;
-#endif
 
 
 // Allowed return values of Test 

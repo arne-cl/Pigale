@@ -12,13 +12,13 @@
 #ifndef GRAPH_PROPERTIES_H
 #define GRAPH_PROPERTIES_H
 
-#include <qradiobutton.h>
-#include <qmenubar.h>
-#include <qwidget.h>
-#include <qlineedit.h>
 #include <QT/Action_def.h>
 #include <TAXI/Tsvector.h>
 #include <TAXI/graph.h>
+
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QMenuBar>
 
 class pigaleWindow;
 
@@ -26,7 +26,7 @@ class RoRadioButton : public QRadioButton
 { 
   Q_OBJECT
 public:
-  RoRadioButton(QWidget * parent, const char * name = 0);
+  RoRadioButton(QWidget * parent);
   ~RoRadioButton(){};
   void mousePressEvent(QMouseEvent* e);
   void mouseReleaseEvent(QMouseEvent* e);
@@ -37,8 +37,7 @@ class Graph_Properties : public QWidget
   Q_OBJECT
 
 public:
-  Graph_Properties( QWidget* parent = 0,QMenuBar *menu = 0,
-		    const char* name = 0,Qt::WFlags fl = 0 );
+  Graph_Properties(QWidget* parent,QMenuBar* menu,pigaleWindow* mw);
   ~Graph_Properties();
  
   void update(GraphContainer & GC,bool print = true);
@@ -72,12 +71,6 @@ public:
   RoRadioButton* RBSimple;
   RoRadioButton* RBBipartite;
   RoRadioButton* RBAcyclic;
-  int MaxNSlow;
-  int MaxNDisplay;
-
-public slots:
-  void MaxNSlowChanged(int i);
-  void MaxNDisplayChanged(int i);
 
 private:
   pigaleWindow * mw; 

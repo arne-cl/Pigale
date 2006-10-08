@@ -14,19 +14,15 @@
 
 #ifndef _GRAPH_GL_H_INCLUDED_
 #define _GRAPH_GL_H_INCLUDED_
-#include <qwidget.h>
-#include <qtabwidget.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-//hub #include <qhbuttongroup.h>
-#include <qradiobutton.h>
-//Added by qt3to4:
-//#include <QResizeEvent>
-#include <qevent.h>
-//hub
-//#include <Q3HButtonGroup>
+
+#include <QSpinBox>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QEvent>
+#include <QTabWidget>
+#include <QLayout>
+
 
 class GraphGLPrivate;
 class pigaleWindow; 
@@ -35,12 +31,12 @@ class GraphGL : public QWidget
 {
   Q_OBJECT
 public:
-  GraphGL( QWidget *parent=0, const char *name=0,pigaleWindow* mw=0);
+  GraphGL(QWidget *parent,pigaleWindow* mw);
   ~GraphGL();
   int init();
 public slots:
   int update();
-  void png();
+  void png(int size);
   void delayChanged(int i);
 private slots:
   void Reload();

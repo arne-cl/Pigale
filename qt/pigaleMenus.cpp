@@ -10,6 +10,8 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include <TAXI/Tgf.h>
@@ -22,6 +24,7 @@
 #include "ClientSocket.h"
 
 #include <QT/pigaleWindow_doc.h> 
+#include <QT/staticData.h>
 #include <QT/Misc.h>
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
@@ -29,40 +32,25 @@
 #include <QT/pigaleCanvas.h>
 #include <QT/clientEvent.h> 
 
-#include <qicon.h>
-#include <qtextedit.h>
-#include <qmenudata.h> 
-#include <qmenubar.h>
-#include <qstatusbar.h>
-#include <qtoolbar.h>
-#include <qtoolbutton.h>
-#include <qpixmap.h>
-#include <qfiledialog.h>
-#include <qinputdialog.h> 
-#include <qfontdialog.h> 
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qapplication.h>
-#include <qlineedit.h>
-#include <qtabwidget.h>
-#include <qtabbar.h>
-#include <qwhatsthis.h>
-#include <qmessagebox.h>
-#include <qlabel.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qbuttongroup.h>
-#include <qpalette.h>
-#include <qcolordialog.h> 
-#include <qprinter.h> 
-#include <qprogressbar.h>
-#include <qrect.h> 
-#include <qlist.h>
-#include <qgridlayout.h>
-#include "qboxlayout.h"
-#include <qvalidator.h>
-#include <qdesktopwidget.h>
+#include <QIcon>
+#include <QPixmap>
+#include <QTextBrowser>
+#include <QBoxLayout>
+#include <QSpinBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QButtonGroup>
+#include <QMessageBox>
+#include <QColorDialog>
+#include <QFontDialog>
+#include <QToolBar>
+#include <QStatusBar>
+#include <QProgressBar>
+#include <QWhatsThis>
+#include <QValidator>
+#include <QDesktopWidget>
+
 #include "icones/fileopen.xpm"
 #include "icones/filenew.xpm"
 #include "icones/fileprint.xpm"
@@ -83,66 +71,29 @@ void Init_IOGraphml();
 void UndoErase();
 void initGraphDebug();
 
-int pigaleWindow::setId(QAction * action,int Id)
-  {action->setData(Id);
-  menuIntAction[Id] = action;
-  return Id;
-  }
-int pigaleWindow::getId(QAction *action)
-  {return (action->data()).toInt();
-  }
-
 pigaleWindow::pigaleWindow()
-//    :QMainWindow(0,"pigaleWindow",Qt::WDestructiveClose)
-//    :QMainWindow(0, Qt::WA_DeleteOnClose)
-    :ServerExecuting(false),ServerClientId(0) // end public
+    :QMainWindow()
+    ,ServerExecuting(false),ServerClientId(0) // end public
     ,GraphIndex1(1)
     //start private
     ,pigaleThread(this) // ?
+    ,server(NULL)
     ,pGraphIndex(&GraphIndex1),GraphIndex2(1)
     ,UndoIndex(0),UndoMax(0)
-    ,IsUndoEnable(true)
-    ,MacroRecording(false),MacroLooping(false)
-    ,MacroExecuting(false),MacroPlay(false),Server(false)
+    ,MacroNumActions(0),MacroRecording(false),MacroLooping(false)
+    ,MacroExecuting(false),MacroPlay(false),_key(0),Server(false)
     
-  {setError();// Initialize Error
-  server = NULL;
-  // Macros
-  MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
-  MacroNumActions = 0;
-  _key = 0;
-#ifdef _WINDOWS
-   initGraphDebug();// as the compiler does not initialize static ...
+  {setObjectName("Main Pigale Window");
+  // set Title
+#ifdef TDEBUG
+  setWindowTitle(tr("Qt4 Pigale Editor: ")+PACKAGE_VERSION+" "+tr("Debug Mode"));
+#else
+  setWindowTitle(tr("Qt4 Pigale Editor: ")+PACKAGE_VERSION);
 #endif
-  // Export some data
-  DefinepigaleWindow(this);
-  //thread
-  pigaleThread.mw = this;
-  qApp->setMainWidget(this); // to be able to retrieve the mainWidget
-  mapActionsInit();// Create the actions map
-  Init_IO();// Initialize input/output drivers
-  Init_IOGraphml();
-  // Load settings, input and output filenames
+  // Load settings
   LoadSettings();
-  QFileInfo fi0 =  QFileInfo(InputFileName);
-  QFileInfo fi = QFileInfo(fi0.dirPath());
-  if(!fi.exists() || !fi.isDir())
-      {QString DirFile = QFileDialog::
-      getExistingDirectory(".",this,"find","Choose the TGF directory",TRUE);
-      InputFileName = DirFile + QDir::separator() + fi0.fileName();
-      OutputFileName = InputFileName;
-      }
-  // Load inpu/output drivers
-  InputDriver = IO_WhoseIs((const char *)InputFileName);
-  if (InputDriver<0) InputDriver=0;
-  OutputDriver = IO_WhoseIs((const char *)OutputFileName);
-  if (OutputDriver<0) OutputDriver=0;
   // Modify settings according to passed arguments
-   ParseArguments();
-  // Init random generator
-  randomInitSeed();
-  // Define some colors
-  setAutoFillBackground(true);
+  ParseArguments();
   // Create a printer
   printer = new QPrinter; //(QPrinter::HighResolution);
   if(PrinterOrientation == QPrinter::Portrait)
@@ -155,212 +106,333 @@ pigaleWindow::pigaleWindow()
   else
       printer->setColorMode(QPrinter::Color);
 
-  // Widgets
-  QWidget *mainWidget = new QWidget(this,"mainWidget");
-  mainWidget->setAutoFillBackground(true);
+  // mainWidget
+  QWidget *mainWidget = new QWidget(this);  mainWidget->setAutoFillBackground(true);
   setCentralWidget(mainWidget);
-  QDesktopWidget *desktop = QApplication::desktop();
-  bool bigScreen = (desktop->height() >= 830); // min 785x830 ou 785x610
-  QHBoxLayout *topLayout = new QHBoxLayout(mainWidget,0,0,"topLayout");
-  //LEFT LAYOUT: Graph editor,Paint,GL,Browser *************************************************************
-  QHBoxLayout * leftLayout = new QHBoxLayout(topLayout,0,"leftLayout");
+  mainWidget->setFocus();
+  setAutoFillBackground(true);
+
+  // toolBar
+  createToolBar();
+
+  // create all widgets
+  createLayout(mainWidget);
+
+  // menus
+  createMenus();
+
+ // progressBar
+  progressBar = new QProgressBar(statusBar());
+  progressBar->hide();
+  progressBar->setGeometry(QRect(0,0,width()*2/3,30)); 
+
+
+  UpdatePigaleColors();  
+  initPigale();
+  qApp->processEvents();
+  
+  gw->update();
+  if(!Server)load(0);
+  }
+pigaleWindow::~pigaleWindow()
+  {//delete printer;
+//   if(server)
+//       {server->close();
+//       cout<<"closing server"<<endl;
+//       delete server;
+//       }
+//   pigaleThread.terminate();pigaleThread.wait();
+//   UndoErase();
+//   LogPrintf("END\n");
+   cout<<"END"<<endl;
+  }
+int pigaleWindow::setId(QAction * action,int Id)
+  {action->setData(Id);
+  menuIntAction[Id] = action;
+  return Id;
+  }
+int pigaleWindow::getId(QAction *action)
+  {return (action->data()).toInt();
+  }
+void pigaleWindow::initPigale()
+  {// Initialize Error
+  setError();
+  // Macros
+  MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
+#ifdef _WINDOWS
+   initGraphDebug();// as the compiler does not initialize static ...
+#endif
+   DefinepigaleWindow(this); // only used by EmbedCurve
+  //thread
+  pigaleThread.mw = this;
+  //qApp->setMainWidget(this); // to be able to retrieve the mainWidget
+  mapActionsInit();// Create the actions map
+  Init_IO();// Initialize input/output drivers
+  Init_IOGraphml();
+
+
+  QFileInfo fi0 =  QFileInfo(InputFileName);
+  QFileInfo fi = QFileInfo(fi0.absolutePath());
+  if(!fi.exists() || !fi.isDir())
+      {QString DirFile = QFileDialog::
+      getExistingDirectory(this
+                           ,tr("Choose the TGF directory")
+                           ,"."
+                           ,QFileDialog::ShowDirsOnly);
+      InputFileName = DirFile + QDir::separator() + fi0.fileName();
+      OutputFileName = InputFileName;
+      }
+  // Load inpu/output drivers
+  InputDriver = IO_WhoseIs((const char *)InputFileName.toAscii());
+  if (InputDriver<0) InputDriver=0;
+  OutputDriver = IO_WhoseIs((const char *)OutputFileName.toAscii());
+  if (OutputDriver<0) OutputDriver=0;
+
+  // Init random generator
+  if(staticData::RandomSeed())randomInitSeed();
+  //Check for documentation repertory
+  CheckDocumentationPath();
+  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
+  UndoInit();// Create a tgf file with no records
+  LogPrintf("Init seed:%ld\n",randomSetSeed());
+  }
+void pigaleWindow::createLayout(QWidget *mainWidget)
+  {QHBoxLayout * leftLayout = new QHBoxLayout(mainWidget);
   tabWidget = new  QTabWidget();
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
-  //tabWidget->setAutoFillBackground(true);
-  mypaint =  new pigalePaint(0,"mypaint",this);
+  mypaint =  new pigalePaint(0,this);
   gw = new  GraphWidget(0,"graphwidget",this);
-  graphgl  = new GraphGL(0,"graphgl",this);
-  graphgl->setAutoFillBackground(true);
-  graphsym = new GraphSym(0,"graphsym",this);
-  graphsym->setAutoFillBackground(true);
+  graphgl  = new GraphGL(0,this);   graphgl->setAutoFillBackground(true);
+  graphsym = new GraphSym(0,this);  graphsym->setAutoFillBackground(true);
+  browser = new QTextBrowser(0);
+  QPalette bop(QColorDialog::customColor(3));
+  browser->setPalette(bop);         browser->setAutoFillBackground(true);
   tabWidget->addTab(gw,tr("Graph Editor"));
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
   tabWidget->addTab(graphsym,""); 
-  
-  browser = new QTextBrowser(0);
   tabWidget->addTab(browser,tr("User Guide")); 
-  QPalette bop(QColorDialog::customColor(3));
-  browser->setPalette(bop);
-  browser->setAutoFillBackground(true);
-  
-  /* genealogy:
-   mainWindow -> mainWidget -> rtabWidget
-   rtabWidget -> ?? -> gInfo
-  */
-  QTabWidget  *rtabWidget = new  QTabWidget(); 
+  createRightLayout(leftLayout);
+  }
+void pigaleWindow::createRightLayout(QHBoxLayout * leftLayout)
+  //{QTabWidget  *rtabWidget = new  QTabWidget(); 
+  {rtabWidget = new  QTabWidget(); 
   gSettings = new QWidget();  gSettings->setAutoFillBackground(true);  
-  QWidget * gInfo = new QWidget(); gInfo->setAutoFillBackground(true);               
-  rtabWidget->setMaximumWidth(300);  rtabWidget->setMinimumWidth(300);
+  gInfo = new QWidget(); gInfo->setAutoFillBackground(true);               
+  rtabWidget->setMaximumWidth(300);  rtabWidget->setMinimumWidth(300);  rtabWidget->setMinimumHeight(500); 
   leftLayout->addWidget(rtabWidget,2);
   rtabWidget->addTab(gInfo,tr("Information"));
   rtabWidget->addTab(gSettings,tr("Settings"));
-
-  //rightLayout: Information
-  QGridLayout *rightLayout = new  QGridLayout(gInfo,2,3,-1);
+  createPageInfo(gInfo);
+  createPageSettings(gSettings,leftLayout);
+  }
+void pigaleWindow::createPageInfo(QWidget *gInfo)
+  {  QGridLayout *rightLayout = new  QGridLayout(gInfo);
   //messages
   messages = new QTextEdit(gInfo);
-  QBrush pb(QColorDialog::customColor(1)); //messages->setPaper(pb); 
+  QBrush pb(QColorDialog::customColor(1));
   messages->setReadOnly(true);
   //graph_properties
-  graph_properties = new Graph_Properties(gInfo,menuBar(),"graph_properties");
+  graph_properties = new Graph_Properties(gInfo,menuBar(),this);
   graph_properties->setAutoFillBackground(true); 
   //mouse_action
-  mouse_actions = new Mouse_Actions(gInfo,"mouseactions",0,gw);
+  mouse_actions = new Mouse_Actions(gInfo,gw);
   mouse_actions->setAutoFillBackground(true); 
- 
-  rightLayout->addMultiCellWidget(messages,1,1,1,2);
-  rightLayout->addMultiCellWidget(graph_properties,2,2,1,2);
-  rightLayout->addMultiCellWidget(mouse_actions,3,3,1,2);
 
-
-  //rightLayout: Settings ********************************************
-  //generators
-  spin_N1 = new QSpinBox(1,100000,1,0,"spinN1");  spin_N1->setValue(Gen_N1);     
-  spin_N2 = new QSpinBox(1,100000,1,0,"spinN2");  spin_N2->setValue(Gen_N2);     
-  spin_M = new QSpinBox(1,300000,1,0,"spinM");    spin_M->setValue(Gen_M);      
-  QValidator *validator = new QIntValidator(this);
-  seedEdit =  new QLineEdit(0,"seedEdit");
-  seedEdit->setValidator(validator);
-  connect(seedEdit,SIGNAL(textEdited(const QString & )),SLOT(seedEdited(const QString & )));
-  seedEdit->setText(QString("%1").arg(randomSetSeed()));
+  rightLayout->addWidget(messages,0,0,1,2);
+  rightLayout->addWidget(graph_properties,1,0,1,2);
+  rightLayout->addWidget(mouse_actions,2,0,1,2);
+  }
+void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayout)
+  {  //generators
+  QSpinBox *spin_N1 = new QSpinBox();  
+  spin_N1->setRange(1,100000); spin_N1->setSingleStep(1); spin_N1->setValue(staticData::Gen_N1);  
+  QSpinBox *spin_N2 = new QSpinBox();  
+  spin_N2->setRange(1,100000); spin_N2->setSingleStep(1); spin_N2->setValue(staticData::Gen_N2);  
+  QSpinBox *spin_M = new QSpinBox();     
+  spin_M->setRange(1,300000); spin_M->setSingleStep(1); spin_M->setValue(staticData::Gen_M); 
   connect(spin_N1,SIGNAL(valueChanged(int)),SLOT(spinN1Changed(int)));
   connect(spin_N2,SIGNAL(valueChanged(int)),SLOT(spinN2Changed(int)));
   connect(spin_M,SIGNAL(valueChanged(int)),SLOT(spinMChanged(int)));
-  // Macro
-  macroSpin = new QSpinBox(0,60,1,0,"macroDelaySpin");  macroSpin->setValue(pauseDelay());
-  connect(macroSpin,SIGNAL(valueChanged(int)),SLOT(spinDelayChanged(int)));
-  macroLine = new LineEditNum(0,"macroLineEditNum");
-  int macroMul = macroRepeat/100;
-  int macroNum = macroMul ? macroRepeat/(macroMul*100) : macroRepeat;
-  macroLine->setNum(macroNum); macroLine->setMul(macroMul);
-  QSlider *macroSlider = new QSlider(0,100,0,macroRepeat,Qt::Horizontal,0,"macroSlider");macroSlider->setValue(macroNum);
-  QSlider *macroSliderM = new QSlider(0,100,0,macroMul,Qt::Horizontal,0,"macroSliderM");macroSliderM->setValue(macroMul);
-  connect(macroSlider,SIGNAL(valueChanged(int)),macroLine,SLOT(setNum(int)));
-  connect(macroSliderM,SIGNAL(valueChanged(int)),macroLine,SLOT(setMul(int)));
+  // Seed
+  QValidator *validator = new QIntValidator(this);
+  QLineEdit *seedEdit =  new QLineEdit(0);
+  seedEdit->setValidator(validator);
+  connect(seedEdit,SIGNAL(textEdited(const QString & )),SLOT(seedEdited(const QString & )));
+  seedEdit->setText(QString("%1").arg(randomSetSeed()));
+  // Macro delay
+  QSpinBox *spinDelay = new QSpinBox(); 
+  spinDelay->setRange(0,600); spinDelay->setSingleStep(10); 
+  spinDelay->setValue(staticData::macroDelay);
+  connect(spinDelay,SIGNAL(valueChanged(int)),SLOT(spinDelayChanged(int)));
+  // Macro repeat
+  QSpinBox *spinRepeat = new QSpinBox();     
+  spinRepeat->setRange(0,1000000); spinRepeat->setSingleStep(100);
+  spinRepeat->setValue(staticData::macroRepeat); 
+  connect(spinRepeat,SIGNAL(valueChanged(int)),SLOT(spinRepeatChanged(int)));
   // Labels of vertices
   QComboBox *comboLabel = new QComboBox(0);
-  comboLabel->insertItem(tr("Nothing"));
-  comboLabel->insertItem(tr("Index"));
-  comboLabel->insertItem(tr("Text"));
-  comboLabel->insertItem(tr("Label"));
-  int current = ShowVertex();current += 3;
-  comboLabel->setCurrentItem(current);showLabel(current);
+  comboLabel->addItem(tr("Nothing"));
+  comboLabel->addItem(tr("Index"));
+  comboLabel->addItem(tr("Text"));
+  comboLabel->addItem(tr("Label"));
+  int current = staticData::ShowVertex();current += 3;
+  comboLabel->setCurrentIndex(current);showLabel(current);
   connect(comboLabel,SIGNAL(activated(int)),SLOT(showLabel(int)));
   // Partition
-  spin_N = new QSpinBox(2,50,1,0,"spinN");  spin_N->setValue(2);     //spin_N->setPrefix(tr("Number of classes: "));
+  QSpinBox *spin_N = new QSpinBox();  
+  spin_N->setRange(2,50);  spin_N->setSingleStep(1); spin_N->setValue(2);
+  connect(spin_N,SIGNAL(valueChanged(int)),SLOT(spinNChanged(int)));
   // Distances
   QComboBox *comboDistance  = new QComboBox(0);
-  comboDistance->insertItem(tr("Czekanovski-Dice"));
-  comboDistance->insertItem(tr("Bisect"));
-  comboDistance->insertItem(tr("Adjacence"));
-  comboDistance->insertItem(tr("Adjacence M"));
-  comboDistance->insertItem(tr("Laplacian"));
-  comboDistance->insertItem(tr("Q-distance"));
-  comboDistance->insertItem(tr("Oriented"));
-  comboDistance->insertItem(tr("R2"));
-  comboDistance->setCurrentItem(useDistance());distOption(useDistance());
+  comboDistance->addItem(tr("Czekanovski-Dice"));
+  comboDistance->addItem(tr("Bisect"));
+  comboDistance->addItem(tr("Adjacence"));
+  comboDistance->addItem(tr("Adjacence M"));
+  comboDistance->addItem(tr("Laplacian"));
+  comboDistance->addItem(tr("Q-distance"));
+  comboDistance->addItem(tr("Oriented"));
+  comboDistance->addItem(tr("R2"));
+  comboDistance->setCurrentIndex(staticData::UseDistance());distOption(staticData::UseDistance());
   connect(comboDistance,SIGNAL(activated(int)),SLOT(distOption(int)));
   // Limits
-  spin_MaxNS = new QSpinBox(1,10000,1,0,"spinMaxNS");  spin_MaxNS->setValue(MaxNS);    
-  spin_MaxND = new QSpinBox(1,10000,1,0,"spinMaxND");  spin_MaxND->setValue(MaxND);      
-  connect(spin_MaxNS,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNSlowChanged(int)));
-  connect(spin_MaxND,SIGNAL(valueChanged(int)),graph_properties,SLOT(MaxNDisplayChanged(int)));
+  QSpinBox *spin_MaxNS = new QSpinBox();     
+  spin_MaxNS->setRange(1,1000); spin_MaxNS->setSingleStep(100); spin_MaxNS->setValue(staticData::MaxNS); 
+  QSpinBox *spin_MaxND = new QSpinBox();        
+  spin_MaxND->setRange(1,1000); spin_MaxND->setSingleStep(100); spin_MaxND->setValue(staticData::MaxND);
+  connect(spin_MaxNS,SIGNAL(valueChanged(int)),this,SLOT(spinMaxNSChanged(int)));
+  connect(spin_MaxND,SIGNAL(valueChanged(int)),this,SLOT(spinMaxNDChanged(int)));
   // CheckBoxes
   QButtonGroup *Group1 = new QButtonGroup(0);  Group1->setExclusive(false); //0 -> this ==
   connect(Group1,SIGNAL(buttonClicked(int)),this,SLOT(settingsHandler(int)));
+  QCheckBox *box1,*box2,*box3,*box4,*box5,*box7,*box8,*box9,*box10,*box11;
   box1 = new  QCheckBox("Debug",0);
-  box1->setCheckState(debug() ? Qt::Checked : Qt::Unchecked);                     Group1->addButton(box1,A_SET_DEBUG);
+  box1->setCheckState(debug() ? Qt::Checked : Qt::Unchecked); 
+  Group1->addButton(box1,A_SET_DEBUG);
   box2 = new  QCheckBox("Undo",0);
-  box2->setCheckState(IsUndoEnable ? Qt::Checked : Qt::Unchecked);                Group1->addButton(box2,A_SET_UNDO);
+  box2->setCheckState(staticData::IsUndoEnable ? Qt::Checked : Qt::Unchecked);
+  Group1->addButton(box2,A_SET_UNDO);
   box3 = new  QCheckBox("Erase multiple edges ",0);
-  box3->setCheckState(randomEraseMultipleEdges() ? Qt::Checked : Qt::Unchecked);  Group1->addButton(box3,A_SET_ERASE_MULT);
+  box3->setCheckState(staticData::RandomEraseMultipleEdges() ? Qt::Checked : Qt::Unchecked); 
+  Group1->addButton(box3,A_SET_ERASE_MULT);
   box4 = new  QCheckBox("Use generated cir",0);  
-  box4->setCheckState(randomUseGeneratedCir() ? Qt::Checked : Qt::Unchecked);     Group1->addButton(box4,A_SET_GEN_CIR);
+  box4->setCheckState(staticData::RandomUseGeneratedCir() ? Qt::Checked : Qt::Unchecked);
+  Group1->addButton(box4,A_SET_GEN_CIR);
   box5 = new  QCheckBox("Random seed",0);    
-  box5->setCheckState(randomSeed() ? Qt::Checked : Qt::Unchecked);                Group1->addButton(box5,A_SET_RANDOM_SEED);
-  box6 = new  QCheckBox("Show orientation",0);  
-  box6->setCheckState(ShowOrientation() ? Qt::Checked : Qt::Unchecked);           Group1->addButton(box6, A_SET_ORIENT);
+  box5->setCheckState(staticData::RandomSeed() ? Qt::Checked : Qt::Unchecked);
+  Group1->addButton(box5,A_SET_RANDOM_SEED);
+  chkOrient = new  QCheckBox("Show orientation",0);  
+  chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
+  Group1->addButton(chkOrient, A_SET_ORIENT);
   box7 = new  QCheckBox("Show arrows",0);    
-  box7->setCheckState(ShowArrow() ? Qt::Checked : Qt::Unchecked);                 Group1->addButton(box7, A_SET_ARROW);
+  box7->setCheckState(staticData::ShowArrow() ? Qt::Checked : Qt::Unchecked);   
+  Group1->addButton(box7, A_SET_ARROW);
   box8 = new  QCheckBox("Show exterior edge",0);  
-  box8->setCheckState(ShowExtBrin() ? Qt::Checked : Qt::Unchecked);               Group1->addButton(box8,A_SET_EXTBRIN);
+  box8->setCheckState(staticData::ShowExtTbrin() ? Qt::Checked : Qt::Unchecked);  
+  Group1->addButton(box8,A_SET_EXTBRIN);
   box9 = new  QCheckBox("Schnyder Rect",0);
-  box9->setCheckState(SchnyderRect() ? Qt::Checked : Qt::Unchecked);              Group1->addButton(box9,A_SET_SCH_RECT); 
+  box9->setCheckState(staticData::SchnyderRect() ? Qt::Checked : Qt::Unchecked);  
+  Group1->addButton(box9,A_SET_SCH_RECT); 
   box10 = new  QCheckBox("Schnyder color",0);
-  box10->setCheckState(SchnyderColor() ? Qt::Checked : Qt::Unchecked);            Group1->addButton(box10,A_SET_SCH_COLOR);
+  box10->setCheckState(staticData::SchnyderColor() ? Qt::Checked : Qt::Unchecked); 
+  Group1->addButton(box10,A_SET_SCH_COLOR);
   box11 = new  QCheckBox("Use longest face",0);
-  box11->setCheckState(SchnyderLongestFace() ? Qt::Checked : Qt::Unchecked);      Group1->addButton(box11,A_SET_LFACE);
+  box11->setCheckState(staticData::SchnyderLongestFace() ? Qt::Checked : Qt::Unchecked); 
+  Group1->addButton(box11,A_SET_LFACE);
+  
+  // png
+  QSpinBox *spinPNG = new QSpinBox();     
+  spinPNG->setRange(100,1600); spinPNG->setSingleStep(50);  spinPNG->setValue(staticData::sizePng);
+  connect(spinPNG,SIGNAL(valueChanged(int)),SLOT(spinPNGChanged(int)));
 
   // Add to the Layout
-  //bigScreen = false;
-  int mw, mh;
+  QDesktopWidget *desktop = QApplication::desktop();
+  bool bigScreen = (desktop->height() >= 768); //630
+  //bigScreen=false;
+  const int mw = 100;
+  const int mh = 18;
   if(bigScreen)
-      {mw = 100; mh = 20;
-      gSettings->setMaximumHeight(660);//630
+  // minimum Height window = 640
+  // minimum Width window  = 800
+      {gSettings->setMinimumHeight(495);
+      gSettings->setMaximumHeight(600);
       }
   else
-      {mw = 100; mh = 18;
-      gSettings->setMaximumHeight(500);
+  // minimum Height window = 600
+  // minimum Width window  = 780
+      {gSettings->setMaximumHeight(485);
+      tb->setIconSize(QSize(14,14));
+      leftLayout->setMargin(0);
       }
-  comboLabel->setMaximumWidth(mw);comboLabel->setMaximumHeight(mh);
-  comboDistance->setMaximumWidth(mw);comboDistance->setMaximumHeight(mh);
-  seedEdit->setMaximumWidth(mw);seedEdit->setMaximumHeight(mh);
-  spin_N->setMaximumWidth(mw);spin_N->setMaximumHeight(mh);
-  spin_N1->setMaximumWidth(mw);spin_N1->setMaximumHeight(mh);
-  spin_N2->setMaximumWidth(mw);spin_N2->setMaximumHeight(mh);
-  spin_M->setMaximumWidth(mw);spin_M->setMaximumHeight(mh);
-  spin_MaxNS->setMaximumWidth(mw);spin_MaxNS->setMaximumHeight(mh);
-  spin_MaxND->setMaximumWidth(mw);spin_MaxND->setMaximumHeight(mh);
-  macroSpin->setMaximumWidth(mw);macroSpin->setMaximumHeight(mh);
-  macroLine->setMaximumWidth(mw+20);macroLine->setMaximumHeight(mh);
-  macroSlider->setMaximumWidth(mw+20);
-  macroSliderM->setMaximumWidth(mw+20);
+      
+  comboLabel->setMaximumWidth(mw);comboLabel->setMinimumHeight(mh);
+  comboDistance->setMaximumWidth(mw+40);comboDistance->setMinimumHeight(mh);
+  seedEdit->setMaximumWidth(mw);seedEdit->setMinimumHeight(mh);
+  spin_N->setMaximumWidth(mw);spin_N->setMinimumHeight(mh);
+  spin_N1->setMaximumWidth(mw);spin_N1->setMinimumHeight(mh);
+  spin_N2->setMaximumWidth(mw);spin_N2->setMinimumHeight(mh);
+  spin_M->setMaximumWidth(mw);spin_M->setMinimumHeight(mh);
+  spin_MaxNS->setMaximumWidth(mw);spin_MaxNS->setMinimumHeight(mh);
+  spin_MaxND->setMaximumWidth(mw);spin_MaxND->setMinimumHeight(mh);
+  spinDelay->setMaximumWidth(mw);spinDelay->setMinimumHeight(mh);
+  spinRepeat->setMaximumWidth(mw);spinRepeat->setMinimumHeight(mh);
+  spinPNG->setMaximumWidth(mw);spinPNG->setMinimumHeight(mh);
+  
+//   // for styles like CDE
+//   comboDistance->setFrame(false);
+//   comboLabel->setFrame(false);
 
-  QGridLayout *setLayout = new  QGridLayout(gSettings,2,28);
-  //QGridLayout *setLayout = new  QGridLayout(gSettings);
+
+  QGridLayout *setLayout = new  QGridLayout(gSettings);
+ 
   int row = -1;
   // General
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("General settings"),0),++row,1,1,2,Qt::AlignHCenter);
-  // CheckBoxes
+  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>General settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(box1,++row,1);  setLayout->addWidget(box2,row,2); //debug,undo
-  setLayout->addWidget(box6,++row,1);  setLayout->addWidget(box7,row,2); // orientation,arrowq
+  setLayout->addWidget(chkOrient,++row,1);  setLayout->addWidget(box7,row,2); // orientation,arrowq
   setLayout->addWidget(box8,++row,1);  setLayout->addWidget(box11,row,2); // exterioredge, longest face
   setLayout->addWidget(new QLabel(tr("Vertex label"),0),++row,1,Qt::AlignLeft);  setLayout->addWidget(comboLabel,row,2);
-  //setLayout->addWidget(new QLabel(tr("Maximum number of vertices:"),0),++row,1,1,2,tQt::AlignHCenter);
   setLayout->addWidget(new QLabel(tr("Max N display"),0),++row,1);
   setLayout->addWidget(new QLabel(tr("Max N slow algorithms"),0),row,2);
   setLayout->addWidget(spin_MaxND,++row,1); setLayout->addWidget(spin_MaxNS,row,2);
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  
   // generators
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("Graph Generators"),0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Graph Generators</b>"),0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(new QLabel("N1",0),++row,1);    setLayout->addWidget(spin_N1,row,2);
   setLayout->addWidget(new QLabel("N2",0),++row,1);    setLayout->addWidget(spin_N2,row,2);
   setLayout->addWidget(new QLabel("M",0),++row,1);     setLayout->addWidget(spin_M,row,2);
   setLayout->addWidget(new QLabel(tr("Seed"),0),++row,1);  setLayout->addWidget(seedEdit,row,2);
   setLayout->addWidget(box3,++row,1);  setLayout->addWidget(box4,row,2); // multiple edges, generated cir
   setLayout->addWidget(box5,++row,1); // random seed
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+
   // macro
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("Macro Settings"),0),++row,1,1,2,Qt::AlignHCenter);
-  setLayout->addWidget(new QLabel(tr("Delay (seconds)"),0),++row,1);  setLayout->addWidget(macroSpin,row,2);
-  setLayout->addWidget(new QLabel(tr("Repeat"),0),++row,1);setLayout->addWidget(macroLine,row,2);
-  setLayout->addWidget(new QLabel("x",0),++row,1);  setLayout->addWidget(macroSlider,row,2);
-  setLayout->addWidget(new QLabel("x100",0),++row,1); setLayout->addWidget(macroSliderM,row,2);
-  if(bigScreen) setLayout->addWidget(new QLabel(" ",0),++row,1);
-  // distance
-  if(bigScreen)setLayout->addWidget(new QLabel("Factorial analysis parameters",0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Macro Settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+  setLayout->addWidget(new QLabel(tr("Delay (1/10 seconds)"),0),++row,1);  setLayout->addWidget(spinDelay,row,2);
+  setLayout->addWidget(new QLabel(tr("Repeat"),0),++row,1);setLayout->addWidget(spinRepeat,row,2);
+
+  //Factorial Analysis
+  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  if(bigScreen)setLayout->addWidget(new QLabel("<b>Factorial analysis</b>",0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(new QLabel(tr("Distance"),0),++row,1);  setLayout->addWidget(new QLabel(tr("Number of classes"),0),row,2);
   setLayout->addWidget(comboDistance,++row,1);setLayout->addWidget(spin_N,row,2);
+  
+  // PNG
   if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  setLayout->addWidget(new QLabel(tr("Png size"),0),++row,1);
+  setLayout->addWidget(spinPNG,++row,1);
+  
   // Schnyder
-  if(bigScreen)setLayout->addWidget(new QLabel("Schyder parameters",0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
+  if(bigScreen)setLayout->addWidget(new QLabel("<b>Schyder parameters</b>",0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(box9,++row,1); setLayout->addWidget(box10,row,2); //Schnyder rect,color
   if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
   //cout<<"row:"<<row<<endl;
-  //Pixmaps
+  }
+void pigaleWindow::createToolBar()
+  {//Pixmaps
   QIcon openIcon = QIcon(fileopen),newIcon = QIcon(filenew),saveIcon = QIcon(filesave);
   QIcon leftIcon = QIcon(sleft),   rightIcon = QIcon(sright);
   QIcon reloadIcon = QIcon(sreload);
@@ -426,39 +498,41 @@ pigaleWindow::pigaleWindow()
   undoRAct->setStatusTip(tr("Redo last action"));
   connect(undoRAct, SIGNAL(triggered()),this,SLOT(Redo()));
   tb->addAction(undoRAct);
-  undoLAct->setEnabled(false);  undoSAct->setEnabled(IsUndoEnable);   undoRAct->setEnabled(false);
+  undoLAct->setEnabled(false); undoSAct->setEnabled(staticData::IsUndoEnable);undoRAct->setEnabled(false);
   tb->addSeparator();
   // MACRO
   QAction *macroAct = new QAction(macroplayIcon, tr("Macro..."), this);
   macroAct->setStatusTip(tr("Play the macro"));
   connect(macroAct, SIGNAL(triggered()),this,SLOT(macroPlay()));
   tb->addAction(macroAct);
+  // Help
   QAction *helpAct =  QWhatsThis::createAction(); 
   //connect(helpAct, SIGNAL(triggered()),this,SLOT(whatsThis()));
   helpAct->setShortcut(Qt::SHIFT+Qt::Key_F1);
   tb->addAction(helpAct);
-
-
-  // Status bar
-  progressBar = new QProgressBar(statusBar());
-  connect(menuBar(),SIGNAL(triggered(QAction *)),this,SLOT(handler(QAction *)));
-  //QIcon xmanIcone = QIcon("xman.xpm");
+  }
+void pigaleWindow::createMenus()
+  {connect(menuBar(),SIGNAL(triggered(QAction *)),this,SLOT(handler(QAction *)));
   QAction *action;
+  //Pixmaps
+  QIcon openIcon = QIcon(fileopen),newIcon = QIcon(filenew),saveIcon = QIcon(filesave);
+  QIcon helpIcon = QIcon(help),printIcon = QIcon(fileprint);
+  QIcon xmanIcon = QIcon(xman),infoIcon = QIcon(info);
 
   QMenu *file = menuBar()->addMenu( tr("&File"));  //-> inutil
   file->addAction(newIcon,tr("&New Graph"),this, SLOT(NewGraph()));
   action = file->addAction(openIcon,tr("&Open"),this, SLOT(load()));
   action->setWhatsThis(fileopen_txt);
   file->addAction(tr("Save &as ..."), this, SLOT(saveAs()));
-  file->insertItem(saveIcon,tr("&Save"), this, SLOT(save()));
-  file->insertSeparator();
+  file->addAction(saveIcon,tr("&Save"), this, SLOT(save()));
+  file->addSeparator();
   file->addAction(tr("&Delete current record"),this,SLOT(deleterecord()));
   file->addAction(tr("S&witch Input/Output files"),this,SLOT(switchInputOutput()));
-  file->insertSeparator();
+  file->addSeparator();
   file->addAction(printIcon,tr("&Print"),this, SLOT(print()));
-  file->insertSeparator();
+  file->addSeparator();
   file->addAction(tr("&Init server"),this, SLOT(initServer()));
-  file->insertSeparator();
+  file->addSeparator();
   QAction * exitAct = new QAction(tr("E&xit"),this);
   exitAct->setShortcut(tr("Ctrl+Q"));
   exitAct->setStatusTip(tr("Exit the application"));
@@ -539,18 +613,18 @@ pigaleWindow::pigaleWindow()
   action->setWhatsThis(tr(tutte_circle_txt));
   setId(action,A_EMBED_TUTTE_CIRCLE);
  embed->addSeparator();
-#ifdef VERSION_ALPHA
+ //#ifdef VERSION_ALPHA
   action = embed->addAction(tr("Double Occurrence (&DFS)")); 
   setId(action, A_EMBED_POLREC_DFS);
-#endif
+  //#endif
   action = embed->addAction(tr("Double Occurrence (&LR DFS)")); 
   setId(action, A_EMBED_POLREC_DFSLR);  
   action = embed->addAction(tr("Double Occurrence (&BFS)")); 
   setId(action, A_EMBED_POLREC_BFS);
-#ifdef VERSION_ALPHA
-  action = embed->addAction(tr("Double Occurrence &Cir (&BFS)")); 
+  //#ifdef VERSION_ALPHA
+  action = embed->addAction(tr("Double Occurrence &Circular (&BFS)")); 
   setId(action, A_EMBED_POLAR);
-#endif
+  //#endif
   embed->addSeparator();
   action = embed->addAction(tr("&Visibility"));   setId(action,A_EMBED_VISION);
   action = embed->addAction(tr("FPP Visi&bility"));   setId(action,A_EMBED_FPP_RECTI);
@@ -677,102 +751,34 @@ pigaleWindow::pigaleWindow()
   profile->addAction(tr("&Gray profile"),this,SLOT(SetPigaleColorsProfile1()));
   profile->addAction(tr("&Yellow profile"),this,SLOT(SetPigaleColorsProfile2()));
   set->addAction(tr("Set a font"),this,SLOT(SetPigaleFont()));
-  set->addAction(tr("&Documentation path"),this,SLOT(SetDocumentPath()));
+  set->addAction(tr("&Documentation path"),this,SLOT(SetDocumentationPath()));
   set->addAction(tr("&Save Settings"),this,SLOT(SaveSettings()));
+  set->addAction(tr("&Reset Settings"),this,SLOT(ResetSettings()));
 
   QMenu *help = menuBar()->addMenu(tr("&Information")); 
+  QAction *helpAct =  QWhatsThis::createAction(); 
   help->addAction(infoIcon,tr("&Graph properties"),this,SLOT(computeInformation()),Qt::SHIFT+Qt::Key_F2);
   help->addSeparator();
   help->addAction(helpAct);
   help->addSeparator();
   help->addAction(tr("About &Qt..."), qApp, SLOT(aboutQt()));
   help->addAction(tr("&About..."), this, SLOT(about()),Qt::Key_F1);
-  //End of the menuBar():window
- 
 
-  //Resize
-#ifdef TDEBUG
-  setCaption(tr("Qt4 Pigale Editor ")+PACKAGE_VERSION+" "+tr("Debug Mode"));
-#else
-  setCaption(tr("Qt4 Pigale Editor ")+PACKAGE_VERSION);
-#endif
-
-  resize(pigaleWindowInitXsize,pigaleWindowInitYsize);
-  QRect rect_status(0,0,pigaleWindowInitXsize*2/3,30);
-  progressBar->setGeometry(rect_status); 
-  
-  QPalette Palette1; 
-  Palette1.setColor(QPalette::Window,QColor(QColorDialog::customColor(1)));
-  Palette1.setColor(QPalette::WindowText,Qt::darkGreen);
-  statusBar()->setPalette(Palette1,TRUE);
-  statusBar()->setAutoFillBackground(true); 
-  progressBar->hide();
-
-  mainWidget->setFocus();
-  //Check for documentation repertory
-  QFileInfo fdoc = QFileInfo(DirFileDoc);
-  if(!fdoc.exists() || !fdoc.isDir())
-      {int rep = QMessageBox::warning(this,"Pigale Editor"
-                                      ,tr("I cannot find the repertory <b>Doc<br>"
-                                          "Load manually ?")
-                                      ,QMessageBox::Ok
-                                      ,QMessageBox::Cancel);
-      if(rep == 1)
-          {DirFileDoc = QFileDialog::
-          getExistingDirectory(".",this,"find", tr("Choose the documentation directory <em>Doc</em>"),TRUE);
-          if(!DirFileDoc.isEmpty())
-              {QFileInfo fi =  
-              QFileInfo(DirFileDoc + QDir::separator() + QString("manual.html"));
-              if(fi.exists())
-                  {browser->setSearchPaths(QStringList(DirFileDoc));
-                  browser->setSource(QUrl("manual.html"));
-                  SaveSettings();
-                  }
-              else
-                  QMessageBox::information(this,"Pigale Editor"
-                                           ,tr("I cannot find the inline manual<em>manual.html</em>")
-                                           ,QMessageBox::Ok);
-              }
-          }
-      }
-  else
-      {browser->setSearchPaths(QStringList(DirFileDoc));
-      QUrl url = QUrl("manual.html");
-      browser->setSource(url);
-      }
-  UpdatePigaleColors();    
-  qApp->processEvents();
   initMenuTest();
-  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
-  UndoInit();// Create a tgf file with no records
-  LogPrintf("Init seed:%ld\n",randomSetSeed());
-  gw->update();
-  if(!Server)load(0);
   }
-pigaleWindow::~pigaleWindow()
-  {delete printer;
-//   if(server)
-//       {server->close();
-//       cout<<"closing server"<<endl;
-//       delete server;
-//       }
-//   pigaleThread.terminate();pigaleThread.wait();
-//   UndoErase();
-//   LogPrintf("END\n");
-//   cout<<"END"<<endl;
-  }
+
 void pigaleWindow::closeEvent(QCloseEvent *event)
   {
   if(server)
       {server->close();
       //cout<<"closing server"<<endl;
-      //delete server;
+      delete server;
       }
-  
-  pigaleThread.stop();
-
+  pigaleThread.terminate();pigaleThread.wait();
+  //pigaleThread.deleteLater(); -> bad free
   UndoErase();
   LogPrintf("END\n");
+  delete printer;
   event->accept();
   }
 void pigaleWindow::AllowAllMenus()
@@ -787,35 +793,47 @@ void  pigaleWindow::setUserMenu(int i, const QString &txt)
  list.at(i-1)->setText(txt);
  }
 void pigaleWindow::seedEdited(const QString & t)
-  {randomSetSeed() = atol((const char *)t); 
+  {bool ok;
+  long seed = t.toLong(&ok);
+  if(ok)randomSetSeed() = seed; 
   }
 void pigaleWindow::spinN1Changed(int val)
-  {Gen_N1 = val;}
+  {staticData::Gen_N1 = val;}
 void pigaleWindow::spinN2Changed(int val)
-  {Gen_N2 = val;}
+  {staticData::Gen_N2 = val;}
 void pigaleWindow::spinMChanged(int val)
-  {Gen_M = val;}
+  {staticData::Gen_M = val;}
+void pigaleWindow::spinNChanged(int val)
+  {staticData::nCut = val;}
+void pigaleWindow::spinPNGChanged(int val)
+  {staticData::sizePng = val;}
 void pigaleWindow::spinDelayChanged(int val)
-  {pauseDelay() = val;}
+  {staticData::macroDelay = val;}
+void pigaleWindow::spinMaxNSChanged(int i)
+  {staticData::MaxNS = i;}
+void pigaleWindow::spinMaxNDChanged(int i)
+  {staticData::MaxND = i;}
+void pigaleWindow::spinRepeatChanged(int i)
+  {staticData::macroRepeat = i;}  
 void  pigaleWindow::distOption(int use)
-  {useDistance() = use;
+  {staticData::UseDistance() = use;
   }
 void  pigaleWindow::setShowOrientation(bool val)
-  {ShowOrientation() = val;
-  box6->setCheckState(ShowOrientation() ? Qt::Checked : Qt::Unchecked);
+  {staticData::ShowOrientation() = val;
+  chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
   }
 void pigaleWindow::SetPigaleFont()
  {bool ok;
   QFont font = QFontDialog::getFont( &ok, this->font(), this );
   if(!ok)return;
-  QApplication::setFont(font,true);
-  setFont(font,true);
+  QApplication::setFont(font);
+  setFont(font);
  }
 void pigaleWindow::showLabel(int show)
-  {int _show = ShowVertex();
-  ShowVertex() = show -3;
-  if(ShowVertex() != _show && GC.nv())
-      {switch(tabWidget->currentPageIndex())
+  {int _show = staticData::ShowVertex();
+  staticData::ShowVertex() = show -3;
+  if(staticData::ShowVertex() != _show && GC.nv())
+      {switch(tabWidget->currentIndex())
           {case 0:
               gw->update();
               break;
@@ -837,7 +855,7 @@ void pigaleWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
   }
 void pigaleWindow::print()
-  {switch(tabWidget->currentPageIndex())
+  {switch(tabWidget->currentIndex())
       {case 0:
           gw->print(printer);
           break;
@@ -852,18 +870,22 @@ void pigaleWindow::print()
       }
   }
 void pigaleWindow::png()
-  {switch(tabWidget->currentPageIndex())
+  {QRect geo;
+  switch(tabWidget->currentIndex())
       {case 0:
-          gw->png();
+          gw->png(staticData::sizePng);
           break;
       case 1:
+          geo = mypaint->geometry();
+          mypaint->resize(staticData::sizePng,staticData::sizePng);
           mypaint->png();
+          mypaint->setGeometry(geo);
           break;
       case 2:
-          graphgl->png();
+          graphgl->png(staticData::sizePng);
           break;
       case 3:
-          graphsym->png();
+          graphsym->png(staticData::sizePng);
           break;
       default:
           break;

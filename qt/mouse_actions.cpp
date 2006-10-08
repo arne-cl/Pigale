@@ -9,12 +9,15 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include "mouse_actions.h"
 #include "GraphWidget.h"
 #include "GraphGL.h"
 
-#include <qpalette.h>
-#include <qcolordialog.h> 
+
+#include <QButtonGroup>
+#include <QColorDialog>
 
 static int mouse_action_1 = 3;
 
@@ -40,122 +43,112 @@ const int ox2 =  sliderOx + sliderWidth + 3;    // postion of right group
 const int dx2 = Width-ox2-1;             // group of radiobuttons
 const int dxb = dx2/2;// width of buttons
 
-Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
-			     ,Qt::WFlags fl,GraphWidget* gw)
-    : QWidget(parent,name,fl)
-//: QWidget()
-  {if(!name)setName("Mouse_Acions");
-  
-  //hub
-//   //QPalette bup(Qt::red,Qt::blue);
-//   QPalette bup(Qt::red);
-//    QBrush brush = bup.window();   brush.setColor(Qt::yellow);
-//    bup.setBrush(QPalette::Active,QPalette::Window,brush);
-//   //bup.setColor(QPalette::Active,QPalette::Window,Qt::yellow);
-//   bup.setColor(QPalette::Active,QPalette::WindowText,Qt::darkGreen);
-//   bup.setColor(QPalette::Active,QPalette::Button,Qt::darkGreen);
-//   //bup.setColor(this->backgroundRole(),Qt::yellow);
-//   bup.setColor(backgroundRole(),Qt::yellow);
-//   setPalette(bup);
-//   setBackgroundRole(QPalette::Button);
-//   setForegroundRole(QPalette::Button);
-//   //setEraseColor(Qt::white);
-//   //setBackgroundMode(Qt::BackgroundMode widgetBackground, Qt::BackgroundMode paletteBackground = Qt::PaletteBackground );
-//   setBackgroundMode(Qt::PaletteButton);
-  
-
+Mouse_Actions::Mouse_Actions(QWidget* parent,GraphWidget* gw)
+    : QWidget(parent)
+  {
   setMinimumHeight(Height);  setMaximumHeight(Height); 
 
-  ButtonGroup1 = new Q3ButtonGroup(this,"ButtonGroup1");
+  ButtonGroup1 = new QGroupBox(this);
   ButtonGroup1->setGeometry(QRect(ox1-1,0,dx1,7*dy+oy+15)); 
   ButtonGroup1->setTitle(tr("Left Button"));
-  ButtonGroup1->setRadioButtonExclusive(TRUE);
+  QButtonGroup *group1 = new QButtonGroup( ButtonGroup1); 
+  group1->setExclusive(TRUE);
 
-  ButtonAddV = new QRadioButton(ButtonGroup1,"ButtonAddV");
-  ButtonAddV->setGeometry(QRect(ox1,oy,dx,20)); 
-  ButtonAddV->setText(tr("Col/Thick"));
+  QRadioButton *Button0 = new QRadioButton(ButtonGroup1);
+  Button0->setGeometry(QRect(ox1,oy,dx,20)); 
+  Button0->setText(tr("Col/Thick"));
+  group1->addButton(Button0);group1->setId(Button0,0);
 
-  ButtonAddE = new QRadioButton(ButtonGroup1,"ButtonAddE");
-  ButtonAddE->setGeometry(QRect(ox1,oy+dy,dx,20)); 
-  ButtonAddE->setText(tr("Add/Del"));
+  QRadioButton *Button1 = new QRadioButton(ButtonGroup1);
+  Button1->setGeometry(QRect(ox1,oy+dy,dx,20)); 
+  Button1->setText(tr("Add/Del"));
+  group1->addButton(Button1);group1->setId(Button1,1);
 
-  ButtonDel = new QRadioButton(ButtonGroup1,"ButtonDel");
-  ButtonDel->setGeometry(QRect(ox1,oy+2*dy,dx,20)); 
-  ButtonDel->setText(tr("Orient"));
+  QRadioButton *Button2 = new QRadioButton(ButtonGroup1);
+  Button2->setGeometry(QRect(ox1,oy+2*dy,dx,20)); 
+  Button2->setText(tr("Orient"));
+  group1->addButton(Button2);group1->setId(Button2,2);
 
-  ButtonMove = new QRadioButton(ButtonGroup1,"ButtonMove");
-  ButtonMove->setGeometry(QRect(ox1,oy+3*dy,dx,20)); 
-  ButtonMove->setText(tr("Move"));
-  ButtonMove->setChecked(TRUE);
+  QRadioButton *Button3 = new QRadioButton(ButtonGroup1);
+  Button3->setGeometry(QRect(ox1,oy+3*dy,dx,20)); 
+  Button3->setText(tr("Move"));
+  Button3->setChecked(TRUE);
+  group1->addButton(Button3);group1->setId(Button3,3);
 
-  ButtonBissect = new QRadioButton(ButtonGroup1,"ButtonBisect");
-  ButtonBissect->setGeometry(QRect(ox1,oy+4*dy,dx,20)); 
-  ButtonBissect->setText(tr("Bis./Cont."));
+  QRadioButton *Button4 = new QRadioButton(ButtonGroup1);
+  Button4->setGeometry(QRect(ox1,oy+4*dy,dx,20)); 
+  Button4->setText(tr("Bis./Cont."));
+  group1->addButton(Button4);group1->setId(Button4,4);
 
-  ButtonContract = new QRadioButton(ButtonGroup1,"ButtonContract");
-  ButtonContract->setGeometry(QRect(ox1,oy+5*dy,dx,20)); 
-  ButtonContract->setText(tr("Ext Face/extbrin"));
+  QRadioButton *Button5 = new QRadioButton(ButtonGroup1);
+  Button5->setGeometry(QRect(ox1,oy+5*dy,dx,20)); 
+  Button5->setText(tr("Ext Face/extbrin"));
+  group1->addButton(Button5);group1->setId(Button5,5);
 
-  ButtonLabel = new QRadioButton(ButtonGroup1,"ButtonLabel");
-  ButtonLabel->setGeometry(QRect(ox1,oy+6*dy,dx,20)); 
-  ButtonLabel->setText(tr("Label/Reset all"));
+  QRadioButton *Button6 = new QRadioButton(ButtonGroup1);
+  Button6->setGeometry(QRect(ox1,oy+6*dy,dx,20)); 
+  Button6->setText(tr("Label/Reset all"));
+  group1->addButton(Button6);group1->setId(Button6,6);
 
     //****************************************************************
   gw->sizegridChanged(sizegrid);
-  LCDNumber = new QLCDNumber(this,"LCDNumber");
+  LCDNumber = new QLCDNumber(this);
   LCDNumber->setGeometry(QRect(ox2,oy2,30,30)); 
   QFont LCDNumber_font(LCDNumber->font());
   LCDNumber_font.setBold(TRUE);
   LCDNumber->setFont(LCDNumber_font); 
   LCDNumber->setNumDigits(3);
   LCDNumber->setSegmentStyle(QLCDNumber::Flat);
-  LCDNumber->setProperty("intValue",sizegrid);
+  //LCDNumber->setProperty("intValue",sizegrid);
+  LCDNumber->display(sizegrid);
 
-  LCDNumberX = new QLCDNumber(this,"LCDNumber");
+  LCDNumberX = new QLCDNumber(this);
   QColor col;         col.setRgb(0,100,0);
   // 0:background gprop 1:background msg 3:background help 2:background mouse
   QPalette pal = QPalette(QColorDialog::customColor(1));
-  pal.setColor(QColorGroup::Foreground,col);
+  pal.setColor(QPalette::Foreground,col);
   LCDNumberX->setPalette(pal);
   LCDNumberX->setGeometry(QRect(ox2+35,oy2,30,30)); 
   LCDNumberX->setFont(LCDNumber_font); 
   LCDNumberX->setNumDigits(3);
   LCDNumberX->setSegmentStyle(QLCDNumber::Flat);
-  LCDNumberX->setProperty("intValue",sizegrid);
+  //LCDNumberX->setProperty("intValue",sizegrid);
+  LCDNumberX->display(sizegrid);
 
-  LCDNumberY = new QLCDNumber(this,"LCDNumber");
+  LCDNumberY = new QLCDNumber(this);
   LCDNumberY->setPalette(pal);
   LCDNumberY->setGeometry(QRect(ox2+35+30+2,oy2,30,30)); 
   LCDNumberY->setFont(LCDNumber_font); 
   LCDNumberY->setNumDigits(3);
   LCDNumberY->setSegmentStyle(QLCDNumber::Flat);
-  LCDNumberY->setProperty("intValue",sizegrid);
+  //LCDNumberY->setProperty("intValue",sizegrid);
+  LCDNumberY->display(sizegrid);
 
-  Slider = new QSlider(this,"Slider");
+  Slider = new QSlider(this);
   Slider->setGeometry(QRect(sliderOx,sliderOy,sliderWidth,sliderHeight)); 
-  Slider->setMinValue(2);    Slider->setMaxValue(100);
+  Slider->setMinimum(2);    Slider->setMaximum(100);
   Slider->setValue(sizegrid);
   Slider->setOrientation(Qt::Vertical);
 
-  ButtonFitGrid = new QCheckBox(this,"ButtonFitGrid");
+  ButtonFitGrid = new QCheckBox(this);
   ButtonFitGrid->setGeometry(QRect(ox2,oy2+35,Width-ox2,20)); 
   ButtonFitGrid->setText(tr("Fit grid"));
 
-  ButtonShowGrid = new QCheckBox(this,"ButtonShowGrid");
+  ButtonShowGrid = new QCheckBox(this);
   ButtonShowGrid->setGeometry(QRect(ox2,oy2+55,Width-ox2,20)); 
   ButtonShowGrid->setText(tr("Show grid"));
   
-  ButtonForceGrid = new QPushButton(this,"ButtonForceGrid");
+  ButtonForceGrid = new QPushButton(this);
   ButtonForceGrid->setGeometry(QRect(ox2,oy2+78,dxb,20));
   ButtonForceGrid->setText(tr("Force G"));
 
-  ButtonUndoGrid = new QPushButton(this,"ButtonUndoGrid");
+  ButtonUndoGrid = new QPushButton(this);
   ButtonUndoGrid->setGeometry(QRect(ox2+dxb,oy2+78,dxb,20));
   ButtonUndoGrid->setText(tr("Undo G"));
   ButtonUndoGrid->setDisabled(true);
 
   // signals and slots connections
-  connect(ButtonGroup1,SIGNAL(clicked(int)),SLOT(valueChanged(int)));
+  connect(group1,SIGNAL(buttonClicked(int)),SLOT(valueChanged(int)));
   connect(Slider,SIGNAL(valueChanged(int)),LCDNumber,SLOT(display(int)));
   connect(Slider,SIGNAL(valueChanged(int)),gw,SLOT(sizegridChanged(int)));
   connect(ButtonShowGrid,SIGNAL(toggled(bool)),gw,SLOT(showgridChanged(bool)));
@@ -165,8 +158,6 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,const char* name
   }
 Mouse_Actions::~Mouse_Actions()
 {}
-#include "Pigale.h"  
-#include <stdio.h>  
 void Mouse_Actions::valueChanged(int i)
   {mouse_action_1 = i;
   }

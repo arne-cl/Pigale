@@ -18,7 +18,6 @@
 #include "mouse_actions.h"
 #include "gprop.h"
 #include <TAXI/Tmessage.h> 
-#include <qtabwidget.h>
 
 
 // in HeapSort.cpp

@@ -9,13 +9,14 @@
 **
 *****************************************************************************/
 
+#undef QT3_SUPPORT
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include <TAXI/Tgf.h>
 #include <QT/Action_def.h>
-#include <qfileinfo.h>
-#include <qtoolbutton.h>
+
 /*
 The copies are cleared when a new graph is loaded or generated, but the last graph is saved
 A copy is created when edges/vertices are added/deleted outside the editor
@@ -26,11 +27,11 @@ Should always be possible to restore 1
 */
 
 //static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
-#if defined(_WINDOWS) || defined(_WIN32)
+//#if defined(_WINDOWS) || defined(_WIN32)
 static char undofile[L_tmpnam] = "_undo.tgf" ;
-#else
-static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
-#endif
+// #else
+// static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
+// #endif
 
 void pigaleWindow::UndoInit()
   {Tgf undo_tgf;
@@ -50,7 +51,7 @@ void pigaleWindow::UndoTouch(bool save)
   else if (save) { UndoSave(); UndoIndex++;banner();}
   }
 void pigaleWindow::UndoSave()
-  {if(!IsUndoEnable)return;
+  {if(!staticData::IsUndoEnable)return;
   TopologicalGraph G(GC);
   if(G.nv() == 0)return;
   int nb = IO_GetNumRecords(0,undofile); if (nb<0) nb=0;
@@ -64,7 +65,11 @@ void pigaleWindow::UndoSave()
           }
       }
   if(IO_Save(0,G,undofile) == 1)
-      {handler(A_SET_UNDO);return;}
+      {Tprintf("Could not write the undo file");
+      handler(A_SET_UNDO);
+      return;
+      }
+
   UndoIndex=UndoMax=++nb;
   undoLAct->setEnabled(true);
   banner();
@@ -77,12 +82,9 @@ void pigaleWindow::Redo()
   undoRAct->setEnabled(UndoIndex < UndoMax);
   }
 void pigaleWindow::UndoClear()
-  {if(!IsUndoEnable)return;
+  {if(!staticData::IsUndoEnable)return;
   UndoIndex = 0;
   UndoMax = 0;
-  //hub
-  //undoL->setEnabled(false);
-  //undoR->setEnabled(false);
   // empty the tgf file
   Tgf undo_tgf;
   undo_tgf.open(undofile,Tgf::create);
@@ -92,9 +94,9 @@ void pigaleWindow::UndoEnable(bool enable)
   if(!enable)
       UndoClear();
   else
-      {IsUndoEnable = true;UndoSave();}
+      {staticData::IsUndoEnable = true;UndoSave();}
   banner();
-  IsUndoEnable = enable;
+  staticData::IsUndoEnable = enable;
   }
 // UndoErase is called when the program exit
 void UndoErase()
