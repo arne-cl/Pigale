@@ -13,22 +13,7 @@
 #define MYPAINT_H
 
 #include <TAXI/graphs.h> 
-#include <qpainter.h>
-#include <qwidget.h>
-#include <qstring.h>
-#include <qprinter.h>
-#include <qpixmap.h>
-#include <qfile.h>
-#include <qfileinfo.h>
 
-#if QT_VERSION >= 0x40000
-#include <q3filedialog.h>
-#include <qevent.h> 	
-#else
-#include <qfiledialog.h>
-#endif
-#include <qtabwidget.h>
-#include <qapplication.h>
 
 class pigaleWindow;
 class QPrinter;
@@ -39,7 +24,7 @@ class pigalePaint : public QWidget
   //Q_OBJECT
 
 public:
-  pigalePaint(QWidget *parent=0,const char *name=0,pigaleWindow *father = 0);
+  pigalePaint(QWidget *parent=0,pigaleWindow *father = 0);
   ~pigalePaint();
   int to_x(double x);   
   int to_y(double y);   

@@ -27,26 +27,23 @@ void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir);
 void BFSOrientTree(TopologicalGraph &G, tvertex v0);
 
 // Drawings
-bool & SchnyderRect();
-bool & SchnyderLongestFace();
-bool & SchnyderColor();
-int EmbedTContact(TopologicalGraph &G);
+int EmbedTContact(TopologicalGraph &G,bool schnyderLongestFace);
 int EmbedTriangle(TopologicalGraph &G);
-int EmbedFPPRecti(TopologicalGraph &G);
-int EmbedFPP(TopologicalGraph &G);
+int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace);
+int EmbedFPP(TopologicalGraph &G,bool schnyderRect,bool schnyderLongestFace);
 int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact);
-int EmbedTutteCircle(TopologicalGraph &G);
+int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace);
 int FindNPSet(TopologicalGraph &);
-int split(Graph &G0,int &NumberOfClasses);
+int split(Graph &G0,int &NumberOfClasses,int usedDistance);
 int EmbedVision(TopologicalGraph &G);
 //int Vision(TopologicalGraph &G);
 int Vision(TopologicalGraph &xG,int morg);
 int EmbedContactBip(GeometricGraph &G);
 int DecompMaxBip(TopologicalGraph &G);
 int Polar(TopologicalGraph &G);
-int Embed3d(TopologicalGraph &G0);
+int Embed3d(TopologicalGraph &G0,int usedDistance);
 int Embed3dbis(TopologicalGraph &G0);
-int Embed3dSchnyder(TopologicalGraph &G0);
+int Embed3dSchnyder(TopologicalGraph &G0,bool schnyderLongestFace);
 int EmbedPolyline(TopologicalGraph &G);
 int EmbedCurves(TopologicalGraph &G);
 int EmbedPolrecDFS(TopologicalGraph &G);
@@ -58,14 +55,15 @@ int EmbedPolrecLR(TopologicalGraph &G);
 GraphContainer *GenerateGrid(int a, int b);
 GraphContainer *GenerateCompleteGraph(int a);
 GraphContainer *GenerateCompleteBiGraph(int a,int b);
-GraphContainer *GenerateRandomGraph(int a,int b);
+GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges);
 
 //in SchaefferGen.cpp
-GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity);
+GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity
+                                  ,bool randomEraseMultipleEdges,bool randomUseGeneratedCir);
 
 // Outerplanar maps
-GraphContainer *GenerateRandomOuterplanarGraph(int n);
-GraphContainer *GenerateRandomOuterplanarGraph(int n,int m);
+GraphContainer *GenerateRandomOuterplanarGraph(int n,bool randomEraseMultipleEdges);
+GraphContainer *GenerateRandomOuterplanarGraph(int n,int m,bool randomEraseMultipleEdges);
 
 // random
 void shuffleCir(TopologicalGraph &G);

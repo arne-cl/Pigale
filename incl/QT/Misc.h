@@ -12,7 +12,7 @@
 #ifndef MISC_H
 #define MISC_H
 
-#include <qstring.h> 
+#include <QString> 
 
 // in Misc.cpp 
 QString getVertexLabel(GraphContainer &GC,tvertex v);
@@ -27,13 +27,7 @@ void Normalise();
 void Normalise(GeometricGraph &G); 
 void Normalise(TopologicalGraph &G);
 int & pauseDelay();
-int & useDistance();
-bool & ShowOrientation();
-bool & ShowArrow();
-bool & ShowExtBrin();
-int & ShowVertex();
 QColor OppCol(QColor & col);
 QColor Desaturate(QColor & col);
-bool & ShowIndex();
 
 #endif

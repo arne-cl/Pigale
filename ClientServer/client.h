@@ -70,10 +70,11 @@ public:
   void sendToServer(QString& str);
   bool debug() {bool b; mutex.lock(); b=dbg; mutex.unlock(); return b;}
   void debug(bool b);
-  void exit( );
 
 private slots:
   void closeConnection();
+  void askCloseConnection();
+  void askConnection();
   void sendToServer();
   void socketReadyRead();
   void socketConnected();
@@ -81,6 +82,7 @@ private slots:
   void socketClosed();
   void socketError(QAbstractSocket::SocketError e);
   void stop();
+  void exit();
 
 public:
   int ChangeActionsToDo(int delta);
@@ -97,9 +99,13 @@ private:
   
   bool event(QEvent * ev);
   void customEvent(QEvent * e );
+  QString host;
+  quint16 port;
+  QPushButton *send,*close,*quit,*connection; 
   QTcpSocket *socket;
   int ActionsToDo;
   bool dbg;
+  int warning;
  
   
   QMutex mutex;

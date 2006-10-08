@@ -16,8 +16,6 @@
 #include <TAXI/Tmessage.h>
 #include <TAXI/Tpoint.h>
 #include <TAXI/color.h>
-#include <qpainter.h>
-#include <qrect.h>
 
 // in HeapSort.cpp
 void HeapSort(int (*f)(int a,int b),int first,int nelements,int *heap);
@@ -53,7 +51,7 @@ class SymWindow : public QWidget
 {
 
 public:
-  SymWindow(GraphSymPrivate *g,QWidget * parent = 0,const char * name = 0);
+  SymWindow(GraphSymPrivate *g,QWidget * parent);
   ~SymWindow(){};
   void initialize();
   void FindSym();

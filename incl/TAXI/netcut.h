@@ -243,20 +243,20 @@ class EmbedRnGraph : public TopologicalGraph
  /*!
    \param G Graph to be embedded
  */
-  EmbedRnGraph(Graph &G) :
+  EmbedRnGraph(Graph &G,int usedDistance) :
     TopologicalGraph(G),
     vcolor(G.PV(),PROP_COLOR,5),vlabel(G.PV(),PROP_LABEL),
     ewidth(G.PE(),PROP_WIDTH,1), ecolor(G.PE(),PROP_COLOR,1),
     elabel(G.PE(),PROP_LABEL),
     vvadj(NULL),inList(NULL),outList(NULL),
     Distances(NULL),Coords(NULL),ok(true)
-    {init();}
+    {init(usedDistance);}
   
   //! Destructor
   ~EmbedRnGraph() {release();}
 
 private :
-  void init(); //!< Class initialization 
+  void init(int usedDistance); //!< Class initialization 
  void release(); //!< Member destructions 
 };
 
@@ -278,8 +278,8 @@ class SplitGraph : public EmbedRnGraph
       \param maxdim Maximum dimension  to be used for optimization
       \warning \p maxdim is overridden by init()
     */
-    SplitGraph(Graph &G,int numclasses,int maxdim) :
-      EmbedRnGraph(G),
+  SplitGraph(Graph &G,int numclasses,int maxdim,int usedDistance) :
+      EmbedRnGraph(G,usedDistance),
       NumberOfClasses(numclasses),MaxDimension(maxdim),CurrentNumberOfClasses(0)
       {init();}
     //! Destructor

@@ -144,7 +144,7 @@ class vProp
  *    - it may \b exist (there is a \c svector corresponding to the property)
  */
 
-/*      int exist(num) : la propriete existe
+/*      bool exist(num) : la propriete existe
  *      int declared(num) : la propriete a ete declaree (typee)
  *      int defined(num) : la propriete est definie (vecteur non vide)
  *
@@ -305,7 +305,7 @@ class PSet
     //! checks if a property \b exists
     /*! \param num property number (see propdef.h)
      */
-    int exist(int num) const {return tab[num]!=(_svector *)0;}
+    bool exist(int num) const {return tab[num]!=(_svector *)0;}
     //! checks if a property is \b declared
     /*! \param num property number (see propdef.h)
      */
@@ -713,7 +713,7 @@ class PSet1
     //! checks if a property \b exists
     /*! \param num property number (see propdef.h)
      */    
-    int exist(int num) const {return tab[num]!=(void *)0;}
+    bool exist(int num) const {return tab[num]!=(void *)0;}
     //! checks if a property is \b declared
     /*! \param num property number (see propdef.h)
      */

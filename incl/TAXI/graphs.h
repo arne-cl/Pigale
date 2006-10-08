@@ -246,9 +246,10 @@ public :
     int PseudoBipolarPlan(tbrin& st_brin,int &NumberOfSinks);
     // in Schnyder.cpp
     int SchnyderOrient(tbrin FirstBrin);
-    int Schnyder(tbrin FirstBrin);
-    int SchnyderXYZ(tbrin FirstBrin,svector<int>&x,svector<int>&y,svector<int>&z);
-    int SchnyderV(tbrin FirstBrin);
+    int Schnyder(bool schnyderRect,bool schnyderColor,bool schnyderLongestFace,tbrin FirstBrin);
+    int SchnyderXYZ(bool schnyderColor,bool schnyderLongestFace
+                    ,tbrin FirstBrin,svector<int>&x,svector<int>&y,svector<int>&z);
+    int SchnyderV(bool schnyderRect,bool schnyderColor,bool schnyderLongestFace,tbrin FirstBrin);
     // in k-InfOrient.cpp
     int InfOrient();
     // in 3-ConOrientTriang.cpp

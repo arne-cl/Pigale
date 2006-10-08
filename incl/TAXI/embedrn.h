@@ -74,10 +74,11 @@ class RnEmbedding {
     Space(0,dm), Coord3ok(false),Coord3(0,n)
     {for (int i=0; i<=dmax; i++)
       Space[i]=new svector<double>(0,n);
+    Space[0]->clear();
     SetAxes(1,2,3);
     }
   ~RnEmbedding()
-    {for (int i=1; i<=dmax; i++)
+    {for (int i=0; i<=dmax; i++)
       delete Space[i];
     }
 };

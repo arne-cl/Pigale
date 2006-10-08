@@ -20,7 +20,7 @@
 #define _GLWINDOW_H_INCLUDED_
 
 
-#include <qgl.h>
+#include <QGLWidget>
 
 class GLControlWidget; 
 
@@ -28,14 +28,14 @@ class GLWindow : public GLControlWidget
 {
 
 public:
-  GLWindow(GraphGLPrivate *g,QWidget * parent = 0,const char * name = 0);
+  GLWindow(GraphGLPrivate *g,QWidget * parent);
   ~GLWindow();
   void initializeGL();
   void initialize(bool init);
   void animate();
   void setAnimationDelay(int ms);
   GLuint load(bool init);
-  void png();
+  void png(int size);
 
 private:
   void loadFaces();

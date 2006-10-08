@@ -10,7 +10,7 @@
 *****************************************************************************/
 
 #ifndef HANDLER_H
-#define HANDLER_H_
+#define HANDLER_H
 
 #include <Pigale.h> 
 

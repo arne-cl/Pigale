@@ -11,5 +11,6 @@ EXTRA_DIST += tgraph/tgraph-VisualC++-7.vcproj tgraph/tgraph-VisualC++-8.vcproj
 EXTRA_DIST += freeglut/*.c freeglut/*.h freeglut/freeglut.pro freeglut/COPYING
 EXTRA_DIST += UsingTgraph/main.cpp UsingTgraph/ex.pro UsingTgraph/ex.vcproj UsingTgraph/Readme.txt
 EXTRA_DIST += wpigale.inc wqmake.bat wset.bat wmake.bat
+EXTRA_DIST += cgi/*.cpp cgi/*.h cgi/*.pro 
 datadir = $(prefix)
 nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*) macro/maxPlanar4Connex.mc

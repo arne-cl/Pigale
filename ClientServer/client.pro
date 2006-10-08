@@ -37,7 +37,7 @@ CONFIG(debug, debug|release)  {
 distdir.commands =
 QMAKE_EXTRA_TARGETS += distdir
  
-QT += qt3support network 
+QT += network 
 DESTDIR=.
    
 #Installation

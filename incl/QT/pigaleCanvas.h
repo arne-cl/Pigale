@@ -12,7 +12,12 @@
 #ifndef  MYCANVAS_H_INCLUDED
 #define  MYCANVAS_H_INCLUDED
 
-#if QT_VERSION >= 0x40000
+#include <TAXI/graphs.h> 
+#include <TAXI/color.h> 
+#include <TAXI/Tpoint.h> 
+#include <QT/grid.h> 
+
+#include <QPainter>
 #include <q3canvas.h>
 #define QCanvasPolygonalItem  Q3CanvasPolygonalItem
 #define QPointArray  Q3PointArray
@@ -20,28 +25,8 @@
 #define QCanvasText  Q3CanvasText
 #define QCanvasRectangle Q3CanvasRectangle
 #define QCanvasView  Q3CanvasView
-//#include <QWheelEvent> 	
-//#include <qwheelevent.h> 	
-//#include <QPaintEvent> 	
-//#include <qpaintevent.h> 	
 #include <Q3PointArray> 	
-//#include <QHideEvent> 	
-//#include <qhideevent.h> 	
-//#include <QKeyEvent> 	
-//#include <QShowEvent> 	
-//#include <qshowevent.h> 	
-//#include <QResizeEvent> 	
-//#include <QMouseEvent> 
-#else
-#include <qcanvas.h>
-#endif
 
-#include <TAXI/graphs.h> 
-#include <TAXI/color.h> 
-#include <TAXI/Tpoint.h> 
-#include <QT/grid.h> 
-
-#include <qpainter.h>
 
 bool & ShowOrientation();
 int  & ShowVertex();
@@ -195,7 +180,7 @@ class GraphEditor : public QCanvasView
   void clear();
   void load(bool initgrid = true);
   void print(QPrinter* printer);
-  void png();
+  void png(int size);
   void Normalise();
   bool InitGrid(Tgrid &g);
   void UndoGrid();

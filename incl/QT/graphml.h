@@ -1,17 +1,10 @@
 #ifndef XGRAPHML_H
 #define XGRAPHML_H   
 
-#include <qxml.h>
+#include <QFile>
+#include <QMap>
+#include <QtXml>
 
-#if QT_VERSION >= 0x40000
-#include <q3ptrstack.h>
-#else
-#include <qptrstack.h>
-#endif
-
-#include <qmap.h>
-#include <qfile.h>
-#include <qwindowdefs.h>
 #include <TAXI/graphs.h>
 #include <TAXI/Tfile.h>
 
@@ -91,7 +84,7 @@ public:
   QString errorString () const
   { QString s; 
     s.sprintf("%s %s : line %d, column %d",
-	      (const char *)type, (const char *)exception->message(),
+              (const char *)type.toAscii(), (const char *)exception->message().toAscii(),
 	      exception->lineNumber(), exception->columnNumber()); return s;
   }
 };
@@ -180,13 +173,13 @@ class GraphmlParser : public QXmlDefaultHandler
   virtual void ExitEdge() {}
 
   bool parseTpoint(QString s,Tpoint &p)
-  { QStringList coords = QStringList::split(",",s);
+  { QStringList coords = s.split(",");
     bool ok;
     QStringList::Iterator it = coords.begin();
     if (it==coords.end() || (p.x()=(*it).toDouble(&ok),!ok) 
 	|| ++it==coords.end() || (p.y()=(*it).toDouble(&ok),!ok)
 	|| ++it!=coords.end())
-      { LogPrintf("Badly formed coordinates: %s\n",(const char *)s);
+      { LogPrintf("Badly formed coordinates: %s\n",(const char *)s.toAscii());
 	read_error(); return false;
       }
     return true;
@@ -261,7 +254,7 @@ class GraphmlReader : public GraphmlParser {
 	  {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);}
 	else
 	  { LogPrintf("unknown value for graph/edgedefault : %s\n",
-		      (const char *)top.att["edgedefault"]);
+		      (const char *)top.att["edgedefault"].toAscii());
 	    read_error();
 	  }
       }
@@ -335,9 +328,10 @@ class GraphmlReader : public GraphmlParser {
     slabel[0]=0;
     vslabel()[0]=(tstring *)0;
     for (QMap<QString,int>::Iterator it=V.begin(); it!=V.end(); ++it)
-        {if(!has_labels)vlabel[it.data()]=it.data();
-      slabel[it.data()]=it.data();
-      vslabel()[it.data()]=new tstring((const char *)it.key());
+        {if(!has_labels)
+            vlabel[it.value()]=it.value();
+      slabel[it.value()]=it.value();
+      vslabel()[it.value()]=new tstring((const char *)it.key().toAscii());
       }
   }
 };

@@ -22,14 +22,14 @@ QString  universalFileName(QString const & fileName)
   return filename;
   }
 
-//Client::Client(const QString &host, Q_UINT16 port)
-Client::Client(const QString &host, quint16 port)
-  :ActionsToDo(0),dbg(false),numFiles(0)
+Client::Client(const QString &_host, quint16 _port)
+    :host(_host),port(_port),ActionsToDo(0),dbg(false),warning(0),numFiles(0)
   {infoText = new QTextEdit( this );
   inputText = new QLineEdit( this );
-  QPushButton *send = new QPushButton("Send",this);
-  QPushButton *close = new QPushButton("Close connection",this);
-  QPushButton *quit = new QPushButton("Quit",this);
+  send = new QPushButton("Send",this);
+  connection = new QPushButton("Connect",this);
+  close = new QPushButton("Close connection",this);close->hide();
+  quit = new QPushButton("Quit",this);
   QVBoxLayout *layoutV = new QVBoxLayout;
   setLayout(layoutV);
   layoutV->addWidget(infoText);
@@ -37,12 +37,14 @@ Client::Client(const QString &host, quint16 port)
   layoutH->addWidget(inputText);
   layoutH->addWidget(send);
   layoutV->addLayout(layoutH);
+  layoutV->addWidget(connection);
   layoutV->addWidget(close);
   layoutV->addWidget(quit);
   connect(send,SIGNAL(clicked()),SLOT(sendToServer()));
-  connect(close,SIGNAL(clicked()),SLOT(closeConnection()));
-  connect(quit,SIGNAL(clicked()),SLOT(stop()));
-  connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+  connect(connection,SIGNAL(clicked()),SLOT(askConnection()));
+  connect(close,SIGNAL(clicked()),SLOT(askCloseConnection()));
+  connect(quit,SIGNAL(clicked()),SLOT(exit()));
+  connect(qApp,SIGNAL(aboutToQuit()),SLOT(stop()));
   // create the socket and connect various of its signals
   socket = new QTcpSocket(this);
   socket->connectToHost(host,port);
@@ -63,17 +65,28 @@ void Client::exit()
   } 
 void Client::socketConnected()
   {infoText->append("Connected to server");
-  stack.push("WAIT_SERVER");
+  //ActionsToDo = 0;
+  stack.push("Server Ready");
   ChangeActionsToDo(1);
   ThreadRead.pclient = this;
   ThreadRead.start();
+  connection->hide();quit->hide();close->show();inputText->show();send->show();
   }
 void Client::socketConnectionClosed()
   {infoText->append("Connection closed by the server");
   stop();
+  connection->show();
   }
 void Client::socketClosed()
   {//infoText->append("Connection closed");
+  }
+void Client::askConnection()
+  {socket->connectToHost(host,port);
+  }
+void Client::askCloseConnection()
+  {if(socket->state() != QAbstractSocket::ConnectedState)return;
+  QString str = "!";
+  sendToServer(str);
   }
 void Client::closeConnection()
   {socket->close();
@@ -81,7 +94,7 @@ void Client::closeConnection()
        connect(socket,SIGNAL(delayedCloseFinished()),SLOT(socketClosed()));
    else
        socketClosed();
-  stop();
+  send->hide();close->hide();inputText->hide();quit->show();
   }
 void Client::socketError(QAbstractSocket::SocketError e)
   {if(e == QAbstractSocket::ConnectionRefusedError)
@@ -157,11 +170,11 @@ int Client::ChangeActionsToDo(int delta)
           }
       stack.pop(); 
       }
-  else if(debug())
+  else //if(debug())
       {if(stack.isEmpty()){writeClient(QString("ERROR:+STACK EMPTY %1 ").arg(i));return i;}
       writeClient(QString("%1 (%2)").arg(stack.top()).arg(i));
       }
-  return i;
+  return i; 
   } 
 void Client:: debug(bool b) 
   {mutex.lock(); dbg=b; mutex.unlock();
@@ -181,7 +194,8 @@ void Client::sendToServer(QString &str)
       writeServerEvent(str);
       return;
       }
-  QStringList fields = QStringList::split(ACTION_SEP,str);//not qt4
+  //QStringList fields = QStringList::split(ACTION_SEP,str);//not qt4
+  QStringList fields = str.split(ACTION_SEP);
   for(int i = 0; i < (int)fields.count();i++)
       {fields[i].simplified();
       if(fields[i].contains("RC_GRAPH"))
@@ -196,7 +210,8 @@ void Client::sendToServer(QString &str)
   }
 int Client::sendToServerGraph(QString &data)
   {if(socket->state() != QAbstractSocket::ConnectedState)return -1;
-  QStringList fields = QStringList::split(PARAM_SEP,data);
+  //QStringList fields = QStringList::split(PARAM_SEP,data);
+  QStringList fields =data.split(PARAM_SEP);
   if(fields.count() < 2){writeClient("MISSING ARGUMENT");return -1;}
   QString FileName = fields[1].simplified();
   QString GraphFileName = universalFileName(FileName);
@@ -222,7 +237,6 @@ uint Client::readBuffer(char*  &buffer)
   {uint size;
   while(socket->bytesAvailable() < (int)sizeof(uint))socket->waitForReadyRead(10);
   clo >> size;
-  //cout<<"getting:"<<size<<endl;
   buffer = new char[size+1];
   char *pbuff = buffer;
   int retry = 0;
@@ -253,7 +267,8 @@ void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
       str = str.simplified();
-      if(str.at(0) == ':')
+      //cout<<"read:"<<(const char*) str.toLatin1()<<endl;
+      if(str.at(0) == ':' || str.at(0) == '?' )
           writeClient(str.mid(1));
       else if(str.contains("!PNGREADY"))// receiving a png image
           {char * buffer = NULL;
@@ -262,12 +277,12 @@ void Client::socketReadyRead()
           lock.unlock();
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PngFile = QString("image%1.png").arg(++numFiles);
-          QFile file(PngFile);          file.open(QIODevice::ReadWrite);
+          QFile file(PngFile);          file.open(QIODevice::WriteOnly | QIODevice::Truncate);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);
           file.close();
           delete [] buffer;
-          writeClient("!PNG");
+          if(debug())writeClient("!PNG");
           ChangeActionsToDo(-1);
           }
       else if(str.contains("!PSREADY"))// receiving a ps image
@@ -275,12 +290,12 @@ void Client::socketReadyRead()
           uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PsFile = QString("image%1.ps").arg(++numFiles);
-          QFile file(PsFile);          file.open(QIODevice::ReadWrite);
+          QFile file(PsFile);          file.open(QIODevice::WriteOnly | QIODevice::Truncate);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);
           file.close();
           delete [] buffer;
-          writeClient("!PS");
+          if(debug())writeClient("!PS");
           ChangeActionsToDo(-1);
           }
       else if(str.contains("!GRAPH"))// receiving a graph
@@ -289,12 +304,12 @@ void Client::socketReadyRead()
           char * buffer = NULL;
           uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
-          int pos = str.find(PARAM_SEP);//not QT4
+          //int pos = str.find(PARAM_SEP);//not QT4
+          int pos = str.indexOf(PARAM_SEP);//not QT4
           QString graphFile = str.mid(pos+1);
           QFile file(graphFile);  
-          QFileInfo fi = QFileInfo(graphFile);
-          if(fi.exists())file.remove();
-          file.open(QIODevice::ReadWrite);
+          //QFileInfo fi = QFileInfo(graphFile);   if(fi.exists())file.remove();
+          file.open(QIODevice::WriteOnly | QIODevice::Truncate);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);
           file.close();
@@ -304,8 +319,8 @@ void Client::socketReadyRead()
           }
       else if(str == "!!")// server has finished everything
           {ChangeActionsToDo(-1);
-          //writeClient("Connection close");
           closeConnection();
+          if(warning)writeClient(QString("warning:%1").arg(warning));
           }
       else if(str == "!|")// server ha finished everything and client wants to quit
           {closeConnection();
@@ -313,7 +328,22 @@ void Client::socketReadyRead()
           }
       else if(str.at(0) == '!')//server has finished one action
           {if(!stack.isEmpty())
-              writeClient("!"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1)+"   "+str);
+              {if(str.at(1) == '#')
+                  ;//writeClient("!"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1));
+              else
+                  {QString stt = stack.top();
+                  int index = stt.indexOf(';');
+                  if(index > 0)stt = stt.left(index);
+                  if(str.contains(stt))
+                      {if(debug())writeClient("!"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1));
+                      }
+                  else 
+                      {writeClient("*** !"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1)+"   "+str);
+                      cout << (const char *)stack.top().toLatin1()<< " != "<<(const char *)str.toLatin1()<<endl;
+                      ++warning;
+                      }
+                  }
+              }
           else
               writeClient("<- "+str+QString(" EMPTY:%1").arg(ChangeActionsToDo(0)-1));
           ChangeActionsToDo(-1);

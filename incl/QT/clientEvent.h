@@ -14,7 +14,7 @@
 
 #if QT_VERSION >= 0x4000
 
-#include <qevent.h> 
+#include <QEvent> 
 #define USER_EVENT  QEvent::User
 #else
 #define USER_EVENT  65432
@@ -72,6 +72,13 @@ class textEvent : public QEvent
       QString str;
     };
 
+class clearTextEvent : public QEvent
+    {public:
+      clearTextEvent()
+          : QEvent((QEvent::Type) CLEARTEXT_EVENT)  
+          {}
+    };
+
 class writeEvent : public QEvent
     {public:
       writeEvent( QString  txt)
@@ -112,6 +119,13 @@ class waitEvent : public QEvent
       QString getString() const { return str; }
     private:
       QString str;
+    };
+
+class drawgEvent : public QEvent
+    {public:
+      drawgEvent()
+          : QEvent((QEvent::Type) DRAWG_EVENT)  
+          {}
     };
 
 class handlerEvent : public QEvent
