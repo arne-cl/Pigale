@@ -91,7 +91,7 @@ QT += qt3support opengl network xml
 unix {
       # awk
       awk.target = ../incl/QT/Action.h
-      awk.depends = ../incl/QT/Action_def.h
+      awk.depends = ../incl/QT/Action_def.h Action.awk
       awk.commands = $$AWK -f Action.awk ../incl/QT/Action_def.h > ../incl/QT/Action.h
       QMAKE_EXTRA_TARGETS += awk
       # Translations

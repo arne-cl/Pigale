@@ -321,7 +321,7 @@ void pigaleWindow::SetPigaleColorsProfile2()//yellow
   col.setRgb(248,238,224);QColorDialog::setCustomColor(1,col.rgb());
   UpdatePigaleColors();
   } 
-void pigaleWindow::ParseArguments()
+void pigaleWindow::ParseArguments() 
   // if pigale was called with arguments, we may modify some values
   {if(qApp->argc() < 1)return;
   int narg = qApp->argc() -1;
