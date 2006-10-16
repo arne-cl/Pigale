@@ -4,10 +4,10 @@ win32 {
       MQTDIR = c:/Qt/4.1.4
       MOC_DIR = moc
       QMAKE_CXXFLAGS_WARN_ON =  -Wall 
-      QMAKE_CXXFLAGS += frtti -fexceptions 
-      DEFINES +=  __MINGW32__ _WIN32 -DUNICODE -DQT_LARGEFILE_SUPPORT
+      QMAKE_CXXFLAGS += -frtti -fexceptions 
+      DEFINES +=  __MINGW32__ _WIN32 
       CONFIG += console
-      INCLUDEPATH = c:/pigale/1.3.4/incl
+      INCLUDEPATH = c:/pigale-1.3.4/incl
       INCLUDEPATH += $$MQTDIR/include/QtCore
       INCLUDEPATH += $$MQTDIR/include/QtNetwork
       INCLUDEPATH += $$MQTDIR/include/

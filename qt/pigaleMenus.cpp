@@ -414,7 +414,7 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
 
   //Factorial Analysis
   if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel("<b>Factorial analysis</b>",0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Factorial analysis</b>"),0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(new QLabel(tr("Distance"),0),++row,1);  setLayout->addWidget(new QLabel(tr("Number of classes"),0),row,2);
   setLayout->addWidget(comboDistance,++row,1);setLayout->addWidget(spin_N,row,2);
   
@@ -425,7 +425,7 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   
   // Schnyder
   if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel("<b>Schyder parameters</b>",0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)setLayout->addWidget(new QLabel("<b>Schyder</b>",0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(box9,++row,1); setLayout->addWidget(box10,row,2); //Schnyder rect,color
   if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
   //cout<<"row:"<<row<<endl;

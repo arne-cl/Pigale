@@ -198,7 +198,7 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = tgraph  freeglut qt ClientServer
 EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css \
 	tgf/*.tgf tgf/*.txt tgf/*.graphml incl/*.h incl/TAXI/*.h \
-	incl/QT/*.h incl/GL/*.h qt/icones qt/*.h qt/*.cpp \
+	incl/QT/*.h incl/GL/*.h qt/icones/*.xpm qt/*.h qt/*.cpp \
 	qt/Action.awk qt/pigale.pro qt/pigale_fr.ts qt/pigale_fr.qm \
 	ClientServer/*.h ClientServer/*.cpp ClientServer/client.pro \
 	ClientServer/Clientdata.txt runqmake.sh Doxyfile \
@@ -209,7 +209,7 @@ EXTRA_DIST = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css \
 	freeglut/freeglut.pro freeglut/COPYING UsingTgraph/main.cpp \
 	UsingTgraph/ex.pro UsingTgraph/ex.vcproj \
 	UsingTgraph/Readme.txt wpigale.inc wqmake.bat wset.bat \
-	wmake.bat cgi/*.cpp cgi/*.h cgi/*.pro
+	wmake.bat cgi/*.cpp cgi/*.h cgi/*.pro cgi/Readme.txt
 nobase_data_DATA = $(wildcard Doc/icones/*) $(wildcard Doc/*.*) $(wildcard tgf/*.*) macro/maxPlanar4Connex.mc
 all: all-recursive
 
@@ -419,7 +419,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/UsingTgraph $(distdir)/cgi $(distdir)/freeglut $(distdir)/incl $(distdir)/incl/GL $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/macro $(distdir)/qt $(distdir)/tgf $(distdir)/tgraph
+	$(mkdir_p) $(distdir)/. $(distdir)/ClientServer $(distdir)/Doc $(distdir)/Doc/icones $(distdir)/UsingTgraph $(distdir)/cgi $(distdir)/freeglut $(distdir)/incl $(distdir)/incl/GL $(distdir)/incl/QT $(distdir)/incl/TAXI $(distdir)/macro $(distdir)/qt $(distdir)/qt/icones $(distdir)/tgf $(distdir)/tgraph
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

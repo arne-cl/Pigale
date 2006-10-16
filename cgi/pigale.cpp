@@ -135,7 +135,11 @@ int main( int argc, char** argv )
   time_t time_seed;  
   time(&time_seed);  
   int id = (int)time_seed;
+#ifdef _WIN32
+  QString outDir = "/www/html/images/";
+#else
   QString outDir = "/var/www/html/images/";
+#endif
   QString result = "";
   QCoreApplication app(argc,argv);
   Client client("localhost",4242,&todo,id,outDir,&result);

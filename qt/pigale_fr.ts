@@ -1405,7 +1405,15 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <source>Use longest face</source>
-        <translation type="unfinished">Utiliser face + longue</translation>
+        <translation>Utiliser face +longue</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Factorial analysis&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Analyse factorielle&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Schyder parameters&lt;/b&gt;</source>
+        <translation type="obsolete">&lt;b&gt;paramètres Schyder&lt;/b&gt;</translation>
     </message>
 </context>
 </TS>

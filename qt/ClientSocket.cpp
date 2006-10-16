@@ -17,7 +17,6 @@
 #include "GraphSym.h"
 #include "mouse_actions.h"
 #include "gprop.h"
-#include "LineEditNum.h"
 #include <QT/Misc.h>
 #include <QT/Handler.h>
 #include <QT/pigalePaint.h>
