@@ -33,7 +33,8 @@ enum UserEvents {
 	DRAWG_EVENT,
 	HANDLER_EVENT,
 	PROGRESS_EVENT,
-	BANNER_EVENT
+	BANNER_EVENT,
+    READY_EVENT
 };
 
 class clientEvent : public QEvent
@@ -161,6 +162,12 @@ action == -1  close
       int _step;
     };
 
+class readyEvent : public QEvent
+    {public:
+      readyEvent()
+          : QEvent((QEvent::Type) READY_EVENT)  
+          {}
+    };
 
 #endif
 

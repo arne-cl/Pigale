@@ -9,8 +9,10 @@
 **
 *****************************************************************************/
 
-#undef QT3_SUPPORT
 
+#ifdef QT3_SUPPORT
+#undef QT3_SUPPORT
+#endif
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h" 
@@ -42,7 +44,7 @@ bool eventEater::eventFilter(QObject *,QEvent *e)
 
 void pigaleWindow::keyPressEvent(QKeyEvent *k)
   {_key = k->key();
-  if(_key == Qt::Key_Escape)MacroLooping = MacroWait = false;
+  if(_key == Qt::Key_Escape)MacroLooping = MacroExecuting = MacroWait = false;
   }
 int pigaleWindow::getKey()
   {int key0 = _key;
@@ -69,7 +71,7 @@ void pigaleWindow::blockInput(bool t)
 void pigaleWindow::timerWait()
   {MacroWait = false;
   }
-void pigaleWindow::wait(int millisec)// not used
+void pigaleWindow::wait(int millisec)
   {MacroWait = true;
   QTimer::singleShot(millisec,this,SLOT(timerWait()));
   do
@@ -131,7 +133,9 @@ void pigaleWindow::macroHandler(QAction *qaction)
   QTime t0;
   QString msg0,msg1;
   int repeat0,record;
+  bool _debug = debug();
   int event = getId(qaction);
+  showInfoTab();
   switch(event)
       {case 1://start recording
           if(debug())LogPrintf("\nRecord macro\n");
@@ -151,7 +155,6 @@ void pigaleWindow::macroHandler(QAction *qaction)
       case 4:// play repeat times
           MacroRecording = false;
           MacroWait = false;
-          MacroLooping = true;
           setFocus(); 
           postMessageClear();
           DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
@@ -162,6 +165,15 @@ void pigaleWindow::macroHandler(QAction *qaction)
           msg0 = "Macro started";
 #endif
           DebugPrintf("%s",(const char *)msg0.toAscii()); 
+          MacroLooping = true;
+          if(repeat == 0)debug() = false;
+          else if(debug())
+              {if(QMessageBox::question(this,"Pigale Editor"
+                                       ,tr("Stop log debugging information ?")
+                                       ,QMessageBox::Ok 
+                                       ,QMessageBox::Cancel)  != QMessageBox::Cancel)
+                  debug() = false;
+              }
           t0.restart();
           repeat0 = (repeat == 0) ? 1000 : repeat;
           progressBar->setRange(0,repeat0);
@@ -177,16 +189,16 @@ void pigaleWindow::macroHandler(QAction *qaction)
               if(!MacroLooping)break;
               }
           progressBar->hide();
-          MacroLooping = MacroExecuting = MacroWait = false;
           Time = t0.elapsed()/1000.;
           t0.restart();
+          if(EditNeedUpdate)gw->update(-1);
+          if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
+          MacroLooping = false;
 #ifndef _WINDOWS
           msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
 #else
           msg1 ="Macro stopped"; 
 #endif
-          if(EditNeedUpdate)gw->update(-1);
-          if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
           DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
           Tprintf("%s",(const char *)msg0.toAscii()); 
           DebugPrintf("%s",(const char *)msg1.toAscii()); 
@@ -212,17 +224,17 @@ void pigaleWindow::macroHandler(QAction *qaction)
                                                            ,"Macros (*.mc)");
           if(FileName.isEmpty())break;
           if(QFileInfo(FileName).suffix() != (const char *)"mc")
-              FileName += (const char *)".mc";
+              {FileName += (const char *)".mc";
+              QFileInfo fi = QFileInfo(FileName);
+              if(fi.exists())
+                  {if(QMessageBox::warning(this,"Pigale Editor"
+                                           ,"This file already exixts.<br>"
+                                           "Overwrite ?"
+                                           ,QMessageBox::Ok 
+                                           ,QMessageBox::Cancel) == QMessageBox::Cancel)break;
+                  }
+              }
           DirFileMacro = QFileInfo(FileName).absolutePath();
-          QFileInfo fi = QFileInfo(FileName);
-          if(fi.exists())
-              {int rep = QMessageBox::warning(this,"Pigale Editor"
-                                              ,"This file already exixts.<br>"
-                                              "Overwrite ?"
-                                              ,QMessageBox::Ok 
-                                              ,QMessageBox::Cancel);
-              if(rep == 2)break;
-              } 
           FILE *out = fopen((const char *)FileName.toAscii(),"wt");
           fprintf(out,"Macro Version:2\n");
           for(record = 1;record <= MacroNumActions;record++)
@@ -244,21 +256,23 @@ void pigaleWindow::macroHandler(QAction *qaction)
       default:
           break;
       }
+  debug() = _debug;
   }
 
-void pigaleWindow::macroPlay()
-//  MacroExecuting = true => handler does not update of the editor
+void pigaleWindow::macroPlay(bool start)
+// start = true if pigale was launch with a macro
   {if(MacroNumActions == 0)return;
   blockInput(true);
-  if(!MacroLooping){postMessageClear();DebugPrintf("\nPlay macro:%d actions\n",MacroNumActions);}
+  if(!MacroLooping){postMessageClear();DebugPrintf("Play macro:%d actions",MacroNumActions);}
   int ret_handler = 0,action;
   EditNeedUpdate =  InfoNeedUpdate = true;
   MacroExecuting = true;
   MacroRecording = MacroWait = false;
   
-  // Load next graph 
-  if(MacroActions[1] < A_GENERATE || MacroActions[1] >  A_GENERATE_END)
-      load(1); 
+  // Load next graph if no generator is called
+  if(!start && MacroActions[1] < A_GENERATE || MacroActions[1] >  A_GENERATE_END)
+      {load(1); EditNeedUpdate =  InfoNeedUpdate = false;}
+
   for(int record = 1;record <= MacroNumActions;++record)
       {action = MacroActions[record];
       if(action != A_PAUSE && action < A_TEST && !graph_properties->actionAllowed(action))
@@ -272,35 +286,32 @@ void pigaleWindow::macroPlay()
           ++record;continue;
           }
       if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action).toAscii());
+      if(!MacroExecuting)break;
       // Execute the macro
-      handler(action);
       if(action ==  A_PAUSE)
-          {do
-              {qApp->processEvents();
-              }while(MacroWait);
+          {wait(100*staticData::macroDelay);          
+          // update the editor and information
+          if(record != MacroNumActions)
+              {if(EditNeedUpdate)
+                  {gw->update();EditNeedUpdate = false;}
+              if(InfoNeedUpdate)
+                  {information();InfoNeedUpdate = false;}
+              }
           continue;
           }
+
+      handler(action);
+      wait(100);
       while((ret_handler = getResultHandler()) == -999)
           qApp->processEvents();
       if(ret_handler == 0)
           InfoNeedUpdate = EditNeedUpdate = false;
       else if(ret_handler == 1)
-          InfoNeedUpdate = true;
+          {InfoNeedUpdate = false;EditNeedUpdate = true;}
       else if(ret_handler == 2)
           InfoNeedUpdate = EditNeedUpdate = true;
       else if(ret_handler == 7 || ret_handler == 8)
           EditNeedUpdate = false;
-
-      // update the editor and information if a pause 
-      if(record != MacroNumActions && action == A_PAUSE)
-          {if(EditNeedUpdate)
-              {gw->update();EditNeedUpdate = false;}
-          if(InfoNeedUpdate)
-              {MacroExecuting = false; //Otherwise no information displayed
-              information();InfoNeedUpdate = false;
-              MacroExecuting = true;
-              }
-          }
       if(getError())
           {DebugPrintf("MACRO %s",(const char *)getErrorString().toAscii());
           setError();
@@ -308,14 +319,14 @@ void pigaleWindow::macroPlay()
           InfoNeedUpdate = false; // do not hide the error message
           break;
           }
-      }
+      }//end for
 
-  MacroWait = MacroExecuting = false;
+  MacroExecuting = false;
   if(!MacroLooping)
       {if(EditNeedUpdate)
           {gw->update(-1);EditNeedUpdate = false;}
       if(InfoNeedUpdate)
-          {information();InfoNeedUpdate = false;}
+          {information(false);InfoNeedUpdate = false;}
       blockInput(false);
       }
   }

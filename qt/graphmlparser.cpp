@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-             
+#endif             
 #include <TAXI/Tpoint.h>
 #include <TAXI/Tbase.h>
 #include <QT/graphml.h>

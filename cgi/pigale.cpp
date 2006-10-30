@@ -12,36 +12,57 @@
 using namespace std; 
 
 const char * html1 = "\
-<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n\
-<html>\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n\
-<META http-equiv=\"pragma\" content=\"no-cache\">\n\
-<title>Pigale</title>\n\
-</head>\n\
-<BODY TEXT=\"#00AAAA\" BGCOLOR=\"#501520\">\n\
-<FORM method = \"POST\" action=pigale >\n\
-<CENTER>\n\
-<H1>Pigale Server Demo</H1>\n\
-</CENTER>\n\
-<TABLE WIDTH=400>\n\
-<TR>\n\
-<TH ALIGN=RIGHT COLSPAN=\"2\">Generator:</TH>\n\
-<TD COLSPAN=\"2\"><select name=\"xx_gen\">";
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n    \
+<html>\n                                                                \
+<head>\n                                                               \
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n \
+<META http-equiv=\"pragma\" content=\"no-cache\">\n                     \
+<title>Pigale</title>\n                                                 \
+<script language=\"JavaScript\" type=\"text/javascript\">\n             \
+<!--\n                                                                 \
+function largeur_fenetre()\n                                            \
+{\n                                                                     \
+ if (window.innerWidth) return window.innerWidth;\n                     \
+ else if (document.body && document.body.offsetWidth) return document.body.offsetWidth;\n \
+ else return 0;\n                                                       \
+}\n                                                                     \
+function hauteur_fenetre()\n                                            \
+{\n                                                                     \
+ if (window.innerHeight) return window.innerHeight;\n                   \
+ else if (document.body && document.body.offsetHeight) return document.body.offsetHeight;\n \
+ else return 0;\n                                                       \
+}\n                                                                     \
+function fill_form()\n                                                  \
+  {\n                                                                   \
+  document.getElementsByName(\"maxx\")[0].value=largeur_fenetre();\n    \
+  document.getElementsByName(\"maxy\")[0].value=hauteur_fenetre();\n    \
+  }\n                                                                   \
+-->\n                                                                   \
+  </script>\n                                                           \
+  </head>\n                                                             \
+  <BODY TEXT=\"#00AAAA\" BGCOLOR=\"#501520\">\n                         \
+  <FORM method = \"POST\" action=\"pigale.cgi\" onsubmit=\"fill_form()\">\n \
+  <INPUT type=hidden name=\"maxx\" value=0>\n                           \
+  <INPUT type=hidden name=\"maxy\" value=0>\n                           \
+  <CENTER>\n                                                            \
+  <H1>Pigale Server Demo</H1>\n                                         \
+  </CENTER>\n                                                           \
+  <TABLE WIDTH=400>\n                                                   \
+  <TR>\n                                                                \
+  <TH ALIGN=RIGHT COLSPAN=\"2\">Generator:</TH>\n                       \
+  <TD COLSPAN=\"2\"><select name=\"xx_gen\">\n                          \
+  \n";
 
 const char *html3 = "\
-</select>\n\
-</TD></TR>\n\
-<TR>\n\
-<TH ALIGN=RIGHT COLSPAN=\"2\">Execute:</TH>\n\
-<TD COLSPAN=\"2\"><input type=submit  id=\"xx\"value=\"Go\">\n\
-</TD></TR>\n\
-</TABLE>\n\
-</form>\n\
-<hr>\n\
-\n";
-
-
+  </select>\n                                                   \
+  </TD></TR>\n                                                  \
+  <TR>\n                                                                \
+  <TH ALIGN=RIGHT COLSPAN=\"2\">Execute:</TH>\n                         \
+  <TD COLSPAN=\"2\"><input type=submit  id=\"xx\"value=\"Go\">\n        \
+  </TD></TR>\n                                                          \
+  </TABLE>\n                                                            \
+  </form>\n                                                             \
+  \n";
 
 QString findValue(QString data,QString field)
   {QString str= data.section(field+"=",1);
@@ -92,6 +113,7 @@ void printHTML(QString &lastCommand,int m)
   printOption(lastCommand,"CURVES");
   printOption(lastCommand,"EMBED-3d");
   cout<<html3<<endl;
+  cout<<"<hr>"<<endl;
   }
 
 int main( int argc, char** argv )
@@ -119,7 +141,13 @@ int main( int argc, char** argv )
       cout <<"</BODY>\n</HTML>\n"<<endl;
       return 0;
       }
-
+  bool ok;
+  int nx = findValue(data,"maxx").toInt();
+  if(!ok)nx = 0;
+  int ny = findValue(data,"maxy").toInt();
+  if(!ok)ny = 0;
+  int sizePng = 550;
+  if(nx && ny)sizePng = (int)(.95*Min(nx,ny-280));
   QList <QString>  todo;
   //todo <<":D";
   todo <<QString("GEN_M;%1").arg(m);
@@ -129,17 +157,14 @@ int main( int argc, char** argv )
       todo << "TUTTE_CIRCLE";
   todo <<"N"<<"M";
   todo <<drawing;
-  todo <<"PNG;550" <<":X";
+  todo <<QString("PNG;%1").arg(sizePng) <<":X";
+  //todo <<"PNG;550" <<":X";
 
   // as some navigators may not reload the image
   time_t time_seed;  
   time(&time_seed);  
   int id = (int)time_seed;
-#ifdef _WIN32
-  QString outDir = "/www/html/images/";
-#else
   QString outDir = "/var/www/html/images/";
-#endif
   QString result = "";
   QCoreApplication app(argc,argv);
   Client client("localhost",4242,&todo,id,outDir,&result);
@@ -147,7 +172,8 @@ int main( int argc, char** argv )
   
   QString image = QString("tmp%1.png").arg(id);
   cout<<"<CENTER>"<<endl;
-  cout <<"<br><h3>" << (const char *)result.toAscii() <<"</h3><br>" <<endl;
+  //cout <<"<h3>" << (const char *)result.toAscii() <<"</h3>" <<endl;
+  cout <<"<br><b>" << (const char *)result.toAscii() <<"</b><br>"<<endl;
   cout <<"<IMG SRC=\"/images/"<<(const char *)image.toAscii()
        <<"\" ALT=\"missing\">"<<endl;
   cout<<"</CENTER>"<<endl;
@@ -170,6 +196,7 @@ int main( int argc, char** argv )
       }
   return 0;
   }
+
 
 
 

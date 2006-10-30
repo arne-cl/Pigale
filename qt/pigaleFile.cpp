@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -153,7 +154,8 @@ int pigaleWindow::load(int pos)
   TopologicalGraph G(GC);
   UndoSave();
   banner();
-  information(); gw->update();
+  information(); 
+  gw->update();
   return *pGraphIndex;
   }
 int pigaleWindow::save(bool manual)
@@ -161,12 +163,11 @@ int pigaleWindow::save(bool manual)
   if(manual) // check overwrite
       {QFileInfo fi =  QFileInfo(OutputFileName);
       if(!(IO_Capabilities(OutputDriver)&TAXI_FILE_RECORD_ADD) && fi.exists() )
-          {int rep = QMessageBox::warning(this,"Pigale Editor"
-                                          ,"This file already exixts.<br>"
-                                          "Overwrite ?"
-                                          ,QMessageBox::Ok 
-                                          ,QMessageBox::Cancel);
-          if(rep == 2)return 0;
+          {if(QMessageBox::warning(this,"Pigale Editor"
+                                   ,"This file already exixts.<br>"
+                                   "Overwrite ?"
+                                   ,QMessageBox::Ok 
+                                   ,QMessageBox::Cancel) == QMessageBox::Cancel)return 0;
           }
       }
   if(manual)// ask for a title

@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include "ClientSocket.h"
 #include "GraphWidget.h"
 #include "GraphGL.h"

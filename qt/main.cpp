@@ -18,8 +18,9 @@
     email                : hf@ehess.fr
  ***************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include <config.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>

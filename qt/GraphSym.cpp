@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include "pigaleWindow.h"
 #include "GraphSym.h"
 #include <QT/SymWindow.h>

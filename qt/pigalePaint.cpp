@@ -139,7 +139,7 @@ void DrawPolyline(QPainter *p,pigalePaint *paint)
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
   QPen pn = p->pen();pn.setWidth(2);
-  Q3PointArray bez(4);
+  //Q3PointArray bez(4);
 
   for (tedge ee=1; ee<= G.ne(); ee++)
       {if (Ebend[ee] != Tpoint(-1, -1)) 

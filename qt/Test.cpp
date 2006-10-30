@@ -1,7 +1,8 @@
 
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include "GraphWidget.h"
 #include "pigaleWindow.h"
 #include <QT/Action_def.h> 
@@ -43,27 +44,34 @@ int Test(GraphContainer &GC,int action,int &drawing)
   if(debug())DebugPrintf("    END executing Test:%d",action);
   return ret;
   }
-
+ 
 int Test1(GraphContainer &GC,int &drawing)
   {drawing = 0;
   TopologicalGraph G(GC);
+  bool _debug = debug();
   QTime timer;timer.start();
   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestPlanar();}
   double Time1 = timer.elapsed(); // millisec
   if(Time1 < 10)
       {Tprintf("too short time to measure");
-      return 0;
+      debug() = _debug;
+      return 1;
       }
   timer.start();
   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestNewPlanar();}
   double Time2 = timer.elapsed();
   Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
-  return 0;
+  debug() = _debug;
+  return 1;
   }
 int Test2(GraphContainer &GC,int &drawing)
   {TopologicalGraph G(GC);
+  bool _debug = debug();
   shuffleCir(G);
+  QTime timer;timer.start();
   for(int i = 0;i < 1000;i++)G.TestNewPlanar();
+  Tprintf("Used time : %f",timer.elapsed()/1000.);
+  debug() = _debug;
   drawing = 0;
   return 0;
   }

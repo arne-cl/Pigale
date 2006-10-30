@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include <config.h>
 
 #include <QProgressBar>
@@ -40,13 +41,10 @@
 int Test(GraphContainer &GC,int action,int & drawing);
 void UndoErase();
 
-void pigaleWindow::whenReady()
-  {if(MacroPlay && macroLoad(MacroFileName) != -1)  macroPlay();
-  if(Server)initServer();
-  }
 void pigaleWindow::initServer()
   {ServerClientId = 0;
   NewGraph(); 
+  
   server = new PigaleServer(this);
   server->setProxy(QNetworkProxy::NoProxy);
   threadServer = 0;
@@ -55,7 +53,9 @@ void pigaleWindow::initServer()
       cout <<"Server: Init failed"<<endl;
       }
   else
-      Tprintf("Server using port%d",server->serverPort());
+      {Tprintf("Server using port%d",server->serverPort());
+      menuIntAction[A_SERVER_INIT]-> setEnabled(false);
+      }
   showMinimized();
   }
 bool pigaleWindow::event(QEvent * ev)
@@ -82,7 +82,6 @@ void pigaleWindow::customEvent(QEvent * ev)
       {case  TEXT_EVENT:
           {textEvent *event  =  (textEvent  *)ev;
           Message(event->getString());
-          //cout<<"mw:"<<(const char *)event->getString()<<endl;
           }
           break;
       case CLEARTEXT_EVENT:
@@ -104,6 +103,9 @@ void pigaleWindow::customEvent(QEvent * ev)
           break;
       case HANDLER_EVENT:
            postHandler(ev);    
+          break;
+      case READY_EVENT:
+          whenReady();
           break;
       case PROGRESS_EVENT:
           {progressEvent *event  =  (progressEvent  *)ev;
@@ -138,11 +140,13 @@ void pigaleWindow::banner()
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postMessage(const QString &msg)
-  {textEvent *e = new textEvent(msg);
+  {if(++numMessages > 500|| MacroLooping)return;
+  textEvent *e = new textEvent(msg);
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postMessageClear()
   {clearTextEvent *e = new clearTextEvent();
+  numMessages = 0;
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postWait(const QString &msg)
@@ -193,19 +197,15 @@ void pigaleWindow::computeInformation()
   postMessageClear();setError(0);
   graph_properties->update(GC,true);
   }
-void pigaleWindow::information()
-  {if(!getError() && !MacroExecuting && !ServerExecuting)postMessageClear();
-  graph_properties->update(GC,!MacroExecuting && !ServerExecuting);
+void pigaleWindow::information(bool erase)
+  {if(!getError() && erase &&  !MacroLooping  && !ServerExecuting)postMessageClear();
+  graph_properties->update(GC,!MacroExecuting && !MacroLooping && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
   {// only called when a checkbox is clicked
   // but could be called from the server
   switch(action)
-      {
-//       case A_SET_PAUSE_DELAY:
-//           staticData::PauseDelay() = macroSpin->value();
-//           return;
-      case A_SET_DEBUG:
+      {case A_SET_DEBUG:
           debug() = !debug();
           return;
       case  A_SET_SCH_RECT:
@@ -254,8 +254,7 @@ int pigaleWindow::handler(int action)
   getResultHandler() = -999;
   if(MacroRecording)macroRecord(action);
   if(action == A_PAUSE)
-      {//pauseDelay() = macroSpin->value();
-      qApp->processEvents();
+      {qApp->processEvents();
       MacroWait = true;
       QTimer::singleShot(100*staticData::macroDelay,this,SLOT(timerWait()));
       return 0;
@@ -323,9 +322,11 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   // In case we called the orienthandler
   chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
   if(action == 1)
-      {if(!MacroExecuting )gw->update();}
+      //{if(!MacroExecuting )gw->update();}
+      {gw->update();}
   else if(action == 2)
-      {if(!MacroRecording)information();
+      {if(MacroExecuting)information(false);
+      else if(!MacroRecording)information();
       if(!MacroExecuting )gw->update();
       }
   else if(action == 20) // Remove handler

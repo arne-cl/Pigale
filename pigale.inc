@@ -1,6 +1,6 @@
-MQTDIR = /usr/local/Trolltech/Qt-4.1.4
+MQTDIR = /usr/local/Trolltech/Qt-4.2.1/
 #version of the library
-VERSION= 1.3.0
+VERSION= 1.3.1
 MODE = release
 DISTPATH = /home/pigale/pigale
 AWK = gawk

@@ -594,7 +594,7 @@ void GraphEditor::paintEvent(QPaintEvent *e)
       if(!canvas())setCanvas(gwp->canvas);
       canvas()->update();
       initialize();
-      gwp->mywindow->whenReady();
+      //gwp->mywindow->whenReady();
       }
   } 
 void GraphEditor::initialize()

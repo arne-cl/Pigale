@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include <config.h>
 #include "pigaleWindow.h"
 #include "mouse_actions.h"
@@ -85,12 +86,11 @@ void pigaleWindow::CheckDocumentationPath()
       browser->setSource(QUrl("manual.html"));
       }
   else
-      {int rep = QMessageBox::warning(this,"Pigale Editor"
-                                      ,tr("I cannot find the repertory <b>Doc<br>"
-                                          "Load manually ?")
-                                      ,QMessageBox::Ok
-                                      ,QMessageBox::Cancel);
-      if(rep != 1)return;
+      {if(QMessageBox::question(this,"Pigale Editor"
+                               ,tr("I cannot find the repertory <b>Doc<br>"
+                                   "Load manually ?")
+                               ,QMessageBox::Ok
+                               ,QMessageBox::Cancel) == QMessageBox::Cancel)return;
       SetDocumentationPath(); 
       }
   }
@@ -266,6 +266,7 @@ void pigaleWindow::LoadSettings()
   Palette.setColor(QPalette::Base      ,QColor(QColorDialog::customColor(1)));
   Palette.setColor(QPalette::Button    ,QColor(QColorDialog::customColor(2)));
   QApplication::setPalette(Palette);
+  setPalette(Palette);
 }
 
 void pigaleWindow::EditPigaleColors()
@@ -279,6 +280,7 @@ void pigaleWindow::UpdatePigaleColors()
   Palette.setColor(QPalette::Dark,QColor(Qt::black));
   Palette.setColor(QPalette::Base      ,QColor(QColorDialog::customColor(1)));
   Palette.setColor(QPalette::Button    ,QColor(QColorDialog::customColor(2)));
+  Palette.setColor(QPalette::Disabled, QPalette::Text, QColor(Qt::darkRed));
   
   LightPalette = QPalette(QColor(QColorDialog::customColor(2)));
   LightPalette.setColor(QPalette::Base,QColor(QColorDialog::customColor(1)));
@@ -325,32 +327,45 @@ void pigaleWindow::ParseArguments()
   {if(qApp->argc() < 1)return;
   int narg = qApp->argc() -1;
   for(int i = 1; i <= narg;i++)
-      {if(QString((const char *)qApp->argv()[i]) == "-fi")
+      {QString argi = QString((const char *)qApp->argv()[i]);
+      if(argi == "-i")
           {if(i == narg)return;
           InputFileName = (const char *)qApp->argv()[i+1];
           QFileInfo fi = QFileInfo(InputFileName);
           if(!fi.exists()) 
-              qDebug("%s does not exist",(const char *)InputFileName.toAscii());
+              {qDebug("%s does not exist",(const char *)InputFileName.toAscii());exit(0);}
           i++;
           }
-      else if(QString((const char *)qApp->argv()[i]) == "-fo")
+      else if(argi == "-o")
           {if(i == narg)return;
           OutputFileName =  (const char *)qApp->argv()[i+1];
           i++;
           }
-      else if(QString((const char *)qApp->argv()[i]) == "-macro")
+      else if(argi == "-m")
           {if(i == narg)return;
           MacroFileName =  (const char *)qApp->argv()[i+1];
+          QFileInfo fi = QFileInfo(MacroFileName);
+          if(!fi.exists()) 
+              {qDebug("%s does not exist",(const char *)MacroFileName.toAscii());exit(0);}
           MacroPlay = true;
           i++;
           }
-      else if((QString((const char *)qApp->argv()[i]) == "--version") || (QString((const char *)qApp->argv()[i]) == "-v"))
-          qDebug("%s version %s",PACKAGE_NAME,PACKAGE_VERSION);
-      else if(QString((const char *)qApp->argv()[i]) == "-server")
+      else if(argi == "--version" || argi == "-v")
+          {qDebug("%s version %s",PACKAGE_NAME,PACKAGE_VERSION);
+          exit(0);
+          }
+      else if(argi == "-s")
           Server = true;
+      else if(argi == "-h" || argi == "--help")
+          {qDebug("Pigale options:\n -i input\n -o output\n -m macro\n -s server\n -h help");
+          qDebug("Qt options:\n -style cde|CleanLooks|WindowsXP|MacIntosh|Motif");
+          exit(0);
+          }
       else
           {qDebug("%s option not recognized",(const char *)qApp->argv()[i]);
-          qDebug("valid options:\n -fi input\n -fo output\n -macro macro\n -server");
+          qDebug("Pigale options:\n -i input\n -o output\n -m macro\n -s server");
+          qDebug("Qt options:\n -style cde|CleanLooks|WindowsXP|MacIntosh|Motif");
+          exit(0);
           }
       }
   if(Server || MacroPlay)staticData::IsUndoEnable = false;

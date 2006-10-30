@@ -70,7 +70,7 @@ class ArrowItem: public QCanvasPolygonalItem
   void SetColor(QColor col);
   int rtti() const;
  private:
-  QPointArray ArrowItem::areaPoints () const;
+  QPointArray areaPoints () const;
   void drawShape ( QPainter & p );
   GraphWidgetPrivate* gwp;
   EdgeItem *edgeItem;

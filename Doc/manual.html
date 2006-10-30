@@ -42,33 +42,29 @@ sourceforge  -->
 
 <H2> <A NAME="OV">O</A>verview </H2>
 <h3>Starting Pigale</h3>
-If <b>pigale</b> has been compiled with a <b>Qt</b> version at least
-<b>3.0</b>, <b>pigale</b> first reads the <A HREF="manual.html#set">settings</A>
- that have been saved.
+<b>Pigale</b> first reads the <A HREF="manual.html#set">settings</A>
+ that have been saved or the default ones
 <br>
 The input and output files can be overridden by the arguments passed to
- <b>pigale</b>.
+ <b>Pigale</b>.
 <br>
 The valid flags are:
 
 <table >
 <tr>
-<td><b> -fi </b></td><td> <tt> input-filename </tt></td><td></td><td></td><td></td><td></td>
+<td><b> -i </b></td><td> <tt> input-filename </tt></td><td></td><td></td><td></td><td></td>
 </tr><tr>
-<td><b> -fo </b> </td><td><tt> output-filename </tt></td>
+<td><b> -o </b> </td><td><tt> output-filename </tt></td>
 </tr><tr>
- <td><b> -macro </b></td><td> <tt> macro-filename </tt></td>
+ <td><b> -m </b></td><td> <tt> macro-filename </tt></td>
 </tr><tr>
-<td><b> -server </b></td><td> to start pigale as a server.
+<td><b> -s </b></td><td> to start Pigale as a server.
 </table>
 
 The filenames must include the paths, which will determined the repertories where the files are loaded and saved.
 <br>
 
-If the <b>Qt</b> version is smaller than <b>3.0</b> and no flags are given,
-the file <tt>a.txt</tt> of the current directory is opened.
-<br>
-Otherwise, the first time you execute <b>pigale</b>, you are asked to give a location of input files and the location of this manual.
+The first time you execute <b>Pigale</b>, you amay be asked to give a location of input files and the location of this manual.
 <br>
 
 Graphs are either coded as <A HREF="manual.html#tgf"><b>tgf</b></A> files or
@@ -112,7 +108,7 @@ Among other things, the <b>Settings</b> menu allows you to:
 <li> be in <b>debug</b> mode to increase the verbosity of Pigale and print more messages in <tt>log.txt</tt></li>
 <li> enable or disable the <A HREF="#undo"><b>undo</b></A> feature</li>
 <li> define the <b>Pigale colors</b> used by Pigale.</li>
-<li> define the <b>limits</b> of pigale: i.e. define the maximum number of vertices above which graph are not displayed and slow algorithms are not performed.</li>
+<li> define the <b>limits</b> of Pigale: i.e. define the maximum number of vertices above which graph are not displayed and slow algorithms are not performed.</li>
 <li>define what the <b>vertex show</b> i.e. their labels or their index (or whatever the user programmed).</li>
 <li> define some <b>embed options</b>, now for geometric drawings.</li>
 <li> define the <b>distance</b> used to embed the graph in <b>R<sup>n-1</sup></b></li>
@@ -129,7 +125,7 @@ Among other things, the <b>Settings</b> menu allows you to:
 <li> the printer settings.</li>
 </ul></li>
 </ul>
-Under Linux, the settings are saved in ~/.qt/pigalerc.
+Under Linux, the settings are saved in ~/.qt/Pigalerc.
 The dashed line at the top of the settings menu, is used to create a floating settings menu.
 
 <br><A HREF="manual.html#home"><em>top</em></A>
@@ -287,7 +283,8 @@ The <b>facet</b> button triangulate the graph, if it is planar, and draw the fac
 <HR><H2> <A NAME="gen">G</A>enerating graphs </H2> 
 The planar graph generators are based on the algorithms of Gilles Schaeffer.
 They produce random planar graphs with prescribed properties.<br>
-The size input of these algorithms is either the number of edges The program automatically
+The size input of these algorithms is either the number of edges or the number of vertices.<br> 
+The program automatically
  modified this value if unacceptable (e.g.  a cubic graph has a number
 of edges  divisible by three).<br>
 Depending on the prescribed properties, the algorithms, consume more or less memory and time.
@@ -305,7 +302,7 @@ Each record consisting of a variable number of fields.<br>
 One of its main advantage is that we can write and read any complex data structure.
 But it is dependent of the processor type (Low or High indian etc).<br><br>
 We partially implemented  the <b>GRAPHML</b> file format (cf. http://graphml.graphdrawing.org/),
-which is now the only way to add text labels to the vertices<br><br>
+which is now the only way in <b>Pigale</b>to add text labels to the vertices<br><br>
 We use a very simple <b>ASCII</b> file structure to store graphs. <br>
 For example, the following file defines a graph called <tt>Triangle</tt> 
 with three vertices labeled <tt>10,20,30</tt>

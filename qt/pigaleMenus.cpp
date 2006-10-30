@@ -10,8 +10,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include <config.h>
 #include "pigaleWindow.h"
 #include <TAXI/Tgf.h>
@@ -81,13 +82,13 @@ pigaleWindow::pigaleWindow()
     ,UndoIndex(0),UndoMax(0)
     ,MacroNumActions(0),MacroRecording(false),MacroLooping(false)
     ,MacroExecuting(false),MacroPlay(false),_key(0),Server(false)
-    
+    ,numMessages(0)
   {setObjectName("Main Pigale Window");
   // set Title
 #ifdef TDEBUG
-  setWindowTitle(tr("Qt4 Pigale Editor: ")+PACKAGE_VERSION+" "+tr("Debug Mode"));
+  setWindowTitle(tr("Qt4 Pigale Editor:")+" "+PACKAGE_VERSION+" "+tr("Debug Mode"));
 #else
-  setWindowTitle(tr("Qt4 Pigale Editor: ")+PACKAGE_VERSION);
+  setWindowTitle(tr("Qt4 Pigale Editor:")+" "PACKAGE_VERSION);
 #endif
   // Load settings
   LoadSettings();
@@ -125,13 +126,20 @@ pigaleWindow::pigaleWindow()
   progressBar->hide();
   progressBar->setGeometry(QRect(0,0,width()*2/3,30)); 
 
-
   UpdatePigaleColors();  
   initPigale();
-  qApp->processEvents();
-  
   gw->update();
-  if(!Server)load(0);
+  // post a message to know when initialization complete
+  readyEvent *e = new readyEvent();
+  QApplication::postEvent(this,e);
+  }
+void pigaleWindow::whenReady()
+  {if(MacroPlay && macroLoad(MacroFileName) != -1)
+      {load(0);macroPlay(true);}
+  else if(Server)
+      initServer();
+  else
+      load(0);
   }
 pigaleWindow::~pigaleWindow()
   {//delete printer;
@@ -530,7 +538,10 @@ void pigaleWindow::createMenus()
   file->addSeparator();
   file->addAction(printIcon,tr("&Print"),this, SLOT(print()));
   file->addSeparator();
-  file->addAction(tr("Init server"),this, SLOT(initServer()));
+  //file->addAction(tr("Init server"),this, SLOT(initServer()));
+  action = file->addAction(tr("Init server")); 
+  setId(action,A_SERVER_INIT);
+  connect(action, SIGNAL(triggered()),this,SLOT(initServer()));
   file->addSeparator();
   QAction * exitAct = new QAction(tr("E&xit"),this);
   exitAct->setShortcut(tr("Ctrl+Q"));
@@ -611,11 +622,11 @@ void pigaleWindow::createMenus()
   action = embed->addAction(xmanIcon,tr("Tutte &Circle")); 
   action->setWhatsThis(tr(tutte_circle_txt));
   setId(action,A_EMBED_TUTTE_CIRCLE);
- embed->addSeparator();
- //#ifdef VERSION_ALPHA
+  embed->addSeparator();
+#ifdef VERSION_ALPHA
   action = embed->addAction(tr("Double Occurrence (&DFS)")); 
   setId(action, A_EMBED_POLREC_DFS);
-  //#endif
+#endif
   action = embed->addAction(tr("Double Occurrence (&LR DFS)")); 
   setId(action, A_EMBED_POLREC_DFSLR);  
   action = embed->addAction(tr("Double Occurrence (&BFS)")); 
@@ -643,10 +654,10 @@ void pigaleWindow::createMenus()
   action = embed->addAction(xmanIcon,tr("Spring Planar")); 
   action->setWhatsThis(tr(jacquard_txt));  
   setId(action,A_EMBED_JACQUARD);
-#endif
   action = embed->addAction(xmanIcon,tr("Spring")); 
   action->setWhatsThis(tr(spring_txt));  
   setId(action,A_EMBED_SPRING);
+#endif
   embed->addSeparator(); 
   action = embed->addAction(xmanIcon,tr("Embedding in Rn")); 
   action->setWhatsThis(tr(embed3d_txt));  

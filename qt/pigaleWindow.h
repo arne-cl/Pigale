@@ -97,7 +97,7 @@ private slots:
   void deleterecord();
   void switchInputOutput();
   void macroHandler(QAction *);
-  void macroPlay();
+  void macroPlay(bool start=false);
   void about();
   void aboutQt();
   void showLabel(int action);
@@ -154,7 +154,7 @@ public slots:
   void timerWait();
   void UndoSave();
   void computeInformation();
-  void information();
+  void information(bool erase = true);
   void print();
   void png();
   int  handler(int action);
@@ -231,6 +231,7 @@ private:
   bool MacroRecording,MacroLooping,MacroExecuting,MacroWait,MacroPlay;
   int _key;
   bool Server;
+  int numMessages;
   typedef QMap<int,QString> IntStringMap;
   IntStringMap mapActionsString;
   typedef QMap<QString,int> StringIntMap;

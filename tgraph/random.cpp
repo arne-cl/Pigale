@@ -52,7 +52,8 @@ void randomShuffle(svector<int> &tab)
  randomEnd();
  }
 void shuffleCir(TopologicalGraph &G)
-  {for(tvertex v = 1; v < G.nv();v++)
+  {G.planarMap() = 0;
+  for(tvertex v = 1; v < G.nv();v++)
       {int degree = G.Degree(v);
       if(degree < 3)continue;
       svector<int> tab(degree);

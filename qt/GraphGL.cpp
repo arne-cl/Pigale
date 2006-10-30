@@ -12,8 +12,9 @@
 \brief 3D embedding class methods
 \ingroup qt */
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include "pigaleWindow.h"
 #include "GraphGL.h"
 #include "glcontrolwidget.h"

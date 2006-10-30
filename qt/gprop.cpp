@@ -9,8 +9,9 @@
 **
 *****************************************************************************/
 
+#ifdef QT3_SUPPORT
 #undef QT3_SUPPORT
-
+#endif
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include "gprop.h"
@@ -143,9 +144,9 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 #ifdef TDEBUG
   if(!G.DebugCir())
       {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return;}
-  DebugPrintf("START INFO: n = %d m = %d Name:%s",G.nv(),G.ne(),~title());
+  LogPrintf("START INFO: n = %d m = %d Name:%s\n",G.nv(),G.ne(),~title());
 #endif
-
+  if(print && debug())Tprintf("START INFO:");
 // #ifdef TDEBUG
 //   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
 //       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
@@ -278,6 +279,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   if(debug())DebugPrintf("END INFO %d\n",print);
 #endif
   if(!print)return; 
+
   mw->showInfoTab();
   // Modify the buttons
   RBSimple->setChecked(S);
@@ -347,7 +349,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 void Graph_Properties::allowAction(int action,bool condition)
   {allow[action] = condition;
   if(_updateMenu && mw->menuIntAction.contains(action))
-      //{mw->menuIntAction[action]-> setEnabled(condition);
-      {mw->menuIntAction[action]-> setVisible(condition);
+      {mw->menuIntAction[action]-> setEnabled(condition);
+      //{mw->menuIntAction[action]-> setVisible(condition);
       }
   }

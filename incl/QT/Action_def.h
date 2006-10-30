@@ -172,7 +172,8 @@
 
 #define A_SERVER               (2000)
 
-#define A_INFO                 (A_SERVER)     
+#define A_SERVER_INIT          (A_SERVER)     
+#define A_INFO                 (A_SERVER+1)     
 #define A_INFO_N               (A_INFO+1)     // N
 #define A_INFO_M               (A_INFO+2)     // M
 #define A_INFO_SIMPLE          (A_INFO+3)     // SIMPLE

@@ -15,7 +15,7 @@ win32 {
       }
 
 INCLUDEPATH = ../incl
-DEPENDPATH = ../incl
+DEPENDPATH =  ../incl $$MQTDIR/include/Qt 
 
 HEADERS = pigaleWindow.h \
     ClientSocket.h \

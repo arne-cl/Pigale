@@ -1,5 +1,14 @@
+recent changes:
+Except files using a Canvas, Qt3support is not used. 
+Improved settings.
+Fixed non-maximal outerplanar generator.
+Fixed starting Pigale with a macro.
+A small Web server extension.
+Can define the size of png images.
+
+older changes:
 28/06/2006: a small example to use the library tgraph.
-27/06/2006: improved Windows installation.
+27/06/2006: improved Windows installation and dependencies checks.
 27/06/2006: use antialiasing in pigalePaint.cpp
 22/06/2006: Pigale now uses freeglut under Linux and Windows.
 21/05/2006: Fixed the client and the server.	
