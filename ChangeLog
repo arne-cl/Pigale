@@ -1,3 +1,6 @@
+21/12/2006: Input actions are now blocked when necessary
+07/11/2006: CheckTriconnected returned false for K4
+07/11/2006: Some error/warning messages were not displayed
 recent changes:
 Except files using a Canvas, Qt3support is not used. 
 Improved settings.

@@ -102,6 +102,7 @@ void pigaleWindow::customEvent(QEvent * ev)
           gw->update();
           break;
       case HANDLER_EVENT:
+           blockInput(true);qApp->processEvents();
            postHandler(ev);    
           break;
       case READY_EVENT:
@@ -313,7 +314,15 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   //10:png to client
   //cout<<"action:"<<action<<" drawingType:"<<drawingType<<" saveType:"<<saveType<<endl;
   double Time = timer.elapsed()/1000.;
-  if(action <= 0){blockInput(false);return action;}
+  if(action <= 0) // error
+      {blockInput(false);
+      if(getError())
+          {Tprintf("Handler Error:%s",(const char *)getErrorString().toAscii());
+          setError(0);
+          }
+      return action;
+      }
+ 
   if(saveType == 1)
       UndoSave();
   else if(saveType == 2)
@@ -361,6 +370,7 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getError())
           {Tprintf("Handler Error:%s",(const char *)getErrorString().toAscii());
+          setError(0);
           if(debug())Twait((const char *)getErrorString().toAscii()); 
           }
       }

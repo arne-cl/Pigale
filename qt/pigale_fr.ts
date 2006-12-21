@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS><TS version="1.1" language="fr_FR">
 <context>
     <name>GLWindow</name>
     <message>
@@ -325,7 +325,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Rendre 2-connexe un gaphe &amp;non-planaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="573"/>
+        <location filename="pigaleMenus.cpp" line="580"/>
         <source>&amp;Vertex Triangulate</source>
         <translation>&amp;Trianguler (ajout de sommets)</translation>
     </message>
@@ -336,27 +336,27 @@ en minimisant l&apos;augmentation des degrès</translation>
 </translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="576"/>
+        <location filename="pigaleMenus.cpp" line="584"/>
         <source>&amp;ZigZag Triangulate</source>
         <translation>Trianguler par &amp;ZigZag</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="578"/>
+        <location filename="pigaleMenus.cpp" line="586"/>
         <source>Triangulate a PLANAR graph by adding edges</source>
         <translation>Triangule le graphe en rajoutant des arêtes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="579"/>
+        <location filename="pigaleMenus.cpp" line="588"/>
         <source>T&amp;ricon. Triangulate</source>
         <translation>Trianguler un graphe &amp;3-connexe</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="581"/>
+        <location filename="pigaleMenus.cpp" line="590"/>
         <source>Optimally triangulate a PLANAR graph by adding edges</source>
         <translation>Triangulation optimale d&apos;un graphe planaire (minimisation des degrès)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="582"/>
+        <location filename="pigaleMenus.cpp" line="592"/>
         <source>Vertex &amp;Quadrangulate</source>
         <translation>&amp;Quadranguler par ajout de sommets</translation>
     </message>
@@ -366,37 +366,37 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">quadrangule un graphe planaire biparti</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="586"/>
+        <location filename="pigaleMenus.cpp" line="597"/>
         <source>&amp;Bisect all edges</source>
         <translation>&amp;Bissecte toutes les arêtes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="589"/>
+        <location filename="pigaleMenus.cpp" line="600"/>
         <source>&amp;Remove</source>
         <translation>&amp;Effacer</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="590"/>
+        <location filename="pigaleMenus.cpp" line="601"/>
         <source>&amp;Isolated vertices</source>
         <translation>Sommets &amp;Isolés</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="592"/>
+        <location filename="pigaleMenus.cpp" line="603"/>
         <source>&amp;Multiple edges</source>
         <translation>Arêtes &amp;multiples</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="594"/>
+        <location filename="pigaleMenus.cpp" line="605"/>
         <source>Ist&amp;hmus</source>
         <translation>Ist&amp;hmes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="597"/>
+        <location filename="pigaleMenus.cpp" line="608"/>
         <source>Colored &amp;vertices</source>
         <translation>&amp;Sommets colorés</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="599"/>
+        <location filename="pigaleMenus.cpp" line="610"/>
         <source>Colored &amp;edges</source>
         <translation>&amp;Arêtes colorées</translation>
     </message>
@@ -406,12 +406,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Arêtes &amp;épaisses</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="602"/>
+        <location filename="pigaleMenus.cpp" line="613"/>
         <source>E&amp;mbed</source>
         <translation>&amp;Tracés</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="639"/>
+        <location filename="pigaleMenus.cpp" line="650"/>
         <source>&amp;Visibility</source>
         <translation>&amp;Visibilité</translation>
     </message>
@@ -421,22 +421,22 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">FPP Visi&amp;bilité</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="641"/>
+        <location filename="pigaleMenus.cpp" line="652"/>
         <source>&amp;General Visibility</source>
         <translation>Visibilité &amp;Générale</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="643"/>
+        <location filename="pigaleMenus.cpp" line="654"/>
         <source>&amp;T Contact</source>
         <translation>Contact de &amp;T</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="645"/>
+        <location filename="pigaleMenus.cpp" line="656"/>
         <source>&amp;Contact Biparti</source>
         <translation>Contact (&amp;biparti)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="647"/>
+        <location filename="pigaleMenus.cpp" line="658"/>
         <source>&amp;Polyline</source>
         <translation>Lignes Bris&amp;ées</translation>
     </message>
@@ -446,7 +446,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Spring (présevant la carte)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="654"/>
+        <location filename="pigaleMenus.cpp" line="665"/>
         <source>Spring Planar</source>
         <translation>Spring (préservant la planarité)</translation>
     </message>
@@ -456,7 +456,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Plongement dans Rn</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="665"/>
+        <location filename="pigaleMenus.cpp" line="676"/>
         <source>Schnyder in R3</source>
         <translation>Plongement dans R3 (Schnyder)</translation>
     </message>
@@ -466,12 +466,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Dual &amp;Géométrique</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="681"/>
+        <location filename="pigaleMenus.cpp" line="692"/>
         <source>Find &amp;Kuratowski</source>
         <translation>Trouver &amp;Kuratowski</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="682"/>
+        <location filename="pigaleMenus.cpp" line="693"/>
         <source>Find &amp;Cotree Critical</source>
         <translation>Trouver &amp;Coarbre Critique</translation>
     </message>
@@ -481,7 +481,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Arêtes non critiques en rouge</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="684"/>
+        <location filename="pigaleMenus.cpp" line="695"/>
         <source>Max.Planar (simple graph) Fast</source>
         <translation>Max. Planaire (rapide)</translation>
     </message>
@@ -491,32 +491,32 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Max. Planaire (lent)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="687"/>
+        <location filename="pigaleMenus.cpp" line="698"/>
         <source>Use &amp;Geometric Map</source>
         <translation>Carte &amp;Géométrique</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="688"/>
+        <location filename="pigaleMenus.cpp" line="699"/>
         <source>Use &amp;LRALGO Map</source>
         <translation>Carte &amp;LRALGO</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="690"/>
+        <location filename="pigaleMenus.cpp" line="701"/>
         <source>&amp;Color everything</source>
         <translation>Tout &amp;Colorier</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="691"/>
+        <location filename="pigaleMenus.cpp" line="702"/>
         <source>Color &amp;bipartite</source>
         <translation>Colorier &amp;biparti</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="692"/>
+        <location filename="pigaleMenus.cpp" line="703"/>
         <source>Color current e&amp;xterior face</source>
         <translation>Colorier face e&amp;xtérieure courante</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="695"/>
+        <location filename="pigaleMenus.cpp" line="706"/>
         <source>&amp;Symmetry</source>
         <translation>&amp;Symétrie</translation>
     </message>
@@ -526,12 +526,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Nombre de classes:</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="697"/>
+        <location filename="pigaleMenus.cpp" line="708"/>
         <source>&amp;Partition</source>
         <translation>&amp;Partitionner</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="699"/>
+        <location filename="pigaleMenus.cpp" line="710"/>
         <source>&amp;Orient</source>
         <translation>&amp;Orienter</translation>
     </message>
@@ -541,22 +541,22 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Montrer Orientation</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="700"/>
+        <location filename="pigaleMenus.cpp" line="711"/>
         <source>&amp;Orient all edges</source>
         <translation>Tout &amp;Orienter</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="702"/>
+        <location filename="pigaleMenus.cpp" line="713"/>
         <source>&amp;Color Poles</source>
         <translation>&amp;Colorier Pôles</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="703"/>
+        <location filename="pigaleMenus.cpp" line="714"/>
         <source>&amp;ReOrient color edges</source>
         <translation>&amp;Réorienter arêtes coloriées</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="704"/>
+        <location filename="pigaleMenus.cpp" line="715"/>
         <source>&amp;Inf Orientation</source>
         <translation>&amp;Inf Orientation</translation>
     </message>
@@ -576,92 +576,92 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Planaire &amp;Schnyder</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="708"/>
+        <location filename="pigaleMenus.cpp" line="719"/>
         <source>B&amp;ipolarOrient Planar</source>
         <translation>Orient. B&amp;ipol. Planaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="709"/>
+        <location filename="pigaleMenus.cpp" line="720"/>
         <source>BipolarOrient</source>
         <translation>Orient. Bipolaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="712"/>
+        <location filename="pigaleMenus.cpp" line="723"/>
         <source>&amp;Generate</source>
         <translation>&amp;Générateurs</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="713"/>
+        <location filename="pigaleMenus.cpp" line="724"/>
         <source>&amp;Outer Planar</source>
         <translation>&amp;Extra Planaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="714"/>
+        <location filename="pigaleMenus.cpp" line="725"/>
         <source>&amp;Outer Planar (N1)</source>
         <translation>&amp;Extra Planaire (N1)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="715"/>
+        <location filename="pigaleMenus.cpp" line="726"/>
         <source>O&amp;uter Planar (N1,M))</source>
         <translation>E&amp;xtra Planaire (N1,M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="716"/>
+        <location filename="pigaleMenus.cpp" line="727"/>
         <source>&amp;Planar</source>
         <translation>&amp;Planaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="717"/>
+        <location filename="pigaleMenus.cpp" line="728"/>
         <source>connected (M)</source>
         <translation>connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="721"/>
+        <location filename="pigaleMenus.cpp" line="732"/>
         <source>2-connected (M)</source>
         <translation>2-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="719"/>
+        <location filename="pigaleMenus.cpp" line="730"/>
         <source>3-connected (M))</source>
         <translation>3-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="720"/>
+        <location filename="pigaleMenus.cpp" line="731"/>
         <source>Planar &amp;cubic</source>
         <translation>Planaire &amp;cubique</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="722"/>
+        <location filename="pigaleMenus.cpp" line="733"/>
         <source>3-connected (M)</source>
         <translation>3-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="723"/>
+        <location filename="pigaleMenus.cpp" line="734"/>
         <source>dual:4-connected (M)</source>
         <translation>dual:4-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="724"/>
+        <location filename="pigaleMenus.cpp" line="735"/>
         <source>Planar &amp;4-regular</source>
         <translation>Planaire &amp;4-regulier</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="725"/>
+        <location filename="pigaleMenus.cpp" line="736"/>
         <source>4-regular 2-connected (M)</source>
         <translation>4-regulier 2-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="726"/>
+        <location filename="pigaleMenus.cpp" line="737"/>
         <source>4-regular 3-connected (M)</source>
         <translation>4-regulier 3-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="729"/>
+        <location filename="pigaleMenus.cpp" line="740"/>
         <source>Bipartite (M)</source>
         <translation>Biparti (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="730"/>
+        <location filename="pigaleMenus.cpp" line="741"/>
         <source>Bipartite cubic 2-connected (M)</source>
         <translation>Biparti cubique 2-connexe (M)</translation>
     </message>
@@ -671,22 +671,22 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Biparti cubique 3-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="733"/>
+        <location filename="pigaleMenus.cpp" line="744"/>
         <source>&amp;Grid (N1,N2)</source>
         <translation>&amp;Grille (N1,N2)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="735"/>
+        <location filename="pigaleMenus.cpp" line="746"/>
         <source>&amp;Complete (N1)</source>
         <translation>&amp;Complet (N1)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="736"/>
+        <location filename="pigaleMenus.cpp" line="747"/>
         <source>&amp;Bipartite complete (N1,N2)</source>
         <translation>&amp;Biparti complet (N1,N2)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="738"/>
+        <location filename="pigaleMenus.cpp" line="749"/>
         <source>&amp;Random (N1,M)</source>
         <translation>&amp;Aléatoire (N1,M)</translation>
     </message>
@@ -706,37 +706,37 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Changer germe</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="742"/>
+        <location filename="pigaleMenus.cpp" line="753"/>
         <source>Start recording</source>
         <translation>Débuter enregistrement</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="743"/>
+        <location filename="pigaleMenus.cpp" line="754"/>
         <source>Stop  recording</source>
         <translation>Arrêter enregistrement</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="744"/>
+        <location filename="pigaleMenus.cpp" line="755"/>
         <source>Continue recording</source>
         <translation>Continuer enregistrement</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="746"/>
+        <location filename="pigaleMenus.cpp" line="757"/>
         <source>Display Macro</source>
         <translation>Montrer Macro</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="747"/>
+        <location filename="pigaleMenus.cpp" line="758"/>
         <source>Save Macro</source>
         <translation>Sauver Macro</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="748"/>
+        <location filename="pigaleMenus.cpp" line="759"/>
         <source>Read Macro</source>
         <translation>Lire Macro</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="750"/>
+        <location filename="pigaleMenus.cpp" line="761"/>
         <source>Insert a Pause</source>
         <translation>Insérer une Pause</translation>
     </message>
@@ -746,7 +746,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete"># Répétitions:</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="751"/>
+        <location filename="pigaleMenus.cpp" line="762"/>
         <source>Repeat macro</source>
         <translation>Répéter macro</translation>
     </message>
@@ -881,7 +881,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>R2</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="765"/>
+        <location filename="pigaleMenus.cpp" line="776"/>
         <source>&amp;Save Settings</source>
         <translation>&amp;Sauver Options</translation>
     </message>
@@ -896,12 +896,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Polaire</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="669"/>
+        <location filename="pigaleMenus.cpp" line="680"/>
         <source>&amp;Dual/Angle</source>
         <translation>&amp;Dual/Angle</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="670"/>
+        <location filename="pigaleMenus.cpp" line="681"/>
         <source>&amp;Dual</source>
         <translation>&amp;Dual</translation>
     </message>
@@ -911,17 +911,17 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;Angle</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="680"/>
+        <location filename="pigaleMenus.cpp" line="691"/>
         <source>&amp;Algo</source>
         <translation>&amp;Algo</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="758"/>
+        <location filename="pigaleMenus.cpp" line="769"/>
         <source>&amp;Settings</source>
         <translation>&amp;Paramètres</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="770"/>
+        <location filename="pigaleMenus.cpp" line="781"/>
         <source>&amp;Graph properties</source>
         <translation>Propriétés du &amp;Graphe</translation>
     </message>
@@ -941,7 +941,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&amp;À propos...</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="728"/>
+        <location filename="pigaleMenus.cpp" line="739"/>
         <source>Planar &amp;bipartite</source>
         <translation>Planaire &amp;biparti</translation>
     </message>
@@ -961,12 +961,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Q-distance</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="648"/>
+        <location filename="pigaleMenus.cpp" line="659"/>
         <source>&amp;Curves</source>
         <translation>&amp;Courbes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="727"/>
+        <location filename="pigaleMenus.cpp" line="738"/>
         <source>4-regular bipartite (M)</source>
         <translation>4-regulier biparti (M)</translation>
     </message>
@@ -976,7 +976,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Secondes: </translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="764"/>
+        <location filename="pigaleMenus.cpp" line="775"/>
         <source>&amp;Documentation path</source>
         <translation>Chemmin de la &amp;Documentation</translation>
     </message>
@@ -1016,12 +1016,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Je ne trouve pas le fichier &lt;em&gt;manual.html&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="763"/>
+        <location filename="pigaleMenus.cpp" line="774"/>
         <source>Set a font</source>
         <translation>Choisir une police</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="858"/>
+        <location filename="pigaleMenus.cpp" line="869"/>
         <source>Pigale Editor</source>
         <translation>Editeur Pigale</translation>
     </message>
@@ -1031,19 +1031,19 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Mode debug</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="693"/>
+        <location filename="pigaleMenus.cpp" line="704"/>
         <source>Color c&amp;onnected components</source>
         <translation>Colorier les c&amp;omposantes connexes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="555"/>
+        <location filename="pigaleMenus.cpp" line="556"/>
         <source>Make &amp;Connected (edge)</source>
         <translation>Rendre &amp;Connexe (arête)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="557"/>
+        <location filename="pigaleMenus.cpp" line="558"/>
         <source>Make a graph connected adding edges</source>
-        <translation>Rendre un graphe connexe en ajoutant des arêtes</translation>
+        <translation>Rendre connexe par ajout d&apos;arêtes</translation>
     </message>
     <message>
         <location filename="" line="7471221"/>
@@ -1051,7 +1051,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Rendre &amp;Connexe (sommet)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="560"/>
+        <location filename="pigaleMenus.cpp" line="562"/>
         <source>Make a graph connected adding a vertex</source>
         <translation>Rendre un graphe connexe en ajoutant un sommet</translation>
     </message>
@@ -1081,17 +1081,17 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Rendre Connexe (sommet)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="561"/>
+        <location filename="pigaleMenus.cpp" line="564"/>
         <source>Make &amp;2-Connected a planar graph (edge)</source>
         <translation>Rendre &amp;2-connexe un graphe planaire (arête)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="563"/>
+        <location filename="pigaleMenus.cpp" line="566"/>
         <source>Make a PLANAR graph 2-connected adding edges</source>
         <translation>Rendre 2-connexe un graphe planaire en ajoutant des arêtes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="564"/>
+        <location filename="pigaleMenus.cpp" line="568"/>
         <source>Make 2-Connected a planar graph &amp;Opt (edge)</source>
         <translation>Rendre 2-connexe un graphe planaire (&amp;Opt)</translation>
     </message>
@@ -1103,32 +1103,32 @@ en minimisant l&apos;augmentation des degrès</translation>
 en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="567"/>
+        <location filename="pigaleMenus.cpp" line="572"/>
         <source>Make 2-Connected  (edge)</source>
         <translation>Rendre 2-connexe un graphe (arête)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="569"/>
+        <location filename="pigaleMenus.cpp" line="574"/>
         <source>Make 2-connected a graph (planar or not)  adding edges</source>
         <translation>Rendre 2-connexe un graphe (planaire ou non) en ajoutant des arêtes</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="570"/>
+        <location filename="pigaleMenus.cpp" line="576"/>
         <source>Make 2-Connected   (vertex)</source>
         <translation>Rendre 2-connexe un graphe (sommet)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="572"/>
+        <location filename="pigaleMenus.cpp" line="578"/>
         <source>Make 2-connected a graph (planar or not) adding vertices</source>
         <translation>Rendre 2-connexe un graphe (planaire ou non) en ajoutant des sommets</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="575"/>
+        <location filename="pigaleMenus.cpp" line="582"/>
         <source>Triangulate a PLANAR graph  adding vertices</source>
         <translation>Trianguler un graphe planaire en ajoutant des sommets</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="584"/>
+        <location filename="pigaleMenus.cpp" line="594"/>
         <source>Quadrangulate a PLANAR  bipartite graph</source>
         <translation>Quadranguler un graphe biparti planaire</translation>
     </message>
@@ -1153,12 +1153,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Choisir un fichier pour sauver le graphe</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="701"/>
+        <location filename="pigaleMenus.cpp" line="712"/>
         <source>&amp;Unorient all edges</source>
         <translation>Désorienter les arêtes (&amp;U)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="710"/>
+        <location filename="pigaleMenus.cpp" line="721"/>
         <source>BFS Orientation</source>
         <translation></translation>
     </message>
@@ -1168,17 +1168,17 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Texte</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="627"/>
+        <location filename="pigaleMenus.cpp" line="638"/>
         <source>Double Occurrence (&amp;DFS)</source>
         <translation>Double Occurrence (&amp;DFS)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="630"/>
+        <location filename="pigaleMenus.cpp" line="641"/>
         <source>Double Occurrence (&amp;LR DFS)</source>
         <translation>Double Occurrence (&amp;LR DFS)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="632"/>
+        <location filename="pigaleMenus.cpp" line="643"/>
         <source>Double Occurrence (&amp;BFS)</source>
         <translation>Double Occurrence (&amp;BFS)</translation>
     </message>
@@ -1363,29 +1363,24 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Exécuter la macro</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="558"/>
-        <source>Make &amp;Connected (vertex)</source>
-        <translation>Rendre 2-connexe (sommet) (&amp;C)</translation>
-    </message>
-    <message>
-        <location filename="pigaleMenus.cpp" line="566"/>
+        <location filename="pigaleMenus.cpp" line="570"/>
         <source>Make a PLANAR graph 2-connected
  adding edges ( minimal degree increase)</source>
         <translation>Make a PLANAR graph 2-connected(new line)
 (sp)adding edges ( minimal degree increase)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="603"/>
+        <location filename="pigaleMenus.cpp" line="614"/>
         <source>&amp;FPP Fary</source>
         <translation>&amp;FPP Fary</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="606"/>
+        <location filename="pigaleMenus.cpp" line="617"/>
         <source>&amp;Schnyder</source>
         <translation>&amp;Schnyder</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="609"/>
+        <location filename="pigaleMenus.cpp" line="620"/>
         <source>Schnyder &amp;V</source>
         <translation>Schnyder &amp;V</translation>
     </message>
@@ -1400,17 +1395,17 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Tracé Co&amp;nvex compact</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="619"/>
+        <location filename="pigaleMenus.cpp" line="630"/>
         <source>&amp;Tutte</source>
         <translation>&amp;Tutte</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="622"/>
+        <location filename="pigaleMenus.cpp" line="633"/>
         <source>Tutte &amp;Circle</source>
         <translation>Tutte &amp;Circle</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="644"/>
+        <location filename="pigaleMenus.cpp" line="655"/>
         <source>&amp;R Triangle Contact</source>
         <translation>&amp;R Contact de triangles</translation>
     </message>
@@ -1425,67 +1420,67 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">G&amp;eometric Angle</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="683"/>
+        <location filename="pigaleMenus.cpp" line="694"/>
         <source>Color red  non critical edges</source>
         <translation>Colorier en rouge arêtes non critiques</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="685"/>
+        <location filename="pigaleMenus.cpp" line="696"/>
         <source>&amp;Max.Planar (simple graph) Slow</source>
         <translation>&amp;Max.Planaire (graphe simple) Lent</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="731"/>
+        <location filename="pigaleMenus.cpp" line="742"/>
         <source>Bipartite cubic 3-connected (M)</source>
         <translation>Biparti cubique 3-connexe (M)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="740"/>
+        <location filename="pigaleMenus.cpp" line="751"/>
         <source>&amp;Macro</source>
         <translation>&amp;Macro</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="753"/>
+        <location filename="pigaleMenus.cpp" line="764"/>
         <source>&amp;User menu</source>
         <translation>Menu &amp;Utilisateur</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="754"/>
+        <location filename="pigaleMenus.cpp" line="765"/>
         <source>Test &amp;1</source>
         <translation>Test &amp;1</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="755"/>
+        <location filename="pigaleMenus.cpp" line="766"/>
         <source>Test &amp;2</source>
         <translation>Test &amp;2</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="756"/>
+        <location filename="pigaleMenus.cpp" line="767"/>
         <source>Test &amp;3</source>
         <translation>Test &amp;3</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="759"/>
+        <location filename="pigaleMenus.cpp" line="770"/>
         <source>&amp;Pigale colors</source>
         <translation>Couleurs de &amp;Pigale</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="760"/>
+        <location filename="pigaleMenus.cpp" line="771"/>
         <source>&amp;Edit Pigale Colors</source>
         <translation>Editer les couleurs de Pigale</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="761"/>
+        <location filename="pigaleMenus.cpp" line="772"/>
         <source>&amp;Gray profile</source>
         <translation>profile &amp;Gris</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="762"/>
+        <location filename="pigaleMenus.cpp" line="773"/>
         <source>&amp;Yellow profile</source>
         <translation>profil jaune</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="768"/>
+        <location filename="pigaleMenus.cpp" line="779"/>
         <source>&amp;Information</source>
         <translation>&amp;Information</translation>
     </message>
@@ -1545,7 +1540,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Double Occurrence &amp;Circular (&amp;BFS)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="766"/>
+        <location filename="pigaleMenus.cpp" line="777"/>
         <source>&amp;Reset Settings</source>
         <translation>&amp;Réinitialiser paramètres</translation>
     </message>
@@ -1605,12 +1600,12 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Enregistrer sous</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="774"/>
+        <location filename="pigaleMenus.cpp" line="785"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="775"/>
+        <location filename="pigaleMenus.cpp" line="786"/>
         <source>&amp;About</source>
         <translation>&amp;A propos</translation>
     </message>
@@ -1645,62 +1640,62 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Démarrer le serveur</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="612"/>
+        <location filename="pigaleMenus.cpp" line="623"/>
         <source>Convex Drawing</source>
         <translation>Tracé convexe</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="615"/>
+        <location filename="pigaleMenus.cpp" line="626"/>
         <source>Convex Compact Drawing</source>
         <translation>Tracé convexe compact</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="635"/>
+        <location filename="pigaleMenus.cpp" line="646"/>
         <source>Double Occurrence Circular (BFS)</source>
         <translation>Double Occurrence Circular (BFS)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="640"/>
+        <location filename="pigaleMenus.cpp" line="651"/>
         <source>FPP Visibility</source>
         <translation>FPP Visibilité</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="650"/>
+        <location filename="pigaleMenus.cpp" line="661"/>
         <source>Spring (Map Preserving)</source>
         <translation>Spring (Préservant la carte)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="657"/>
+        <location filename="pigaleMenus.cpp" line="668"/>
         <source>Spring</source>
         <translation>Spring</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="662"/>
+        <location filename="pigaleMenus.cpp" line="673"/>
         <source>Embedding in Rn</source>
         <translation>Plongement dans Rn</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="671"/>
+        <location filename="pigaleMenus.cpp" line="682"/>
         <source>Geometric Dual</source>
         <translation>Dual géomètrique</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="675"/>
+        <location filename="pigaleMenus.cpp" line="686"/>
         <source>Angle</source>
         <translation>Graphe d&apos;angle</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="676"/>
+        <location filename="pigaleMenus.cpp" line="687"/>
         <source>Geometric Angle</source>
         <translation>Graphe d&apos;angle géomètrique</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="705"/>
+        <location filename="pigaleMenus.cpp" line="716"/>
         <source>Inf Orientation 3-connex</source>
         <translation>Inf Orientation 3-connexe</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="706"/>
+        <location filename="pigaleMenus.cpp" line="717"/>
         <source>Inf Orientation bipartite</source>
         <translation>Inf Orientation biparti</translation>
     </message>
@@ -1710,7 +1705,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">Orientation de Schnyder</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="707"/>
+        <location filename="pigaleMenus.cpp" line="718"/>
         <source>Schnyder Orientation</source>
         <translation>Orientation de Schnyder</translation>
     </message>
@@ -1760,9 +1755,14 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation type="obsolete">&lt;b&gt;paramètres Schyder&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="Macro.cpp" line="173"/>
+        <location filename="Macro.cpp" line="175"/>
         <source>Stop log debugging information ?</source>
         <translation>Suspendre log de debug ?</translation>
+    </message>
+    <message>
+        <location filename="pigaleMenus.cpp" line="560"/>
+        <source>Make Connected (vertex)</source>
+        <translation>Rendre connexe (sommet)</translation>
     </message>
 </context>
 </TS>

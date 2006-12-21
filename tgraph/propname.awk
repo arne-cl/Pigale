@@ -36,4 +36,5 @@ print "};"
 print "static _PropName pname;"
 print "char *PropName(int s, int i) { return pname.name[s*256+i];}"
 print "char *PropDesc(int s, int i) { return pname.desc[s*256+i];}"
-}
+} 
+

@@ -159,13 +159,13 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   if(print && nloops)Tprintf("Graph had %d loops",nloops);
   S = G.CheckSimple();
   P = G.CheckPlanar();
-  bool SMALL = (G.nv() < 3) ? true : false;
-  bool M = (!SMALL  && (G.ne() == 3*G.nv() - 6)) ? true : false;
+  bool SMALL = (G.nv() < 3);
+  bool M = (!SMALL  && (G.ne() == 3*G.nv() - 6));
   T = (P && S && M) ? true : false;     //Triangulation
   A = G.CheckAcyclic(ns,nt);
   B = G.CheckBipartite();
   G.MinMaxDegree(dmin,dmax);
-  R = (dmin == dmax) ? true :false;
+  R = (dmin == dmax);
   C1 = C2 = C3 = false;
   Outer =  Serie = false;
  
@@ -197,8 +197,8 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 
   //Modify the enable menus
   //For slow programs or display
-  bool NotBigS = (G.nv() > staticData::MaxNS ) ? false : true;
-  bool NotBigD = (G.nv() > staticData::MaxND) ? false : true;
+  bool NotBigS = !(G.nv() > staticData::MaxNS);
+  bool NotBigD = !(G.nv() > staticData::MaxND);
   allowAction(A_EMBED_3d,G.nv() > 3 && NotBigD);                   //Rn embedding
   allowAction(A_ALGO_SYM,!SMALL && NotBigS);                       //sym
   allowAction(A_ALGO_NETCUT,!SMALL && NotBigS);                    //partition

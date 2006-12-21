@@ -1115,7 +1115,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
           }while((b = AG.cir[-b]) != b0);
       if(SumInDegrees == 4)break;      
       }
-  if(i > Fpbrin.n()){Tprintf("Error SubdivTriconencted");setError(A_ERRORS_SUBDIVTRICON,"subdiv3con");i=1;}
+  if(i > Fpbrin.n()){setError(A_ERRORS_SUBDIVTRICON,"subdiv3con");i=1;}
   b0 = Fpbrin[i];
   delete &Fpbrin;
     
@@ -1245,7 +1245,7 @@ bool TopologicalGraph::CheckTriconnected()
   {if(debug())DebugPrintf("   CheckTriconnected");
   if(Set().exist(PROP_TRICONNECTED))return true;
   if(!CheckConnected())return false;
-  if (nv()<=3 || ne()<=nv()+2) return false;
+  if (nv()<=3 || ne()<=nv()+2 && nv() !=4) return false;
   if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing CheckTriconnected");
   int nsinks;
@@ -1277,7 +1277,7 @@ bool TopologicalGraph::CheckTriconnected()
     
   if(res)Prop1<int> istricon(Set(),PROP_TRICONNECTED);
   save_oriented.Tswap(oriented); RestoreOrientation();
-  if(debug())DebugPrintf("END CheckTriconnected");
+  if(debug())DebugPrintf("END CheckTriconnected:%d",res);
   return res;
   }
 

@@ -239,24 +239,19 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
       case A_EMBED_SCHNYDER_E:ret = 1;
           err = G.Schnyder(staticData::SchnyderRect(),staticData::SchnyderColor()
                            ,staticData::SchnyderLongestFace(),0);
-          if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_SCHNYDER_V:ret = 1;
           err = G.SchnyderV(staticData::SchnyderRect(),staticData::SchnyderColor()
                             ,staticData::SchnyderLongestFace(),0);
-          if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_FPP:ret = 1;
           err = EmbedFPP(G,staticData::SchnyderRect(),staticData::SchnyderLongestFace());
-          if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_CD:ret = 1;
           err = EmbedCCD(G, G0, false);
-          if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_CCD:ret = 1;
           err = EmbedCCD(G, G0, true);
-          if(err)Tprintf("ret=%d",err);
           break;
       case A_EMBED_TUTTE_CIRCLE:ret = 1;
           EmbedTutteCircle(G,staticData::SchnyderLongestFace());
@@ -302,17 +297,14 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           break;
       case A_EMBED_GVISION:ret = 3;
           err = EmbedGVision(G);
-          if(err)Tprintf("Vision err=%d",err);
           drawing = 2;
           break;
       case A_EMBED_T_CONTACT:ret = 3;
           err = EmbedTContact(G,staticData::SchnyderLongestFace());
-          if(err)Tprintf("T-Contact err=%d",err);
           drawing = 5;
           break;
       case A_EMBED_TRIANGLE:ret = 3;
           err = EmbedTriangle(G);
-          if(err)Tprintf("Triangle err=%d",err);
           drawing = 9;
           break;
       case A_EMBED_3d:ret = 4; //Embed3d

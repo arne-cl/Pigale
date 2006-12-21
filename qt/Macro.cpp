@@ -27,6 +27,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSpinBox>
+#include <QToolBar>
 
 
 class eventEater : public QObject
@@ -38,8 +39,8 @@ protected:
 };
 
 bool eventEater::eventFilter(QObject *,QEvent *e)
-  {if(e->type() == QEvent::MouseButtonPress) return TRUE; // eat event
-    return FALSE;
+  {if(e->type() == QEvent::MouseButtonPress) return true; // eat event
+    return false;
   }
 
 void pigaleWindow::keyPressEvent(QKeyEvent *k)
@@ -57,11 +58,12 @@ void pigaleWindow::blockInput(bool t)
   if(_inputBlocked == t)return;
   _inputBlocked = t;
   menuBar()->setDisabled(t); 
+  tb->setDisabled(t); 
   static eventEater *EventEater = 0;
   if(!EventEater)EventEater = new eventEater();
   if(t)
       {qApp->installEventFilter(EventEater);
-      qApp->setOverrideCursor(QCursor(Qt::WaitCursor)); 
+      qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
       }
   else 
       {qApp->removeEventFilter(EventEater);

@@ -20,22 +20,27 @@ const char * html1 = "\
 <title>Pigale</title>\n                                                 \
 <script language=\"JavaScript\" type=\"text/javascript\">\n             \
 <!--\n                                                                 \
-function largeur_fenetre()\n                                            \
-{\n                                                                     \
- if (window.innerWidth) return window.innerWidth;\n                     \
- else if (document.body && document.body.offsetWidth) return document.body.offsetWidth;\n \
- else return 0;\n                                                       \
-}\n                                                                     \
-function hauteur_fenetre()\n                                            \
-{\n                                                                     \
- if (window.innerHeight) return window.innerHeight;\n                   \
- else if (document.body && document.body.offsetHeight) return document.body.offsetHeight;\n \
- else return 0;\n                                                       \
-}\n                                                                     \
+function minimum(a,b)\n                                                \
+  {if(a < b) return a;\n                                               \
+  return b;\n                                                          \
+  }\n                                                                  \
+function largeur()\n                                                   \
+ {if(self.innerWidth)//Konqueror, Firefox\n                            \
+    return minimum(self.innerWidth,self.outerWidth); \n                \
+  else // explorer\n                    \
+    return document.body.offsetWidth;\n \
+}\n                                     \
+function hauteur()\n                       \
+{if(self.innerWidth)//Konqueror, Firefox\n                      \
+  return minimum(self.innerHeight,self.outerHeight); \n \
+ else // explorer\n                     \
+   return document.body.offsetHeight;\n \
+}\n                                     \
+                                        \
 function fill_form()\n                                                  \
   {\n                                                                   \
-  document.getElementsByName(\"maxx\")[0].value=largeur_fenetre();\n    \
-  document.getElementsByName(\"maxy\")[0].value=hauteur_fenetre();\n    \
+  document.getElementsByName(\"maxx\")[0].value=largeur();\n            \
+  document.getElementsByName(\"maxy\")[0].value=hauteur();\n            \
   }\n                                                                   \
 -->\n                                                                   \
   </script>\n                                                           \
@@ -148,6 +153,7 @@ int main( int argc, char** argv )
   if(!ok)ny = 0;
   int sizePng = 550;
   if(nx && ny)sizePng = (int)(.95*Min(nx,ny-280));
+  //cout<<"nx:"<<nx<<" ny:"<<ny<<" png:"<<sizePng<<endl;
   QList <QString>  todo;
   //todo <<":D";
   todo <<QString("GEN_M;%1").arg(m);

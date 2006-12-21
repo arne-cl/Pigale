@@ -61,7 +61,9 @@ int main(int argc,char * argv[])
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
   // translation file for Qt
   QTranslator qt(0);
-  QString locale = QLocale::system().name();
+  //QLocale aa(QLocale::English,QLocale::UnitedStates);QLocale::setDefault(aa);
+  QString locale = QLocale::system().name(); // francais
+  //QString locale = QLocale::c().name(); // anglais
   qt.load(QString("qt_") + locale,transDict);
   app.installTranslator( &qt );
   // translation file for application strings

@@ -172,7 +172,8 @@ int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
 	delete pGC2;
 	}*/
 
- if(!G.CheckPlanar() || ! G.CheckTriconnected()){setError(-1,"initial conditions not satisfied");return -1;}
+ if(!G.CheckPlanar()){setError(-1,"not planar: CheckPlanar");return -1;}
+ if(! G.CheckTriconnected()){setError(-1,"not 3-connected: CheckTriconnected");return -1;}
   tvertex v;
   tbrin FirstBrin = G.extbrin();
   SchnyderWood SW(G, FirstBrin);

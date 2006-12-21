@@ -4,15 +4,15 @@ win32 {
       MQTDIR = c:/Qt/4.1.4
       MOC_DIR = moc
       QMAKE_CXXFLAGS_WARN_ON =  -Wall 
-      QMAKE_CXXFLAGS += -frtti -fexceptions 
-      DEFINES +=  __MINGW32__ _WIN32 
+      QMAKE_CXXFLAGS += frtti -fexceptions 
+      DEFINES +=  __MINGW32__ _WIN32 -DUNICODE -DQT_LARGEFILE_SUPPORT
       CONFIG += console
-      INCLUDEPATH = c:/pigale-1.3.4/incl
+      INCLUDEPATH = c:/pigale/1.3.4/incl
       INCLUDEPATH += $$MQTDIR/include/QtCore
       INCLUDEPATH += $$MQTDIR/include/QtNetwork
       INCLUDEPATH += $$MQTDIR/include/
       LIBS +=  $$MQTDIR/lib/libQtNetwork4.a $$MQTDIR/lib/libQtCore4.a
-      DESTDIR=/www/cgi-bin
+      DESTDIR=/var/www/cgi-bin
       } else {
       MQTDIR = /usr/local/Trolltech/Qt-4.1.4
       MOC_DIR = .moc

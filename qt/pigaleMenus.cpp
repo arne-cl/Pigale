@@ -552,36 +552,47 @@ void pigaleWindow::createMenus()
   //file->addAction(tr("&Quit"),qApp,SLOT(closeAllWindows()));
 
   QMenu *augment = menuBar()->addMenu( tr("&Augment")); 
+
   action = augment->addAction(xmanIcon,tr("Make &Connected (edge)")); 
   setId(action,A_AUGMENT_CONNECT);
   action->setWhatsThis(tr("Make a graph connected adding edges"));
-  action = augment->addAction(xmanIcon,tr("Make &Connected (vertex)")); 
+
+  action = augment->addAction(xmanIcon,tr("Make Connected (vertex)"));
   setId(action,A_AUGMENT_CONNECT_V);
   action->setWhatsThis(tr("Make a graph connected adding a vertex"));
+
   action = augment->addAction(xmanIcon,tr("Make &2-Connected a planar graph (edge)")); 
   setId(action,A_AUGMENT_BICONNECT);
   action->setWhatsThis(tr("Make a PLANAR graph 2-connected adding edges"));
+
   action = augment->addAction(xmanIcon,tr("Make 2-Connected a planar graph &Opt (edge)"));
   setId(action,A_AUGMENT_BICONNECT_6);
   action->setWhatsThis(tr("Make a PLANAR graph 2-connected\n adding edges ( minimal degree increase)"));
+
   action = augment->addAction(xmanIcon,tr("Make 2-Connected  (edge)")); 
   setId(action,A_AUGMENT_BICONNECT_NP);
   action->setWhatsThis(tr("Make 2-connected a graph (planar or not)  adding edges"));
+
   action = augment->addAction(xmanIcon,tr("Make 2-Connected   (vertex)")); 
   setId(action,A_AUGMENT_BICONNECT_NP_V);
   action->setWhatsThis(tr("Make 2-connected a graph (planar or not) adding vertices"));
+
   action = augment->addAction(xmanIcon,tr("&Vertex Triangulate")); 
   setId(action,A_AUGMENT_TRIANGULATE_V);
   action->setWhatsThis(tr("Triangulate a PLANAR graph  adding vertices"));
+
   action = augment->addAction(xmanIcon,tr("&ZigZag Triangulate")); 
   setId(action,A_AUGMENT_TRIANGULATE_ZZ);
   action->setWhatsThis(tr("Triangulate a PLANAR graph by adding edges"));
+
   action = augment->addAction(xmanIcon,tr("T&ricon. Triangulate")); 
   setId(action,A_AUGMENT_TRIANGULATE_3C);
   action->setWhatsThis(tr("Optimally triangulate a PLANAR graph by adding edges"));
+
   action = augment->addAction(xmanIcon,tr("Vertex &Quadrangulate")); 
   setId(action,A_AUGMENT_QUADRANGULATE_V);
   action->setWhatsThis(tr("Quadrangulate a PLANAR  bipartite graph"));
+
   augment->addSeparator();
   action = augment->addAction(xmanIcon,tr("&Bisect all edges")); 
   setId(action,A_AUGMENT_BISSECT_ALL_E);
@@ -776,7 +787,6 @@ void pigaleWindow::createMenus()
 
   initMenuTest();
   }
-
 void pigaleWindow::closeEvent(QCloseEvent *event)
   {
   if(server)
@@ -796,6 +806,7 @@ void pigaleWindow::AllowAllMenus()
     while(i.hasNext()) 
         {i.next();
         i.value()->setVisible(true);
+        i.value()->setEnabled(true);
         }
   }
 void  pigaleWindow::setUserMenu(int i, const QString &txt)

@@ -1016,13 +1016,13 @@ int GraphEditor::SpringJacquard()
               {continue;}
           if (isnan(G.vcoord[v].x()) || isnan(G.vcoord[v].y())) 
 	      {DebugPrintf("Error in Jacquard: Emergency exit at v=%d before moving",v());
-	      gwp->mywindow->blockInput(false);
+	      //gwp->mywindow->blockInput(false);
 	      return generations;
 	      }
           deplacement = tryMove(v,SumDep,k,VAV,CEG,extvertex,G);
           if (isnan(G.vcoord[v].x()) || isnan(G.vcoord[v].y())) 
 	      {DebugPrintf("Error in Jacquard: Emergency exit at v=%d",v());
-	      gwp->mywindow->blockInput(false);
+	      //gwp->mywindow->blockInput(false);
 	      return generations;
 	      }
           if (extvertex[v] && deplacement<0.01)
