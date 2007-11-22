@@ -1,5 +1,5 @@
 TEMPLATE = app
-PIGALEPATH = ../pigale
+PIGALEPATH = ..
 INCLUDEPATH = $$PIGALEPATH/incl
 SOURCES = main.cpp 
 CONFIG -= qt 
