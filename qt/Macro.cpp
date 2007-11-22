@@ -10,9 +10,7 @@
 *****************************************************************************/
 
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h" 

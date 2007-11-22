@@ -18,9 +18,7 @@
     email                : hf@ehess.fr
  ***************************************************************************/
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
@@ -29,10 +27,6 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QGLFormat>
-
-#ifdef SPLASHSCREEN
-#include <QSplashScreen>>
-#endif
 
 #ifdef _WIN32
 #undef PACKAGE_PATH
@@ -44,13 +38,6 @@ int main(int argc,char * argv[])
   {QApplication app(argc,argv);
   QApplication::setDesktopSettingsAware(true);
   //QApplication::setStyle("motif");
-#ifdef SPLASHSCREEN
-  QPixmap pixmap(500,500);
-  pixmap.fill(Qt::lightGray);
-  QSplashScreen *splash = new QSplashScreen(pixmap);
-  splash->show();
-  splash->showMessage("LOADING PIGALE ...",Qt::AlignCenter,Qt::black);
-#endif
   // glut,openGL
   glutInit(&argc,argv);
   QGLFormat fmt;
@@ -73,9 +60,5 @@ int main(int argc,char * argv[])
   pigaleWindow *mw = new pigaleWindow();
   mw->show();
   app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));
-#ifdef SPLASHSCREEN
-  splash->finish(mw);
-  delete splash;
-#endif
   return app.exec();
   }

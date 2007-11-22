@@ -1,8 +1,6 @@
 
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include "GraphWidget.h"
 #include "pigaleWindow.h"
 #include <QT/Action_def.h> 

@@ -9,8 +9,6 @@
 **
 *****************************************************************************/
 
-//#undef QT3_SUPPORT 
-// only needs QT3_SUPPORT for bezier
 
 #include "pigaleWindow.h"
 #include <QT/pigalePaint.h>
@@ -18,7 +16,6 @@
 #include <QT/Misc.h>
 
 #include <QPixmap>
-#include <Q3PointArray>
 #include <QPainter>
 
 void DrawPolrec(QPainter *p,pigalePaint *paint)
@@ -139,7 +136,6 @@ void DrawPolyline(QPainter *p,pigalePaint *paint)
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
   QPen pn = p->pen();pn.setWidth(2);
-  //Q3PointArray bez(4);
 
   for (tedge ee=1; ee<= G.ne(); ee++)
       {if (Ebend[ee] != Tpoint(-1, -1)) 
@@ -166,19 +162,24 @@ void DrawCurves(QPainter *p,pigalePaint *paint)
   int m = G.ne(); 
   int n = G.nv(); 
   QPen pn = p->pen();pn.setWidth(2);
-  Q3PointArray bez(7);
+  QVector<QPoint>  bez(7);
 
   for (tedge ee=1; ee<=m; ee++)
     {if (Epoint2[ee]!=Tpoint(0,0)) {
-       bez.setPoint(0,paint->to_x(vcoord[G.vin[ee]].x()),paint->to_y(vcoord[G.vin[ee]].y()));
-       bez.setPoint(1,paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
-       bez.setPoint(2,paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
-       bez.setPoint(3,paint->to_x(Epoint2[ee].x()),paint->to_y(Epoint2[ee].y()));
-       bez.setPoint(4,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
-       bez.setPoint(5,paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
-       bez.setPoint(6,paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
-       p->drawCubicBezier(bez,0);
-       p->drawCubicBezier(bez,3);
+       bez[0] = QPoint(paint->to_x(vcoord[G.vin[ee]].x()),paint->to_y(vcoord[G.vin[ee]].y()));
+       bez[1] = QPoint(paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
+       bez[2] = QPoint(paint->to_x(Epoint1[ee].x()),paint->to_y(Epoint1[ee].y()));
+       bez[3] = QPoint(paint->to_x(Epoint2[ee].x()),paint->to_y(Epoint2[ee].y()));
+       bez[4] = QPoint(paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
+       bez[5] = QPoint(paint->to_x(Epoint3[ee].x()),paint->to_y(Epoint3[ee].y()));
+       bez[6] = QPoint(paint->to_x(vcoord[G.vin[-ee]].x()),paint->to_y(vcoord[G.vin[-ee]].y()));
+       QPainterPath path;
+       path.moveTo(bez.at(0));
+       path.cubicTo(bez.at(1),bez.at(2),bez.at(3));
+       p->strokePath(path, p->pen());
+       path.moveTo(bez.at(3));
+       path.cubicTo(bez.at(4),bez.at(5),bez.at(6));
+       p->strokePath(path, p->pen());
        //paint->DrawRect(p,Epoint1[ee],3,3,Red);
        //paint->DrawRect(p,Epoint3[ee],3,3,Red);
      }
@@ -653,9 +654,9 @@ void pigalePaint::DrawTriangle(QPainter *p,Tpoint &p1,Tpoint &p2,Tpoint &p3,int 
   {QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
   pb.setColor(color[bound(col,1,16)]);p->setBrush(pb);
-  Q3PointArray vertices(3);
+  QPoint vertices[3];
   vertices[0] = QPoint((int)to_x(p1.x()),(int)to_y(p1.y()));
   vertices[1] = QPoint((int)to_x(p2.x()),(int)to_y(p2.y()));
   vertices[2] = QPoint((int)to_x(p3.x()),(int)to_y(p3.y()));
-  p->drawPolygon(vertices); 
+  p->drawConvexPolygon(vertices,3);
   }

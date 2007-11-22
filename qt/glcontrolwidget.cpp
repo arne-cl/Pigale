@@ -1,7 +1,5 @@
 
-#ifdef QT3_SUPPORT 
-#undef QT3_SUPPORT 
-#endif
+
 #include <TAXI/Tbase.h>
 #include "glcontrolwidget.h"
 #include <QGLFormat>

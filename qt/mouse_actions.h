@@ -36,7 +36,6 @@ public:
   
   void contentsMousePressEvent(QMouseEvent* e);
 
-  //Q3ButtonGroup* ButtonGroup1;
   QGroupBox* ButtonGroup1;
   QRadioButton* ButtonAddV;
   QRadioButton* ButtonAddE;

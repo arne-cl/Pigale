@@ -20,6 +20,7 @@
 #include <TAXI/Tmessage.h> 
 
 
+
 // in HeapSort.cpp
 void HeapSort(int (*f)(int a,int b),int first,int nelements,int *heap);
 static bool Equal(double x, double y);
@@ -68,25 +69,29 @@ double pgcd(double a, double b,double precision)
 //Methods of GraphEditor
 
 void GraphEditor::showGrid(bool showgrid)
-  {if(!canvas())return;
-  Q3CanvasItemList list = gwp->canvas->allItems();
-  Q3CanvasItemList::Iterator it = list.begin();
+{if(!scene())return;
+  QList<QGraphicsItem *>  list = gwp->canvas->items();
+  QList<QGraphicsItem *>::Iterator it = list.begin();
   if(showgrid)
       for (; it != list.end(); ++it)
-	  {if((int)(*it)->rtti() == line_rtti)(*it)->show();}
+	{if((int)(*it)->type() == line_rtti)
+	      (*it)->show();
+	}
   else
       for (; it != list.end(); ++it)
-	 {if((int)(*it)->rtti() == line_rtti)(*it)->hide();}
-  canvas()->update();
+	{if((int)(*it)->type() == line_rtti)
+	     (*it)->hide();
+	}
+  scene()->update();
   }
 void GraphEditor::clearGrid()
-  {if(!canvas() || !GridDrawn)return;
-  Q3CanvasItemList list = gwp->canvas->allItems();
-  Q3CanvasItemList::Iterator it = list.begin();
+  {if(!scene() || !GridDrawn)return;
+  QList<QGraphicsItem *>  list = gwp->canvas->items();
+  QList<QGraphicsItem *>::Iterator it = list.begin();
   for (; it != list.end(); ++it)
-      {if((int)(*it)->rtti() == line_rtti)
+    {if((int)(*it)->type() == line_rtti)
 	  if(*it)delete *it;
-      }
+    }
   GridDrawn = false;
   }
 void GraphEditor::UndoGrid()
@@ -121,7 +126,7 @@ void GraphEditor::UndoGrid()
   gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
   gwp->mywindow->mouse_actions->Slider->setValue(nstep);
   DrawGrid(current_grid);
-  canvas()->update(); 
+  scene()->update(); 
   }
 void GraphEditor::UpdateSizeGrid()
 // called when end moving a vertex forced on a grid

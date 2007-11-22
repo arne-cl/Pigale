@@ -10,9 +10,7 @@
 **
 *****************************************************************************/
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include <TAXI/Tgf.h>
@@ -209,7 +207,7 @@ void pigaleWindow::createLayout(QWidget *mainWidget)
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
   mypaint =  new pigalePaint(0,this);
-  gw = new  GraphWidget(0,"graphwidget",this);
+  gw = new  GraphWidget(0,this);//gw->setAutoFillBackground(true);
   graphgl  = new GraphGL(0,this);   graphgl->setAutoFillBackground(true);
   graphsym = new GraphSym(0,this);  graphsym->setAutoFillBackground(true);
   browser = new QTextBrowser(0);

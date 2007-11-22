@@ -9,9 +9,7 @@
 **
 *****************************************************************************/
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include "pigaleWindow.h" 
 #include "GraphWidget.h" 
 #include <TAXI/Tmessage.h>
@@ -82,19 +80,13 @@ QString getVertexLabel(GraphContainer &GC,tvertex v)
   return t;
   }
 QColor OppCol(QColor & col)
+// to draw text on vertices
   {int hue,sat,val;
   col.getHsv(&hue,&sat,&val);
   val = (val <= 192) ? 255 : 0;
-  col.setHsv((hue+180)%360,sat/2,val); 
-  /*
-   int r,g,b;
-  col.rgb(&r,&g,&b);
-  r = (r > 128) ? 0 : 255;
-  g = (g > 128) ? 0 : 255;
-  b = (b > 128) ? 0 : 255;
-  col.setRgb(r,g,b);
-  */
-  return col;
+  QColor col1;
+  col1.setHsv((hue+180)%360,sat/2,val); 
+  return col1;
   }
 QColor Desaturate(QColor & col)
   {int hue,sat,val;

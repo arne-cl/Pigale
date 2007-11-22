@@ -12,9 +12,7 @@
 \brief 3D embedding class methods
 \ingroup qt */
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include "pigaleWindow.h"
 #include "GraphGL.h"
 #include "glcontrolwidget.h"
@@ -244,7 +242,7 @@ void GLWindow::png(int size)
                       ,tr("Choose a file to save under")
                       ,glp->mw->DirFilePng
                       ,"Images(*.png)");
-      if(FileName.isEmpty())return; 
+      if(FileName.isEmpty()){setGeometry(geo);return;}
       if(QFileInfo(FileName).suffix() != (const char *)"png")
 	  FileName += (const char *)".png";
       glp->mw->DirFilePng = QFileInfo(FileName).absolutePath();

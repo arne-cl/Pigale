@@ -9,9 +9,7 @@
 **
 *****************************************************************************/
 
-#ifdef QT3_SUPPORT 
-#undef QT3_SUPPORT 
-#endif
+
 #include "pigaleWindow.h" 
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
@@ -22,7 +20,7 @@
 using namespace std;
 
 int EmbedCurves(TopologicalGraph &G)
-{
+  {
   GeometricGraph GG(G); 
   Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_DRAW_POINT_1);
   int n=G.nv();

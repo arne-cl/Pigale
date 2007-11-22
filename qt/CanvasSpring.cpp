@@ -44,8 +44,8 @@ void GraphEditor::Spring()
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<Tpoint> translate(1,G.nv()); translate.clear();
   DoNormalise = true;
-  int h = gwp->canvas->height();
-  int w = gwp->canvas->width();
+  int h = (int)gwp->canvas->height();
+  int w = (int)gwp->canvas->width();
   double mhw = Min(w,h) - 2*BORDER;
   Tpoint center((w - space - sizerect)/2.,h/2.); 
   int n_red,n = G.nv(),m =G.ne();
@@ -138,7 +138,7 @@ void GraphEditor::Spring()
 	  else
 	      {nodeitem[v]->SetColor(Qt::red);++n_red;}
 	  nodeitem[v]->moveTo(G.vcoord[v]);
-	  canvas()->update();
+	  scene()->update();
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
       stop = (n_red == G.nv())? stop+1 : 0;
@@ -163,7 +163,7 @@ void GraphEditor::Spring()
       {nodeitem[v]->SetColor(color[G.vcolor[v]]);
       nodeitem[v]->moveTo(G.vcoord[v]);
       }
-  canvas()->update();
+  scene()->update();
 #ifdef  VERSION_ALPHA 
   if(debug())
       Tprintf("Iter=%d len=%d stop=%d dep=%f expand=%f force=%f",iter,(int)len,stop,dep,expand,force);
@@ -176,7 +176,7 @@ void GraphEditor::SpringPreservingMap(bool draw)
 /*
 t current tanslation of v0
 */
-  {
+{
 #ifdef TDEBUG
   if(debug())DebugPrintf("Spring PM\n");
 #endif
@@ -193,10 +193,11 @@ t current tanslation of v0
       {mw->progressBar->setRange(0,G.nv());
       mw->progressBar->setValue(0);
       mw->progressBar->show();
+      setRenderHints(!QPainter::Antialiasing);
       }
   DoNormalise = true;
   //int option = Twait("option");
-  int h = gwp->canvas->height(),w = gwp->canvas->width();
+  int h = (int)gwp->canvas->height(),w = (int)gwp->canvas->width();
   double mhw = Min(w,h) - 2*BORDER;
   int n_red,n = G.nv(),m =G.ne();
   double len=.0,len02 = mhw*mhw/n;
@@ -218,7 +219,7 @@ t current tanslation of v0
       degree[v] = G.Degree(v);
 
   for(iter = 1;iter <= niter;iter++)
-      {//if((iter%50) == 0)cout<<"iter:"<<iter<<"  "<<niter<<endl;
+    {//if((iter) == 0)cout<<"iter:"<<iter<<"  "<<niter<<endl;
       t=Tpoint(0,0);
       if(iter > 100)force *= .99;
       else if(iter > 200)force *= .98;
@@ -348,17 +349,20 @@ t current tanslation of v0
               dx = Abs(t.x()); dy = Abs(t.y());
               dep = Max(dep,dx,dy);  
               if (dx > 30./n || dy > 30./n)
-                  {if (draw) nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
+		{if(draw && iter%8 == 0)
+		    {nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
+		     nodeitem[v0]->moveTo(G.vcoord[v0],5.);
+		    }
+		}
               else
-                  {if (draw) nodeitem[v0]->SetColor(Qt::red);
-                  ++n_red;
-                  }
-              if (draw) nodeitem[v0]->moveTo(G.vcoord[v0],3.);
+		{if(draw && iter%8 == 0) nodeitem[v0]->SetColor(Qt::red);
+                ++n_red;
+		}
               }
           else
-              { if (draw) nodeitem[v0]->SetColor(Qt::blue);
-              ++n_red;
-              }
+	    {if(draw && iter%8 == 0) nodeitem[v0]->SetColor(Qt::blue);
+            ++n_red;
+	    }
           }
       // update the drawing
       if(!draw)
@@ -369,7 +373,7 @@ t current tanslation of v0
           {mw->progressBar->setValue(n_red);
           qApp->processEvents(); // absolutely needed
           }
-      if(iter%2 == 0 && draw)canvas()->update();
+      //if(iter%2 == 0 && draw)scene()->update();
       stop = (n_red == G.nv())? stop+1 : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
@@ -383,18 +387,18 @@ t current tanslation of v0
       sizex0 = sizex;      sizey0 = sizey;
       }
   Normalise();
-   if(!draw)
-          {progressEvent  * event = new progressEvent(-1);
-          QApplication::postEvent(mw,event);
-          }
+  if(!draw)
+    {progressEvent  * event = new progressEvent(-1);
+      QApplication::postEvent(mw,event);
+    }
    else
        {mw->progressBar->hide();
+	 setRenderHints(QPainter::Antialiasing);
        // same as load(false) but much faster
        for(v = 1;v <= n;v++)
            {nodeitem[v]->SetColor(color[G.vcolor[v]]);
            nodeitem[v]->moveTo(G.vcoord[v]);
            }
-       canvas()->update();
        }
 #ifdef  VERSION_ALPHA 
   if(debug())
@@ -1050,7 +1054,7 @@ int GraphEditor::SpringJacquard()
       //hub qApp->processEvents(1);
       qApp->processEvents();
       if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
-      canvas()->update(); 
+      scene()->update(); 
       }
   Tprintf("Spring iter=%d",generations);
   DoNormalise = true;

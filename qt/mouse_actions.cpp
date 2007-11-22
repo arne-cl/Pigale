@@ -9,9 +9,7 @@
 **
 *****************************************************************************/
 
-#ifdef QT3_SUPPORT
-#undef QT3_SUPPORT
-#endif
+
 #include "mouse_actions.h"
 #include "GraphWidget.h"
 #include "GraphGL.h"

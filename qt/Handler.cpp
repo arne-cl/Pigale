@@ -9,9 +9,7 @@
  **
  *****************************************************************************/
 
-#ifdef QT3_SUPPORT 
-#undef QT3_SUPPORT 
-#endif
+
 #include <QT/Action_def.h>
 #include "pigaleWindow.h" 
 #include <QT/Misc.h>
