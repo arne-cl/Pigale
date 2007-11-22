@@ -59,7 +59,7 @@ GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges);
 
 //in SchaefferGen.cpp
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity
-                                  ,bool randomEraseMultipleEdges,bool randomUseGeneratedCir);
+                                  ,bool randomEraseMultipleEdges=false,bool randomUseGeneratedCir=false);
 
 // Outerplanar maps
 GraphContainer *GenerateRandomOuterplanarGraph(int n,bool randomEraseMultipleEdges);

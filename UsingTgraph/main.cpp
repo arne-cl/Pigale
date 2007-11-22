@@ -1,55 +1,71 @@
 #include <Pigale.h>
 
 
-int main (int argc, char** argv)
-  {GraphContainer GCC;
+int main ()
+{   
+  GraphContainer GC; // defined in TAXI/graph.h
+  // GC is the object that will contains all the information of a graph.
+  int n = 4; // n =  number of vertices [1,n]
+  int m = 5; // m = number of edges     [1,m] 
   
-  if(argc<2) 
-      {cout << "usage: " << argv[0] << " <filename.txt>\n";
-      exit(0); 
-      } 
- 
-  if(ReadGraphAscii(GCC,argv[1]) != 0)
-      {cout << "Error in reading file" << endl;return 1;}
-  TopologicalGraph G(GCC); // create a topological access
-  cout<<"Reading file a.txt"<<endl;
-  cout << "Nodes: " << G.nv() << "\tEdges: " << G.ne()<< endl;
-  cout << "Simple:" << G.CheckSimple() << endl;
-  cout << "Connected:" << G.CheckConnected() << endl;
-  cout << "BiConnected:" << G.CheckBiconnected() << endl;
-  G.Simplify();
-  G.Biconnect();
-  cout << "After making 2-connected"<<endl;
-  cout << "Nodes: " << G.nv() << "\tEdges: " << G.ne()<< endl;
-  cout << "BiConnected:" << G.CheckBiconnected() << endl;
-  cout << "TesTplanar:" << G.TestPlanar() << endl; 
-
+  GC.setsize(n,m);  // defines the size of the container
+  /*
+   - a tvertex v is internally represented by an integer v(): 1 <= v() <= n = GC.nv() 
+   - a tedge   e is internally represented by an integer e(): 1 <= e() <= m = GC.ne() 
+   - a tedge   e is composed of 2 tbrin b0,b1 internally represented by e() and -e()
+   tvertex, tedge, tbrin behave like integers in many respects
+  */ 
   
-  GraphContainer *GC=(GraphContainer *)0;
-  {cout<<"\nGenerate a 3x3 grid"<<endl;
-  GC = GenerateGrid(3,3); // returns a pointer on a graph container
-  GCC.Tswap(*GC);          // swap the pointer
-  delete GC;
-  GeometricGraph GG(GCC); // create a geometric access
-  cout << "Nodes: " << GG.nv() << "\tEdges: " << GG.ne()<< endl;
-  cout << "Coordinates of vertices" << endl;
-  for(tvertex v = 1; v <= GG.nv();v++)
-      cout << "vertex " << v()<< " -> (" << GG.vcoord[v].x() <<","<<  GG.vcoord[v].x() <<")"<<endl;
-  }
-   
-  // see Qt/Handler.cpp to see the parameters of GenerateSchaeffer
-  {cout <<"\nGenerate a 3-connected planar graph with around 30 edges" <<endl;
-  GC = GenerateSchaeffer(30,1,3);  
-  GCC.Tswap(*GC);         
-  delete GC;    
-  TopologicalGraph GG(GCC);
-  cout << "Nodes: " << GG.nv() << "\tEdges: " << GG.ne()<< endl;
-  cout << "BiConnected:" << GG.CheckBiconnected() << endl;
-  cout << "TriConnected:" << GG.CheckTriconnected() << endl;
-  cout << "TesTplanar:" << GG.TestPlanar2() << endl; 
-  }
+  Prop<tvertex> vin(GC.Set(tbrin()),PROP_VIN);// vin is an array  of tbrin whose values are tvertex.
 
+  // Create the edges: each edge (tedge) is incident to 2 vertices (tvertex)
+  vin[1] = 1; vin[-1] = 2;  // means that the edge 1 is incident to the vertex 1 and 2
+  vin[2] = 1; vin[-2] = 3;  
+  vin[3] = 2; vin[-3] = 3; 
+  vin[4] = 3; vin[-4] = 4; 
+  vin[5] = 2; vin[-5] = 4;  // vin[-5] = 4 could be written vin[(tbrin)-5] = (tvertex)4;
 
+  // create a topological graph access
+  TopologicalGraph G(GC); // defined in TAXI/graphs.h
+
+  // print the number of vertices and edges
+  cout << "Nodes: " << G.nv() << "\tEdges: " << G.ne()<< endl;
+
+  // print the edges (if e is a tedge, e() is the int that represents it)
+  cout << "Edges:" << endl;
+  for(tedge e = 1; e <= G.ne();e++)
+    cout << e() << " = [" << G.vin[e] << "," << G.vin[-e] << "]" <<endl;
+
+  // at this point loops are FORBIDDEN. You can remove them:
+  // int nloops = RemoveLoops();
+
+  // Compute a planar embedding or return -1
+  if(G.Planarity() == 0) 
+    {cout << "not planar" << endl; return -1;}
+
+  // At each vertex v  there is a tbrin G.pbrin[v] incident to it: G.vin[G.pbrin[v]] = v;
+  // So we can print the planar map (cirular order of half edges around each  vertex)
+  cout << "Map (half edges):"<<endl;
+  for(tvertex v = 1; v <= G.nv() ; v++)
+    {cout << v() <<"  -> ";
+      tbrin first = G.pbrin[v];
+      tbrin b = first;
+      do
+	{cout << b() << " ";
+	}while((b = G.cir[b]) != first);
+      cout << endl;
+    }
+  // Or you could print the circular order of vertices aroud each vertex
+  cout << "Map (vertices):"<<endl;
+  for(tvertex v = 1; v <= G.nv() ; v++)
+    {cout << v() <<"  -> ";
+      tbrin first = G.pbrin[v];
+      tbrin b = first;
+      do
+	{cout << G.vin[-b]() << " ";
+	}while((b = G.cir[b]) != first);
+      cout << endl;
+    }
   return 0;      
   }
 

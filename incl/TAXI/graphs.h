@@ -366,7 +366,7 @@ public :
         ewidth[ee] = ewidth[e];
         vcoord[v].x() = (vcoord[v1].x()+vcoord[v2].x())/2;
         vcoord[v].y() = (vcoord[v1].y()+vcoord[v2].y())/2;
-        vcolor[v] = vcolor[v1];
+        //vcolor[v] = vcolor[v1];
         return v;
         }
   int ComputeGeometricCir();

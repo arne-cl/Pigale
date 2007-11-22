@@ -18,30 +18,27 @@
 #include <QT/grid.h> 
 
 #include <QPainter>
-#include <q3canvas.h>
-#define QCanvasPolygonalItem  Q3CanvasPolygonalItem
-#define QPointArray  Q3PointArray
-#define QCanvasLine Q3CanvasLine
-#define QCanvasText  Q3CanvasText
-#define QCanvasRectangle Q3CanvasRectangle
-#define QCanvasView  Q3CanvasView
-#include <Q3PointArray> 	
-
+#include <QGraphicsScene>
+#include <QGraphicsItem>
+#include <QGraphicsView>
+#include <QList>
+#include <QStyleOptionGraphicsItem>
 
 bool & ShowOrientation();
 int  & ShowVertex();
 
 class NodeItem;
 
-const int line_rtti    = 7;
-const int arrow_rtti = 8;
-const int ntxt_rtti    = 1004;
-const int node_rtti    = 1005;
-const int col_rtti     = 1006;
-const int edge_rtti    = 1007;
-const int curs_rtti    = 1008;
-const int info_rtti    = 1009;
-const int thick_rtti   = 1009;
+const int min_rtti = QGraphicsItem::UserType;
+const int line_rtti    = min_rtti+20;
+const int arrow_rtti   = min_rtti+11;
+const int ntxt_rtti    = min_rtti+4;
+const int node_rtti    = min_rtti+5;
+const int col_rtti     = min_rtti+6;
+const int edge_rtti    = min_rtti+7;
+const int curs_rtti    = min_rtti+8;
+const int info_rtti    = min_rtti+9;
+const int thick_rtti   = min_rtti+9;
 
 const int grid_z     =   1; // Grid
 const int ntxt_z     = 128; // NodeTextItem
@@ -61,33 +58,28 @@ const int space      = 1;   //spece + sizerect <= 13 for screens 800x600
 const int BORDER     = 30;  // free space around the graph drawing 
 class EdgeItem;
 
-class ArrowItem: public QCanvasPolygonalItem 
+
+class ArrowItem: public QGraphicsPolygonItem
 {public:
   ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g);
-  ~ArrowItem();
   void ComputeCoord();
   void SetColor();
   void SetColor(QColor col);
-  int rtti() const;
+  int type() const {return arrow_rtti;}
  private:
-  QPointArray areaPoints () const;
-  void drawShape ( QPainter & p );
   GraphWidgetPrivate* gwp;
   EdgeItem *edgeItem;
-  QPointArray pts,refresh;
+  QVector<QPointF>pts;
 };
 
-class EdgeItem: public QCanvasLine
+class EdgeItem: public QGraphicsLineItem
 {public:
-  EdgeItem(tedge &ee,GraphWidgetPrivate* g);
-  EdgeItem(tedge &ee,int x_from,int y_from,int x_to,int y_to,bool l
-	   ,GraphWidgetPrivate* g);
+  EdgeItem(tedge &ee,double x_from,double y_from,double x_to,double y_to,bool _lower,GraphWidgetPrivate* g);
   void SetColor(QColor c,bool both=true);
   void SetColors(QColor c1, QColor c2);
-  void setFromPoint(int x,int y) ;
-  void setToPoint(int x,int y);
-  int rtti() const;
-
+  void setFromPoint(double x,double y) ;
+  void setToPoint(double x,double y);
+  int type() const {return edge_rtti;}
   tedge e;
   EdgeItem *opp;
   ArrowItem *arrow;
@@ -96,44 +88,34 @@ private:
   GraphWidgetPrivate* gwp;
 };
 
-class CursItem: public QCanvasLine
+class CursItem: public QGraphicsLineItem
 {public:
   CursItem(tvertex &v,QPoint &p,GraphWidgetPrivate* g);
   void setToPoint(int x,int y);
-  int rtti() const;
+  int type() const {return curs_rtti;}
   tvertex v;
-  private:
-  GraphWidgetPrivate* gwp;
 };
 
-class InfoItem: public QCanvasText
+class LineItem: public QGraphicsLineItem
+{public:
+  LineItem(GraphWidgetPrivate* g);
+  int type() const {return line_rtti;}
+};
+
+class InfoItem: public QGraphicsSimpleTextItem
 {public:
   InfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p);
-  int rtti() const;
-
-  QCanvasRectangle* rectitem;
+  int type() const {return info_rtti;}
+  QGraphicsRectItem* rectitem;
   private:
   GraphWidgetPrivate* gwp;
 };
 
-class NodeTextItem: public QCanvasText
+class ColorItem: public QGraphicsRectItem
 {public:
-  NodeTextItem(GraphWidgetPrivate* g,QString &t);
-  ~NodeTextItem() {}
-  void SetColor(QColor c);
-  void SetText(QString t){setText(t);update();}
-  int rtti() const;
-
-  NodeItem *nodeitem;
-private:
-  GraphWidgetPrivate* gwp;
-};
-
-class ColorItem: public QCanvasRectangle
-{public:
-  ColorItem(GraphWidgetPrivate* g,QRect &rect,int pen_color,int brush_color,bool node);
+  ColorItem(GraphWidgetPrivate* g,QRectF &rect,int pen_color,int brush_color,bool node);
   ~ColorItem() {}
-  int rtti() const;
+  int type() const {return col_rtti;}
   void SetPenColor(int pen_color);
   int brush_color;
   bool node;
@@ -141,11 +123,11 @@ private:
   GraphWidgetPrivate* gwp;
 };
 
-class ThickItem: public QCanvasRectangle
+class ThickItem: public QGraphicsRectItem
 {public:
-  ThickItem(GraphWidgetPrivate* g,QRect &rect,int ewidth,int brush_color);
+  ThickItem(GraphWidgetPrivate* g,QRectF &rect,int ewidth,int brush_color);
   ~ThickItem() {}
-  int rtti() const;
+  int type() const {return thick_rtti;}
   void SetBrushColor(int bcolor);
   int brush_color;
   int width;
@@ -153,26 +135,25 @@ private:
   GraphWidgetPrivate* gwp;
 };
 
-class NodeItem: public QCanvasRectangle
+class NodeItem: public QGraphicsRectItem
 {public:
-  NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRect &rect);
-  ~NodeItem() {}
+  NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRectF &rect,QColor & col,QString &_t);
   void moveBy(double dx, double dy);
   void moveTo(Tpoint &p,double eps = .0);
   void SetColor(QColor c);
-  int rtti() const;
-
-  int width;
-  int height;
+  void SetText(QString t);
+  int type() const {return node_rtti;}
+  void paint(QPainter *painter,const QStyleOptionGraphicsItem * option,QWidget * widget = 0); 
   tvertex v;
-  NodeTextItem *nodetextitem;
 private:
   GraphWidgetPrivate* gwp;
+  QColor vcolor,tcolor;
+  QString t;
 };
 
-class GraphEditor : public QCanvasView
+class GraphEditor : public QGraphicsView
 {public:
-  GraphEditor(GraphWidgetPrivate *g,QWidget* parent=0,const char* name=0,Qt::WFlags f=0);
+  GraphEditor(GraphWidgetPrivate *g,QWidget* parent=0);
   ~GraphEditor();
   QSize sizeHint() const;
   double zoom;
@@ -207,9 +188,9 @@ class GraphEditor : public QCanvasView
   Tgrid current_grid, graph_grid,old_grid,undo_grid;
 
 private:
-  void contentsMousePressEvent(QMouseEvent*);
-  void contentsMouseReleaseEvent(QMouseEvent*);
-  void contentsMouseMoveEvent(QMouseEvent*);
+  void mousePressEvent(QMouseEvent*);
+  void mouseReleaseEvent(QMouseEvent*);
+  void mouseMoveEvent(QMouseEvent*);
   void wheelEvent(QWheelEvent *event);
   void showEvent(QShowEvent*);
   void hideEvent(QHideEvent*);

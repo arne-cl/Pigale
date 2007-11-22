@@ -85,7 +85,7 @@ DEFINES += FREEGLUT FREEGLUT_STATIC
 unix:LIBS += $$DISTPATH/lib/libglut.a
 win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 
-QT += qt3support opengl network xml
+QT += opengl network xml
 #unix::DESTDIR = .
 #win32:DESTDIR = $$DISTPATH/bin
 unix {
@@ -131,7 +131,7 @@ win32 {
       macro.path = $$DISTPATH/macro
       INSTALLS += target translations doc ico tgf macro
       contains(DLL,"yes") {
-           dll.files = $$MQTDIR/bin/QtCore4.dll $$MQTDIR/bin/QtGui4.dll $$MQTDIR/bin/Qt3Support4.dll 
+           dll.files = $$MQTDIR/bin/QtCore4.dll $$MQTDIR/bin/QtGui4.dll
            dll.files += $$MQTDIR/bin/QtNetwork4.dll $$MQTDIR/bin/QtOpenGL4.dll $$MQTDIR/bin/QtXml4.dll
            dll.files += $$MQTDIR/bin/QtSql4.dll $$MQTDIR/bin/QtSvg4.dll
            dll.files += $$MINGW//bin/mingwm10.dll

@@ -12,10 +12,7 @@
 #ifndef  GRAPHWIDGETPRIVATE_H_INCLUDED
 #define  GRAPHWIDGETPRIVATE_H_INCLUDED
 
-#if QT_VERSION >= 0x40000
 
-#define QCanvas Q3Canvas
-#endif 
 class GraphWidgetPrivate
 {public:
   GraphWidgetPrivate()
@@ -25,6 +22,7 @@ class GraphWidgetPrivate
       editor = 0;
       SizeGrid = 100;
       ShowGrid = false;
+      FitToGrid = false;
       CanvasHidden = false;
       }
   ~GraphWidgetPrivate()
@@ -41,7 +39,7 @@ class GraphWidgetPrivate
   int FitSizeGrid ;
   int OldFitSizeGrid ;
   int SizeGrid ;
-  QCanvas* canvas;
+  QGraphicsScene* canvas;
   NodeItem* moving_item;
   CursItem* curs_item;
   InfoItem* info_item;
