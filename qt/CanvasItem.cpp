@@ -44,7 +44,7 @@ void GraphWidget::update(int compute)
       d->is_init = true;
       }
   else
-  delete d->pGG;
+      delete d->pGG;
   
   d->pGG = new GeometricGraph(d->mywindow->GC);
   d->moving_item = 0;  d->curs_item = 0;  d->info_item = 0; d->moving_subgraph = false;
@@ -222,136 +222,6 @@ void CursItem::setToPoint(int x,int y)
   {setLine(line().p1().x(),line().p1().y(),x,y);
   }
 
-//**********************************************************************************
-ArrowItem::ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g)
-  :QGraphicsPolygonItem(0,g->canvas)
-  {gwp = g;
-  pts.resize(4);
-  //refresh.resize(2);
-  edgeItem = edgeitem;
-  ComputeCoord();
-  SetColor();
-  setPen(*tp);
-  setZValue(arrow_z);
-  setFlags(0);
-  }
-void ArrowItem::ComputeCoord()
-  {//prepareGeometryChange();
-  QPointF u =  edgeItem->line().p2() - edgeItem->line().p1();
-  double ml = sqrt(double(u.x()*u.x() + u.y()*u.y()))+1.5;
-  double diviseur = 12;
-  // for short edges or long edges
-  if(ml > 10 && ml < 50){diviseur = (diviseur*ml)/50;}
-  else if(ml > 100) {diviseur = (diviseur*ml)/100;}
-  diviseur = Max(diviseur,1);
-  QPointF v = QPointF(-u.y()/diviseur,u.x()/diviseur);
-  QPointF p0 = pts[0] = edgeItem->line().p2();
-  QPointF p1 = pts[1] =  p0 - v -(u*2)/diviseur;
-  pts[2] = p0  -u/diviseur;
-  QPointF p3 = pts[3] = p0 + v - (u*2)/diviseur;
-  setPolygon(pts);
-  // boundingrect
-//   double xmin = Min(p0.x(),p1.x(),p3.x());  double xmax = Max(p0.x(),p1.x(),p3.x());
-//   double ymin = Min(p0.y(),p1.y(),p3.y());  double ymax = Max(p0.y(),p1.y(),p3.y());
-//   refresh[0] = QPointF(xmin-4,ymax+4);   
-//   refresh[1] = QPointF(xmax+4,ymin-4);
-  }
-/*
-QRectF ArrowItem::boundingRect() const
-  {return QRectF(refresh[0],refresh[1]);
-  }
-*/
-void ArrowItem::SetColor()
-  {GeometricGraph & G = *(gwp->pGG);
-  int col = bound(G.ecolor[ edgeItem->e],1,16);
-  tp->setColor(color[col]); // needed not to get the desaturated color
-  tb->setColor(color[col]); // needed not to get the desaturated color
-  setPen(*tp);setBrush(*tb);
-  }
-void ArrowItem::SetColor(QColor col)
-  {tp->setColor(col); // needed not to get the desaturated color
-  tb->setColor(col); // needed not to get the desaturated color
-  setPen(*tp);setBrush(*tb);
-  }
-
-//**********************************************************************************
-EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
-  {GeometricGraph & G = *(g->pGG);
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
-  tvertex v0 = G.vin[e];  tvertex v1 = G.vin[-e];
-  double h = g->canvas->height();
-  double x0 = G.vcoord[v0].x();  double y0 = G.vcoord[v0].y();
-  double x1 = G.vcoord[v1].x();  double y1 = G.vcoord[v1].y();
-  double x  = x0 * xorient + x1*(1.-xorient);
-  double y  = y0 * xorient + y1*(1.-xorient);
-  QColor col = color[bound(G.ecolor[e],1,16)];
-  QColor col2 = col;
-  if (G.Set(tedge()).exist(PROP_COLOR2))
-      {Prop<short> ecolor2(G.Set(tedge()),PROP_COLOR2);
-      ecolor2.definit(1);
-      col2 = color[bound(ecolor2[e],1,16)];
-      }
-  // first EdgeItem representing the lower part
-  tp->setColor(col);tp->setWidth(G.ewidth[e]);
-  EdgeItem *edge0 = new EdgeItem(e,x0,h-y0,x,h-y,true,g);
-  // second EdgeItem  representing the upper part
-  if(staticData::ShowOrientation() && eoriented[e])
-      {edge0->arrow->show();
-      tp->setColor(Desaturate(col));
-      }
-  else
-      {edge0->arrow->hide();
-      tp->setColor(col2);
-      }
-  EdgeItem *edge1 = new EdgeItem(e,x,h-y,x1,h-y1,false,g);
-  edge0->opp = edge1;  edge1->opp = edge0;
-  return edge0;
-  }
-EdgeItem::EdgeItem(tedge &ee,double x_from,double y_from,double x_to,double y_to,bool _lower
-		   ,GraphWidgetPrivate* g) // used when CreateEdgeItem is called (load)
-  :QGraphicsLineItem(0,g->canvas)
-  {gwp = g;
-  lower = _lower;
-  e = ee;
-  setLine(x_from,y_from,x_to,y_to);
-  if(lower)
-      arrow = new  ArrowItem(this,g);
-  else 
-      arrow = NULL;
-  setPen(*tp);
-  setZValue(edge_z);
-  setFlags(0);
-  }
-void EdgeItem::SetColor(QColor c,bool both)
-  {GeometricGraph & G = *(gwp->pGG);
-  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
-  tp->setColor(c);tp->setWidth(G.ewidth[e]);
-  setPen(*tp);
-  if(lower && both)
-      {if(eoriented[this->e] && staticData::ShowOrientation())
-	  opp->SetColor(Desaturate(c));
-      else
-	  opp->SetColor(c);
-      arrow->SetColor(c);
-      }
-  }
-void EdgeItem::SetColors(QColor c1, QColor c2)
-  {GeometricGraph & G = *(gwp->pGG);
-    Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
-    tp->setColor(c1);tp->setWidth(G.ewidth[e]);
-    setPen(*tp);
-    if(lower)
-    opp->SetColor(c2);
- else
- opp->SetColor(c1);
-  }
-void EdgeItem::setFromPoint(double x,double y)
-  {setLine(x,y,line().p2().x(),line().p2().y());
-  }
-void EdgeItem::setToPoint(double x,double y)
-  {setLine(line().p1().x(),line().p1().y(),x,y);
-  }
-
 //*********************************************************
 InfoItem::InfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p)
   :QGraphicsSimpleTextItem(t,0,g->canvas)
@@ -379,6 +249,129 @@ InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
   return infoitem;
   }
 
+//**********************************************************************************
+ArrowItem::ArrowItem(EdgeItem *edgeitem)
+    :QGraphicsPolygonItem(0,edgeitem->scene())
+  {edgeItem= edgeitem;
+  pts.resize(4);
+  ComputeCoord();
+  setZValue(arrow_z);
+  setFlags(0);
+  }
+void ArrowItem::ComputeCoord()
+  {prepareGeometryChange();
+  QPointF u =  edgeItem->line().p2() - edgeItem->line().p1();
+  double ml = sqrt(double(u.x()*u.x() + u.y()*u.y()))+1.5;
+  double diviseur = 12;
+  // for short edges or long edges
+  if(ml > 10 && ml < 50){diviseur = (diviseur*ml)/50;}
+  else if(ml > 100) {diviseur = (diviseur*ml)/100;}
+  diviseur = Max(diviseur,1);
+  QPointF v = QPointF(-u.y()/diviseur,u.x()/diviseur);
+  QPointF p0 = pts[0] = edgeItem->line().p2();
+  QPointF p1 = pts[1] =  p0 - v -(u*2)/diviseur;
+  pts[2] = p0  -u/diviseur;
+  QPointF p3 = pts[3] = p0 + v - (u*2)/diviseur;
+  setPolygon(pts);
+  }
+void ArrowItem::SetColor(QColor col)
+  {tp->setColor(col);  tb->setColor(col); 
+  setPen(*tp);setBrush(*tb);
+  }
+
+//**********************************************************************************
+EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
+  {GeometricGraph & G = *(g->pGG);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
+  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
+  tvertex v0 = G.vin[e];  tvertex v1 = G.vin[-e];
+  double h = g->canvas->height();
+  double x0 = G.vcoord[v0].x();  double y0 = G.vcoord[v0].y();
+  double x1 = G.vcoord[v1].x();  double y1 = G.vcoord[v1].y();
+  double x  = x0 * xorient + x1*(1.-xorient);
+  double y  = y0 * xorient + y1*(1.-xorient);
+  QColor col = color[bound(G.ecolor[e],1,16)];
+  QColor col2 = col;
+  if (G.Set(tedge()).exist(PROP_COLOR2))
+      {Prop<short> ecolor2(G.Set(tedge()),PROP_COLOR2);
+      ecolor2.definit(1);
+      col2 = color[bound(ecolor2[e],1,16)];
+      }
+  // first EdgeItem representing the lower part
+  tp->setColor(col);
+  tp->setWidth(G.ewidth[e]);
+  EdgeItem *edge0 = new EdgeItem(g,e,x0,h-y0,x,h-y,true,nodeitem(G.vin[e]));
+  edge0->arrow->SetColor(col);
+  // second EdgeItem  representing the upper part
+  if(staticData::ShowOrientation() && eoriented[e])
+      {edge0->arrow->show();
+      tp->setColor(Desaturate(col));
+      col = Desaturate(col);
+      }
+  else
+      {edge0->arrow->hide();
+      tp->setColor(col2);
+      col = col2;
+      }
+  EdgeItem *edge1 = new EdgeItem(g,e,x,h-y,x1,h-y1,false,nodeitem(G.vin[-e]));
+  edge0->opp = edge1;  edge1->opp = edge0;
+  return edge0;
+  }
+EdgeItem::EdgeItem(GraphWidgetPrivate* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
+                   ,bool _lower,NodeItem *_node)
+    :QGraphicsLineItem(0,g->canvas)
+  {gwp = g;
+  lower = _lower;
+  e = ee;
+  node = _node;
+  setLine(x_from,y_from,x_to,y_to);
+  if(lower)
+      arrow = new  ArrowItem(this);
+  else 
+      arrow = NULL;
+  setPen(*tp);
+  setZValue(edge_z);
+  setFlags(0);
+  }
+void EdgeItem::paint(QPainter *painter,const QStyleOptionGraphicsItem *,QWidget *)
+  {painter->setPen(pen());
+  painter->drawLine(line());
+//   cout<<"E:"<<e()<<endl;
+  } 
+QRectF EdgeItem::boundingRect() const
+  {return QRectF(line().p1(),line().p2());  
+  }
+void EdgeItem::SetColor(QColor c,bool both)
+  {GeometricGraph & G = *(gwp->pGG);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
+  tp->setColor(c);tp->setWidth(G.ewidth[e]);
+  setPen(*tp);
+  if(lower && both)
+      {if(eoriented[this->e] && staticData::ShowOrientation())
+	  opp->SetColor(Desaturate(c));
+      else
+	  opp->SetColor(c);
+      arrow->SetColor(c);
+      }
+  }
+void EdgeItem::SetColors(QColor c1, QColor c2)
+  {GeometricGraph & G = *(gwp->pGG);
+  Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
+  tp->setColor(c1);tp->setWidth(G.ewidth[e]);
+  setPen(*tp);
+  if(lower)
+      opp->SetColor(c2);
+  else
+      opp->SetColor(c1);
+  }
+void EdgeItem::setFromPoint(double x,double y)
+  {prepareGeometryChange(); // ralenti mais utile ???
+  setLine(x,y,line().p2().x(),line().p2().y());
+  }
+void EdgeItem::setToPoint(double x,double y)
+  {prepareGeometryChange();
+  setLine(line().p1().x(),line().p1().y(),x,y);
+  }
 //**************************************************************************
 NodeItem::NodeItem(tvertex &_v,GraphWidgetPrivate* g,QRectF &rect,QColor &col,QString &_t)
   :QGraphicsRectItem(rect,0,g->canvas)
@@ -390,11 +383,16 @@ NodeItem::NodeItem(tvertex &_v,GraphWidgetPrivate* g,QRectF &rect,QColor &col,QS
   setZValue(node_z);
   setFlags(0);
   }
+QRectF NodeItem::boundingRect() const
+  {return QRectF(rect());  
+  }
 void NodeItem::paint(QPainter *painter,const QStyleOptionGraphicsItem * option,QWidget *)
   {painter->setBrush(vcolor);
   painter->drawRect(option->exposedRect);
   painter->setPen(tcolor);
-  painter->drawText(option->exposedRect,Qt::AlignCenter,t);
+  // if smartViewportUpdate:
+  painter->drawText(rect(),Qt::AlignCenter,t);// so the text is completely redrawn
+  //painter->drawText(option->exposedRect,Qt::AlignCenter,t);
   }
 NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
   {GeometricGraph & G = *(gwp->pGG);
@@ -415,6 +413,7 @@ void NodeItem::SetText(QString _t)
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 4;  int dy =size.height();
   if(t.length() == 0){dx = 8; dy = 8;}
+  prepareGeometryChange();
   setRect(QRectF(rect().center().x()-dx/2,rect().center().y()-dy/2,dx,dy));
   }
 void NodeItem::SetColor(QColor c)
@@ -422,7 +421,7 @@ void NodeItem::SetColor(QColor c)
   update();
   }
 void NodeItem::moveTo(Tpoint &p,double eps)
-// does not modify vertex coordinates: used in spring embedders
+// does not modify vertex coordinates: only used in spring embedders
   {QPointF qp = QRectF(rect()).center() + pos(); //position approximative
   double dx = p.x() - qp.x();
   double dy = gwp->canvas->height() - p.y() - qp.y();
@@ -433,7 +432,7 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   double nx = p.x(); //new x position
   double ny = gwp->canvas->height() - p.y();
   QGraphicsRectItem::moveBy(dx,dy);
-  // Deplacer les aretes
+  // Move incident edges
   EdgeItem *ei,*up;
   double x0,y0;
   double x,y;
@@ -445,18 +444,19 @@ void NodeItem::moveTo(Tpoint &p,double eps)
 	  x  = nx * xorient + x0*(1.-xorient);
 	  y  = ny * xorient + y0*(1.-xorient);
 	  ei->setLine(nx,ny,x,y); 
- 	  up->setFromPoint(x,y); //up->setLine(x,y,x0,y0);
+ 	  up->setFromPoint(x,y);
 	  }
       else  
 	  {x0 = ei->line().p1().x(); y0 = ei->line().p1().y();
 	  x  = x0 * xorient + nx*(1.-xorient);
 	  y  = y0 * xorient + ny*(1.-xorient);
 	  up->setLine(x,y,nx,ny);
- 	  ei->setToPoint(x,y); 
+ 	  ei->setToPoint(x,y);
 	  }
       ei->arrow->ComputeCoord();
       }
-  gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);//slightly faster
+  //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
  void NodeItem::moveBy(double dx, double dy)
 // modify vertex coordinates
@@ -464,33 +464,34 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   QGraphicsRectItem::moveBy(dx,dy);
   GeometricGraph & G = *(gwp->pGG);
   G.vcoord[v].x() += dx;   G.vcoord[v].y() -= dy; 
-  // Deplacer les aretes
+  // Move incident edges
   double nx = G.vcoord[v].x();  
   double ny = gwp->canvas->height() - G.vcoord[v].y();
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
-  EdgeItem *ei,*opp;
+  EdgeItem *ei,*up;
   double x0,y0;
   double x,y;
   for(tbrin b=G.FirstBrin(v);b!=0;b=G.NextBrin(v,b))
       {ei = (EdgeItem *)(edgeitem[b.GetEdge()]); //lower part
-      opp = ei->opp; //upper part
+      up = ei->opp; //upper part
       if(b() > 0)  
-	  {x0 = opp->line().p2().x(); y0 = opp->line().p2().y();
+	  {x0 = up->line().p2().x(); y0 = up->line().p2().y();
 	  x  = nx * xorient + x0*(1.-xorient);
 	  y  = ny * xorient + y0*(1.-xorient);
-	  ei->setLine(nx,ny,x,y);   
-	  opp->setFromPoint(x,y);
+          ei->setLine(nx,ny,x,y);
+	  up->setFromPoint(x,y);//updates the incident node
 	  }
       else  
 	  {x0 = ei->line().p1().x(); y0 = ei->line().p1().y();
 	  x  = x0 * xorient + nx*(1.-xorient);
 	  y  = y0 * xorient + ny*(1.-xorient);
-	  opp->setLine(x,y,nx,ny); 
 	  ei->setToPoint(x,y);    
+          up->setLine(x,y,nx,ny);//updates the incident node
 	  }
       ei->arrow->ComputeCoord();
       }
   gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
 
 //***************************************************************

@@ -43,10 +43,10 @@ const int thick_rtti   = min_rtti+9;
 const int grid_z     =   1; // Grid
 const int ntxt_z     = 128; // NodeTextItem
 const int node_z     = 127; // NodeItem
-const int col_z      = 130; // ColorItem
-const int thick_z    = 130; // ThickItem
+const int col_z      = 2; // ColorItem //130
+const int thick_z    = 2; // ThickItem //130
 const int edge_z     = 126; // EdgeItem
-const int arrow_z     = 125; // ArrowItem
+const int arrow_z    = 125; // ArrowItem
 const int curs_z     = 129; // CursItem
 const int inforect_z = 131; // rect containing the info
 const int info_z     = 132; // InfoItem
@@ -61,28 +61,30 @@ class EdgeItem;
 
 class ArrowItem: public QGraphicsPolygonItem
 {public:
-  ArrowItem( EdgeItem *edgeitem,GraphWidgetPrivate* g);
+  ArrowItem(EdgeItem *edgeitem);
   void ComputeCoord();
-  void SetColor();
   void SetColor(QColor col);
   int type() const {return arrow_rtti;}
  private:
-  GraphWidgetPrivate* gwp;
   EdgeItem *edgeItem;
   QVector<QPointF>pts;
 };
 
 class EdgeItem: public QGraphicsLineItem
 {public:
-  EdgeItem(tedge &ee,double x_from,double y_from,double x_to,double y_to,bool _lower,GraphWidgetPrivate* g);
+  EdgeItem(GraphWidgetPrivate* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
+           ,bool _lower,NodeItem *node);
+  void paint(QPainter *painter,const QStyleOptionGraphicsItem * option,QWidget * widget = 0); 
   void SetColor(QColor c,bool both=true);
   void SetColors(QColor c1, QColor c2);
   void setFromPoint(double x,double y) ;
   void setToPoint(double x,double y);
   int type() const {return edge_rtti;}
+  QRectF boundingRect() const;
   tedge e;
   EdgeItem *opp;
   ArrowItem *arrow;
+  NodeItem *node;
   bool lower;
 private:
   GraphWidgetPrivate* gwp;
@@ -138,6 +140,7 @@ private:
 class NodeItem: public QGraphicsRectItem
 {public:
   NodeItem(tvertex &vv,GraphWidgetPrivate* g,QRectF &rect,QColor & col,QString &_t);
+  QRectF boundingRect() const;
   void moveBy(double dx, double dy);
   void moveTo(Tpoint &p,double eps = .0);
   void SetColor(QColor c);

@@ -38,7 +38,8 @@ GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent)
   setRenderHints(QPainter::Antialiasing);
   //faster but no antialiasing if no Samplebuffers
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); 
-  setViewportUpdateMode(FullViewportUpdate);
+  //setViewportUpdateMode(FullViewportUpdate);
+  setViewportUpdateMode(SmartViewportUpdate);
 #if QT_VERSION >= 0x040302
   setOptimizationFlags(DontSavePainterState|DontClipPainter); //same speed
 #endif
@@ -443,7 +444,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
   }
 void GraphEditor::mouseMoveEvent(QMouseEvent* e)
   {if(gwp->moving_item)
-      {setRenderHints(!QPainter::Antialiasing);
+      {//setRenderHints(!QPainter::Antialiasing);
       gwp->moving_item->moveBy(e->pos().x() - start_position.x(), e->pos().y() - start_position.y());
       start_position = e->pos();
       }
@@ -464,7 +465,7 @@ void GraphEditor::mouseMoveEvent(QMouseEvent* e)
       gwp->curs_item->setToPoint(e->pos().x(),e->pos().y());
   }
 void GraphEditor::mouseReleaseEvent(QMouseEvent* event)
-  {setRenderHints(QPainter::Antialiasing);
+  {//setRenderHints(QPainter::Antialiasing);
   if(gwp->info_item) //end info
       {scene()->removeItem(gwp->info_item->rectitem);
       scene()->removeItem(gwp->info_item);

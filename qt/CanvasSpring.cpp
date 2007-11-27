@@ -344,23 +344,23 @@ t current tanslation of v0
               if(found)
                   t=Tpoint(0,0);
               }
+          bool redraw = draw && iter%8 == 0;
           if(!found)
               {G.vcoord[v0] += t; 
               dx = Abs(t.x()); dy = Abs(t.y());
               dep = Max(dep,dx,dy);  
               if (dx > 30./n || dy > 30./n)
-		{if(draw && iter%8 == 0)
-		    {nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
-		     nodeitem[v0]->moveTo(G.vcoord[v0],5.);
-		    }
+		{if(redraw)
+		    nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
 		}
               else
-		{if(draw && iter%8 == 0) nodeitem[v0]->SetColor(Qt::red);
+		{if(redraw) nodeitem[v0]->SetColor(Qt::red);
                 ++n_red;
 		}
+              if(redraw)nodeitem[v0]->moveTo(G.vcoord[v0],5.);
               }
           else
-	    {if(draw && iter%8 == 0) nodeitem[v0]->SetColor(Qt::blue);
+	    {if(draw)nodeitem[v0]->SetColor(Qt::blue);
             ++n_red;
 	    }
           }
@@ -373,7 +373,6 @@ t current tanslation of v0
           {mw->progressBar->setValue(n_red);
           qApp->processEvents(); // absolutely needed
           }
-      //if(iter%2 == 0 && draw)scene()->update();
       stop = (n_red == G.nv())? stop+1 : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
