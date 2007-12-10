@@ -62,7 +62,7 @@ int TopologicalGraph::Planarity(tbrin b0)
   if(debug())DebugPrintf("Executing TopologicalGraph::Planarity");
 #ifdef TDEBUG
   if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 #endif
   
   int m_origin = ne();
@@ -80,7 +80,7 @@ int TopologicalGraph::Planarity(tbrin b0)
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;
       DebugPrintf("GDFSRenum ERROR");
-      setError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
+      setPigaleError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
       }
   nvin.Tswap(vin);
   _Bicon Bicon(n);
@@ -129,7 +129,7 @@ int TopologicalGraph::Planarity(tbrin b0)
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
-          {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
+          {DebugPrintf("ERROR genus:%d",g);setPigaleError(A_ERRORS_PLANARITY);}
       }
 #endif
   if(m != m_origin)
@@ -153,7 +153,7 @@ int TopologicalGraph::TestPlanar()
   if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
 #ifdef TDEBUG
   if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 #endif
   svector<tvertex> nvin(-m,m); nvin.SetName("TestPlanar:nvin");
   // DFS calls GDFS after some initializations
@@ -192,7 +192,7 @@ int TopologicalGraph::NewPlanarity(tbrin b0)
   if(debug())DebugPrintf("Executing TopologicalGraph::NewPlanarity");
 #ifdef TDEBUG
   if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 #endif
   
   int m_origin = ne();
@@ -210,7 +210,7 @@ int TopologicalGraph::NewPlanarity(tbrin b0)
   if(!GDFSRenum(xcir,nvin)) // Error
       {delete &low;
       DebugPrintf("GDFSRenum ERROR");
-      setError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
+      setPigaleError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
       }
   nvin.Tswap(vin);
   _Bicon Bicon(n);
@@ -259,7 +259,7 @@ int TopologicalGraph::NewPlanarity(tbrin b0)
   if(ret)
       {int g;
       if((g = ComputeGenus()) != 0)
-          {DebugPrintf("ERROR genus:%d",g);setError(A_ERRORS_PLANARITY);}
+          {DebugPrintf("ERROR genus:%d",g);setPigaleError(A_ERRORS_PLANARITY);}
       }
 #endif
   if(m != m_origin)
@@ -282,7 +282,7 @@ int TopologicalGraph::TestNewPlanar()
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
 #ifdef TDEBUG
   if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 #endif
   if(debug())DebugPrintf("Executing TopologicalGraph:NewTestPlanar");
   svector<tvertex> nvin(-m,m);nvin.SetName("TestNewPlanar:nvin");

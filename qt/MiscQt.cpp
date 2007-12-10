@@ -27,37 +27,15 @@ QString  universalFileName(QString const & fileName)
   filename.replace('/', QDir::separator());
   return filename;
   }
-QString  getErrorString()
+QString  getPigaleErrorString()
   {QString m;
-  if(getErrorMsg() &&  strlen(getErrorMsg()))
-      m.sprintf("Error:%d '%s' in %s:%d",getError(),getErrorMsg(),getErrorFile(),getErrorLine());
+  if(getPigaleErrorMsg() &&  strlen(getPigaleErrorMsg()))
+      m.sprintf("Error:%d '%s' in %s:%d",getPigaleError(),getPigaleErrorMsg(),getPigaleErrorFile(),getPigaleErrorLine());
   else
-      m.sprintf("Error:%d in %s:%d",getError(),getErrorFile(),getErrorLine());
+      m.sprintf("Error:%d in %s:%d",getPigaleError(),getPigaleErrorFile(),getPigaleErrorLine());
   return m;
   }
 
-/*
-bool & ShowOrientation()
-  {static bool showorientation = false;
-  return showorientation;
-  }
-
-bool & ShowArrow()
-  {static bool showarrow= true;
-  return showarrow;
-  }
-
-bool & ShowExtBrin()
-  {static bool showextbrin= false;
-  return showextbrin;
-  }
-
-int & ShowVertex()
-// -3:nothing -2:index else:prop
-  {static int _show = 0; 
-  return _show;
-  }
-*/
 QString getVertexLabel(GraphContainer &GC,tvertex v)
   {QString t;
   int prop = staticData::ShowVertex();

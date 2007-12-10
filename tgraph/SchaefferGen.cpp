@@ -2793,7 +2793,7 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity
       erased = TG.RemoveLoops();
   if(debug())LogPrintf("<GEN:(%ld) n:%d m:%d erased:%d>\n",randomSetSeed(),TG.nv(),TG.ne(),erased);
   if(randomUseGeneratedCir)
-       {if (TG.ComputeGenus() != 0) setError(-1,"Bad genus for random map (Schaeffer)");
+       {if (TG.ComputeGenus() != 0) setPigaleError(-1,"Bad genus for random map (Schaeffer)");
        else TG.planarMap() = 1;
        }
   

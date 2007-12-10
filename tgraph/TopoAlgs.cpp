@@ -836,7 +836,7 @@ int TopologicalGraph::VertexTriangulate()
   delete &Fpbrin;
   if(ne() != 3*nv() - 6)
       {DebugPrintf("Error 3:Vertextriangulate n=%d m=%d",ne(),nv());
-      setError(A_ERRORS_VTRIANGULATE);
+      setPigaleError(A_ERRORS_VTRIANGULATE);
       for(v = nv(); v > v00;v--)DeleteVertex(v);
       return -3;    
       }
@@ -1028,13 +1028,13 @@ bool TopologicalGraph::CheckNoC3Sep()
   if(debug())DebugPrintf("   CheckNoC3Sep");
   if (nv() < 6) return false;
   if(!CheckPlanar() || !CheckBiconnected() || !CheckSimple())
-      {DebugPrintf("Not planar or not Bicconnected or not simple");setError(A_ERRORS_BAD_INPUT);
+      {DebugPrintf("Not planar or not Bicconnected or not simple");setPigaleError(A_ERRORS_BAD_INPUT);
       return false;
       }
   if(debug())DebugPrintf("ExecutingCheckNoC3Sep");
   GraphContainer GC(Container());
   TopologicalGraph G0(GC);
-  if(G0.VertexTriangulate() != 0){setError(A_ERRORS_VTRIANGULATE);return false;}
+  if(G0.VertexTriangulate() != 0){setPigaleError(A_ERRORS_VTRIANGULATE);return false;}
   G0.SchnyderOrient(1);
   Prop<bool> erase(G0.Set(tvertex()),PROP_TMP);
   erase.clear();
@@ -1073,7 +1073,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
   save_oriented.Tswap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(-1,"PseudoBipolar");save_oriented.Tswap(oriented);RestoreOrientation();return false;}  
+      {setPigaleError(-1,"PseudoBipolar");save_oriented.Tswap(oriented);RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if (nsinks > 1)
       {save_oriented.Tswap(oriented);RestoreOrientation(); return false;}
@@ -1115,7 +1115,7 @@ bool TopologicalGraph::CheckSubdivTriconnected()
           }while((b = AG.cir[-b]) != b0);
       if(SumInDegrees == 4)break;      
       }
-  if(i > Fpbrin.n()){setError(A_ERRORS_SUBDIVTRICON,"subdiv3con");i=1;}
+  if(i > Fpbrin.n()){setPigaleError(A_ERRORS_SUBDIVTRICON,"subdiv3con");i=1;}
   b0 = Fpbrin[i];
   delete &Fpbrin;
     
@@ -1254,7 +1254,7 @@ bool TopologicalGraph::CheckTriconnected()
   save_oriented.Tswap(oriented);
   tbrin first = 1;
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(A_ERRORS_BIPOLAR_PSEUDO_PLAN);
+      {setPigaleError(A_ERRORS_BIPOLAR_PSEUDO_PLAN);
       save_oriented.Tswap(oriented);RestoreOrientation();return false;
       }  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
@@ -1293,7 +1293,7 @@ bool TopologicalGraph::CheckSerieParallel()
   int nsinks;
 
   if(PseudoBipolarPlan(first,nsinks)) // {s,t} edge 1
-      {setError(-1);save_oriented.Tswap(oriented); RestoreOrientation();return false;}  
+      {setPigaleError(-1);save_oriented.Tswap(oriented); RestoreOrientation();return false;}  
   // If only 1 sink and vin[-1] is a sink  => G is biconnected
   if (nsinks > 1)
       {save_oriented.Tswap(oriented); RestoreOrientation(); return false;}
@@ -1326,13 +1326,13 @@ GraphContainer * TopologicalGraph::AngleGraph()
   { if(debug())DebugPrintf("Executing AngleGraph");
   if(!CheckConnected() || !FindPlanarMap())
       {DebugPrintf("Could not compute angle graph");
-      setError(-1,"Could not compute angle graph");
+      setPigaleError(-1,"Could not compute angle graph");
       return (GraphContainer *)0;
       }
 // #ifdef TDEBUG
 //   if(ComputeGenus() != 0)
 //       {DebugPrintf("Not planar map !");
-//       setError(-1,"Not planar map !");
+//       setPigaleError(-1,"Not planar map !");
 //       return (GraphContainer *)0;
 //       }
 // #endif
@@ -1415,7 +1415,7 @@ GraphContainer * TopologicalGraph::DualGraph()
   int n = nv();
   if(!CheckConnected() || !FindPlanarMap())
       {DebugPrintf("Error Computing the dual:no planar map");
-      setError(-1,"Could not compute angle graph");
+      setPigaleError(-1,"Could not compute angle graph");
       return (GraphContainer *)0;
       }
   GraphContainer & Dual = *new GraphContainer;
@@ -1441,7 +1441,7 @@ GraphContainer * TopologicalGraph::DualGraph()
 
   if (nf != m-n+2) 
       {DebugPrintf("m=%d n=%d",m,n);
-      setError(A_ERRORS_DUAL);
+      setPigaleError(A_ERRORS_DUAL);
       DebugPrintf("Error Computing the dual: nf != m-n+2 %d!=%d",nf(),m-n+2);
       delete &Dual;return (GraphContainer *)0;
       }

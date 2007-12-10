@@ -91,7 +91,7 @@ bool CheckBipolarlyOriented(TopologicalGraph &G,tvertex &s,tvertex &t,bool &stCo
   // Add an edge between s and t
   if(addEdge)
       {G.NewEdge(bs,bt);
-      if(G.ComputeGenus() != 0)setError(-1);
+      if(G.ComputeGenus() != 0)setPigaleError(-1);
       bs = (tbrin)G.ne(); 
       }
   return true;

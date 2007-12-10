@@ -141,14 +141,14 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   Prop1<tstring> title(G.Set(),PROP_TITRE);
 #ifdef TDEBUG
   if(!G.DebugCir())
-      {DebugPrintf("input Cir is wrong");setError(A_ERRORS_BAD_INPUT);return;}
+      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return;}
   LogPrintf("START INFO: n = %d m = %d Name:%s\n",G.nv(),G.ne(),~title());
 #endif
   if(print && debug())Tprintf("START INFO:");
 // #ifdef TDEBUG
 //   if(G.vin[0]() || G.cir[0]() || G.acir[0]())
 //       {Tprintf("vin[0]=%d,cir[0]=%d,acir[0]=%d",G.vin[0](),G.cir[0](),G.acir[0]());
-//       setError(-1,"vin[0] or cir[0] or acir[0] != 0");
+//       setPigaleError(-1,"vin[0] or cir[0] or acir[0] != 0");
 //       }
 //   if(debug())DebugPrintf("START INFO: n = %d m = %d Name:%s",G.nv(),G.ne(),~title());
 // #endif
@@ -317,18 +317,18 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
   Tprintf("Name:%s",~title());
 
-  if(getError())DebugPrintf("ERROR:%s",(const char *)getErrorString().toAscii());
+  if(getPigaleError())DebugPrintf("ERROR:%s",(const char *)getPigaleErrorString().toAscii());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;
   else if(T && G.nv() > 3)
       {E = G.CheckNoC3Sep();
-      if(getError()){setError();Tprintf("Error CheckNoC3Sep");}
+      if(getPigaleError()){setPigaleError();Tprintf("Error CheckNoC3Sep");}
       else if(E) Tprintf("No C3 Separator");
       else Tprintf("C3 Separator");
       }
   else if(!C3 && P && S && !M && G.CheckSubdivTriconnected())
-      {if(getError()){setError();Tprintf("Error CheckSubdivTriconnected");}
+      {if(getPigaleError()){setPigaleError();Tprintf("Error CheckSubdivTriconnected");}
       else Tprintf("Subdivision of a 3-Connected");
       }
 

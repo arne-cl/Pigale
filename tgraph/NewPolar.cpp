@@ -701,7 +701,7 @@ int Polar(TopologicalGraph &G)
   // Mark the edges of a BFS tree
   G.Set().erase(PROP_CONNECTED);
   if(!G.CheckConnected())
-      {setError(-1,"Polar: graph not connected");
+      {setPigaleError(-1,"Polar: graph not connected");
       return -1;
       }
   

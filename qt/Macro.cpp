@@ -19,14 +19,12 @@
 #include <QT/Action_def.h>  
 #include <TAXI/Tgf.h> 
 
-
 #include <QApplication>
 #include <QProgressBar>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSpinBox>
 #include <QToolBar>
-
 
 class eventEater : public QObject
 {public:
@@ -191,7 +189,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
           progressBar->hide();
           Time = t0.elapsed()/1000.;
           t0.restart();
-          if(EditNeedUpdate)gw->update(-1);
+          if(EditNeedUpdate)gw->editor->update(-1);
           if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
           MacroLooping = false;
 #ifndef _WINDOWS
@@ -202,7 +200,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
           DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
           Tprintf("%s",(const char *)msg0.toAscii()); 
           DebugPrintf("%s",(const char *)msg1.toAscii()); 
-          if(!getError())
+          if(!getPigaleError())
               DebugPrintf("END PLAY OK iter:%d",j);
           else
               DebugPrintf("END PLAY ERROR iter=%d",j);
@@ -293,7 +291,7 @@ void pigaleWindow::macroPlay(bool start)
           // update the editor and information
           if(record != MacroNumActions)
               {if(EditNeedUpdate)
-                  {gw->update();EditNeedUpdate = false;}
+                  {gw->editor->update(1);EditNeedUpdate = false;}
               if(InfoNeedUpdate)
                   {information();InfoNeedUpdate = false;}
               }
@@ -312,9 +310,9 @@ void pigaleWindow::macroPlay(bool start)
           InfoNeedUpdate = EditNeedUpdate = true;
       else if(ret_handler == 7 || ret_handler == 8)
           EditNeedUpdate = false;
-      if(getError())
-          {DebugPrintf("MACRO %s",(const char *)getErrorString().toAscii());
-          setError();
+      if(getPigaleError())
+          {DebugPrintf("MACRO %s",(const char *)getPigaleErrorString().toAscii());
+          setPigaleError();
           MacroWait = MacroLooping = false;
           InfoNeedUpdate = false; // do not hide the error message
           break;
@@ -324,7 +322,7 @@ void pigaleWindow::macroPlay(bool start)
   MacroExecuting = false;
   if(!MacroLooping)
       {if(EditNeedUpdate)
-          {gw->update(-1);EditNeedUpdate = false;}
+          {gw->editor->update(-1);EditNeedUpdate = false;}
       if(InfoNeedUpdate)
           {information(false);InfoNeedUpdate = false;}
       blockInput(false);

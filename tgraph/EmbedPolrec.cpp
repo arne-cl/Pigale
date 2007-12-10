@@ -191,7 +191,7 @@ int DoccGraph::makeDosLR()
   if(!ok)return -1;
 
 #endif
-  if (y != nv() || occ != 2*ne()){setError(-1,"makeDosPR"); ok = false;return -1;}
+  if (y != nv() || occ != 2*ne()){setPigaleError(-1,"makeDosPR"); ok = false;return -1;}
 
   // Compute dosInv  
   dosInv[0] = 0;
@@ -544,7 +544,7 @@ void  DoccGraph::edgeHeightLR()
   MPATH->solve(hauteur);
 #ifdef TDEBUG
   bool nocircuits =  MPATH->verify(hauteur);
-  if(!nocircuits){ok = false;setError(-1,"There is a CIRCUIT");}
+  if(!nocircuits){ok = false;setPigaleError(-1,"There is a CIRCUIT");}
   if(!nocircuits)printf("THERE IS A CIRCUIT----------------------------\n");
  hmax = Max(hmax,hauteur[ne()+1] +1);
 #else
@@ -612,7 +612,7 @@ int  DoccGraph::checkListe(svector<tedge> &liste,int ml)
               {printf("crossing:%d %d\n",liste[i](),liste[j]());
               ecolor[iel[liste[i]].GetEdge()]  = Red;
               ecolor[iel[liste[j]].GetEdge()]  = Blue;
-              setError(-1,"polrec:bad drawing X");
+              setPigaleError(-1,"polrec:bad drawing X");
               ok = false;
               return -1;
               }
@@ -620,7 +620,7 @@ int  DoccGraph::checkListe(svector<tedge> &liste,int ml)
               {printf("touching:%d %d\n",liste[i](),liste[j]());
               ecolor[iel[liste[i]].GetEdge()] = Red;
               ecolor[iel[liste[j]].GetEdge()] = Green;
-              setError(-1,"polrec:bad drawing T");
+              setPigaleError(-1,"polrec:bad drawing T");
               ok = false;
               return -1;
               }
@@ -641,7 +641,7 @@ int  DoccGraph::checkDrawing()
       link[je] = htop[h]; htop[h] = je;
       }
   if( htop[0]())
-      {setError(-1,"polrec:bad drawing");
+      {setPigaleError(-1,"polrec:bad drawing");
       ok = false;
       return -1;
       }
@@ -714,7 +714,7 @@ int EmbedPolrecGeneral(TopologicalGraph &G,int type)
   if(type == 1)G.Planarity(G.extbrin());
   
   DoccGraph DG(G,morg,type);
-  if(!DG.ok){setError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
+  if(!DG.ok){setPigaleError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
   DG.vertexHeight();
   if(type == 1&& DG.planarMap() == -1)
       {DG.edgeMinHeight();
@@ -729,7 +729,7 @@ int EmbedPolrecGeneral(TopologicalGraph &G,int type)
   DG.drawPR();
   if(type == 1) {G.cir.vector() = cir0; G.acir.vector() = acir0; G.extbrin() = b0;}
 #ifndef TDEBUG
-  if(!DG.ok){setError(-1,"ERROR: polrec");DebugPrintf("ERROR: polrec");return -1;}
+  if(!DG.ok){setPigaleError(-1,"ERROR: polrec");DebugPrintf("ERROR: polrec");return -1;}
 #endif
   
   return 0;
@@ -744,7 +744,7 @@ int EmbedPolrecBFS(TopologicalGraph &G)
   {int morg = G.ne();
   G.MakeConnected();
   DoccGraph DG(G,morg,2);
-  if(!DG.ok){setError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
+  if(!DG.ok){setPigaleError(-1,"ERROR: polrec construction");DebugPrintf("ERROR: polrec"); return -1;}
   DG.vertexHeight();
   DG.edgeHeight();
   DG.vertexLeftRight();

@@ -663,7 +663,6 @@ class GraphSymPrivate
       Factorial = false;
       editor = NULL;
       bt_sym = bt_opt = bt_fact = NULL;
-      pGC = NULL;
       pGG = NULL;
       }
   ~GraphSymPrivate()
@@ -696,7 +695,9 @@ int GraphSym::update()
       vb->setMargin(2);
       d->editor = new SymWindow(d,this);
       vb->addWidget(d->editor);
-      QHBoxLayout* hb = new QHBoxLayout();    vb->addLayout(hb);
+      QHBoxLayout* hb = new QHBoxLayout();  
+      vb->addStrut(35); // why necessary ??? 30 = hb->minimumSize().height()
+      vb->addLayout(hb);
       QPushButton* bt_next = new QPushButton( "Next",this);
       bt_next->setMaximumWidth(60);
       d->bt_fact = new QCheckBox( "Fact",this);           
@@ -712,14 +713,14 @@ int GraphSym::update()
       connect(d->bt_fact,SIGNAL(clicked()),SLOT(Factorial()));
       connect(d->bt_opt,SIGNAL(clicked()),SLOT(Optimal()));
       connect(d->bt_sym,SIGNAL(clicked()),SLOT(SymLabel()));
+      d->bt_fact->setPalette(d->mw->LightPalette);
+      d->bt_opt->setPalette(d->mw->LightPalette);
+      d->bt_sym->setPalette(d->mw->LightPalette);
       }
   else
       {delete d->pGG;
       delete [] xcoord;delete [] ycoord;delete [] zcoord;
       }
-  d->bt_fact->setPalette(d->mw->LightPalette);
-  d->bt_opt->setPalette(d->mw->LightPalette);
-  d->bt_sym->setPalette(d->mw->LightPalette);
 
   d->Factorial = false; d->SymLabel = true;
   d->Optimal = false;  d->OtherCoords = false;
@@ -731,8 +732,7 @@ int GraphSym::update()
   d->pGG = new GeometricGraph(*(d->pGC));
   d->editor->start = 1;d->editor->start0 = 1;
   GeometricGraph & G = *(d->pGG);
-
-  int n = d->pGG->nv();
+  int n = G.nv();
   xcoord	= new double[n+1];	
   ycoord	= new double[n+1];
   zcoord	= new double[n+1];
@@ -790,7 +790,7 @@ void GraphSym::png(int size)
                       tr("Choose a file to save under"),
                       d->mw->DirFilePng,
                       "Images(*.png)");
-      if(FileName.isEmpty())return; 
+      if(FileName.isEmpty()){d->editor->setGeometry(geo);return;}
       if(QFileInfo(FileName).suffix() != (const char *)"png")
 	  FileName += (const char *)".png";
       d->mw->DirFilePng = QFileInfo(FileName).absolutePath();

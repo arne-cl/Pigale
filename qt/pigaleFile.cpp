@@ -9,7 +9,6 @@
 **
 *****************************************************************************/
 
-
 #include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -20,6 +19,7 @@
 #include <QInputDialog>
 #include <QStatusBar>
 #include <QMessageBox>
+
 
 void Init_IO();
 
@@ -93,14 +93,14 @@ int pigaleWindow::publicLoad(int pos)
    if(!fi.exists() || fi.size() == 0)
        {m = QString("file -%1- does not exist").arg(InputFileName);
        LogPrintf("%s\n",(const char *)m.toAscii());
-       setError(-1,"Non existing file");
+       setPigaleError(-1,"Non existing file");
        return -1;
       } 
    int i = IO_WhoseIs((const char *)InputFileName.toAscii());
    if(i < 0) 
        {m = QString("%1: unrecognized format").arg(InputFileName);
      LogPrintf("%s\n",(const char *)m.toAscii());
-     setError(-1,"unrecognized format");
+     setPigaleError(-1,"unrecognized format");
      return -1;
      }
    InputDriver = i;
@@ -121,7 +121,7 @@ int pigaleWindow::publicLoad(int pos)
   return *pGraphIndex;
   }
 int pigaleWindow::load(int pos)
-  {setError();
+  {setPigaleError();
   QString m;
   QFileInfo fi(InputFileName);
   if(!fi.exists() || fi.size() == 0)
@@ -153,7 +153,7 @@ int pigaleWindow::load(int pos)
   UndoSave();
   banner();
   information(); 
-  gw->update();
+  gw->editor->update(1);
   return *pGraphIndex;
   }
 int pigaleWindow::save(bool manual)
@@ -180,7 +180,7 @@ int pigaleWindow::save(bool manual)
       }
  
   if(IO_Save(OutputDriver,G,(const char *)OutputFileName.toAscii()) == 1)
-      {setError(-1,QString("Cannot open file:%1").arg(OutputFileName).toAscii());
+      {setPigaleError(-1,QString("Cannot open file:%1").arg(OutputFileName).toAscii());
       return -1;
       }
   GraphIndex2 = IO_GetNumRecords(OutputDriver,(const char *)OutputFileName.toAscii());
@@ -193,7 +193,7 @@ int pigaleWindow::publicSave(QString FileName)
   title() = "G";
   QFileInfo fi =  QFileInfo(FileName);
   QString fileExt =  fi.suffix();
-  if(fileExt.length() < 3){setError(-1,"UNKNOWN EXTENSION");return -1;}
+  if(fileExt.length() < 3){setPigaleError(-1,"UNKNOWN EXTENSION");return -1;}
   int driver = -1;
   QString extName;
   for (int i=0; i<IO_n();i++)
@@ -201,7 +201,7 @@ int pigaleWindow::publicSave(QString FileName)
       if(fileExt.contains(extName))driver = i;
       }
   if(driver == -1)
-      {setError(-1,"UNKNOWN DRIVER");return -1;}
+      {setPigaleError(-1,"UNKNOWN DRIVER");return -1;}
   OutputFileName = FileName;
   OutputDriver = driver;
   save(false);
@@ -257,14 +257,14 @@ void pigaleWindow::switchInputOutput()
   load(0);
 }
 void pigaleWindow::NewGraph()
-  {setError();
+  {setPigaleError();
   statusBar()->showMessage("New graph");
   UndoClear();UndoSave();
   Graph G(GC);
   G.StrictReset();
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   if(debug())DebugPrintf("**** New graph");
-  information();gw->update();
+  information();gw->editor->update(1);
   }
 void pigaleWindow::previous()
   {load(-1);}

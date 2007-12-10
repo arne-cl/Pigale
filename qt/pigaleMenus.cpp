@@ -27,7 +27,6 @@
 #include <QT/Handler.h>
 #include <QT/Action_def.h>
 #include <QT/pigalePaint.h> 
-#include <QT/pigaleCanvas.h>
 #include <QT/clientEvent.h> 
 
 #include <QIcon>
@@ -126,7 +125,7 @@ pigaleWindow::pigaleWindow()
 
   UpdatePigaleColors();  
   initPigale();
-  gw->update();
+  gw->editor->update(1);
   // post a message to know when initialization complete
   readyEvent *e = new readyEvent();
   QApplication::postEvent(this,e);
@@ -161,7 +160,7 @@ int pigaleWindow::getId(QAction *action)
   }
 void pigaleWindow::initPigale()
   {// Initialize Error
-  setError();
+  setPigaleError();
   // Macros
   MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
 #ifdef _WINDOWS
@@ -207,12 +206,13 @@ void pigaleWindow::createLayout(QWidget *mainWidget)
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
   mypaint =  new pigalePaint(0,this);
-  gw = new  GraphWidget(0,this);//gw->setAutoFillBackground(true);
+  gw = new  GraphWidget(0,this);    gw->setAutoFillBackground(true);
   graphgl  = new GraphGL(0,this);   graphgl->setAutoFillBackground(true);
   graphsym = new GraphSym(0,this);  graphsym->setAutoFillBackground(true);
-  browser = new QTextBrowser(0);
+  browser = new QTextBrowser(0);    browser->setAutoFillBackground(true);
   QPalette bop(QColorDialog::customColor(3));
-  browser->setPalette(bop);         browser->setAutoFillBackground(true);
+  browser->setPalette(bop);
+  gw->setPalette(bop);
   tabWidget->addTab(gw,tr("Graph Editor"));
   tabWidget->addTab(mypaint,"");
   tabWidget->addTab(graphgl,""); 
@@ -221,7 +221,6 @@ void pigaleWindow::createLayout(QWidget *mainWidget)
   createRightLayout(leftLayout);
   }
 void pigaleWindow::createRightLayout(QHBoxLayout * leftLayout)
-  //{QTabWidget  *rtabWidget = new  QTabWidget(); 
   {rtabWidget = new  QTabWidget(); 
   gSettings = new QWidget();  gSettings->setAutoFillBackground(true);  
   gInfo = new QWidget(); gInfo->setAutoFillBackground(true);               
@@ -233,7 +232,7 @@ void pigaleWindow::createRightLayout(QHBoxLayout * leftLayout)
   createPageSettings(gSettings,leftLayout);
   }
 void pigaleWindow::createPageInfo(QWidget *gInfo)
-  {  QGridLayout *rightLayout = new  QGridLayout(gInfo);
+  {QGridLayout *rightLayout = new  QGridLayout(gInfo);
   //messages
   messages = new QTextEdit(gInfo);
   QBrush pb(QColorDialog::customColor(1));
@@ -854,7 +853,7 @@ void pigaleWindow::showLabel(int show)
   if(staticData::ShowVertex() != _show && GC.nv())
       {switch(tabWidget->currentIndex())
           {case 0:
-              gw->update();
+              gw->editor->update(1);
               break;
           case 1:
               mypaint->update();
@@ -876,7 +875,7 @@ void pigaleWindow::aboutQt()
 void pigaleWindow::print()
   {switch(tabWidget->currentIndex())
       {case 0:
-          gw->print(printer);
+          gw->editor->print(printer);
           break;
       case 1:
           mypaint->print(printer);
@@ -892,7 +891,7 @@ void pigaleWindow::png()
   {QRect geo;
   switch(tabWidget->currentIndex())
       {case 0:
-          gw->png(staticData::sizePng);
+          gw->editor->png(staticData::sizePng);
           break;
       case 1:
           geo = mypaint->geometry();

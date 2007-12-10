@@ -42,7 +42,7 @@ void pigaleWindow::Undo()
   if(UndoIndex > 1)--UndoIndex;
   if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
-  information(); gw->update();
+  information(); gw->editor->update(1);
   undoRAct->setEnabled(UndoMax != 0 && UndoIndex < UndoMax);
   }
 void pigaleWindow::UndoTouch(bool save)
@@ -77,7 +77,7 @@ void pigaleWindow::Redo()
   {if(UndoIndex < UndoMax)++UndoIndex;
     if(IO_Read(0,GC,undofile,UndoMax,UndoIndex) != 0)return;
   banner();
-  information(); gw->update();
+  information(); gw->editor->update(1);
   undoRAct->setEnabled(UndoIndex < UndoMax);
   }
 void pigaleWindow::UndoClear()

@@ -17,35 +17,55 @@
 #define COLORNAMES
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 
 #include <QInputDialog>
 //#include <QGLWidget>
 
-GraphEditor::GraphEditor(GraphWidgetPrivate *g,QWidget* parent)
-    :QGraphicsView(g->canvas,parent)
-  {gwp = g;
-  DoNormalise = true;
-  is_init = false;
+GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
+    :QGraphicsView(parent->canvas,parent)
+    ,zoom(1.)
+    ,gwp(parent)
+    ,DoNormalise(true),is_init(false)
+    ,color_node(Yellow),color_edge(Black),width_edge(1)
+  {
+  ShowGrid = FitToGrid = false;
+  SizeGrid = 100;
+  mywindow = _mywindow;
   CreatePenBrush();
-  color_node = Yellow;
-  color_edge = Black;
-  width_edge = 1;
-  zoom = 1.;
   setFocusPolicy(Qt::ClickFocus);
-  QBrush brush( Qt::white);  setBackgroundBrush(brush);
   setRenderHints(QPainter::Antialiasing);
-  //faster but no antialiasing if no Samplebuffers
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); 
-  //setViewportUpdateMode(FullViewportUpdate);
-  setViewportUpdateMode(SmartViewportUpdate);
+  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //faster (no antialiasing if no Samplebuffers)
+  setViewportUpdateMode(FullViewportUpdate);
 #if QT_VERSION >= 0x040302
-  setOptimizationFlags(DontSavePainterState|DontClipPainter); //same speed
+  setOptimizationFlags(DontSavePainterState|DontClipPainter); //about same speed
 #endif
+  gwp->canvas = new QGraphicsScene(0,0,contentsRect().width(),contentsRect().height());
+  gwp->canvas->setItemIndexMethod(QGraphicsScene::NoIndex);
+  setScene(gwp->canvas);
   }
-GraphEditor::~GraphEditor()
-  { }
+void GraphEditor::update(int compute)
+// called when loading a graph compute = 1 or -1
+// if we only have erased edges and/or vertice compute = 0
+  {if(gwp->pGG)delete gwp->pGG;
+  gwp->pGG = new GeometricGraph(mywindow->GC);
+  gwp->moving_item = 0;  gwp->curs_item = 0;  gwp->info_item = 0; gwp->moving_subgraph = false;
+  if(compute)
+      {mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+      SizeGrid = FitSizeGrid = OldFitSizeGrid = 100;
+      mywindow->mouse_actions->LCDNumberX->display(100);
+      mywindow->mouse_actions->LCDNumberY->display(100);
+      nxstep = nystep  = SizeGrid;
+      GridDrawn = false;
+      ForceGrid  =false;
+      RedrawGrid =true;
+      zoom = 1.;
+      load(true);
+      }
+  else
+      load(false);
+  if(compute != -1)mywindow->tabWidget->setCurrentIndex(mywindow->tabWidget->indexOf(this));
+  }
 void GraphEditor::keyPressEvent(QKeyEvent *k)
   {key_pressed = k->key();
   if(key_pressed  == Qt::Key_Up)Zoom(1);
@@ -169,12 +189,12 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
           if(rtt == 0)return;
           } 
       if(rtt == node_rtti)
-          {gwp->mywindow->UndoTouch(false);
+          {mywindow->UndoTouch(false);
           G.vcolor[node->v] = color_node;
           node->SetColor(color[color_node]);
           }
       else if(rtt == edge_rtti)
-          {gwp->mywindow->UndoTouch(false);
+          {mywindow->UndoTouch(false);
           G.ecolor[edge->e] = color_edge;
           G.ewidth[edge->e]  = width_edge;
           if(edge->lower) edge->SetColor(color[color_edge]);
@@ -183,7 +203,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
       return; 
       }
   else if(MouseAction == 1) // Start create an edge
-      {gwp->mywindow->UndoTouch(false);
+      {mywindow->UndoTouch(false);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       NodeItem* node;
       EdgeItem *edge;
@@ -195,7 +215,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
           v = G.NewVertex(pp);
           ToGrid(v);
           nodeitem[v] = node  = CreateNodeItem(v,gwp);
-          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
           }
       else
           v = node->v;
@@ -212,16 +232,16 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
           if(rtt == 0)return;
           } 
       if(rtt == node_rtti)
-          {gwp->mywindow->UndoTouch(true);
+          {mywindow->UndoTouch(true);
           G.DeleteVertex(node->v);
-          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
           }
       else
-          {gwp->mywindow->UndoTouch(true);
+          {mywindow->UndoTouch(true);
           G.DeleteEdge(edge->e);
           }
       load(false);
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       PrintSizeGrid();
       return;
       }
@@ -230,22 +250,22 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
       EdgeItem *edge;
       int rtt = FindItem(p,node,edge);
       if(rtt != node_rtti)return;
-      gwp->mywindow->UndoTouch(false);
+      mywindow->UndoTouch(false);
       gwp->moving_item = node;
       start_position = p;
       return;
       }
   else if(MouseAction == -3) // Start moving a subgraph
-      {gwp->mywindow->UndoTouch(false);
+      {mywindow->UndoTouch(false);
       gwp->moving_subgraph = true;
       start_position = p;
       return;
       }
   else if(MouseAction == 4) // Bissect an edge
-      {gwp->mywindow->UndoTouch(true);
-      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-	  gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-      gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+      {mywindow->UndoTouch(true);
+      if(FitToGrid)//and we are sure that ButtonFitGrid exists
+	  mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
@@ -253,20 +273,20 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
       DoNormalise = false;
       load(true);
       DoNormalise = true;
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       return;
       }
   else if(MouseAction == -4) // Contract an edge
       {EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
-      gwp->mywindow->UndoTouch(true);
+      mywindow->UndoTouch(true);
       // provisoire
       if(edge->lower)G.ReverseEdge(edge->e);
       // end provisoire
       G.ContractEdge(edge->e);
       load(false);
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       return;
       }
   else if(MouseAction == 5) // Color Exterior face
@@ -334,11 +354,11 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
       {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
       Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED); 
       Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
-      gwp->mywindow->setShowOrientation(true);
+      mywindow->setShowOrientation(true);
       EdgeItem *edge;
       int rtt = FindItem(p,edge);
       if(rtt != edge_rtti)return;
-      gwp->mywindow->UndoTouch(true);
+      mywindow->UndoTouch(true);
       if(MouseAction == 2)
           {if(eoriented[edge->e])
               {G.ReverseEdge(edge->e); eoriented[edge->e] = true;
@@ -349,7 +369,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
 	      else 
                   scene()->removeItem(edge->opp->arrow);
 	      scene()->removeItem(edge->opp);scene()->removeItem(edge);
-              gwp->mywindow->information();// Informations
+              mywindow->information();// Informations
               return;
               }
           else
@@ -362,7 +382,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
 	      else 
                   scene()->removeItem(edge->opp->arrow);
 	      scene()->removeItem(edge->opp);scene()->removeItem(edge);
-              gwp->mywindow->information();// Informations
+              mywindow->information();// Informations
               return;
               }
           }
@@ -374,15 +394,15 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
           else 
               scene()->removeItem(edge->opp->arrow);
 	  scene()->removeItem(edge->opp);scene()->removeItem(edge);
-          gwp->mywindow->information();// Informations
+          mywindow->information();// Informations
           return;
           }
       }
   else if(MouseAction == 10)// Duplicate the sugraph of the current color
-      {gwp->mywindow->UndoTouch(true);
-      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-          gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-      gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+      {mywindow->UndoTouch(true);
+      if(FitToGrid)//and we are sure that ButtonFitGrid exists
+          mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
       short vcol=0;  G.vcolor.getinit(vcol);
       G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
@@ -404,16 +424,16 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
               G.NewEdge(newvertex[v1],newvertex[v2]);
           }
       load(true);
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       }
   else if(MouseAction == 11)
       //Duplicate the sugraph of the current color
       // and add edges between a new vertex and its father
-      {gwp->mywindow->UndoTouch(true);
-      if(gwp->FitToGrid)//and we are sure that ButtonFitGrid exists
-          gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-      gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-      gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      {mywindow->UndoTouch(true);
+      if(FitToGrid)//and we are sure that ButtonFitGrid exists
+          mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+      mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+      mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
       short vcol=0;  G.vcolor.getinit(vcol);
       G.vcolor.definit((short)((vcol+1)%16));
       GeometricGraph & G = *(gwp->pGG);
@@ -439,7 +459,7 @@ void GraphEditor::mousePressEvent(QMouseEvent* e)
           G.NewEdge(v,newvertex[v]);
           }
       load(true);
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       }
   }
 void GraphEditor::mouseMoveEvent(QMouseEvent* e)
@@ -474,7 +494,7 @@ void GraphEditor::mouseReleaseEvent(QMouseEvent* event)
       return;
       }
   if(gwp->moving_item) //end moving a vertex
-      {if(!gwp->FitToGrid)
+      {if(!FitToGrid)
           {gwp->moving_item = 0;return;}
       GeometricGraph & G = *(gwp->pGG);
       NodeItem *node = gwp->moving_item;
@@ -494,7 +514,7 @@ void GraphEditor::mouseReleaseEvent(QMouseEvent* event)
       }
   if(gwp->moving_subgraph == true)
       {gwp->moving_subgraph = false;
-      if(!gwp->FitToGrid)return;
+      if(!FitToGrid)return;
       GeometricGraph & G = *(gwp->pGG);
       Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
       short vcol=0;  G.vcolor.getinit(vcol);
@@ -543,7 +563,7 @@ void GraphEditor::mouseReleaseEvent(QMouseEvent* event)
           Tpoint pp((double)p.x(),(double)(h - p.y()));
           v2 = G.NewVertex(pp);ToGrid(v2);
           nodeitem[v2] = CreateNodeItem(v2,gwp);
-          gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
           if(IsGrid)UpdateSizeGrid();
           }
       else
@@ -553,85 +573,49 @@ void GraphEditor::mouseReleaseEvent(QMouseEvent* event)
           edgeitem[e] = CreateEdgeItem(e,gwp);
           }
       delete gwp->curs_item;      gwp->curs_item = 0;
-      gwp->mywindow->information();// Informations
+      mywindow->information();// Informations
       if(v1 == v2) // We have created a vertex
           PrintSizeGrid();
       return;
       }
   }
-
-void GraphEditor::showEvent(QShowEvent* e)
-  {initialize();
-  gwp->CanvasHidden = false;
-  QGraphicsView ::showEvent(e);
-  }
-void GraphEditor::hideEvent(QHideEvent* e)
-  {gwp->CanvasHidden = true;
-  QGraphicsView ::hideEvent(e);
-  }
 QSize GraphEditor::sizeHint() const
-  {return QSize(gwp->GW->width(),gwp->GW->height());
+  {return QSize(gwp->width(),gwp->height());
   }
 void GraphEditor::resizeEvent(QResizeEvent* e)
-  {if(gwp->canvas)
-      gwp->canvas->setSceneRect(0,0,contentsRect().width(),contentsRect().height());
-  QGraphicsView ::resizeEvent(e);
+  {gwp->canvas->setSceneRect(0,0,contentsRect().width(),contentsRect().height());
+  if(e->oldSize().width() == e->size().width())
+      is_init = true;
   }
-void GraphEditor::paintEvent(QPaintEvent *e)
-  {//if(gwp->mywindow->MacroLooping)return;
-  QGraphicsView ::paintEvent(e);
-  // Before the first paintEvent,the sizes are wrong
-  if(!is_init)
-      {is_init = true;//initialize();
-      resize(sizeHint());
-      if(gwp->canvas == 0)
-          gwp->canvas = new QGraphicsScene(0,0,contentsRect().width(),contentsRect().height());
-      if(!scene())setScene(gwp->canvas);
-      initialize();
-      }
-  } 
 void GraphEditor::initialize()
-  {
-  // very important to set here in case size was modified while hidden
-  resize(sizeHint());
-  if(gwp->canvas == 0)
-      {gwp->canvas = new QGraphicsScene(0,0,contentsRect().width(),contentsRect().height());
-      gwp->canvas->setItemIndexMethod(QGraphicsScene::NoIndex);
-      }
-  if(!scene())setScene(gwp->canvas);
+  {resize(sizeHint());  //very important to set here in case size was modified while hidden
   //Compute the font size
   int fs = (int)((double)Min(gwp->canvas->width(),gwp->canvas->height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   gwp->fontsize = fs; 
   load(true);
+
   }
 
 void GraphEditor::load(bool initgrid) 
 // by default initgrid = true
-// when editing (erasing edges, vertices,reorinetong) initgrid = false
+// when editing (erasing edges, vertices,reorienting) initgrid = false
   {if(!is_init)return;
   clear();// delete all items
-  //int nmaxdisplay = gwp->mywindow->graph_properties->MaxNDisplay;
   if(gwp->pGG->nv() > staticData::MaxND)
       {Tprintf("Too big graph nv= %d (>%d)",gwp->pGG->nv(),staticData::MaxND);return;}
   GeometricGraph & G = *(gwp->pGG);
+
   if(initgrid)
       {Normalise();
-      if(InitGrid(current_grid))  
-          DrawGrid(current_grid);
-      else
-          DrawGrid(current_grid);
+      InitGrid(current_grid);
       }
-  else
-      {DrawGrid(current_grid);
-      if(gwp->ShowGrid)showGrid(true);
-      }
+  DrawGrid(current_grid);
+  if(ShowGrid)showGrid(true);
 
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM,(NodeItem *)NULL);
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM,(EdgeItem *)NULL);
   nodeitem.SetName("nodeitem");edgeitem.SetName("edgeitem");
-  //qDebug("nodeitemsize:%d",(nodeitem.vector()).SizeElmt());
-      
 
   for(tvertex v = 1;v <= G.nv();v++)
       nodeitem[v] =  CreateNodeItem(v,gwp);
@@ -651,7 +635,6 @@ void GraphEditor::load(bool initgrid)
   G.elabel.definit(0L);
   CreateThickItems(gwp,width_edge);
   G.ewidth.definit(width_edge);
-  //scene()->update();
   }
 
 int GraphEditor::FindItem(QPoint &p,NodeItem* &node,EdgeItem* &edge)
@@ -726,20 +709,20 @@ void GraphEditor::png(int size)
   resize(size+space+sizerect+5,size+4);
   load(true);
   QString FileName;
-  if(!gwp->mywindow->ServerExecuting)
+  if(!mywindow->ServerExecuting)
       {FileName = QFileDialog::
       getSaveFileName(this,
                       tr("Choose a file to save under"),
-                      gwp->mywindow->DirFilePng,
+                      mywindow->DirFilePng,
                       "Images(*.png)");
       if(FileName.isEmpty())
           {setGeometry(geo);load(true);return;}
       if(QFileInfo(FileName).suffix() != (const char *)"png")
 	  FileName += (const char *)".png";
-      gwp->mywindow->DirFilePng = QFileInfo(FileName).absolutePath();
+      mywindow->DirFilePng = QFileInfo(FileName).absolutePath();
       }
   else
-      FileName = QString("/tmp/server%1.png").arg(gwp->mywindow->ServerClientId);
+      FileName = QString("/tmp/server%1.png").arg(mywindow->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget(this
                                        ,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
   pixmap.save(FileName,"PNG",0);
@@ -751,8 +734,8 @@ void GraphEditor::print(QPrinter *printer)
   QString OldFileName="";
   QPrinter::Orientation orient=QPrinter::Portrait;
   QPrinter::ColorMode cm=QPrinter::Color;
-  if(gwp->mywindow->ServerExecuting)
-      {FileName = QString("/tmp/server%1.ps").arg(gwp->mywindow->ServerClientId);
+  if(mywindow->ServerExecuting)
+      {FileName = QString("/tmp/server%1.ps").arg(mywindow->ServerClientId);
       orient=printer->orientation();
       cm=printer->colorMode();
       printer->setOrientation(QPrinter::Portrait);

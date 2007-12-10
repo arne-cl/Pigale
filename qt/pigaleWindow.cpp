@@ -11,14 +11,6 @@
 
 
 #include <config.h>
-
-#include <QProgressBar>
-#include <QDesktopWidget>
-#include <QTextEdit>
-#include <QMessageBox>
-#include <QStatusBar>
-
-
 #include "ClientSocket.h"
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -33,8 +25,13 @@
 #include <QT/Action_def.h>
 #include <QT/Action.h>
 #include <QT/pigalePaint.h> 
-#include <QT/pigaleCanvas.h> 
 #include <QT/clientEvent.h>
+
+#include <QProgressBar>
+#include <QDesktopWidget>
+#include <QTextEdit>
+#include <QMessageBox>
+#include <QStatusBar>
 
 int Test(GraphContainer &GC,int action,int & drawing);
 void UndoErase();
@@ -57,8 +54,7 @@ void pigaleWindow::initServer()
   showMinimized();
   }
 bool pigaleWindow::event(QEvent * ev)
-  {
-  if(ev->type() >=  QEvent::User)
+  {if(ev->type() >=  QEvent::User)
       {customEvent(ev);
       return TRUE;
       }
@@ -76,7 +72,7 @@ bool pigaleWindow::event(QEvent * ev)
   }
 void pigaleWindow::customEvent(QEvent * ev)
   {ev->accept();
-  switch( ev->type())
+  switch(ev->type())
       {case  TEXT_EVENT:
           {textEvent *event  =  (textEvent  *)ev;
           Message(event->getString());
@@ -97,7 +93,7 @@ void pigaleWindow::customEvent(QEvent * ev)
           if(rep == 2)close();
           }
       case DRAWG_EVENT:
-          gw->update();
+          gw->editor->update(1);
           break;
       case HANDLER_EVENT:
            blockInput(true);qApp->processEvents();
@@ -193,11 +189,11 @@ void pigaleWindow::computeInformation()
   if(G. Set().exist(PROP_NLOOPS))  G. Set().erase(PROP_NLOOPS);
   Prop1<int> maptype(G.Set(),PROP_MAPTYPE,PROP_MAPTYPE_UNKNOWN);
   G.planarMap() = 0;
-  postMessageClear();setError(0);
+  postMessageClear();setPigaleError(0);
   graph_properties->update(GC,true);
   }
 void pigaleWindow::information(bool erase)
-  {if(!getError() && erase &&  !MacroLooping  && !ServerExecuting)postMessageClear();
+  {if(!getPigaleError() && erase &&  !MacroLooping  && !ServerExecuting)postMessageClear();
   graph_properties->update(GC,!MacroExecuting && !MacroLooping && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
@@ -314,9 +310,9 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   double Time = timer.elapsed()/1000.;
   if(action <= 0) // error
       {blockInput(false);
-      if(getError())
-          {Tprintf("Handler Error:%s",(const char *)getErrorString().toAscii());
-          setError(0);
+      if(getPigaleError())
+          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
+          setPigaleError(0);
           }
       return action;
       }
@@ -329,16 +325,16 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   // In case we called the orienthandler
   chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
   if(action == 1)
-      //{if(!MacroExecuting )gw->update();}
-      {gw->update();}
+      //{if(!MacroExecuting )gw->editor->update(1);}
+      {gw->editor->update(1);}
   else if(action == 2)
       {if(MacroExecuting)information(false);
       else if(!MacroRecording)information();
-      if(!MacroExecuting )gw->update();
+      if(!MacroExecuting )gw->editor->update(1);
       }
   else if(action == 20) // Remove handler
       {if(!MacroRecording)information();
-      if(!MacroExecuting ) gw->update(0);
+      if(!MacroExecuting ) gw->editor->update(0);
       }
   else if(action == 3)
       mypaint->update(drawingType); 
@@ -350,11 +346,20 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
       }
   // cases 6-7-8 we need a canvas with the current graph loaded
   else if(action == 6)
-      {gw->update();gw->Spring();}
+      {gw->editor->update(1);
+      mouse_actions->ButtonFitGrid->setChecked(false);
+      gw->editor->Spring();
+      }
   else if(action == 7)
-      {gw->update();gw->SpringPreservingMap();}
+      {gw->editor->update(1);
+      mouse_actions->ButtonFitGrid->setChecked(false);
+      gw->editor->SpringPreservingMap();
+      }
   else if(action == 8)
-      {gw->update();gw->SpringJacquard();}
+      {gw->editor->update(1);
+      mouse_actions->ButtonFitGrid->setChecked(false);
+      gw->editor->SpringJacquard();
+      }
 
   //cases 10 create a png 11 create a ps
   else if(action == 10)
@@ -366,10 +371,10 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
   double TimeG = timer.elapsed()/1000.;
   if(!MacroLooping && !MacroRecording && !ServerExecuting)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
-      if(getError())
-          {Tprintf("Handler Error:%s",(const char *)getErrorString().toAscii());
-          setError(0);
-          if(debug())Twait((const char *)getErrorString().toAscii()); 
+      if(getPigaleError())
+          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
+          setPigaleError(0);
+          if(debug())Twait((const char *)getPigaleErrorString().toAscii()); 
           }
       }
   return action;
@@ -478,9 +483,9 @@ void PigaleThread::run()
           continue;
       
       if(mw->ServerExecuting)// will execute only when posthandler has finished
-          {if(getError())
-              {mw->threadServer->writeClientEvent(":ERROR "+getErrorString()+" : "+mw->getActionString(action));
-              setError();
+          {if(getPigaleError())
+              {mw->threadServer->writeClientEvent(":ERROR "+getPigaleErrorString()+" : "+mw->getActionString(action));
+              setPigaleError();
               mw->threadServer->writeClientEvent("!!");
               mw->threadServer->serverReady();
               }

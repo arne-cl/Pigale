@@ -13,8 +13,6 @@
 #include "GraphWidget.h"
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 #include "mouse_actions.h"
 #include "gprop.h"
 #include <TAXI/Tmessage.h> 
@@ -69,7 +67,8 @@ double pgcd(double a, double b,double precision)
 //Methods of GraphEditor
 
 void GraphEditor::showGrid(bool showgrid)
-{if(!scene())return;
+  {if(!scene())return;
+  ShowGrid = showgrid;
   QList<QGraphicsItem *>  list = gwp->canvas->items();
   QList<QGraphicsItem *>::Iterator it = list.begin();
   if(showgrid)
@@ -84,6 +83,23 @@ void GraphEditor::showGrid(bool showgrid)
 	}
   scene()->update();
   }
+void GraphEditor::fitgridChanged(bool fit)
+  {FitToGrid = fit;
+  }
+void GraphEditor::ForceToGrid()
+  {ForceGrid = true;
+  ForceGridOk = true;
+  mywindow->mouse_actions->ButtonUndoGrid->setDisabled(false);
+  load();
+  if(ForceGridOk)
+      {OldFitSizeGrid = FitSizeGrid;
+      FitToGrid = true;
+      FitSizeGrid = SizeGrid;
+      }
+  else
+      FitSizeGrid = OldFitSizeGrid;
+  ForceGrid = false;
+  }
 void GraphEditor::clearGrid()
   {if(!scene() || !GridDrawn)return;
   QList<QGraphicsItem *>  list = gwp->canvas->items();
@@ -94,8 +110,19 @@ void GraphEditor::clearGrid()
     }
   GridDrawn = false;
   }
+void GraphEditor::sizegridChanged(int sg)
+  {if(!RedrawGrid){RedrawGrid = true;return;}
+  // RedrawGrid == false iff we sent the message
+  nxstep = nystep =SizeGrid = sg;
+  current_grid = ParamGrid(sg);
+//   if(FitToGrid && SizeGrid != FitSizeGrid)//and we are sure that ButtonFitGrid exists
+//       mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
+  DrawGrid(current_grid);// compute the grid
+  scene()->update();
+  }
 void GraphEditor::UndoGrid()
-  {GeometricGraph & G = *(gwp->pGG);
+  {SizeGrid = OldFitSizeGrid;
+  GeometricGraph & G = *(gwp->pGG);
   Prop<Tpoint> scoord(G.Set(tvertex()),PROP_CANVAS_COORD);
   // move back the vertices
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
@@ -117,21 +144,24 @@ void GraphEditor::UndoGrid()
   old_grid = current_grid = undo_grid;
   nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
   nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
+  xstep = current_grid.delta.x();
+  ystep = current_grid.delta.y();
   //Update the display
-  gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
-  gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
+  mywindow->mouse_actions->LCDNumberX->display(nxstep);
+  mywindow->mouse_actions->LCDNumberY->display(nystep);
   int nstep = Max(nxstep,nystep);
-  gwp->SizeGrid = nstep;
-  gwp->RedrawGrid = false; //as the slider will send a message
-  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+  SizeGrid = nstep;
+  RedrawGrid = false; //as the slider will send a message
+  mywindow->mouse_actions->LCDNumber->display(nstep);
+  mywindow->mouse_actions->Slider->setValue(nstep);
   DrawGrid(current_grid);
   scene()->update(); 
+  mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
   }
 void GraphEditor::UpdateSizeGrid()
-// called when end moving a vertex forced on a grid
+// called when end moving a vertex forced on a grid or creating an edge
   {if(!IsGrid)return;
-  return;
+  //hub return;
   int nxstep_old = nxstep;
   int nystep_old = nystep;
   GeometricGraph & G = *(gwp->pGG);
@@ -148,10 +178,10 @@ void GraphEditor::UpdateSizeGrid()
   nystep = (int)(.5 + (max_used_y - min_used_y)/ystep);
   if(nxstep == nxstep_old && nystep == nystep_old)return; 
   //Update the display
-  int nstep = Max(nxstep,nystep); gwp->SizeGrid = nstep;
-  gwp->RedrawGrid = false; //as the slider will send a  message
-  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+  int nstep = Max(nxstep,nystep); SizeGrid = nstep;
+  RedrawGrid = false; //as the slider will send a  message
+  mywindow->mouse_actions->LCDNumber->display(nstep);
+  mywindow->mouse_actions->Slider->setValue(nstep);
   }
 void GraphEditor::PrintSizeGrid()
   {if(!IsGrid)return;
@@ -168,8 +198,8 @@ void GraphEditor::PrintSizeGrid()
       }
   int nx = (int)(.5 + (maxused_x - minused_x)/xstep);
   int ny = (int)(.5 + (maxused_y - minused_y)/ystep);
-  gwp->mywindow->mouse_actions->LCDNumberX->display(nx);
-  gwp->mywindow->mouse_actions->LCDNumberY->display(ny);
+  mywindow->mouse_actions->LCDNumberX->display(nx);
+  mywindow->mouse_actions->LCDNumberY->display(ny);
   }
 bool GraphEditor::InitGrid(Tgrid &g)
   {GeometricGraph & G = *(gwp->pGG);
@@ -186,7 +216,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
       x_max = gwp->canvas->width() -BORDER -space -sizerect;
       y_max = gwp->canvas->height() - BORDER;
       }
-  xminstep = (x_max-x_min)/gwp->SizeGrid;  yminstep = (y_max-y_min)/gwp->SizeGrid;
+  xminstep = (x_max-x_min)/SizeGrid;  yminstep = (y_max-y_min)/SizeGrid;
   xepsilon = Epsilon / xminstep;  yepsilon = Epsilon / yminstep;
   
   if(n == 0)// new graph
@@ -197,15 +227,15 @@ bool GraphEditor::InitGrid(Tgrid &g)
       IsGrid = true;
       //Update the display
       int nstep = Max(nxstep,nystep);nstep = Min(nstep,30);
-      gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-      gwp->mywindow->mouse_actions->Slider->setValue(nstep);
+      mywindow->mouse_actions->LCDNumber->display(nstep);
+      mywindow->mouse_actions->Slider->setValue(nstep);
       g = Tgrid(xstep,ystep,min_used_x,min_used_y);
       old_grid = current_grid = g;
       return true; 
       }
 
   // Save coords and compute the geometric cir
-  if(gwp->ForceGrid)
+  if(ForceGrid)
       {scoord = G.vcoord;
       cir0.resize(-m,+m);      
       ComputeGeometricCir(G,cir0);
@@ -232,7 +262,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
       {pos = G.vcoord[i].x() - min_used_x;
       npos = pos>0 ? (int) (.5 + pos/xstep) :(int) (-.5 + pos/xstep) ;
       if(!Equal(pos,npos*xstep))
-	  {if(gwp->ForceGrid)
+	  {if(ForceGrid)
 	      {double r =  fabs(pos -npos*xstep);
 	      double a = pgcd(xstep,r,xminstep);
 	      ns = (int)(xstep/a + .5);
@@ -262,7 +292,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
       {pos = G.vcoord[i].y() - min_used_y;
       npos = pos>0 ? (int) (.5 + pos/ystep) :(int) (-.5 + pos/ystep) ;
       if(!Equal(pos,npos*ystep))
-	  {if(gwp->ForceGrid)
+	  {if(ForceGrid)
 	      {double r =  fabs(pos -npos*ystep);
 	      double a = pgcd(ystep,r,yminstep);
 	      ns = (int)(ystep/a + .5);
@@ -279,25 +309,27 @@ bool GraphEditor::InitGrid(Tgrid &g)
   bool cir_changed,overlap;
   overlap = !CheckCoordNotOverlap(G); // in case there were overlapping
   if(overlap)IsGrid = false;
-  if(overlap)Tprintf("Forcegrid (%d) -> OVERLAPPING",gwp->SizeGrid);
-  if(gwp->ForceGrid) 
+  if(overlap)Tprintf("Forcegrid (%d) -> OVERLAPPING",SizeGrid);
+  if(ForceGrid) 
       {cir1.resize(-m,+m);      
       ComputeGeometricCir(G,cir1);
       cir_changed = (cir0 == cir1) ? false : true;
-      if(cir_changed)Tprintf("Forcegrid (%d) -> MODIFIED CIR",gwp->SizeGrid);
+      if(cir_changed)Tprintf("Forcegrid (%d) -> MODIFIED CIR",SizeGrid);
       if(overlap || cir_changed) 
-	  {gwp->ForceGridOk = false;      //IsGrid = false;
+	  {ForceGridOk = false;      //IsGrid = false;
 	  G.vcoord = scoord;
 	  // reset nxstep and nystep
 	  undo_grid = current_grid = old_grid;
 	  nxstep = (int)((max_used_x-min_used_x)/current_grid.delta.x()+.5);
 	  nystep = (int)((max_used_y-min_used_y)/current_grid.delta.y()+.5);
-	  int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
- 	  gwp->SizeGrid = nstep;
-	  gwp->RedrawGrid = false;
-	  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-	  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
-	  gwp->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
+          xstep = current_grid.delta.x();
+          ystep = current_grid.delta.y();
+	  SizeGrid = Max(nxstep,nystep); 
+          SizeGrid  = Min(SizeGrid,100);
+	  RedrawGrid = false;
+	  mywindow->mouse_actions->LCDNumber->display(SizeGrid);
+	  mywindow->mouse_actions->Slider->setValue(SizeGrid);
+	  mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
 	  return false;
 	  }
       }
@@ -321,16 +353,15 @@ bool GraphEditor::InitGrid(Tgrid &g)
 
   //Update the menu
   if(IsGrid)
-      {gwp->mywindow->mouse_actions->LCDNumberX->display(nxstep);
-      gwp->mywindow->mouse_actions->LCDNumberY->display(nystep);
-      gwp->mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
+      {mywindow->mouse_actions->LCDNumberX->display(nxstep);
+      mywindow->mouse_actions->LCDNumberY->display(nystep);
+      mywindow->mouse_actions->ButtonFitGrid->setChecked(true);
       }
-  // if IsGrid == false, may be we should not have modified xstep and ystep ?
-  gwp->RedrawGrid = false;
+  RedrawGrid = false;
   int nstep = Max(nxstep,nystep);nstep = Min(nstep,100);
-  gwp->mywindow->mouse_actions->LCDNumber->display(nstep);
-  gwp->mywindow->mouse_actions->Slider->setValue(nstep);
-  gwp->SizeGrid = nstep;
+  mywindow->mouse_actions->LCDNumber->display(nstep);
+  mywindow->mouse_actions->Slider->setValue(nstep);
+  SizeGrid = nstep;
   if(NeedNormalise)
       {Normalise();
       if(IsGrid){xstep = (max_used_x - min_used_x)/nxstep; ystep = (max_used_y - min_used_y)/nystep;}
@@ -357,7 +388,7 @@ Tgrid GraphEditor::ParamGrid(int nstep)
 
 void GraphEditor::ToGrid(QPoint &p)
   // called to compute cooresponding coord of the mouse on the grid
-  {if(!gwp->FitToGrid)return;
+  {if(!FitToGrid)return;
     double pos;
     int npos;
     pos = p.x() - min_used_x;  
@@ -369,7 +400,7 @@ void GraphEditor::ToGrid(QPoint &p)
   }
 void GraphEditor::ToGrid(tvertex &v)
   //Only called when moving or creating vertices
-  {if(!gwp->FitToGrid){IsGrid = false;return;}
+  {if(!FitToGrid){IsGrid = false;return;}
   GeometricGraph & G = *(gwp->pGG);
   double pos;
   int npos;

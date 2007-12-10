@@ -22,7 +22,7 @@ void DrawGraph(void);
 void DrawGraph(Graph &G);
 //int GraphInformation();
 QString universalFileName(QString const & fileName);
-QString  getErrorString();
+QString  getPigaleErrorString();
 void Normalise();
 void Normalise(GeometricGraph &G); 
 void Normalise(TopologicalGraph &G);

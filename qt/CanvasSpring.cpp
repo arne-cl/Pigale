@@ -16,8 +16,6 @@
 #include <TAXI/Tbase.h> 
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 #include <QT/clientEvent.h>
 
 #include <QProgressBar>
@@ -183,7 +181,7 @@ t current tanslation of v0
   GeometricGraph & G = *(gwp->pGG);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
   svector<int> degree(1,G.nv()); 
-  pigaleWindow *mw = gwp->mywindow;
+  pigaleWindow *mw = mywindow;
   if(!draw) // called by thread
       {progressEvent *event = new progressEvent(1,G.nv());
       QApplication::postEvent(mw,event); 
@@ -350,9 +348,7 @@ t current tanslation of v0
               dx = Abs(t.x()); dy = Abs(t.y());
               dep = Max(dep,dx,dy);  
               if (dx > 30./n || dy > 30./n)
-		{if(redraw)
-		    nodeitem[v0]->SetColor(color[G.vcolor[v0]]);
-		}
+		{if(redraw)nodeitem[v0]->SetColor(color[G.vcolor[v0]]);}
               else
 		{if(redraw) nodeitem[v0]->SetColor(Qt::red);
                 ++n_red;
@@ -376,7 +372,7 @@ t current tanslation of v0
       stop = (n_red == G.nv())? stop+1 : 0;
       //if(stop)force *= .95;
       if(dep < .1 || stop == 4)break;
-      if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      if(mywindow->getKey() == Qt::Key_Escape)break;
       // Compute bounds ro adapt the expand factor (should not be too strong)
       ComputeBounds(G,xmin,xmax,ymin,ymax,sizex,sizey); 
       if(sizex > sizex0 && sizey > sizey0)
@@ -1052,7 +1048,7 @@ int GraphEditor::SpringJacquard()
       if(n_red > (2*G.nv())/3)break;
       //hub qApp->processEvents(1);
       qApp->processEvents();
-      if(gwp->mywindow->getKey() == Qt::Key_Escape)break;
+      if(mywindow->getKey() == Qt::Key_Escape)break;
       scene()->update(); 
       }
   Tprintf("Spring iter=%d",generations);

@@ -1517,7 +1517,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-LIB_VERSION=1.3.1
+LIB_VERSION=1.3.2
 
 
 if test "$prefix" != NONE; then

@@ -90,7 +90,7 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,GraphWidget* gw)
   group1->addButton(Button6);group1->setId(Button6,6);
 
     //****************************************************************
-  gw->sizegridChanged(sizegrid);
+  gw->editor->sizegridChanged(sizegrid);
   LCDNumber = new QLCDNumber(this);
   LCDNumber->setGeometry(QRect(ox2,oy2,30,30)); 
   QFont LCDNumber_font(LCDNumber->font());
@@ -149,11 +149,11 @@ Mouse_Actions::Mouse_Actions(QWidget* parent,GraphWidget* gw)
   // signals and slots connections
   connect(group1,SIGNAL(buttonClicked(int)),SLOT(valueChanged(int)));
   connect(Slider,SIGNAL(valueChanged(int)),LCDNumber,SLOT(display(int)));
-  connect(Slider,SIGNAL(valueChanged(int)),gw,SLOT(sizegridChanged(int)));
-  connect(ButtonShowGrid,SIGNAL(toggled(bool)),gw,SLOT(showgridChanged(bool)));
-  connect(ButtonFitGrid,SIGNAL(toggled(bool)),gw,SLOT(fitgridChanged(bool)));
-  connect(ButtonForceGrid,SIGNAL(clicked()),gw,SLOT(ForceGrid()));
-  connect(ButtonUndoGrid,SIGNAL(clicked()),gw,SLOT(UndoGrid()));
+  connect(Slider,SIGNAL(valueChanged(int)),gw->editor,SLOT(sizegridChanged(int)));
+  connect(ButtonShowGrid,SIGNAL(toggled(bool)),gw->editor,SLOT(showGrid(bool)));
+  connect(ButtonFitGrid,SIGNAL(toggled(bool)),gw->editor,SLOT(fitgridChanged(bool)));
+  connect(ButtonForceGrid,SIGNAL(clicked()),gw->editor,SLOT(ForceToGrid()));
+  connect(ButtonUndoGrid,SIGNAL(clicked()),gw->editor,SLOT(UndoGrid()));
   }
 Mouse_Actions::~Mouse_Actions()
 {}

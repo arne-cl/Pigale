@@ -22,14 +22,13 @@ static _Error MainError;
 _T_Error &ErrorPositioner(const char *f, int l)
      {MainError.file=f; MainError.line=l; return MainError.error;}
 
-int getError() 
+int getPigaleError() 
   {return (int) MainError.error;}
-//{return MainError.error.code;}
-const char * getErrorMsg()
+const char * getPigaleErrorMsg()
   {return MainError.error.msg;}
-const char * getErrorFile()
+const char * getPigaleErrorFile()
   {return MainError.file;}
-int getErrorLine()
+int getPigaleErrorLine()
   {return MainError.line;}
 
 bool& debug()

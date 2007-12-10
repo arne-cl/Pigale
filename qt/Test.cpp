@@ -5,8 +5,6 @@
 #include "pigaleWindow.h"
 #include <QT/Action_def.h> 
 #include <QT/Misc.h> 
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 
 using namespace std;
 
@@ -88,12 +86,12 @@ int Test3(GraphContainer &GC,int &drawing)
   int ret1 = G.TestNewPlanar();
   int ret2 = G.NewPlanarity(randomGet(G.ne()));
   if(ret0 != ret1)
-      {setError(-1,"Error TestNewPlanar");
+      {setPigaleError(-1,"Error TestNewPlanar");
 	cout << ret0 << " " << ret1 << endl;
 	return 2;
       }
   if(ret0 != ret2)
-      {setError(-1,"Error NewPlanarity");
+      {setPigaleError(-1,"Error NewPlanarity");
       cout << ret0 << " " << ret1 << endl;
       return 2;
       }

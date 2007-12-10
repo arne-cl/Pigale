@@ -10,137 +10,44 @@
 *****************************************************************************/
 
 #include "pigaleWindow.h"
-#include "GraphWidget.h"
 #include "mouse_actions.h"
+#include "GraphWidget.h"
 #include <TAXI/Tprop.h>
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 #include <QT/grid.h>
+
 
 static QBrush *tb = 0;
 static QPen *tp = 0;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphWidget
-GraphWidget::GraphWidget(QWidget *parent,pigaleWindow *mywindow)
+GraphWidget::GraphWidget(QWidget *parent,pigaleWindow *_mywindow)
     : QWidget(parent)
-  {d = new GraphWidgetPrivate;
-  d->mywindow = mywindow;
-  d->NodeColorItem.resize(1,16);
-  d->EdgeColorItem.resize(1,16);
-  d->EdgeThickItem.resize(1,3);
-  d->GW = this;
+    ,canvas(0),pGG(0)
+  {
+  NodeColorItem.resize(1,16);
+  EdgeColorItem.resize(1,16);
+  EdgeThickItem.resize(1,3);
+  editor = new GraphEditor(this,_mywindow);
   }
 GraphWidget::~GraphWidget()
-  {delete d->pGG;   delete d;
+  {if(pGG)delete pGG;   
+  if(canvas)delete canvas;
   }
-void GraphWidget::update(int compute)
-// called when loading a graph compute = 1 or -1
-// if we only have erased edges and/or vertice compute = 0
-  {if(!d->is_init)
-      {d->editor = new GraphEditor(d,this);
-      d->is_init = true;
-      }
-  else
-      delete d->pGG;
-  
-  d->pGG = new GeometricGraph(d->mywindow->GC);
-  d->moving_item = 0;  d->curs_item = 0;  d->info_item = 0; d->moving_subgraph = false;
-  if(compute)
-      {d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-      d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-      d->SizeGrid = d->FitSizeGrid = d->OldFitSizeGrid = 100;
-      d->mywindow->mouse_actions->LCDNumberX->display(100);
-      d->mywindow->mouse_actions->LCDNumberY->display(100);
-      d->editor->nxstep = d->editor->nystep  = d->SizeGrid;
-      d->editor->GridDrawn = false;
-      d->ForceGrid = d->OldFitToGrid =false;
-      d->RedrawGrid =true;
-      d->editor->zoom = 1.;
-      d->editor->initialize();// will call d->editor->load(true);
-      }
-  else
-      d->editor->load(false);
-  if(compute != -1)d->mywindow->tabWidget->setCurrentIndex(d->mywindow->tabWidget->indexOf(this));
-  }
-
-void GraphWidget::print(QPrinter *printer)
-  {if(!d->is_init)return;
-  d->editor->print(printer);
-  }
-void GraphWidget::png(int size)
-  {if(!d->is_init)return;
-  d->editor->png(size);
-  }
-void GraphWidget::Spring()
-  {if(!d->is_init)return;
-  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-  d->editor->Spring();
-  }
-void GraphWidget::SpringPreservingMap()
-  {if(!d->is_init)return;
-  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-  d->editor->SpringPreservingMap();
-  }
-void GraphWidget::SpringJacquard()
-  {if(!d->is_init)return;
-  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-#ifndef _WINDOWS
-  d->editor->SpringJacquard();
-#endif
-  }
-void GraphWidget::resizeEvent(QResizeEvent* e)
-  {if(d->editor)d->editor->initialize();
-  QWidget::resizeEvent(e);
-  }
-void GraphWidget::showgridChanged(bool show)
-  {d->ShowGrid = show;
-  d->editor->showGrid(d->ShowGrid);
-  }
-void GraphWidget::fitgridChanged(bool fit)
-  {d->FitToGrid = fit;
-  }
-void GraphWidget::ForceGrid()
-  {d->ForceGrid = true;
-  d->ForceGridOk = true;
-  d->OldFitToGrid = (d->mywindow->mouse_actions->ButtonUndoGrid->isEnabled()) ? true : false;
-  d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(false);
-  //d->editor->zoom = 1;
-  d->editor->load();
-  if(d->ForceGridOk)
-      {d->OldFitSizeGrid = d->FitSizeGrid;
-      d->FitSizeGrid = d->SizeGrid;
-      }
-  d->ForceGrid = false;
-  }
-void GraphWidget::UndoGrid()
-  {d->SizeGrid = d->OldFitSizeGrid;
-  d->editor->UndoGrid();
-  d->mywindow->mouse_actions->ButtonUndoGrid->setDisabled(true);
-  d->mywindow->mouse_actions->ButtonFitGrid->setChecked(d->OldFitToGrid);
-  }
-void GraphWidget::sizegridChanged(int sg)
-  {if(!d->is_init || d->CanvasHidden)return;
-  if(!d->RedrawGrid){d->RedrawGrid = true;return;}
-  // RedrawGrid == false iff we sent the message
-  d->editor->nxstep = d->editor->nystep =d->SizeGrid = sg;
-  d->editor->current_grid = d->editor->ParamGrid(sg);
-  if(d->FitToGrid && d->SizeGrid != d->FitSizeGrid)//and we are sure that ButtonFitGrid exists
-      d->mywindow->mouse_actions->ButtonFitGrid->setChecked(false);
-  d->editor->DrawGrid(d->editor->current_grid);// compute the grid
-  d->editor->scene()->update();
+void GraphWidget::resizeEvent(QResizeEvent*)
+  {editor->initialize();
   }
 
 //*****************************************************
-// all drawing functions
+// all QGraphicsItem
 //*****************************************************
 void CreatePenBrush()
   {if(!tb) tb = new QBrush( Qt::red );
   if(!tp) tp = new QPen( Qt::black );
   }
-ColorItem:: ColorItem(GraphWidgetPrivate* g,QRectF &rect,int pcolor,int bcolor,bool is_node)
+ColorItem:: ColorItem(GraphWidget* g,QRectF &rect,int pcolor,int bcolor,bool is_node)
   :QGraphicsRectItem(rect,0,g->canvas)
     ,brush_color(bcolor),node(is_node)
   {gwp = g;
@@ -151,7 +58,7 @@ ColorItem:: ColorItem(GraphWidgetPrivate* g,QRectF &rect,int pcolor,int bcolor,b
 void ColorItem::SetPenColor(int pcolor)
   {tp->setColor(color[pcolor]);tp->setWidth(3);setPen(*tp);
   }
-void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
+void CreateColorItems(GraphWidget* gwp,int color_node,int color_edge)
   {ColorItem *coloritem;
   int x = (int)gwp->canvas->width() - sizerect -space;
   int y = space;
@@ -167,7 +74,6 @@ void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
       y = y + sizerect + space;
       }
   // ColorItems for edges
-  //y = gwp->canvas->height() - 16*(sizerect + space);
   y = (int)gwp->canvas->height() - 20*(sizerect + space);
   for(i = 1;i <= 16;i++)
       {QRectF rect(x,y,sizerect,sizerect);
@@ -179,7 +85,7 @@ void CreateColorItems(GraphWidgetPrivate* gwp,int color_node,int color_edge)
       y = y + sizerect + space;
       }
   }
-ThickItem:: ThickItem(GraphWidgetPrivate* g,QRectF &rect,int ewidth,int bcolor)
+ThickItem:: ThickItem(GraphWidget* g,QRectF &rect,int ewidth,int bcolor)
   :QGraphicsRectItem(rect,0,g->canvas)
   ,brush_color(bcolor),width(ewidth)
   {gwp = g;
@@ -190,7 +96,7 @@ ThickItem:: ThickItem(GraphWidgetPrivate* g,QRectF &rect,int ewidth,int bcolor)
 void ThickItem::SetBrushColor(int bcolor)
   {tb->setColor(color[bcolor]);  setBrush(*tb); 
   }
-void CreateThickItems(GraphWidgetPrivate* gwp,int width_edge)
+void CreateThickItems(GraphWidget* gwp,int width_edge)
   {ThickItem *thickitem;
   int x = (int)gwp->canvas->width() - sizerect -space;
   int y = (int)gwp->canvas->height() - 3*(sizerect + space);
@@ -207,11 +113,11 @@ void CreateThickItems(GraphWidgetPrivate* gwp,int width_edge)
 
 //********************************************************
 //LineItem is used for the grid
-LineItem::LineItem(GraphWidgetPrivate* g)
+LineItem::LineItem(GraphWidget* g)
   :QGraphicsLineItem(0,g->canvas)
 {}
 //CursItem is used to add an edge
-CursItem::CursItem(tvertex &_v,QPoint &p,GraphWidgetPrivate* g)
+CursItem::CursItem(tvertex &_v,QPoint &p,GraphWidget* g)
   :QGraphicsLineItem(0,g->canvas)
   {v = _v;
   tp->setColor(Qt::green);tp->setWidth(2);setPen(*tp);
@@ -223,15 +129,14 @@ void CursItem::setToPoint(int x,int y)
   }
 
 //*********************************************************
-InfoItem::InfoItem(GraphWidgetPrivate* g,QString &t,QPoint &p)
+InfoItem::InfoItem(GraphWidget* g,QString &t,QPoint &p)
   :QGraphicsSimpleTextItem(t,0,g->canvas)
-  {gwp = g;
-  setFont(QFont("sans",gwp->fontsize));
+  {  setFont(QFont("sans",g->fontsize));
   tb->setColor(Qt::blue);  setBrush(*tb); 
   setPos(p.x(),p.y());
   setZValue(info_z); 
   }
-InfoItem* CreateInfoItem(GraphWidgetPrivate* gwp,QString &t,QPoint &p)
+InfoItem* CreateInfoItem(GraphWidget* gwp,QString &t,QPoint &p)
   {QFont font = QFont("sans",gwp->fontsize);
   QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
   int dx =size.width() + 8;  int dy =size.height() +4;
@@ -280,7 +185,7 @@ void ArrowItem::SetColor(QColor col)
   }
 
 //**********************************************************************************
-EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
+EdgeItem* CreateEdgeItem(tedge &e,GraphWidget* g)
   {GeometricGraph & G = *(g->pGG);
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
   Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
@@ -317,7 +222,7 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidgetPrivate* g)
   edge0->opp = edge1;  edge1->opp = edge0;
   return edge0;
   }
-EdgeItem::EdgeItem(GraphWidgetPrivate* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
+EdgeItem::EdgeItem(GraphWidget* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
                    ,bool _lower,NodeItem *_node)
     :QGraphicsLineItem(0,g->canvas)
   {gwp = g;
@@ -336,7 +241,6 @@ EdgeItem::EdgeItem(GraphWidgetPrivate* g,tedge &ee,double x_from,double y_from,d
 void EdgeItem::paint(QPainter *painter,const QStyleOptionGraphicsItem *,QWidget *)
   {painter->setPen(pen());
   painter->drawLine(line());
-//   cout<<"E:"<<e()<<endl;
   } 
 QRectF EdgeItem::boundingRect() const
   {return QRectF(line().p1(),line().p2());  
@@ -373,7 +277,7 @@ void EdgeItem::setToPoint(double x,double y)
   setLine(line().p1().x(),line().p1().y(),x,y);
   }
 //**************************************************************************
-NodeItem::NodeItem(tvertex &_v,GraphWidgetPrivate* g,QRectF &rect,QColor &col,QString &_t)
+NodeItem::NodeItem(tvertex &_v,GraphWidget* g,QRectF &rect,QColor &col,QString &_t)
   :QGraphicsRectItem(rect,0,g->canvas)
   {gwp = g;
   v = _v;
@@ -394,7 +298,7 @@ void NodeItem::paint(QPainter *painter,const QStyleOptionGraphicsItem * option,Q
   painter->drawText(rect(),Qt::AlignCenter,t);// so the text is completely redrawn
   //painter->drawText(option->exposedRect,Qt::AlignCenter,t);
   }
-NodeItem* CreateNodeItem(tvertex &v,GraphWidgetPrivate* gwp)
+NodeItem* CreateNodeItem(tvertex &v,GraphWidget* gwp)
   {GeometricGraph & G = *(gwp->pGG);
   double x =  G.vcoord[v].x();
   double y =  gwp->canvas->height() - G.vcoord[v].y();
@@ -422,7 +326,7 @@ void NodeItem::SetColor(QColor c)
   }
 void NodeItem::moveTo(Tpoint &p,double eps)
 // does not modify vertex coordinates: only used in spring embedders
-  {QPointF qp = QRectF(rect()).center() + pos(); //position approximative
+  {QPointF qp = QRectF(rect()).center() + pos(); //position initiale + deplacement
   double dx = p.x() - qp.x();
   double dy = gwp->canvas->height() - p.y() - qp.y();
   if(Abs(dx) < eps && Abs(dy) < eps)return;
@@ -494,7 +398,6 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
 
-//***************************************************************
 void GraphEditor::DrawGrid(const Tgrid &grid)
 // input: min_used_x, max_used_x, nxstep (id for y)
 // compute xstep and the grid
@@ -519,7 +422,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
       line = new LineItem(gwp);
       line->setLine((int)x0,(int)y,(int)x1,(int)y);
       line->setPen(*tp); line->setZValue(grid_z); 
-      if(gwp->ShowGrid) line->show();
+      if(ShowGrid) line->show();
       else line->hide();
       }
   i = .0;
@@ -529,7 +432,7 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
       line = new LineItem(gwp);
       line->setLine((int)x,(int)y0,(int)x,(int)y1);
       line->setPen(*tp); line->setZValue(grid_z);
-      if(gwp->ShowGrid) line->show();
+      if(ShowGrid) line->show();
       else line->hide();
       }
     GridDrawn = true;

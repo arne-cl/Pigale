@@ -39,12 +39,12 @@ struct _Error {
 
 
 _T_Error &ErrorPositioner(const char *f, int l);
-int  getError();
-const char * getErrorMsg();
-const char * getErrorFile();
-int getErrorLine();
+int  getPigaleError();
+const char * getPigaleErrorMsg();
+const char * getPigaleErrorFile();
+int getPigaleErrorLine();
 
-#define setError ErrorPositioner((const char *)__FILE__,__LINE__)=_T_Error
+#define setPigaleError ErrorPositioner((const char *)__FILE__,__LINE__)=_T_Error
 #define _PRINTFL(arg)   DebugPrintf("%s line:%d -> %d",__FILE__, __LINE__,arg)
 
 #ifdef TDEBUG

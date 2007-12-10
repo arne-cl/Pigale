@@ -551,7 +551,7 @@ int GenerateHandler(GraphContainer &GCC,int action,int n1_gen,int n2_gen,int m_g
       {GCC.Tswap(*GC);
       GeometricGraph GG(GCC);
       }
-  else {setError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}
+  else {setPigaleError(-1,"Generator Error");DebugPrintf("Error generating:%d",action);}
   delete GC;
 
   return 2;

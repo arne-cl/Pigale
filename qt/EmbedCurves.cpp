@@ -14,8 +14,6 @@
 #include <QT/Misc.h> 
 #include <QT/Action_def.h> 
 #include "GraphWidget.h"
-#include <QT/pigaleCanvas.h>
-#include <QT/GraphWidgetPrivate.h>
 
 using namespace std;
 
@@ -51,10 +49,10 @@ int EmbedCurves(TopologicalGraph &G)
     NG.NewEdge(s,tvertex(n+2*e()));
     NG.NewEdge(t,tvertex(n+2*e()));
     }
-  GeometricGraph *pGG = GetpigaleWindow()->gw->d->pGG;
-  GetpigaleWindow()->gw->d->pGG=&NGG;
-  GetpigaleWindow()->gw->d->editor->SpringPreservingMap(false);
-  GetpigaleWindow()->gw->d->pGG=pGG;
+  GeometricGraph *pGG = GetpigaleWindow()->gw->pGG;
+  GetpigaleWindow()->gw->pGG=&NGG;
+  GetpigaleWindow()->gw->editor->SpringPreservingMap(false);
+  GetpigaleWindow()->gw->pGG=pGG;
   tvertex v;
   for (v=1; v<=n; v++)
     vcoord[v]=NGG.vcoord[v];
