@@ -12,6 +12,9 @@
 #ifndef _GRAPH_WIDGET_H_INCLUDED_
 #define _GRAPH_WIDGET_H_INCLUDED_
 
+/*! \file
+This header contains the definition of all the classes used by the Pigale Editor
+*/
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
@@ -62,9 +65,10 @@ class GraphEditor;
 class GraphWidget;
 
 class ArrowItem: public QGraphicsPolygonItem
+//! used to display an arrow whose size and loaction depends on the edge length
 {public:
   ArrowItem(EdgeItem *edgeitem);
-  void ComputeCoord();
+  void ComputeCoord(); //!<  compute the shape and position of the arrow
   void SetColor(QColor col);
   int type() const {return arrow_rtti;}
  private:
@@ -72,6 +76,8 @@ class ArrowItem: public QGraphicsPolygonItem
   QVector<QPointF>pts;
 };
 
+/*! An edge is represented by two EdgeItem (corresponding to its lower and upper part) and an ArrowItem
+*/
 class EdgeItem: public QGraphicsLineItem
 {public:
   EdgeItem(GraphWidget* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
@@ -92,6 +98,7 @@ private:
   GraphWidget* gwp;
 };
 
+//!  used when creating an edge
 class CursItem: public QGraphicsLineItem
 {public:
   CursItem(tvertex &v,QPoint &p,GraphWidget* g);
@@ -100,12 +107,14 @@ class CursItem: public QGraphicsLineItem
   tvertex v;
 };
 
+//! LineItem is used for the grid
 class LineItem: public QGraphicsLineItem
 {public:
   LineItem(GraphWidget* g);
   int type() const {return line_rtti;}
 };
 
+//! used to display some info
 class InfoItem: public QGraphicsSimpleTextItem
 {public:
   InfoItem(GraphWidget* g,QString &t,QPoint &p);
@@ -113,6 +122,7 @@ class InfoItem: public QGraphicsSimpleTextItem
   QGraphicsRectItem* rectitem;
 };
 
+//! are the coloured rectangles used to define the colors of vertices and edges
 class ColorItem: public QGraphicsRectItem
 {public:
   ColorItem(GraphWidget* g,QRectF &rect,int pen_color,int brush_color,bool node);
@@ -125,6 +135,7 @@ private:
   GraphWidget* gwp;
 };
 
+//! used to modify  the width of an edge
 class ThickItem: public QGraphicsRectItem
 {public:
   ThickItem(GraphWidget* g,QRectF &rect,int ewidth,int brush_color);
@@ -137,6 +148,7 @@ private:
   GraphWidget* gwp;
 };
 
+//! used to represent a vertex with/witout a label
 class NodeItem: public QGraphicsRectItem
 {public:
   NodeItem(tvertex &vv,GraphWidget* g,QRectF &rect,QColor & col,QString &_t);
@@ -154,14 +166,19 @@ private:
   QString t;
 };
 
+/*!
+widget containing QGraphicsScene pointer which will be populated by QGraphicsItem and
+a GraphEditor pointer (derived from QGraphicsView) which displays the  QGraphicsScene
+*/
 class GraphWidget : public QWidget
 {
+
   Q_OBJECT
 public:
   GraphWidget( QWidget *parent=0,pigaleWindow* mw=0);
   ~GraphWidget();
 private:
-  void resizeEvent(QResizeEvent*);
+  void resizeEvent(QResizeEvent*); //!< resize the editor
 public:
   QGraphicsScene* canvas;
   NodeItem* moving_item;
@@ -176,6 +193,10 @@ public:
   int fontsize;
 };
 
+//!  The main class of the Pigale Editor.
+/*!
+  It derives from QGraphicsView and displays the QGraphicsScene constructed by its parent
+*/
 class GraphEditor : public QGraphicsView
 {
   Q_OBJECT
@@ -183,7 +204,7 @@ public:
   GraphEditor(GraphWidget*parent,pigaleWindow *mywindow);
   ~GraphEditor(){};
   QSize sizeHint() const;
-  void initialize();
+  void setsize();
   void clear();
   void load(bool initgrid = true);
   void print(QPrinter* printer);
@@ -205,7 +226,7 @@ public:
   int FindItem(QPoint &p,ColorItem* &coloritem);
   int FindItem(QPoint &p,ThickItem* &thickitem);
   void resizeEvent(QResizeEvent*);
-
+  void update(int compute);
 
 public slots:
   void showGrid(bool show);
@@ -213,7 +234,6 @@ public slots:
   void ForceToGrid();
   void UndoGrid();
   void sizegridChanged(int i);
-  void update(int compute);
 
 private:
   void mousePressEvent(QMouseEvent*);

@@ -139,15 +139,7 @@ void pigaleWindow::whenReady()
       load(0);
   }
 pigaleWindow::~pigaleWindow()
-  {//delete printer;
-//   if(server)
-//       {server->close();
-//       cout<<"closing server"<<endl;
-//       delete server;
-//       }
-//   pigaleThread.terminate();pigaleThread.wait();
-//   UndoErase();
-//   LogPrintf("END\n");
+  {
    cout<<"END"<<endl;
   }
 int pigaleWindow::setId(QAction * action,int Id)

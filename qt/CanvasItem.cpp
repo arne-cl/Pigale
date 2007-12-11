@@ -9,41 +9,49 @@
 **
 *****************************************************************************/
 
+/*! \file
+\brief  All QGraphicsItem used by QGraphicsScene *canvas
+ */
+
 #include "pigaleWindow.h"
 #include "mouse_actions.h"
 #include "GraphWidget.h"
 #include <TAXI/Tprop.h>
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
-#include <QT/grid.h>
 
-
+//! The brush used by all QGraphicsItem
 static QBrush *tb = 0;
+//! The pen used by all QGraphicsItem
 static QPen *tp = 0;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphWidget
 GraphWidget::GraphWidget(QWidget *parent,pigaleWindow *_mywindow)
     : QWidget(parent)
-    ,canvas(0),pGG(0)
+    ,pGG(0)
   {
   NodeColorItem.resize(1,16);
   EdgeColorItem.resize(1,16);
   EdgeThickItem.resize(1,3);
+  canvas = new QGraphicsScene(0,0,contentsRect().width(),contentsRect().height());
+  canvas->setItemIndexMethod(QGraphicsScene::NoIndex);
   editor = new GraphEditor(this,_mywindow);
+  editor->setScene(canvas);
   }
 GraphWidget::~GraphWidget()
   {if(pGG)delete pGG;   
   if(canvas)delete canvas;
   }
 void GraphWidget::resizeEvent(QResizeEvent*)
-  {editor->initialize();
+  {editor->setsize();
   }
 
 //*****************************************************
 // all QGraphicsItem
 //*****************************************************
 void CreatePenBrush()
+//! creates the pen and the brush used by all QGraphicsItem
   {if(!tb) tb = new QBrush( Qt::red );
   if(!tp) tp = new QPen( Qt::black );
   }
@@ -59,6 +67,7 @@ void ColorItem::SetPenColor(int pcolor)
   {tp->setColor(color[pcolor]);tp->setWidth(3);setPen(*tp);
   }
 void CreateColorItems(GraphWidget* gwp,int color_node,int color_edge)
+//! creates the coloured rectangles used to recolor edges and vertices
   {ColorItem *coloritem;
   int x = (int)gwp->canvas->width() - sizerect -space;
   int y = space;
@@ -110,15 +119,14 @@ void CreateThickItems(GraphWidget* gwp,int width_edge)
       y = y + sizerect + space;
     }
   }
-
-//********************************************************
-//LineItem is used for the grid
+//*****************************************************
 LineItem::LineItem(GraphWidget* g)
   :QGraphicsLineItem(0,g->canvas)
 {}
-//CursItem is used to add an edge
+//*****************************************************
 CursItem::CursItem(tvertex &_v,QPoint &p,GraphWidget* g)
   :QGraphicsLineItem(0,g->canvas)
+
   {v = _v;
   tp->setColor(Qt::green);tp->setWidth(2);setPen(*tp);
   setLine(p.x(),p.y(),p.x(),p.y());
@@ -127,8 +135,7 @@ CursItem::CursItem(tvertex &_v,QPoint &p,GraphWidget* g)
 void CursItem::setToPoint(int x,int y)
   {setLine(line().p1().x(),line().p1().y(),x,y);
   }
-
-//*********************************************************
+//*****************************************************
 InfoItem::InfoItem(GraphWidget* g,QString &t,QPoint &p)
   :QGraphicsSimpleTextItem(t,0,g->canvas)
   {  setFont(QFont("sans",g->fontsize));
@@ -153,8 +160,7 @@ InfoItem* CreateInfoItem(GraphWidget* gwp,QString &t,QPoint &p)
   infoitem->rectitem = rectitem;
   return infoitem;
   }
-
-//**********************************************************************************
+//*****************************************************
 ArrowItem::ArrowItem(EdgeItem *edgeitem)
     :QGraphicsPolygonItem(0,edgeitem->scene())
   {edgeItem= edgeitem;
@@ -183,8 +189,7 @@ void ArrowItem::SetColor(QColor col)
   {tp->setColor(col);  tb->setColor(col); 
   setPen(*tp);setBrush(*tb);
   }
-
-//**********************************************************************************
+//*****************************************************
 EdgeItem* CreateEdgeItem(tedge &e,GraphWidget* g)
   {GeometricGraph & G = *(g->pGG);
   Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);
@@ -276,7 +281,7 @@ void EdgeItem::setToPoint(double x,double y)
   {prepareGeometryChange();
   setLine(line().p1().x(),line().p1().y(),x,y);
   }
-//**************************************************************************
+//*****************************************************
 NodeItem::NodeItem(tvertex &_v,GraphWidget* g,QRectF &rect,QColor &col,QString &_t)
   :QGraphicsRectItem(rect,0,g->canvas)
   {gwp = g;
@@ -325,7 +330,7 @@ void NodeItem::SetColor(QColor c)
   update();
   }
 void NodeItem::moveTo(Tpoint &p,double eps)
-// does not modify vertex coordinates: only used in spring embedders
+//! /fn  does not modify vertex coordinates: only used in spring embedders
   {QPointF qp = QRectF(rect()).center() + pos(); //position initiale + deplacement
   double dx = p.x() - qp.x();
   double dy = gwp->canvas->height() - p.y() - qp.y();
@@ -363,7 +368,7 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
  void NodeItem::moveBy(double dx, double dy)
-// modify vertex coordinates
+//! /fn  modify vertex coordinates
   {gwp->editor->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
   QGraphicsRectItem::moveBy(dx,dy);
   GeometricGraph & G = *(gwp->pGG);
@@ -397,10 +402,11 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
-
+//*****************************************************
 void GraphEditor::DrawGrid(const Tgrid &grid)
-// input: min_used_x, max_used_x, nxstep (id for y)
-// compute xstep and the grid
+/*! input: min_used_x, max_used_x, nxstep (id for y)
+  compute xstep and the grid
+*/
   {if(GridDrawn)clearGrid();
   if( grid.delta.x() < 7 ||  grid.delta.y() < 7){clearGrid();return;}
   QGraphicsLineItem *line;

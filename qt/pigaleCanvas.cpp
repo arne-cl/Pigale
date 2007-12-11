@@ -23,14 +23,11 @@
 
 GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
     :QGraphicsView(parent->canvas,parent)
-    ,zoom(1.)
-    ,gwp(parent)
+    ,gwp(parent),mywindow(_mywindow)
     ,DoNormalise(true),is_init(false)
     ,color_node(Yellow),color_edge(Black),width_edge(1)
+    ,zoom(1.),ShowGrid(false),FitToGrid(false),SizeGrid(100)
   {
-  ShowGrid = FitToGrid = false;
-  SizeGrid = 100;
-  mywindow = _mywindow;
   CreatePenBrush();
   setFocusPolicy(Qt::ClickFocus);
   setRenderHints(QPainter::Antialiasing);
@@ -39,9 +36,6 @@ GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
 #if QT_VERSION >= 0x040302
   setOptimizationFlags(DontSavePainterState|DontClipPainter); //about same speed
 #endif
-  gwp->canvas = new QGraphicsScene(0,0,contentsRect().width(),contentsRect().height());
-  gwp->canvas->setItemIndexMethod(QGraphicsScene::NoIndex);
-  setScene(gwp->canvas);
   }
 void GraphEditor::update(int compute)
 // called when loading a graph compute = 1 or -1
@@ -587,9 +581,9 @@ void GraphEditor::resizeEvent(QResizeEvent* e)
   if(e->oldSize().width() == e->size().width())
       is_init = true;
   }
-void GraphEditor::initialize()
-  {resize(sizeHint());  //very important to set here in case size was modified while hidden
-  //Compute the font size
+void GraphEditor::setsize()
+  {resize(sizeHint()); 
+  //! Compute the font size
   int fs = (int)((double)Min(gwp->canvas->width(),gwp->canvas->height())/50.); 
   if((fs%2) == 1)++fs; fs = Min(fs,10);
   gwp->fontsize = fs; 

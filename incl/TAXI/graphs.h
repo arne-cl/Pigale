@@ -15,7 +15,7 @@
 #include <TAXI/Tbase.h>
 #include <TAXI/graph.h>
 #include <TAXI/Tpoint.h>
-#include <TAXI/Tdebug.h>
+
 
 struct _Bicon;
 class Graph : public GraphAccess
