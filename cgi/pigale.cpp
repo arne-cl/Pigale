@@ -10,7 +10,7 @@
 #include "client.h"
 
 using namespace std; 
-
+ 
 const char * html1 = "\
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n    \
 <html>\n                                                                \

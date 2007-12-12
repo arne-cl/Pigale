@@ -39,7 +39,8 @@ void UndoErase();
 void pigaleWindow::initServer()
   {ServerClientId = 0;
   NewGraph(); 
-  
+  QDir tmp = QDir("/tmp");
+  if(!tmp.exists())QDir("/").mkdir("tmp");
   server = new PigaleServer(this);
   server->setProxy(QNetworkProxy::NoProxy);
   threadServer = 0;

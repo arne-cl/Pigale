@@ -1,8 +1,8 @@
-MQTDIR=C:/Qt/4.2.1/
+MQTDIR=C:/Qt/4.3.3/
 MINGW=C:/MinGW
-DISTPATH=c:/pigale-1.3.5/pigale-1.3.5
+DISTPATH=/pigale-1.3.7
 #to copy dll DLL=yes
-DLL=
+DLL=yes
 ENABLE_STATIC = yes
 MODE = release
 QTDEBUGLIB = no

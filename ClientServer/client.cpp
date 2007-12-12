@@ -13,8 +13,9 @@
 #include "client.h"
 #include <qtextstream.h>
 #include <qevent.h>
-
+ 
 using namespace std;
+
 
 QString  universalFileName(QString const & fileName)
   {QString filename = fileName;

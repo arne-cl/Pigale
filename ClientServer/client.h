@@ -12,29 +12,36 @@
 #ifndef CLIENT_H 
 #define CLIENT_H
 #include <config.h>
-#include <qapplication.h>
-#include <qevent.h>
-#include "qboxlayout.h"
-#include <qtextedit.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qtextstream.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qthread.h>
-#include <qmutex.h>
+#include <QApplication>
+#include <QThread>
+#include <QFile>
+#include <QBoxLayout>
+#include <QTextEdit>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRadioButton>
 #include <qstack.h>
-#include <qdir.h> 
+#include <QDir> 
+#include <QtNetwork>
 #include <QT/clientEvent.h> 
 #include <QT/Action_def.h>
-#include <qevent.h>
 #include <TAXI/Tbase.h> 
 #include <QtNetwork>
-#include <qreadwritelock.h>
 
-/* 
+class Client;
+class threadRead : public QThread 
+/*! Thread whose task is to red the inpu data
+ */
+{
+public:
+  virtual void run();
+  Client* pclient; 
+};
+
+class Client : public QWidget
+/*! USAGE
+The default port used for connection is 4242
+
 In the input:
 - lines starting by '#' are treated as comments
 - lines starting by ':' are treated by the client
@@ -51,18 +58,6 @@ When reading from the server
 - lines starting by : are diplayed in the text window
 otherwise they are output to the terminal 
 */
-
-class Client;
-
-class threadRead : public QThread 
-{
-public:
-  virtual void run();
-  Client* pclient; 
-};
-
-//class Client : public Q3VBox 
-class Client : public QWidget
 {Q_OBJECT
 public:
   Client( const QString &host, quint16 port);
@@ -106,7 +101,6 @@ private:
   int ActionsToDo;
   bool dbg;
   int warning;
- 
   
   QMutex mutex;
   QReadWriteLock lock;
@@ -115,9 +109,6 @@ private:
   QLineEdit *inputText;
   threadRead ThreadRead;
   int numFiles;
-
-public:
-
 };
 
 

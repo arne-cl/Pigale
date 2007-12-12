@@ -19,7 +19,7 @@ QString  universalFileName(QString const & fileName)
   filename.replace('/', QDir::separator());
   return filename;
   }
- 
+  
 Client::Client(const QString &_host, quint16 _port,QList <QString>  *_todo
                ,int id, QString _outDir, QString *_result)
     :todo(_todo)

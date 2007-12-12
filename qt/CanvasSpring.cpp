@@ -404,11 +404,10 @@ t current tanslation of v0
 #endif
   }
 
-//**************************************************************************************
 
 //******************** JACQUARD SPRING EMBEDDER 
 //  ****************** VARIABLES D'EQUILIBRAGE
-#ifndef _WINDOWS
+
 int isInf (double x)
   {if ( x <= 0.0000001 )return 1;
   return 0;
@@ -1056,51 +1055,5 @@ int GraphEditor::SpringJacquard()
   Normalise();load(false);
   return generations;
   }
-#endif
-/*
-bool BoundRay(QCanvas *canvas, GeometricGraph &G, const tvertex &v0, const Tpoint &p0, Tpoint &t)
-  { const double epsilon_ray=0.01;
-  bool found=false;
-  Prop<NodeItem *> nodeitem(G.Set(tvertex()),PROP_CANVAS_ITEM);
-  Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
 
-  for (tbrin b=1; b<=G.ne(); b++)
-      {tvertex v1=G.vin[b];
-      tvertex v2=G.vin[-b];
-      if (v1==v0||v2==v0) 
-	  continue;
-      Tpoint p1=G.vcoord[v1];
-      Tpoint p2=G.vcoord[v2];
-      Tpoint tt=p2-p1;
-      double ex1=Determinant(p1-p0,t);
-      double ex2=Determinant(p2-p0,t);
-      if (ex1*ex2 > 0) continue;
-      double exb1=Determinant(tt,p0-p1);
-      double exb2=Determinant(tt,p0-p1+t);
-      if (exb1*exb2>0) continue;
-      double d=Determinant(tt,t);
-      if (d!=0)
-	  {qDebug("found intersection");
-	  double alpha=-exb1/d;
-          if (alpha<1) 
-	      {t*=alpha; found=true; 
-	      nodeitem[v0]->SetColor(Red);
-	      edgeitem[b()]->SetColor(Red);
-	      canvas->update();
-	      qDebug("alpha correction 1: %f",alpha);
-	      Twait("");
-	      }
-	  }
-      else
-	  {Tpoint pmin;
-	  qDebug("found alignment");
-	  dist_seg(p0,p1,p2,pmin);
-          double alpha=t*(pmin-t)/(t*t);
-	  if (alpha>0 && alpha<1) {t*=alpha;  qDebug("alpha correction 2: %f",alpha);found=true;}
-	  }
-      }
-  if (found) t *=(1-epsilon_ray);
-  return found;
-  }
-*/
 

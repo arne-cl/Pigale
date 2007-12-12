@@ -6,8 +6,6 @@ cd ..\qt
 mingw32-make %1
 cd ..\ClientServer
 mingw32-make %1
-cd ..\cgi
-mingw32-make %1
 cd ..
 
 

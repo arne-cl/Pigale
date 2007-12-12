@@ -58,7 +58,7 @@ void GraphEditor::update(int compute)
       }
   else
       load(false);
-  if(compute != -1)mywindow->tabWidget->setCurrentIndex(mywindow->tabWidget->indexOf(this));
+  if(compute != -1)mywindow->tabWidget->setCurrentIndex(mywindow->tabWidget->indexOf(gwp));
   }
 void GraphEditor::keyPressEvent(QKeyEvent *k)
   {key_pressed = k->key();

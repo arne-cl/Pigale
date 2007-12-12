@@ -61,6 +61,10 @@ class PigaleServer;
 
 
 class PigaleThread : public QThread 
+/*!
+Main non GUI thread that executes all algorithms.
+When an algorithm has finished its execution, the thread post an event to the GUI thread signalling  what graphical operations need to be done. 
+*/
 {Q_OBJECT
 
 private:
@@ -84,6 +88,8 @@ protected:
 };
 
 class pigaleWindow: public QMainWindow 
+/*! Main class of Pigale which constructs all the menus
+ */
 {Q_OBJECT
 
 private slots:

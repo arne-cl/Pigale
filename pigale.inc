@@ -1,4 +1,4 @@
-MQTDIR = /usr/local/Trolltech/Qt-4.3.2/
+MQTDIR = /usr/local/Trolltech/Qt-4.3.3/
 #version of the library
 VERSION= 1.3.2
 MODE = release
