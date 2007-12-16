@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = tgraph  freeglut qt ClientServer
-EXTRA_DIST  = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css 
+EXTRA_DIST  = Doc/icones/*.png Doc/icones/*.gif Doc/*.html Doc/*.css Doc/*.txt Doc/sourceforge.head
 EXTRA_DIST += tgf/*.tgf tgf/*.txt tgf/*.graphml 
 EXTRA_DIST += incl/*.h incl/TAXI/*.h incl/QT/*.h incl/GL/*.h 
 EXTRA_DIST += qt/icones/*.xpm qt/*.h qt/*.cpp qt/Action.awk qt/pigale.pro qt/pigale_fr.ts qt/pigale_fr.qm  

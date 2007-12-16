@@ -60,7 +60,7 @@ INLINE_INFO            = YES
 SORT_MEMBER_DOCS       = YES
 SORT_BRIEF_DOCS        = NO
 SORT_BY_SCOPE_NAME     = NO
-GENERATE_TODOLIST      = NO
+GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
 GENERATE_DEPRECATEDLIST= NO
@@ -78,17 +78,20 @@ WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = NO
 WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text"
-WARN_LOGFILE           = 
+WARN_LOGFILE           = /home/pigale/warning.txt
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /home/pigale/pigale/qt/ \
+INPUT                  = /home/pigale/pigale/Doc/main.txt \
+                         /home/pigale/pigale/qt/ \
                          /home/pigale/pigale/tgraph/ \
-                         /home/pigale/pigale/incl/
+                         /home/pigale/pigale/incl/ \
+                         /home/pigale/pigale/ClientServer
 FILE_PATTERNS          = *.cpp \
                          *.h
 RECURSIVE              = YES
-EXCLUDE                = /home/pigale/pigale/qt/.moc/
+EXCLUDE                = /home/pigale/pigale/qt/.moc/ \
+                         /home/pigale/pigale/ClientServer/.moc
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
 EXAMPLE_PATH           = 
@@ -121,11 +124,11 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = /home/pigale/sourceforge.head
+HTML_HEADER            = /home/pigale/pigale/Doc/sourceforge.head
 HTML_FOOTER            = 
 HTML_STYLESHEET        = 
 HTML_ALIGN_MEMBERS     = NO
-GENERATE_HTMLHELP      = NO
+GENERATE_HTMLHELP      = YES
 CHM_FILE               = 
 HHC_LOCATION           = 
 GENERATE_CHI           = NO
