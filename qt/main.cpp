@@ -19,6 +19,8 @@
  ***************************************************************************/
 
 
+
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>

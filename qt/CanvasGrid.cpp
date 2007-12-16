@@ -9,6 +9,12 @@
 **
 *****************************************************************************/
 
+/*! 
+\file CanvasGrid.cpp
+\ingroup editor
+\brief  Fit a drawing on a grid
+*/
+
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include <QT/pigaleQcolors.h> 

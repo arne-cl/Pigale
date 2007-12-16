@@ -9,14 +9,16 @@
 **
 *****************************************************************************/
 
+/*! 
+\file GraphSym.cpp
+\brief Compute and display the symetries of a graph
+*/
 
 #include "pigaleWindow.h"
 #include "GraphSym.h"
 #include <QT/SymWindow.h>
 #include <QT/pigaleQcolors.h>
 #include <QT/Misc.h>
-
-
 
 #include <QPushButton>
 #include <QCheckBox>

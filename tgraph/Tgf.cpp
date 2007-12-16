@@ -10,12 +10,14 @@
 **
 *****************************************************************************/
 
+/*!
+\file Tgf.cpp
+\brief The main Pigale file format to save graphs
+*/
 
 
 #include <TAXI/Tbase.h>
 #include <TAXI/Tgf.h>
-// ios::bin is deprecated
-// ios::nocreate does not exists anymore
 
 int IsFileTgf(const char *name)
   {char ID[4];

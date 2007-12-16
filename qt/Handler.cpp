@@ -9,6 +9,22 @@
  **
  *****************************************************************************/
 
+/*!
+\file Handler.h
+\brief Handlers used to call the tgraph algorithms. 
+
+Handlers used to call the tgraph algorithms.
+Each algoritm to call is identify by a unique integer action defined in Action_def.h
+Those handlers return:
+ -1 if error
+ O nothing to do
+ 1 need redraw
+ 2 need info redraw
+ 20 need info redraw without any recomputing
+ 3 draw (paint)
+ 4 3d drawing
+ 5 symetrie
+*/
 
 #include <QT/Action_def.h>
 #include "pigaleWindow.h" 
@@ -16,16 +32,6 @@
 #include <QT/Handler.h>
 
 void BFSOrientTree(TopologicalGraph &G, tvertex v0);
-
-// Those handlers return:
-// -1 if error
-// O nothing
-// 1 need redraw
-// 2 need info redraw
-// 20 need info redraw without any recomputing
-// 3 draw (paint)
-// 4 3d drawing
-// 5 symetrie
 
 int OrientHandler(GraphContainer &GC,int action)
   {GeometricGraph G(GC);

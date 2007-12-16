@@ -8,12 +8,10 @@
 ** appearing in the file LICENSE.HTML included in the packaging of this file.
 **
 *****************************************************************************/
-/*!
-\defgroup qt Pigale Qt graph editor
-*/
+
 /*!
 \file GLWindow.h
-\ingroup qt
+
 \brief 3D Drawing window class
 */
 #ifndef _GLWINDOW_H_INCLUDED_

@@ -9,11 +9,19 @@
 **
 *****************************************************************************/
 
+/*!
+\file Action_def.h
+\brief Actions
+
+To each QAction is associated a unique int identifier
+The header Action.h is automatically generated from this file
+The comments defines the macronames which should not include whitespaces
+*/
+
+
 #ifndef  ACTIONS_H_INCLUDED 
 #define  ACTIONS_H_INCLUDED  
 
-// The header Action.h is automatically generated from this file
-// The comments defines the macronames which should not include whitespaces
 
 #define A_PAUSE                    (99)                 // PAUSE
 

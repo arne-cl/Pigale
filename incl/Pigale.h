@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*!
+\file Pigale.h
+\brief Prototypes of non-member functions defined in tgraph
+*/
+
 #ifndef PIGALE_H
 #define PIGALE_H
 #include <TAXI/Tbase.h> 

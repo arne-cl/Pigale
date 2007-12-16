@@ -78,9 +78,6 @@ void Client::socketConnectionClosed()
   stop();
   connection->show();
   }
-void Client::socketClosed()
-  {//infoText->append("Connection closed");
-  }
 void Client::askConnection()
   {socket->connectToHost(host,port);
   }
@@ -90,11 +87,8 @@ void Client::askCloseConnection()
   sendToServer(str);
   }
 void Client::closeConnection()
-  {socket->close();
-   if(socket->state() == QAbstractSocket::ClosingState )
-       connect(socket,SIGNAL(delayedCloseFinished()),SLOT(socketClosed()));
-   else
-       socketClosed();
+  {if(socket->state() == QAbstractSocket::ClosingState )
+      connect(socket,SIGNAL(delayedCloseFinished()),SLOT(socketClosed()));
   send->hide();close->hide();inputText->hide();quit->show();
   }
 void Client::socketError(QAbstractSocket::SocketError e)
@@ -102,17 +96,9 @@ void Client::socketError(QAbstractSocket::SocketError e)
       infoText->append(QString("Connection refused"));
   else if(e  == QAbstractSocket::HostNotFoundError) 
       infoText->append(QString("Host not found"));           
-//   else
-//       infoText->append(QString("A read from the socket failed"));
   }
-bool Client::event(QEvent * ev)
-  {if(ev->type() >=  QEvent::User)
-      {customEvent(ev);
-      return TRUE;
-      }
-  return FALSE;
-  }
-void Client:: customEvent(QEvent * e ) 
+
+void Client::customEvent(QEvent * e) 
   {if( e->type() == (int)TEXT_EVENT )
       {textEvent *event  =  (textEvent  *)e;
       infoText->append(event->getString());

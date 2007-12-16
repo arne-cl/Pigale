@@ -10,6 +10,11 @@
 **
 *****************************************************************************/
 
+/*!
+\file pigaleMenus.cpp
+\ingroup pigaleWindow
+\brief Menus, Toolbar and most widgets
+*/
 
 #include <config.h>
 #include "pigaleWindow.h"
@@ -654,10 +659,12 @@ void pigaleWindow::createMenus()
   action = embed->addAction(xmanIcon,tr("Spring Planar")); 
   action->setWhatsThis(tr(jacquard_txt));  
   setId(action,A_EMBED_JACQUARD);
+#endif
+  //#ifdef VERSION_ALPHA
   action = embed->addAction(xmanIcon,tr("Spring")); 
   action->setWhatsThis(tr(spring_txt));  
   setId(action,A_EMBED_SPRING);
-#endif
+  //#endif
   embed->addSeparator(); 
   action = embed->addAction(xmanIcon,tr("Embedding in Rn")); 
   action->setWhatsThis(tr(embed3d_txt));  

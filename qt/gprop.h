@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file gprop.h
+\brief  Display properties of a grap, enable/disable menus
+*/
+
 #ifndef GRAPH_PROPERTIES_H
 #define GRAPH_PROPERTIES_H
 

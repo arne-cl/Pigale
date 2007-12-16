@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file Settings.cpp
+\ingroup pigaleWindow
+\brief Settings
+*/
 
 #include <config.h>
 #include "pigaleWindow.h"

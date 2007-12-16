@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file pigaleWindow.cpp
+\ingroup pigaleWindow
+\brief Events and Threads
+*/
 
 #include <config.h>
 #include "ClientSocket.h"
@@ -53,23 +58,6 @@ void pigaleWindow::initServer()
       menuIntAction[A_SERVER_INIT]-> setEnabled(false);
       }
   showMinimized();
-  }
-bool pigaleWindow::event(QEvent * ev)
-  {if(ev->type() >=  QEvent::User)
-      {customEvent(ev);
-      return TRUE;
-      }
-  if(ev->type() == QEvent::Close)
-      {QCloseEvent *ec = new QCloseEvent::QCloseEvent();
-      closeEvent(ec);
-      return TRUE;
-      }
-  if(ev->type() >=  QEvent::KeyPress)
-      {QKeyEvent *k = (QKeyEvent *)ev;
-      keyPressEvent(k);
-      return TRUE;
-      }
-  return FALSE;
   }
 void pigaleWindow::customEvent(QEvent * ev)
   {ev->accept();

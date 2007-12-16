@@ -9,12 +9,19 @@
 **
 *****************************************************************************/
 
+/*! 
+\defgroup editor Pigale Editor
+\brief Pigale Editor
+*/
+/*!
+\file GraphWidget.h
+\ingroup editor
+\brief Classes of the Pigale Editor
+*/
+
 #ifndef _GRAPH_WIDGET_H_INCLUDED_
 #define _GRAPH_WIDGET_H_INCLUDED_
 
-/*! \file
-This header contains the definition of all the classes used by the Pigale Editor
-*/
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
@@ -30,32 +37,30 @@ bool & ShowOrientation();
 int  & ShowVertex();
 
 const int min_rtti = QGraphicsItem::UserType;
-const int line_rtti    = min_rtti+20;
-const int arrow_rtti   = min_rtti+11;
-const int ntxt_rtti    = min_rtti+4;
-const int node_rtti    = min_rtti+5;
-const int col_rtti     = min_rtti+6;
-const int edge_rtti    = min_rtti+7;
-const int curs_rtti    = min_rtti+8;
-const int info_rtti    = min_rtti+9;
-const int thick_rtti   = min_rtti+9;
+const int line_rtti    = min_rtti+20;//!Type indentifier of a LineItem
+const int arrow_rtti   = min_rtti+11;//!Type indentifier of a ArrowItem
+const int node_rtti    = min_rtti+5;//!Type indentifier of a NodeItem
+const int col_rtti     = min_rtti+6;//!Type indentifier of a ColorItem
+const int edge_rtti    = min_rtti+7;//!Type indentifier of a EdgeItem
+const int curs_rtti    = min_rtti+8;//!Type indentifier of a CursorItem
+const int info_rtti    = min_rtti+9;//!Type indentifier of a InfoItem
+const int thick_rtti   = min_rtti+9;//!Type indentifier of a ThickItem
 
-const int grid_z     =   1; // Grid
-const int ntxt_z     = 128; // NodeTextItem
-const int node_z     = 127; // NodeItem
-const int col_z      = 2;   // ColorItem //130
-const int thick_z    = 2;   // ThickItem //130
-const int edge_z     = 126; // EdgeItem
-const int arrow_z    = 125; // ArrowItem
-const int curs_z     = 129; // CursItem
-const int inforect_z = 131; // rect containing the info
-const int info_z     = 132; // InfoItem
+const int grid_z     =   1; //!Z-coordinate of the grid
+const int node_z     = 127; //!Z-coordinate of a  NodeItem
+const int col_z      = 2;   //!Z-coordinate of a ColorItem
+const int thick_z    = 2;   //!Z-coordinate of a ThickItem
+const int edge_z     = 126; //!Z-coordinate of a EdgeItem
+const int arrow_z    = 125; //!Z-coordinate of a ArrowItem
+const int curs_z     = 129; //!Z-coordinate of a CursItem
+const int inforect_z = 131; //!Z-coordinate of a rect containing the info
+const int info_z     = 132; //!Z-coordinate of a InfoItem
 
-const double xorient = .4; 
-const int sizerect   = 12;  //size and space are used to draw the color palets
-const int sizerecth  = 8;   //size and space are used to draw the thick palets
-const int space      = 1;   //spece + sizerect <= 13 for screens 800x600
-const int BORDER     = 30;  // free space around the graph drawing 
+const double xorient = .4;  //! constant used to draw an arrow
+const int sizerect   = 12;  //!size and space are used to draw the color palets
+const int sizerecth  = 8;   //!size and space are used to draw the thick palets
+const int space      = 1;   //!spece + sizerect <= 13 for screens 800x600
+const int BORDER     = 30;  //!free space around the graph drawing 
 
 class pigaleWindow; 
 class QPrinter;
@@ -64,8 +69,8 @@ class EdgeItem;
 class GraphEditor;
 class GraphWidget;
 
+//!used to display an arrow whose size and loaction depends on the edge length
 class ArrowItem: public QGraphicsPolygonItem
-//! used to display an arrow whose size and loaction depends on the edge length
 {public:
   ArrowItem(EdgeItem *edgeitem);
   void ComputeCoord(); //!<  compute the shape and position of the arrow
@@ -76,8 +81,7 @@ class ArrowItem: public QGraphicsPolygonItem
   QVector<QPointF>pts;
 };
 
-/*! An edge is represented by two EdgeItem (corresponding to its lower and upper part) and an ArrowItem
-*/
+//! An edge is represented by two EdgeItem (corresponding to its lower and upper part) and an ArrowItem
 class EdgeItem: public QGraphicsLineItem
 {public:
   EdgeItem(GraphWidget* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
@@ -98,7 +102,7 @@ private:
   GraphWidget* gwp;
 };
 
-//!  used when creating an edge
+//!Used when creating an edge
 class CursItem: public QGraphicsLineItem
 {public:
   CursItem(tvertex &v,QPoint &p,GraphWidget* g);
@@ -114,7 +118,7 @@ class LineItem: public QGraphicsLineItem
   int type() const {return line_rtti;}
 };
 
-//! used to display some info
+//!Used to display some info
 class InfoItem: public QGraphicsSimpleTextItem
 {public:
   InfoItem(GraphWidget* g,QString &t,QPoint &p);
@@ -122,7 +126,7 @@ class InfoItem: public QGraphicsSimpleTextItem
   QGraphicsRectItem* rectitem;
 };
 
-//! are the coloured rectangles used to define the colors of vertices and edges
+//!Are the coloured rectangles used to define the colors of vertices and edges
 class ColorItem: public QGraphicsRectItem
 {public:
   ColorItem(GraphWidget* g,QRectF &rect,int pen_color,int brush_color,bool node);
@@ -135,7 +139,7 @@ private:
   GraphWidget* gwp;
 };
 
-//! used to modify  the width of an edge
+//!Used to modify  the width of an edge
 class ThickItem: public QGraphicsRectItem
 {public:
   ThickItem(GraphWidget* g,QRectF &rect,int ewidth,int brush_color);
@@ -148,7 +152,7 @@ private:
   GraphWidget* gwp;
 };
 
-//! used to represent a vertex with/witout a label
+//!\brief Used to represent a vertex with/witout a label
 class NodeItem: public QGraphicsRectItem
 {public:
   NodeItem(tvertex &vv,GraphWidget* g,QRectF &rect,QColor & col,QString &_t);
@@ -166,8 +170,11 @@ private:
   QString t;
 };
 
-/*!
-widget containing QGraphicsScene pointer which will be populated by QGraphicsItem and
+/*! 
+\class GraphWidget
+\brief widget of pigaleWindow
+
+Widget containing QGraphicsScene pointer which will be populated by QGraphicsItem and
 a GraphEditor pointer (derived from QGraphicsView) which displays the  QGraphicsScene
 */
 class GraphWidget : public QWidget
@@ -193,9 +200,11 @@ public:
   int fontsize;
 };
 
-//!  The main class of the Pigale Editor.
 /*!
-  It derives from QGraphicsView and displays the QGraphicsScene constructed by its parent
+\class  GraphEditor
+\brief  The main class of the Pigale Editor.
+
+It derives from QGraphicsView and displays the QGraphicsScene constructed by its parent
 */
 class GraphEditor : public QGraphicsView
 {

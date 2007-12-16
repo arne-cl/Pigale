@@ -9,16 +9,16 @@
 **
 *****************************************************************************/
 
+/*!
+\file clientEvent.h
+\brief CustomEvents created used by Pigale
+*/
+
 #ifndef CLIENTEVENT_H 
 #define CLIENTEVENT_H
 
-#if QT_VERSION >= 0x4000
-
 #include <QEvent> 
 #define USER_EVENT  QEvent::User
-#else
-#define USER_EVENT  65432
-#endif
 
 
 enum UserEvents {

@@ -30,7 +30,7 @@
 
 class Client;
 class threadRead : public QThread 
-/*! Thread whose task is to red the inpu data
+/*! Thread whose task is to red the input data
  */
 {
 public:
@@ -74,7 +74,6 @@ private slots:
   void socketReadyRead();
   void socketConnected();
   void socketConnectionClosed();
-  void socketClosed();
   void socketError(QAbstractSocket::SocketError e);
   void stop();
   void exit();
@@ -86,14 +85,15 @@ public:
   void writeClient(QString str);
   QStack<QString > stack;
 
+protected:
+  void customEvent(QEvent *e);
+
 private:
   int sendToServerGraph(QString &str);
   uint readBuffer(char *  &buff);
   void writeServer(QString str);
   void writeServer(char * buff,quint32 size);
   
-  bool event(QEvent * ev);
-  void customEvent(QEvent * e );
   QString host;
   quint16 port;
   QPushButton *send,*close,*quit,*connection; 

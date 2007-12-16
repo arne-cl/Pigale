@@ -9,6 +9,12 @@
 **
 *****************************************************************************/
 
+/*! 
+\file CanvasSpring.cpp
+\ingroup editor
+\brief  Spring embedders
+ */
+
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"
@@ -126,17 +132,18 @@ void GraphEditor::Spring()
       // update the drawing
       dep = .0;
       n_red = 0;
+      bool redraw = iter%8 == 0;
       for(tvertex v = 1;v <= n;v++)
 	  {dx = Abs(translate[v].x()); dy = Abs(translate[v].y());
 	  dep = Max(dep,dx);  dep = Max(dep,dy);
 	  if(dx > 1. || dy > 1.) 
-	      {nodeitem[v]->SetColor(color[G.vcolor[v]]);
-	      //nodeitem[v]->moveTo(G.vcoord[v]);
+	      {if(redraw)nodeitem[v]->SetColor(color[G.vcolor[v]]);
 	      }
 	  else
-	      {nodeitem[v]->SetColor(Qt::red);++n_red;}
-	  nodeitem[v]->moveTo(G.vcoord[v]);
-	  scene()->update();
+	      {if(redraw)nodeitem[v]->SetColor(Qt::red);
+              ++n_red;
+              }
+	  if(redraw)nodeitem[v]->moveTo(G.vcoord[v]);
 	  }
       //stop = (n_red >= (2*G.nv())/3)? ++stop : 0;
       stop = (n_red == G.nv())? stop+1 : 0;

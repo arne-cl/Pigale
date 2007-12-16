@@ -9,9 +9,11 @@
 **
 *****************************************************************************/
 
-/*! \file
+/*! 
+\file CanvasItem.cpp
+\ingroup editor
 \brief  All QGraphicsItem used by QGraphicsScene *canvas
- */
+*/
 
 #include "pigaleWindow.h"
 #include "mouse_actions.h"

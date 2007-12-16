@@ -17,7 +17,9 @@
 
 #include <QPixmap>
 #include <QPainter>
-
+/*! \file 
+\brief To display non Fary drawings
+ */
 void DrawPolrec(QPainter *p,pigalePaint *paint)
   {TopologicalGraph G(paint->GCP);
   Prop1<tstring> title(G.Set(),PROP_TITRE);

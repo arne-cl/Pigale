@@ -9,6 +9,12 @@
  **
  *****************************************************************************/
 
+/*! 
+\file pigaleCanvas.cpp
+\ingroup editor
+\brief  Constructor, mouse events,...
+ */
+
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include "mouse_actions.h"

@@ -9,41 +9,9 @@
 **
 *****************************************************************************/
 
-/*! \brief tgf file: files used to save graphs 
- */
-/*! \file 
-Ce type de fichier permet d'ecrire un certain nombre (RecordNum) d'objets (record),
-chacun etant defini par un nombre variable (FieldNum) de tags (TOUS DIFFERENTS).
-Chaque record a un numero compris entre 1 et RecordNum
-
-Utilisation Ecriture:
-- Eventuellement definir le SubHeader
-- Open()
-- CreateRecord()
-- FieldWrite()
-- FieldWrite()  ou SeekWrite()
-- FieldWrite()
-- ............
-- CreateRecord()
-
-Remarque: Pendant la definition d'un nouveau record, on n'a pas le droit
-d'utiliser d'autres fonctions.
-Utilisation en Lecture:
-- Open           retourne le nombre de records
-- SetRecord()
-- FieldRead()    ou SeekRead()
-- SetRecord()
-- FieldRead()    ou SeekRead()
-- ...........
-
-Remarque: On peut lire un tag dans un ordre different de l'ecriture
-
-
-Un fichier TGF contient: header,subheader,des IFD,des records
-- Header          -> ID,Version,#champs,#record,Offset du 1 IFD:
-- SubHeader       -> Identificateur du type de Fichier
-- IFDheader       -> Descripteur d'un record
-- Field           -> donne d'un record
+/*! 
+\file Tgf.h
+\brief The main Pigale file format to save graphs
 */
 
 #ifndef _TGF_H_INCLUDED_
@@ -52,7 +20,8 @@ Un fichier TGF contient: header,subheader,des IFD,des records
 #include <TAXI/Tbase.h>
 #include <TAXI/Tsvector.h>
 
-//TGF uses a very primitive dynamic array:
+
+//! \brief TGF uses a very primitive dynamic array:
 template<class T> class TSArray
 {private:
     T *ary;
@@ -83,19 +52,11 @@ public:
 
 
     T & operator[] (int idx)
-        {
-#ifdef TDEBUG
-        if(idx >=size){DebugPrintf("ERROR TSArray %d >= %d",idx,size);myabort();}
-#endif
-        return ary[idx];
+        {return ary[idx];
         }
 
     const T & operator[] (int idx) const
-        {
-#ifdef TDEBUG
-        if(idx >=size){DebugPrintf("ERROR TSArray %d >= %d",idx,size);myabort();}
-#endif
-        return ary[idx];
+        {return ary[idx];
         }
 
     T & operator() (int idx)
@@ -166,6 +127,41 @@ struct StructTagList
 int IsFileTgf(const char *name);
 inline int NumPadding(int n){return(3 - (n+3)%4);}
 
+
+/*! \class Tgf
+Ce type de fichier permet d'ecrire un certain nombre (RecordNum) d'objets (record),
+chacun etant defini par un nombre variable (FieldNum) de tags (TOUS DIFFERENTS).
+Chaque record a un numero compris entre 1 et RecordNum
+
+Utilisation Ecriture:
+- Eventuellement definir le SubHeader
+- Open()
+- CreateRecord()
+- FieldWrite()
+- FieldWrite()  ou SeekWrite()
+- FieldWrite()
+- ............
+- CreateRecord()
+
+Remarque: Pendant la definition d'un nouveau record, on n'a pas le droit
+d'utiliser d'autres fonctions.
+Utilisation en Lecture:
+- Open           retourne le nombre de records
+- SetRecord()
+- FieldRead()    ou SeekRead()
+- SetRecord()
+- FieldRead()    ou SeekRead()
+- ...........
+
+Remarque: On peut lire un tag dans un ordre different de l'ecriture
+
+
+Un fichier TGF contient: header,subheader,des IFD,des records
+- Header          -> ID,Version,#champs,#record,Offset du 1 IFD:
+- SubHeader       -> Identificateur du type de Fichier
+- IFDheader       -> Descripteur d'un record
+- Field           -> donne d'un record
+*/
 class Tgf {
     private:
         enum ifd_tags {TAG_FIRST = 1,TAG_NEXT};

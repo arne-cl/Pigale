@@ -7,11 +7,19 @@
 #include <QT/Misc.h> 
 
 using namespace std;
+/*! \file 
+\ingroup pigaleWindow
+\brief used to add custom functions
 
-
-// Allowed return values of Test 
-// -1:error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
-// 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
+This file allow a user to write his own functions: test1, test2, test3.
+These functions takes as argument:<br>
+ <b>GraphContainer &GC</b> a reference on the current GraphContainer<br>
+ <b>int &drawing</b> which can specify a drawing function defines in pigalePaint.cpp<br>
+The return value tells Pigale what to do after the completion of the function:<br>
+ -1:error 0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Update drawing,Info)<br>
+ 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders<br><br>
+The  <b>initMenuTest() </b> allows the user to set the names of his functions in the main menu.
+*/
 
 inline double abs(double x) {if(x>=0) return x; else return -x;}
 static int Test1(GraphContainer &GC,int &drawing);
@@ -19,16 +27,9 @@ static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 
 void pigaleWindow:: initMenuTest()
-  {
-#ifdef VERSION_ALPHA
-  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x) ");
-  setUserMenu(2,"1000xNewPlanarity");
-  setUserMenu(3,"Test planarity algos");
-#else
-  setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x)");
+  {setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x)");
   setUserMenu(2,"1000xTesNewtPlanarity");
   setUserMenu(3,"Properties");
-#endif
   }
 int Test(GraphContainer &GC,int action,int &drawing)
   {//cout <<"test:"<<action<<endl;
@@ -61,47 +62,21 @@ int Test1(GraphContainer &GC,int &drawing)
   return 1;
   }
 int Test2(GraphContainer &GC,int &drawing)
-  {TopologicalGraph G(GC);
+  {drawing = 0;
+  TopologicalGraph G(GC);
   bool _debug = debug();
   shuffleCir(G);
   QTime timer;timer.start();
   for(int i = 0;i < 1000;i++)G.TestNewPlanar();
   Tprintf("Used time : %f",timer.elapsed()/1000.);
   debug() = _debug;
-  drawing = 0;
   return 0;
   }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-#ifdef VERSION_ALPHA
-int Test3(GraphContainer &GC,int &drawing)
-  {drawing = 0;
-  TopologicalGraph G(GC);
-  tvertex v1 = randomGet(G.nv());
-  tvertex v2 = randomGet(G.nv());
-  if(v1 != v2)G.NewEdge(v1,v2);
-  shuffleCir(G);
-  int ret0 = G.TestPlanar(); 
-  int ret1 = G.TestNewPlanar();
-  int ret2 = G.NewPlanarity(randomGet(G.ne()));
-  if(ret0 != ret1)
-      {setPigaleError(-1,"Error TestNewPlanar");
-	cout << ret0 << " " << ret1 << endl;
-	return 2;
-      }
-  if(ret0 != ret2)
-      {setPigaleError(-1,"Error NewPlanarity");
-      cout << ret0 << " " << ret1 << endl;
-      return 2;
-      }
-  return 2;
-  }
-#else 
-
 int Test3(GraphContainer &GC,int &drawing)
 // display  the properties of the current graph that would be saved in a tgf file.
-  {TopologicalGraph G(GC);
+  {drawing = 0;
+  TopologicalGraph G(GC);
   Tprintf("\nVertices:");
   int i;
   for (i=G.Set(tvertex()).PStart(); i<G.Set(tvertex()).PEnd(); i++)
@@ -131,11 +106,9 @@ int Test3(GraphContainer &GC,int &drawing)
   for (i=G.Set().PStart(); i<G.Set().PEnd(); i++)
       if (G.Set().exist(i))
           Tprintf("\n%d %s \n (%s)",i,PropName(0,i),PropDesc(0,i));
-  drawing = 0;
   return 0;
   }
 
-#endif
 
 
 

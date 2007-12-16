@@ -18,7 +18,17 @@
 class pigaleWindow;
 class QPrinter;
 
+/*! \file 
+\brief To display non Fary drawings
+ */
+/*! \class  pigalePaint
+\brief To display non Fary drawings
 
+This class is used for plane drawings of graphs which are not Fary drawings.
+Fary drawings uses the editor to be displayed.<br>
+For each drawing algorithm, one has to write  a function taking as arguments a pointer on a QPainter and a pointer on this class. <b>pigalePaint</b> uses a pointer to such a function to display the drawing..<br>
+  It works using  a copy of the graph.
+*/
 class pigalePaint : public QWidget 
 {
   //Q_OBJECT

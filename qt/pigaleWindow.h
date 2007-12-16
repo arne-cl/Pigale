@@ -9,6 +9,16 @@
 **
 *****************************************************************************/
 
+/*! 
+\defgroup pigaleWindow Class pigaleWindow
+\brief Main window of Pigale
+*/
+/*!
+\file pigaleWindow.h
+\ingroup pigaleWindow
+\brief Main window of Pigale
+*/
+
 #ifndef MYWINDOW_H 
 #define MYWINDOW_H
 
@@ -59,12 +69,14 @@ class QLineEdit;
 class QPalette;
 class PigaleServer;
 
+/*! 
+\class PigaleThread
+\brief Main non GUI thread that executes all algorithms.
 
-class PigaleThread : public QThread 
-/*!
-Main non GUI thread that executes all algorithms.
-When an algorithm has finished its execution, the thread post an event to the GUI thread signalling  what graphical operations need to be done. 
+When an algorithm has finished its execution, the thread post an event to the GUI thread signalling  
+what graphic operations need to be done. 
 */
+class PigaleThread : public QThread 
 {Q_OBJECT
 
 private:
@@ -86,10 +98,8 @@ signals:
 protected:
   void run();
 };
-
+//! Main class of Pigale which constructs all the menus and widgets
 class pigaleWindow: public QMainWindow 
-/*! Main class of Pigale which constructs all the menus
- */
 {Q_OBJECT
 
 private slots:
@@ -114,7 +124,6 @@ private slots:
   void UndoEnable(bool enable);
   void LoadSettings();
   void SetPigaleFont();
-  void keyPressEvent(QKeyEvent *k);
   void settingsHandler(int action);
   void initServer();
   void seedEdited(const QString & t);
@@ -168,7 +177,7 @@ public slots:
 protected:
   void closeEvent(QCloseEvent *event);
   void customEvent( QEvent * e );
-  bool event(QEvent * e);
+  void keyPressEvent(QKeyEvent *k);
 public:
   pigaleWindow();
   ~pigaleWindow();

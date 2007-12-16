@@ -9,12 +9,14 @@
 **
 *****************************************************************************/
 
+/*! 
+\file mouse_actions.cpp
+\brief  Display the mouses action buttons.
+*/
 
 #include "mouse_actions.h"
 #include "GraphWidget.h"
 #include "GraphGL.h"
-
-
 #include <QButtonGroup>
 #include <QColorDialog>
 

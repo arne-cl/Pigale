@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file mouse_actions.h
+\brief  Display the mouses action buttons.
+*/
+
 #ifndef MOUSE_ACIONS_H
 #define MOUSE_ACIONS_H
 

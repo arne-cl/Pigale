@@ -9,6 +9,14 @@
 **
 *****************************************************************************/
 
+/*!
+\file Handler.h
+\brief Handlers used to call the tgraph algorithms. 
+
+Handlers used to call the tgraph algorithms.
+Each algoritm to call is identify by a unique integer action defined in Action_def.h
+*/
+
 #ifndef HANDLER_H
 #define HANDLER_H
 

@@ -10,6 +10,11 @@
 *****************************************************************************/
 
 
+/*! 
+\file Macro.cpp
+\ingroup pigaleWindow
+\brief Macro
+*/
 
 #include "pigaleWindow.h"
 #include "GraphWidget.h"

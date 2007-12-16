@@ -9,6 +9,12 @@
 **
 *****************************************************************************/
 
+/*! 
+\file SymWindow.h
+\brief Display and compute the symetries of a graph
+*/
+
+
 #ifndef _SYMWINDOW_H_INCLUDED_
 #define _SYMWINDOW_H_INCLUDED_
 
@@ -45,7 +51,6 @@ static double *angles;
 static double theta_12,theta_23;
 static int match0,match1;
 static bool Opt;
-
 
 class SymWindow : public QWidget
 {

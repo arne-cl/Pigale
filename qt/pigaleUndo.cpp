@@ -9,14 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file pigaleUndo.cpp
+\ingroup pigaleWindow
+\brief Undo
 
-#include <config.h>
-#include "pigaleWindow.h"
-#include "GraphWidget.h"
-#include <TAXI/Tgf.h>
-#include <QT/Action_def.h>
-
-/*
 The copies are cleared when a new graph is loaded or generated, but the last graph is saved
 A copy is created when edges/vertices are added/deleted outside the editor
 
@@ -24,6 +21,12 @@ UndoMax  : # of save graphs
 UndoSave : index of graph to restore [1,UndoMax]
 Should always be possible to restore 1
 */
+#include <config.h>
+#include "pigaleWindow.h"
+#include "GraphWidget.h"
+#include <TAXI/Tgf.h>
+#include <QT/Action_def.h>
+
 
 //static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
 //#if defined(_WINDOWS) || defined(_WIN32)

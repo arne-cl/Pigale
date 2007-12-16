@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*! 
+\file GraphSym.h
+\brief widget of pigaleWindow
+*/
+
 #ifndef _GRAPH_SYM_H_INCLUDED_
 #define _GRAPH_SYM_H_INCLUDED_
 
@@ -18,7 +23,7 @@
 class GraphSymPrivate;
 class pigaleWindow; 
 class QPrinter;
-
+//! Window to display symetries
 class GraphSym : public QWidget
 {
   Q_OBJECT

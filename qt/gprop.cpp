@@ -9,6 +9,10 @@
 **
 *****************************************************************************/
 
+/*! 
+\file gprop.cpp
+\brief  Display properties of a grap, enable/disable menus
+*/
 
 #include "pigaleWindow.h"
 #include <QT/Misc.h>

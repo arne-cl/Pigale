@@ -9,6 +9,12 @@
 **
 *****************************************************************************/
 
+/*! 
+\file pigaleFile.cpp
+\ingroup pigaleWindow
+\brief Loading and saving a graph
+*/
+
 #include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
