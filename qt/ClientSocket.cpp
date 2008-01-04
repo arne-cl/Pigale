@@ -9,6 +9,10 @@
 **
 *****************************************************************************/
 
+/*!
+\file 
+\brief PigaleServer and ClientSocket class implementation
+*/
 
 #include "ClientSocket.h"
 #include "GraphWidget.h"
@@ -24,7 +28,6 @@
 #include <QStringList>
 
 
-
 PigaleServer::PigaleServer(pigaleWindow *_mw)
     :QTcpServer(_mw),mw(_mw)
   {nconnections = 0;
@@ -32,119 +35,63 @@ PigaleServer::PigaleServer(pigaleWindow *_mw)
   listen(QHostAddress::Any,4242); 
   connect(this,SIGNAL(newConnection()),this,SLOT(OneClientOpened()));
   }
-void PigaleServer::createNewServer()
-  {QTcpSocket *socket = nextPendingConnection();
-  ClientSocket *thread = new ClientSocket(mw,socket);
-  connect(thread, SIGNAL(finished()),thread,SLOT(deleteLater()));
-  connect(socket,SIGNAL(disconnected()),SLOT(OneClientClosed()));
-  connect(socket,SIGNAL(disconnected()),socket,SLOT(deleteLater()));
-  mw->threadServer = thread;
+void PigaleServer::OneClientOpened()
+  {if(++nconnections == 1)createNewServer();
   }
 void PigaleServer::OneClientClosed()
-  {mw->threadServer->quit();
+  {//mw->threadServer->quit();
   delete mw->threadServer;
   --nconnections;
   if(hasPendingConnections())createNewServer();
   }
-void PigaleServer::OneClientOpened()
-  {if(++nconnections == 1)createNewServer();
+void PigaleServer::createNewServer()
+  {QTcpSocket *socket = nextPendingConnection();
+  ClientSocket *th = new ClientSocket(mw,socket);
+  connect(socket,SIGNAL(disconnected()),SLOT(OneClientClosed()));
+  connect(socket,SIGNAL(disconnected()),socket,SLOT(deleteLater()));
+  connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),th,SLOT(socketError(QAbstractSocket::SocketError)));
+  mw->threadServer = th;
   }
-/**********************************************************/
-// thread
+
+//! ClientSocket (non thread)
 ClientSocket::ClientSocket(pigaleWindow *_mw,QTcpSocket *_socket)
-    :QThread(_mw),mw(_mw)
-    ,abort(false),busy(false),sdebug(0),line(0)
+    :mw(_mw)
+    ,sdebug(0),line(0)
   {socket = _socket;
-  clo.setDevice(socket);   clo.setVersion(QDataStream::Qt_4_0);
+  clo.setDevice(socket);   clo.setVersion(QDataStream::Qt_4_3);
   mw->postMessageClear();
   mw->ServerExecuting = true;      mw->blockInput(true);
   Tprintf("Server: New connection %d",++mw->ServerClientId);
   writeClientEvent(":Server Ready");
   writeClientEvent("!Server Ready C");
-  serverReady();
+  serverReady(); 
   }
 ClientSocket:: ~ClientSocket()
   {Tprintf("Server: Client disconnects %d",mw->ServerClientId);
   mw->ServerExecuting = false;   mw->blockInput(false);
   }
-void ClientSocket::runEvent(QEvent * ev)
-  {mutex.lock();
-  ev0   =  ev;
-  mutex.unlock();
-  start();
+void ClientSocket::socketError(QAbstractSocket::SocketError )
+  {;//cout <<"socket error : "<<e<<endl;
   }
-void ClientSocket::run()
-  {mutex.lock();
-  QEvent * ev = ev0;
-  mutex.unlock();
-  if(abort)return;
+void  ClientSocket::customEvent(QEvent * ev)
+  {ev->accept();
   if(ev->type() == (int)CLIENT_EVENT) 
       {clientEvent  *event  =  (clientEvent  *)ev;
-      int action = event->getAction();
-      QString str = event->getParamString();
-      handlerInput(action,str);
+      handlerInput(event->getAction(),event->getParamString());
       }
   else if(ev->type() == (int)SERVER_READY_EVENT) 
       executeAction();
   else if(ev->type() == (int)WRITE_EVENT) 
       {writeEvent  *event  =  (writeEvent  *)ev;
-      QString str = event->getString();
-      writeClient(str);
-      }
+      writeClient(event->getString());
+     }
   else if(ev->type() == (int)WRITEB_EVENT) 
       {writeBufEvent  *event  =  (writeBufEvent  *)ev;
-      char * buf = event->getPtr();
-      uint size = event->getSize();
-      writeClient(buf,size);
+      writeClient(event->getPtr(),event->getSize());
       }
-  else if(ev->type() == (int)TEXT_EVENT) 
-      {textEvent  *event  =  (textEvent  *)ev;
-      QString str = event->getString();
-      busy = false;
-      xhandler(str);
-      }
-  mutex.lock();
-  busy = false;
-  mutex.unlock(); 
-  }
-
-bool ClientSocket::event(QEvent * ev)
-  {if(ev->type() < QEvent::User)return FALSE;
-  ev->accept();
-// #ifndef _WINDOWS
-//   mutex.lock();
-//   busy = true;  
-//   mutex.unlock();
-//   runEvent(ev);
-//   while(busy) msleep(10);
-// #else
-  customEvent(ev); // non thread version
-// #endif
-  return TRUE;
-  }
-void  ClientSocket::customEvent(QEvent * ev)
-  {if(ev->type() == (int)CLIENT_EVENT) 
-    {clientEvent  *event  =  (clientEvent  *)ev;
-    handlerInput(event->getAction(),event->getParamString());
-    }
-  else if(ev->type() == (int)SERVER_READY_EVENT) 
-      executeAction();
-  else if(ev->type() == (int)WRITE_EVENT) 
-    {writeEvent  *event  =  (writeEvent  *)ev;
-    writeClient(event->getString());
-    }
-  else if(ev->type() == (int)WRITEB_EVENT) 
-    {writeBufEvent  *event  =  (writeBufEvent  *)ev;
-    writeClient(event->getPtr(),event->getSize());
-    }
-  else if(ev->type() == (int)TEXT_EVENT) 
-    {textEvent  *event  =  (textEvent  *)ev;
-    xhandler(event->getString());
-    }
   }
 void ClientSocket::executeAction()
-  {if(abort)return;
-  QString str =  readLine();
+  {QString str =  readLine();
   if(str.size() == 0){serverReady();return;}// never happens
   ++line;
   if(str.at(0) == '#')
@@ -163,12 +110,11 @@ void ClientSocket::executeAction()
       xhandler(str);
   }
 void ClientSocket::serverReady()
-  {serverReadyEvent *event = new serverReadyEvent(); 
+  {serverReadyEvent *event = new serverReadyEvent();
   QApplication::postEvent(this,event);
   }
 void ClientSocket::writeClientEvent(QString str)
   {writeEvent *event = new writeEvent(str);
-  //cout<<"event:"<<(const char*)str<<endl;
   QApplication::postEvent(this,event);
   }
 void ClientSocket::writeClientEvent(char * buf,uint size)
@@ -180,25 +126,27 @@ void ClientSocket::writeClient(QString str)
   QString t = str+'\n'; 
   clo.writeRawData(t.toAscii(),t.length()); 
   socket->waitForBytesWritten(-1); 
-  //if(sdebug)Tprintf("->%s",(const char *)str);
-  //cout<<"write:"<<(const char *)str<<" "<<currentThread()<<endl;
   }
 void ClientSocket::writeClient(char * buff,uint size)
   {QWriteLocker locker(&lock);
+  if(socket->state() != QAbstractSocket::ConnectedState)
+      {delete [] buff;return;}
   clo.writeBytes(buff,size);
-  if(socket->state() != QAbstractSocket::ConnectedState)cout<<"Not connected"<<endl;
   socket->waitForBytesWritten(-1);  
   delete [] buff;
   }
+
 uint ClientSocket::readBuffer(char * &buffer)
   {QReadLocker locker(&lock);
   quint32 size = 0; 
   uint nb = 0;
+  
   while((nb = socket->bytesAvailable()) < (int)sizeof(quint32))
       {if(socket->state() != QAbstractSocket::ConnectedState)
           {setPigaleError(-1,"client not connected");return 0;}
-      else socket->waitForReadyRead(10);
+       socket->waitForReadyRead(100);
       }
+
   clo >>  size;
   if(size <= 0){setPigaleError(-1,"empty file");return 0;}
 
@@ -207,15 +155,60 @@ uint ClientSocket::readBuffer(char * &buffer)
   while((nb = socket->bytesAvailable()) < size)
       {if(socket->state() != QAbstractSocket::ConnectedState)
           {setPigaleError(-1,"client not connected");return 0;}
-      else socket->waitForReadyRead(10);
+      socket->waitForReadyRead(100);
       }
   clo.readRawData(pbuff,nb);
   return size;
   }
+
+/*
+uint ClientSocket::readBuffer(char * &buffer)
+  {QReadLocker locker(&lock);
+  quint32 size = 0; 
+  uint nb = 0;
+  while((nb = socket->bytesAvailable()) < (int)sizeof(quint32))
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {setPigaleError(-1,"client not connected");return 0;}
+       socket->waitForReadyRead(100);
+      }
+  clo >>  size;
+  if(size <= 0){setPigaleError(-1,"empty file");return 0;}
+  buffer  = new char[size+1];
+  char *pbuff = buffer;
+  int retry = 0;
+  uint nread = 0; 
+  uint size0 = 0;
+  while(nread  < size)
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {setPigaleError(-1,"client not connected");return 0;}
+      nb = socket->bytesAvailable();
+      if(nb == 0)
+          {if(++retry > 1000){setPigaleError(-1,"TIMEOUT");return 0;}
+          socket->waitForReadyRead(100);
+          continue;
+          }
+      retry = 0;
+      if(nb > size-nread)nb = size-nread;
+      nread += nb;
+      clo.readRawData(pbuff,nb);
+      pbuff += nb;
+      if(nread >= size0 && debug())
+          {int percent = (int)(nread*100./size + .5);
+          size0 = nread + size/10; // we write when at least 10% more  is read
+          QString t = QString("%1 % (%2 / %3)").arg(percent).arg(nread).arg(size);
+          Tprintf("%s",(const char*)t.toAscii());
+          }
+      }
+  return size;
+  }
+*/
 QString  ClientSocket::readLine()
   {QReadLocker locker(&lock);
-  while(socket->state() != QAbstractSocket::ConnectedState || !socket->canReadLine())
-      socket->waitForReadyRead(10);
+  while(!socket->canReadLine())
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {setPigaleError(-1,"client not connected");return 0;}
+      socket->waitForReadyRead(100);
+      }
   uint len;  char * buffer = NULL;
   clo.readBytes(buffer,len);
   QString str(buffer); str = str.trimmed();
@@ -228,8 +221,8 @@ void ClientSocket::xhandler(const QString& dataAction)
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt(beg);
   if(sdebug)Tprintf("%s ",(const char *)dataAction.toAscii());
+  //cout<<(const char *)dataAction.toAscii()<<endl;
   // call the right handler
-  // cout <<"line:"<<line<<" "<< (const char *)dataAction<<endl;
   if(action == 0)
       setPigaleError(UNKNOWN_COMMAND,"action:0 !!");
   else if(action > A_INFO && action < A_INFO_END)
@@ -440,19 +433,11 @@ void ClientSocket::Png()
   PngFileName = universalFileName(PngFileName);
   qApp->processEvents();
   uint size = QFileInfo(PngFileName).size();
-  int retry = 0;
-  Tprintf("png size:%d",size);
-  // Only for windows !!!
-  while((size = QFileInfo(PngFileName).size()) < 1000)
-      {msleep(500);
-      Tprintf("-> png size:%d retry:%d",size,retry);
-      if(++retry > 20)break;
-      }
-  if(retry)Tprintf("---> png size:%d retry=%d",size,retry);
   if(size == 0)
       {writeClientEvent(QString(":ERROR:%1 not found").arg(PngFileName));
       writeClientEvent("!!");serverReady();return;
       }
+  Tprintf("png size:%d",size);
   QFile file(PngFileName);
   file.open(QIODevice::ReadOnly);
   QDataStream stream(&file);
@@ -472,6 +457,7 @@ void ClientSocket::Ps()
       {writeClientEvent(":ERROR: NO PS FILE");
       writeClientEvent("!!");serverReady();return;
       }
+  Tprintf("pdf size:%d",size);
   QFile file(PsFileName);
   file.open(QIODevice::ReadOnly);
   QDataStream stream(&file);

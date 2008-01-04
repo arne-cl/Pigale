@@ -86,10 +86,10 @@ void SWShelling::SetAdjFaces() {
   do {
     BelongToLastFace[G.vin[b]()] = 1;
     sepf[G.vin[b]()] = 1;
-    if(debug()) {
-      ecolor[b.GetEdge()] = Green2;
-      ewidth[b.GetEdge()] = 3;
-    }
+//     if(debug()) {
+//       ecolor[b.GetEdge()] = Green2;
+//       ewidth[b.GetEdge()] = 3;
+//     }
   } while((b = -G.cir[b]) != b0);
 
   
@@ -128,12 +128,12 @@ void SWShelling::SetAdjFaces() {
   int FaceIndex=2;
   while (!Brins.empty()) {
     b0 = b =Brins.first();
-    if(debug())cout << "face:" << FaceIndex << endl;
+//     if(debug())cout << "face:" << FaceIndex << endl;
     do {
       Brins.del(b());
       Brin2Face[b]=FaceIndex;
-      if(debug())
-	cout << G.vin[b]() << " " <<endl;
+//       if(debug())
+// 	cout << G.vin[b]() << " " <<endl;
     } while((b = G.cir[-b]) != b0);
     
     Face2Brin[FaceIndex]=b();
@@ -228,28 +228,28 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
 
 
   
-  if(debug()) {
-    for(tedge e = 1;e <= G.ne();e++) {
-      if(ecolor[e] == Violet)continue;
-      if(IsOuterE[e])ecolor[e]=Green; // exterior face
-      if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 3;}
-    }
-    for(tvertex w=1;w < G.nv();w++) {
-      if (MarkedV[w])
-	vcolor[w] = Red;
-      else 
-	vcolor[w] = Yellow;
-    }
-    ecolor[FirstBrin.GetEdge()()] = Yellow;
-    static int firstTime = 1;
-    if(firstTime) {
-      {firstTime = 0;
-      cout <<"v1: " << v_1<< "  v2: " <<v_2 << "  vn: "<< v_n << endl;
-      DrawGraph();// red: treated green: exterior face
-      Twait("Init");
-      }
-    }
-  }
+//   if(debug()) {
+//     for(tedge e = 1;e <= G.ne();e++) {
+//       if(ecolor[e] == Violet)continue;
+//       if(IsOuterE[e])ecolor[e]=Green; // exterior face
+//       if(MarkedE[e]){ecolor[e]=Red;ewidth[e] = 3;}
+//     }
+//     for(tvertex w=1;w < G.nv();w++) {
+//       if (MarkedV[w])
+// 	vcolor[w] = Red;
+//       else 
+// 	vcolor[w] = Yellow;
+//     }
+//     ecolor[FirstBrin.GetEdge()()] = Yellow;
+//     static int firstTime = 1;
+//     if(firstTime) {
+//       {firstTime = 0;
+//       cout <<"v1: " << v_1<< "  v2: " <<v_2 << "  vn: "<< v_n << endl;
+//       DrawGraph();// red: treated green: exterior face
+//       Twait("Init");
+//       }
+//     }
+//   }
 
   if (BelongToLastFace[Candidate]) {
     LastFace = 1;
@@ -285,30 +285,30 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   
 
   MarkedV[Candidate]=1;
-  if(debug()) {
-    vcolor[Candidate] = Red;
-    cout << "packing vertex:" <<-i << "*************************"<< endl;
-  }
+//   if(debug()) {
+//     vcolor[Candidate] = Red;
+//     cout << "packing vertex:" <<-i << "*************************"<< endl;
+//   }
     
-  if(debug()) {
-    ecolor[left.GetEdge()()] = Blue;
-    ecolor[right.GetEdge()()] = Orange; 
-    ewidth[left.GetEdge()()] = 3; 
-    ewidth[right.GetEdge()()] = 3; 
-    cout << "***Packing vertex = " << -i << endl;
-    cout  << " v_left = " << G.vin[-left] << "  v_right = " << G.vin[-right]<< endl;
-    DrawGraph();Twait("packing vertex");
-  }
+//   if(debug()) {
+//     ecolor[left.GetEdge()()] = Blue;
+//     ecolor[right.GetEdge()()] = Orange; 
+//     ewidth[left.GetEdge()()] = 3; 
+//     ewidth[right.GetEdge()()] = 3; 
+//     cout << "***Packing vertex = " << -i << endl;
+//     cout  << " v_left = " << G.vin[-left] << "  v_right = " << G.vin[-right]<< endl;
+//     DrawGraph();Twait("packing vertex");
+//   }
 
   b = left;
   while(!MarkedE[b.GetEdge()]) {
     MarkedE[b.GetEdge()]=1;
-    if(debug()) {
-      if(b!= left && b !=right)
-	ecolor[b.GetEdge()] = Pink;
-      else 
-	ecolor[b.GetEdge()] = Red;
-    }
+//     if(debug()) {
+//       if(b!= left && b !=right)
+// 	ecolor[b.GetEdge()] = Pink;
+//       else 
+// 	ecolor[b.GetEdge()] = Red;
+//     }
     b=G.cir[b];
   }
 
@@ -318,10 +318,10 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   b = -left;
   while (b != LeftConnection) {
     MarkedV[G.vin[b]()] = 1;
-    if(debug()) {
-      vcolor[G.vin[b]()] = Red;
-      ecolor[b.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
-    }
+//     if(debug()) {
+//       vcolor[G.vin[b]()] = Red;
+//       ecolor[b.GetEdge()()] = Violet;ewidth[b.GetEdge()()] = 3;
+//     }
     MarkedE[b.GetEdge()()] = 1;
     b = -G.acir[b];
   }
@@ -337,8 +337,8 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   while (1) {
     f = Brin2Face[b()];
     MarkedF[f]=1;
-    if(debug())
-      cout << "marking face:" << f << endl;
+//     if(debug())
+//       cout << "marking face:" << f << endl;
     IsOuterV[G.vin[b]()] = 1;
     IsOuterE[b.GetEdge()()] = 1;
     LeftBorderBrin[G.vin[b]] = b();
@@ -362,44 +362,44 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   if (outv[f]-oute[f] <= 1) {
     if (!NonSepFaces.InList(f)) {
       NonSepFaces.push(f);
-      if(debug()) cout << "pushing NonSepFace: "<< f << endl;
+//       if(debug()) cout << "pushing NonSepFace: "<< f << endl;
     }
   }
   else {
     if (!SepFaces.InList(f)) {
       SepFaces.push(f);
-      if(debug()) cout << "pushing SepFace: "<< f << endl;
+//       if(debug()) cout << "pushing SepFace: "<< f << endl;
     }
   }
     
       
   while (b != LastB) { 
     NewOuterVertices.push(G.vin[b]());
-    if(debug())vcolor[G.vin[b]] = Green;
+//     if(debug())vcolor[G.vin[b]] = Green;
     StopB = b;
     do {
       StopB = G.acir[StopB];
     } while (G.vin[-StopB] == Candidate); // once or twice
-    if(debug())cout << "--------b:"<< G.vin[b]() << "  "<< G.vin[StopB]()<< endl;
+//     if(debug())cout << "--------b:"<< G.vin[b]() << "  "<< G.vin[StopB]()<< endl;
     while(b != StopB) {
       b = G.cir[b];
       f = Brin2Face[b];
       if (outv[f]-oute[f] <= 1) {
 	if (!NonSepFaces.InList(f)) {
 	  NonSepFaces.push(f);
-	  if(debug()) cout << "pushing NonSepFace: "<< f << endl;
+// 	  if(debug()) cout << "pushing NonSepFace: "<< f << endl;
 	}
       }
       else {
 	if (!SepFaces.InList(f)) {
 	  SepFaces.push(f);
-	  if(debug()) cout << "pushing SepFace: "<< f << endl;
+// 	  if(debug()) cout << "pushing SepFace: "<< f << endl;
 	}
       }
     }
     b=-StopB;
   }
-  if(debug()){ DrawGraph();Twait("vertex:packed");}
+//   if(debug()){ DrawGraph();Twait("vertex:packed");}
     
   // for all v newly incident to F_out, 
   //   for all f incident to v, outv[f]++.
@@ -429,7 +429,7 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   while ((f = ~NonSepFaces) != 0) {
     if(outv[f]- oute[f] > 1) {
       NewSepFaces.push(f);
-      if(debug()) cout << "pushing NewSepFaces f: "<< f << " " << G.vin[Face2Brin[f]] <<" " << G.vin[-Face2Brin[f]]<< " " << G.vin[-G.acir[Face2Brin[f]]] <<  endl; 
+//       if(debug()) cout << "pushing NewSepFaces f: "<< f << " " << G.vin[Face2Brin[f]] <<" " << G.vin[-Face2Brin[f]]<< " " << G.vin[-G.acir[Face2Brin[f]]] <<  endl; 
     }
     ++NonSepFaces;
   }        
@@ -438,7 +438,7 @@ int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &
   while ((f = ~SepFaces) != 0) {
     if(outv[f]- oute[f] <= 1) {
       NewNonSepFaces.push(f);
-      if(debug()) cout << "pushing NewNonSepFaces f: " << f  << " " << G.vin[Face2Brin[f]] <<" " << G.vin[-Face2Brin[f]]<< " " << G.vin[-G.acir[Face2Brin[f]]] <<  endl;
+//       if(debug()) cout << "pushing NewNonSepFaces f: " << f  << " " << G.vin[Face2Brin[f]] <<" " << G.vin[-Face2Brin[f]]<< " " << G.vin[-G.acir[Face2Brin[f]]] <<  endl;
     }
     ++SepFaces;
   }     

@@ -36,8 +36,8 @@ int DecompMaxBip(TopologicalGraph &G, tbrin &FirstBrin)
 // v_1 is the root of blue branching.
 // v_2 is the root of red branching.
 // blue branching turns right on red vertices.
-  {if(!G.CheckBipartite())return 4;
-  if(G.VertexQuadrangulate() != 0)return 2; 
+  {if(!G.CheckBipartite())return -4;
+  if(G.VertexQuadrangulate() != 0)return -2; 
   FirstBrin = G.extbrin();
 
   tvertex v1 = G.vin[-FirstBrin];             // leftmost vertex
@@ -57,7 +57,6 @@ int DecompMaxBip(TopologicalGraph &G, tbrin &FirstBrin)
   G.DeleteEdge(e3);
   G.DeleteEdge(e2);
   G.DeleteEdge(e1);
-
   // If FirstBrin is positive, InfOrient() must have reoriented it. So...
   if (FirstBrin() > 0) FirstBrin=-FirstBrin;
 
@@ -125,7 +124,7 @@ static int PackFace(TopologicalGraph &G, tbrin b0, svector<int> &marked,
       {right_brins.push(b());
       b = -G.cir[b];
       }
-  if (!marked[b.GetEdge()]) return 2;  // NG
+  if (!marked[b.GetEdge()]) return -2;  // NG
 
   while (!left_brins.empty()) marked[Abs(left_brins.pop())] = 1;
   while (!right_brins.empty()) marked[Abs(right_brins.pop())] = 1;
@@ -178,8 +177,8 @@ void CalcTotalOrder(GeometricGraph &G, const tbrin FirstBrin)
   }
 
 int EmbedContactBip(GeometricGraph &G)
-  {if(!G.CheckBipartite())return 4;
-  if(!G.FindPlanarMap())return  3;
+  {if(!G.CheckBipartite())return -4;
+  if(!G.FindPlanarMap())return  -3;
   tbrin FirstBrin;
   int  n_origin = G.nv();
   int m_origin = G.ne();
@@ -188,7 +187,9 @@ int EmbedContactBip(GeometricGraph &G)
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,false);
   save_oriented.Tswap(oriented);
   if(DecompMaxBip(G,FirstBrin))
-      {save_oriented.Tswap(oriented);G.RestoreOrientation();return 1;}
+      {
+//       save_oriented.Tswap(oriented);G.RestoreOrientation();
+      return -1;}
   Prop<int> h(G.Set(tvertex()),PROP_DRAW_INT_1);
   h.clear();
   CalcTotalOrder(G,FirstBrin);
@@ -217,13 +218,12 @@ int EmbedContactBip(GeometricGraph &G)
       {xymax = Max(xymax,h[v]);
       xymin = Min(xymin,h[v]);
       }
-  save_oriented.Tswap(oriented);G.RestoreOrientation();
-
+  save_oriented.Tswap(oriented);
+  G.RestoreOrientation(); // create problem !!
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
   pmin() = Tpoint(xymin-1,xymin-1);
   pmax() = Tpoint(xymax+1,xymax+1);
- 
   return 0;
   }
 

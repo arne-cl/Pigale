@@ -129,11 +129,10 @@ void DrawPolar(QPainter *p,pigalePaint *paint)
   }
 void DrawPolyline(QPainter *p,pigalePaint *paint)
   {GeometricGraph G(paint->GCP);
-  Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
+  Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
   Prop<Tpoint> Ebend(G.Set(tedge()),PROP_DRAW_POINT_3);
-
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
 
@@ -449,60 +448,15 @@ pigalePaint::pigalePaint(QWidget *parent,pigaleWindow *f):
   setFocusPolicy(Qt::ClickFocus); 
   }
 void pigalePaint::print(QPrinter* printer)
-  {QString FileName="";
-  QString OldFileName="";
-  //bool outf=false;
-  QPrinter::Orientation orient=QPrinter::Portrait;
-  QPrinter::ColorMode cm=QPrinter::Color;
-  if(index < 0)return;
-  if(mw->ServerExecuting)
-      {FileName = QString("/tmp/server%1.ps").arg(mw->ServerClientId);
-      orient=printer->orientation();
-      cm=printer->colorMode();
-      printer->setOrientation(QPrinter::Portrait);
-      printer->setColorMode(QPrinter::Color);
-      OldFileName=printer->outputFileName();
-      printer->setOutputFileName(FileName);
-      }
-  else 
-      {QPrintDialog printDialog(printer,this);
-      if(printDialog.exec() != QDialog::Accepted) 
-      return;
-      }
-//   int nx = width();
-//   int ny = height();
-//   double scale = Max((double)nx/(double) printer->width(),(double)ny/(double)printer->height());
-//   printer->setResolution((int)(scale*printer->resolution()+.5));
+  {if(index < 0)return;
   QPainter pp(printer);
   drawIt(&pp);
-
-  if(mw->ServerExecuting)
-      {printer->setOrientation(orient); 
-      printer->setColorMode(cm);
-      printer->setOutputFileName(OldFileName);
-//       printer->setOutputToFile(outf);
-      }
   }
 void pigalePaint::png()
   {if(index < 0)return;
   qApp->processEvents();
-  QString FileName;
-  if(!mw->ServerExecuting)
-      {FileName = QFileDialog::
-      getSaveFileName(this,
-                      tr("Choose a file to save under"),
-                      mw->DirFilePng,
-                      "Images(*.png)");
-      if(FileName.isEmpty())return; 
-      if(QFileInfo(FileName).suffix() != (const char *)"png")
-	  FileName += (const char *)".png";
-      mw->DirFilePng = QFileInfo(FileName).absolutePath();
-      }
-  else
-      FileName = QString("/tmp/server%1.png").arg(mw->ServerClientId);
-
   QPixmap pixmap = QPixmap::grabWidget (this); 
-  pixmap.save(FileName,"PNG",0);
+  pixmap.save(staticData::filePng,"PNG",0);
   }
 void pigalePaint::drawIt(QPainter *p)
   {if(index < 0)return;

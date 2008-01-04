@@ -34,7 +34,7 @@ public:
   void setAnimationDelay(int ms);
   GLuint load(bool init);
   void png(int size);
-
+  void print(QPrinter* printer);
 private:
   void loadFaces();
   void paintGL();

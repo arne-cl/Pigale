@@ -82,13 +82,13 @@ class PigaleThread : public QThread
 private:
   QMutex mutex;
   QWaitCondition condition;
-  bool restart;
   bool abort;
+  int previous_action;
   int action; 
   int N,N1,N2,M;
   int delay;
 public:
-  PigaleThread(QObject *parent = 0) ;
+  PigaleThread(QObject *parent);
   ~PigaleThread();
   void stop();
   void run(int action,int N = 0,int N1 = 0,int N2 = 0,int M = 0,int delay = 0);
@@ -98,6 +98,7 @@ signals:
 protected:
   void run();
 };
+
 //! Main class of Pigale which constructs all the menus and widgets
 class pigaleWindow: public QMainWindow 
 {Q_OBJECT
@@ -142,7 +143,9 @@ private slots:
   void SaveSettings();
   void ResetSettings();
   void SetDocumentationPath();
+  void postHandler(int ret,int drawingType,int saveType);
 private:
+  void createThread();
   void initPigale();
   void CheckDocumentationPath(); 
   void createMenus();
@@ -160,10 +163,10 @@ private:
   void Message(QString s);
   void UndoInit();
   void initMenuTest();
-  int postHandler(QEvent *ev);
   void UpdatePigaleColors();
+  bool InitPrinter(QPrinter* printer);
+  bool InitPng();
 public slots:
-  int postHandler(int ret,int drawingType,int saveType);
   void handler(QAction *action);
   void banner();
   void timerWait();
@@ -180,7 +183,7 @@ protected:
   void keyPressEvent(QKeyEvent *k);
 public:
   pigaleWindow();
-  ~pigaleWindow();
+  ~pigaleWindow(){};
   void whenReady();
   void showInfoTab();
   void postMessage(const QString &msg);
@@ -212,7 +215,6 @@ public:
   Graph_Properties *graph_properties;
   Mouse_Actions *mouse_actions;
   GraphContainer GC;
-  QString DirFilePng;
   QPalette LightPalette;
   QString InputFileName;
   QString OutputFileName;
@@ -225,7 +227,7 @@ public:
   int GraphIndex1;
   int pigaleThreadRet;
 private:
-  PigaleThread pigaleThread;
+  PigaleThread *pigaleThread;
   PigaleServer  *server;
   QTextEdit *messages;
   QToolBar *tb;
@@ -239,7 +241,6 @@ private:
   QString MacroFileName;
   int *pGraphIndex,GraphIndex2,UndoIndex,UndoMax;
   QString DirFileDoc;
-  int PrinterOrientation,PrinterColorMode;
   svector<int> MacroActions;
   bool EditNeedUpdate,InfoNeedUpdate;
   int MacroNumActions;

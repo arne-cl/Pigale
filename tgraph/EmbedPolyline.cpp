@@ -180,6 +180,7 @@ static int nb_leaves(GeometricGraph &G, short TreeColor, tbrin RootBrin,
 int EmbedPolyline(TopologicalGraph &G)
   {if(G.nv() < 3 || G.ne() < 2)return -1;
   int OldNumEdge = G.ne();
+  PSet1  propSave(G.Set());
   G.MakeConnected();
   if(!G.FindPlanarMap() )
       {Tprintf("Not Planar Graph");
@@ -211,25 +212,25 @@ int EmbedPolyline(TopologicalGraph &G)
   compute_parents(G0, Blue, -FirstBrin, FatherB, ecolor);
   compute_parents(G0, Red, FirstBrin, FatherR, ecolor);
   compute_parents(G0, Green, -G0.acir[FirstBrin], FatherG, ecolor);
-    // Compute the number of leaves of each tree
-    int nb_leavesB, nb_leavesR, nb_leavesG;
-    nb_leavesB = nb_leaves(G0, Blue, -FirstBrin, ecolor);
-    nb_leavesR = nb_leaves(G0, Red, FirstBrin, ecolor);
-    nb_leavesG = nb_leaves(G0, Green, -G0.acir[FirstBrin], ecolor);
+  // Compute the number of leaves of each tree
+  int nb_leavesB, nb_leavesR, nb_leavesG;
+  nb_leavesB = nb_leaves(G0, Blue, -FirstBrin, ecolor);
+  nb_leavesR = nb_leaves(G0, Red, FirstBrin, ecolor);
+  nb_leavesG = nb_leaves(G0, Green, -G0.acir[FirstBrin], ecolor);
 
     // Compute the coordinates using the tree with the minimum number of leaves
-    ForAllEdges(ee, G) Ebend[ee] = Tpoint(-1,-1);
-    if (nb_leavesB <= nb_leavesR && nb_leavesB <= nb_leavesG) 
-      compute_coords(G0, Red, Blue, -FirstBrin, FatherB, FatherR, FatherG, ecolor, x, y, Ebend);
-    else if (nb_leavesR <= nb_leavesG) 
-      compute_coords(G0, Green, Red, G0.acir[FirstBrin], FatherR, FatherG, FatherB, ecolor, x, y, Ebend);
-    else 
-      compute_coords(G0, Blue, Green, G0.acir[-G0.acir[FirstBrin]], FatherG, FatherB, FatherR, ecolor, x, y, Ebend);
+  ForAllEdges(ee, G) Ebend[ee] = Tpoint(-1,-1);
+  if (nb_leavesB <= nb_leavesR && nb_leavesB <= nb_leavesG) 
+      compute_coords(G0,Red,Blue,-FirstBrin,FatherB,FatherR,FatherG,ecolor,x,y,Ebend);
+  else if (nb_leavesR <= nb_leavesG) 
+      compute_coords(G0,Green,Red,G0.acir[FirstBrin],FatherR,FatherG,FatherB,ecolor,x,y,Ebend);
+  else 
+      compute_coords(G0,Blue,Green,G0.acir[-G0.acir[FirstBrin]],FatherG,FatherB,FatherR,ecolor,x,y,Ebend);
   // computes extremities of vertices
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
   Prop<Tpoint> Epoint2(G.Set(tedge()),PROP_DRAW_POINT_2);
-  Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
-  Prop<Tpoint> VSch(G.Set(tvertex()),PROP_COORD);
+  Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_POINT_1);
+  G.Set() =  propSave;
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);  
   tvertex vv;
@@ -249,7 +250,7 @@ int EmbedPolyline(TopologicalGraph &G)
   }
   // delete the edges added by Connexity and Triangulation
   for(tedge e = G.ne();e > OldNumEdge;e--) G.DeleteEdge(e);
-  G.extbrin() = FirstBrin;
+  //G.extbrin() = FirstBrin;
   return 0;
   }
 

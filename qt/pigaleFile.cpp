@@ -38,7 +38,7 @@ void pigaleWindow::load()
   for (int  i = 0; i< IO_n();i++)
       {filter = IO_Name(i);
       filter += "(*";
-      if (IO_Ext(i) != "!") {filter += "."; filter += IO_Ext(i);}
+      if (QString(IO_Ext(i)) != "!") {filter += "."; filter += IO_Ext(i);}
       filter += ")";
       formats += filter;
       if(filter.contains(extension))selfilter=filter;
@@ -110,7 +110,6 @@ int pigaleWindow::publicLoad(int pos)
      return -1;
      }
    InputDriver = i;
-   UndoClear();UndoSave();
   int NumRecords =IO_GetNumRecords(i,(const char *)InputFileName.toAscii());
   *pGraphIndex = pos;
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
@@ -120,10 +119,11 @@ int pigaleWindow::publicLoad(int pos)
       LogPrintf("%s\n",(const char *)m.toAscii());
       return -2;
       }
+  QFile file(InputFileName);
+  file.remove();
   if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName.toAscii(),*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
-  UndoSave();
   return *pGraphIndex;
   }
 int pigaleWindow::load(int pos)
@@ -220,7 +220,7 @@ void pigaleWindow::saveAs()
     for (int i=0; i<IO_n();i++)
       { filter = tr(IO_Name(i));
 	filter += "(*";
-	if (IO_Ext(i)!="!") {filter += "."; filter += IO_Ext(i);}
+	if (QString(IO_Ext(i))!="!") {filter += "."; filter += IO_Ext(i);}
 	filter += ")";
 	formats += filter;
 	if (i==0) selfilter=filter;
@@ -237,7 +237,7 @@ void pigaleWindow::saveAs()
     for (QStringList::Iterator it = formats.begin(); it != formats.end(); ++it, ++id ) 
         if (selfilter==*it) break;
         
-    if ((QFileInfo(FileName).suffix() != IO_Ext(id)) && (IO_Ext(id)!=""))
+    if ((QFileInfo(FileName).suffix() != IO_Ext(id)) && (QString(IO_Ext(id))!=""))
       {FileName += ".";
       FileName += IO_Ext(id);
       }

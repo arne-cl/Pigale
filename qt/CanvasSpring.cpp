@@ -19,16 +19,13 @@
 #include "GraphWidget.h"
 #include "mouse_actions.h"
 #include "gprop.h"
-#include <TAXI/Tbase.h> 
+//#include <TAXI/Tbase.h> 
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
 #include <QT/clientEvent.h>
 
 #include <QProgressBar>
 
-#ifndef _WINDOWS
-using namespace std;
-#endif
 
 int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax
 		  ,double & dx,double & dy)

@@ -10,20 +10,8 @@
  *****************************************************************************/
 
 /*!
-\file Handler.h
-\brief Handlers used to call the tgraph algorithms. 
-
-Handlers used to call the tgraph algorithms.
-Each algoritm to call is identify by a unique integer action defined in Action_def.h
-Those handlers return:
- -1 if error
- O nothing to do
- 1 need redraw
- 2 need info redraw
- 20 need info redraw without any recomputing
- 3 draw (paint)
- 4 3d drawing
- 5 symetrie
+\file
+\brief Handlers used to call the algorithms
 */
 
 #include <QT/Action_def.h>
@@ -326,7 +314,8 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
       default:
           return 0;
       }
-  if(err)return -1;
+  if(err > 0)err = -err;
+  if(err){Tprintf("embed error:%d",err);return err;}
   return ret;
   }
 int AugmentHandler(GraphContainer &GC,int action)

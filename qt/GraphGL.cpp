@@ -25,6 +25,8 @@
 
 #include <QButtonGroup>
 #include <QBoxLayout>
+#include <QPainter>
+#include <QPrinter>
 
 
 class GraphGLPrivate
@@ -78,7 +80,10 @@ void GraphGL::png(int size)
   {if(!d->is_init)return;
   d->editor->png(size);
   }
-
+void GraphGL::print(QPrinter* printer)
+  {if(!d->is_init)return;
+  d->editor->print(printer);
+  }
 int GraphGL::update()
   {if(!d->is_init)
       {QVBoxLayout* vb = new QVBoxLayout(this);
@@ -230,26 +235,17 @@ GLWindow::~GLWindow()
   {makeCurrent();
   glDeleteLists(object,1);
   }
-
+void GLWindow::print(QPrinter *printer)
+  {QPixmap pixmap = renderPixmap(); 
+  QPainter pp(printer);
+  pp.drawPixmap(0,0,pixmap);
+  }
 void GLWindow::png(int size)
   {QRect geo = geometry();
   resize(size,size);
   QPixmap pixmap = renderPixmap(); 
-  QString FileName;
-  if(!glp->mw->ServerExecuting)
-      {FileName = QFileDialog::
-      getSaveFileName(this
-                      ,tr("Choose a file to save under")
-                      ,glp->mw->DirFilePng
-                      ,"Images(*.png)");
-      if(FileName.isEmpty()){setGeometry(geo);return;}
-      if(QFileInfo(FileName).suffix() != (const char *)"png")
-	  FileName += (const char *)".png";
-      glp->mw->DirFilePng = QFileInfo(FileName).absolutePath();
-      }
-  else
-      FileName = QString("/tmp/server%1.png").arg(glp->mw->ServerClientId);
-  pixmap.save(FileName,"PNG");
+  qApp->processEvents();
+  pixmap.save(staticData::filePng ,"PNG");
   setGeometry(geo);
   }
 void GLWindow::initializeGL()

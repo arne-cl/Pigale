@@ -708,47 +708,15 @@ void GraphEditor::png(int size)
   {QRect geo = geometry();
   resize(size+space+sizerect+5,size+4);
   load(true);
-  QString FileName;
-  if(!mywindow->ServerExecuting)
-      {FileName = QFileDialog::
-      getSaveFileName(this,
-                      tr("Choose a file to save under"),
-                      mywindow->DirFilePng,
-                      "Images(*.png)");
-      if(FileName.isEmpty())
-          {setGeometry(geo);load(true);return;}
-      if(QFileInfo(FileName).suffix() != (const char *)"png")
-	  FileName += (const char *)".png";
-      mywindow->DirFilePng = QFileInfo(FileName).absolutePath();
-      }
-  else
-      FileName = QString("/tmp/server%1.png").arg(mywindow->ServerClientId);
-  QPixmap pixmap = QPixmap::grabWidget(this
-                                       ,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
-  pixmap.save(FileName,"PNG",0);
+  qApp->processEvents();
+  QPixmap pixmap = QPixmap::grabWidget
+  (this,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
+  pixmap.save(staticData::filePng,"PNG",0);
   setGeometry(geo);
   load(true);
   }
 void GraphEditor::print(QPrinter *printer)
-  {QString FileName="";
-  QString OldFileName="";
-  QPrinter::Orientation orient=QPrinter::Portrait;
-  QPrinter::ColorMode cm=QPrinter::Color;
-  if(mywindow->ServerExecuting)
-      {FileName = QString("/tmp/server%1.ps").arg(mywindow->ServerClientId);
-      orient=printer->orientation();
-      cm=printer->colorMode();
-      printer->setOrientation(QPrinter::Portrait);
-      printer->setColorMode(QPrinter::Color);
-      OldFileName=printer->outputFileName();
-      printer->setOutputFileName(FileName);
-      }
-  else 
-      {QPrintDialog printDialog(printer,this);
-      if(printDialog.exec() != QDialog::Accepted) 
-          return;
-      }
-  QPainter pp(printer);
+  {QPainter pp(printer);
   int nx = (int)gwp->canvas->width()-space-sizerect-20;
   int ny = (int)gwp->canvas->height();
   gwp->canvas->render(&pp,QRectF(0,0,printer->width(),printer->height()),QRect(0,0,nx,ny));

@@ -11,7 +11,7 @@
 
 /*! 
 \file gprop.h
-\brief  Display properties of a grap, enable/disable menus
+\brief  Display properties of a graph, enable/disable menus
 */
 
 #ifndef GRAPH_PROPERTIES_H

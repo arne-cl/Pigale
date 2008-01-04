@@ -41,23 +41,52 @@
 int Test(GraphContainer &GC,int action,int & drawing);
 void UndoErase();
 
+void pigaleWindow::createThread()
+  {pigaleThread = new PigaleThread(this);
+  pigaleThread->mw = this;
+  connect(pigaleThread,SIGNAL(handlerSignal(int,int,int)),this,SLOT(postHandler(int,int,int)));
+  }
 void pigaleWindow::initServer()
   {ServerClientId = 0;
+  quint16 port;
   NewGraph(); 
+#ifdef _WIN32
   QDir tmp = QDir("/tmp");
   if(!tmp.exists())QDir("/").mkdir("tmp");
-  server = new PigaleServer(this);
-  server->setProxy(QNetworkProxy::NoProxy);
-  threadServer = 0;
-  if(!server->isListening ())
-      {Tprintf("Server: Init failed");
-      cout <<"Server: Init failed"<<endl;
+#endif
+  if(!server)
+      {server = new PigaleServer(this);
+      server->setProxy(QNetworkProxy::NoProxy);
+      threadServer = 0;
+      if(!server->isListening ())
+          {Tprintf("Server: Init failed");
+          cout <<"Server: Init failed"<<endl;
+          }
+      else
+          {port = server->serverPort();
+          Tprintf("Server using port%d",port);
+          menuIntAction[A_SERVER_INIT]->setText(tr("Close server"));
+          showMinimized();
+          }
+      }
+  else if(!server->isListening ())
+      {server->listen(QHostAddress::Any,4242); 
+      if(!server->isListening ())
+          {Tprintf("Server: Init failed");
+          cout <<"Server: Init failed"<<endl;
+          }
+      else
+          {port = server->serverPort();
+          Tprintf("Server using port%d",port);
+          menuIntAction[A_SERVER_INIT]->setText(tr("Close server"));
+          showMinimized();
+          }
       }
   else
-      {Tprintf("Server using port%d",server->serverPort());
-      menuIntAction[A_SERVER_INIT]-> setEnabled(false);
+      {Tprintf("Server disconnected");
+      server->close();
+      menuIntAction[A_SERVER_INIT]->setText(tr("Init server"));
       }
-  showMinimized();
   }
 void pigaleWindow::customEvent(QEvent * ev)
   {ev->accept();
@@ -84,10 +113,6 @@ void pigaleWindow::customEvent(QEvent * ev)
       case DRAWG_EVENT:
           gw->editor->update(1);
           break;
-      case HANDLER_EVENT:
-           blockInput(true);qApp->processEvents();
-           postHandler(ev);    
-          break;
       case READY_EVENT:
           whenReady();
           break;
@@ -106,6 +131,7 @@ void pigaleWindow::customEvent(QEvent * ev)
           }
           break;
       default:
+          //cout<<"main unknown event:"<<ev->type()-USER_EVENT<<endl;
           qDebug("UNKNOWN EVENT");
           break;
       }
@@ -186,8 +212,8 @@ void pigaleWindow::information(bool erase)
   graph_properties->update(GC,!MacroExecuting && !MacroLooping && !ServerExecuting);
   }
 void pigaleWindow::settingsHandler(int action)
-  {// only called when a checkbox is clicked
-  // but could be called from the server
+  {// called when a checkbox is clicked
+  // or from the server
   switch(action)
       {case A_SET_DEBUG:
           debug() = !debug();
@@ -245,28 +271,28 @@ int pigaleWindow::handler(int action)
       }
   if(action < A_AUGMENT_END)
       {UndoSave();
-      pigaleThread.run(action);
+      pigaleThread->run(action);
       }
   else if(action < A_EMBED_END)
-      pigaleThread.run(action);
+      pigaleThread->run(action);
   else if(action < A_GRAPH_END)
       {UndoClear();UndoSave();
-      pigaleThread.run(action);
+      pigaleThread->run(action);
       }
   else if(action < A_REMOVE_END)
       {UndoSave();
-      pigaleThread.run(action);
+      pigaleThread->run(action);
       }
   else if(action < A_GENERATE_END)
       {UndoClear();UndoSave();
-      pigaleThread.run(action,0,staticData::Gen_N1,staticData::Gen_N2,staticData::Gen_M);
+      pigaleThread->run(action,0,staticData::Gen_N1,staticData::Gen_N2,staticData::Gen_M);
       }
   else if(action < A_ALGO_END)
-      pigaleThread.run(action,staticData::nCut);
+      pigaleThread->run(action,staticData::nCut);
   else if(action < A_ORIENT_END)
-      pigaleThread.run(action);
+      pigaleThread->run(action);
   else if(action < A_TEST_END)
-      pigaleThread.run(action);
+      pigaleThread->run(action);
 //       {int drawing;
 //       timer.start();
 //       int ret = Test(GC,action - A_TEST,drawing);
@@ -275,27 +301,21 @@ int pigaleWindow::handler(int action)
 //       return 0;
 //       }
    else if(action > A_INPUT && action < A_INPUT_END)
-       pigaleThread.run(action);
+       pigaleThread->run(action);
    else if(action > A_TRANS && action < A_TRANS_END)
-       pigaleThread.run(action);
+       pigaleThread->run(action);
   else if(action > A_SET)
       {settingsHandler(action);return 0;}
   else
       return 0;
   return 0;
   }
-int pigaleWindow::postHandler(QEvent *ev)
-  {handlerEvent *event = (handlerEvent  *)ev;  
-  int action = event->getAction();
-  postHandler(action,event->getDrawingType(),event->getSaveType());
-  pigaleThread.run(0); //to unlock the thread
-  return 0;
-  }
-int pigaleWindow::postHandler(int action,int drawingType,int saveType)
+void pigaleWindow::postHandler(int action,int drawingType,int saveType)
   {//action   0:(No-Redraw,No-Info) 1:(Redraw,No-Info) 2:(Redraw,Info) 20:(Redraw_nocompute,Info)
   // 3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders
   //10:png to client
-  //cout<<"action:"<<action<<" drawingType:"<<drawingType<<" saveType:"<<saveType<<endl;
+  //Tprintf("action:%d drawing:%d",action,drawingType);
+  qApp->processEvents();
   double Time = timer.elapsed()/1000.;
   if(action <= 0) // error
       {blockInput(false);
@@ -303,13 +323,17 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
           {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
           setPigaleError(0);
           }
-      return action;
+      else
+          Tprintf("Unknown error:%d",action);
+      pigaleThread->run(0); 
+      return;
       }
  
   if(saveType == 1)
       UndoSave();
   else if(saveType == 2)
       UndoTouch(false);
+
 
   // In case we called the orienthandler
   chkOrient->setCheckState(staticData::ShowOrientation() ? Qt::Checked : Qt::Unchecked);
@@ -318,7 +342,8 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
       {gw->editor->update(1);}
   else if(action == 2)
       {if(MacroExecuting)information(false);
-      else if(!MacroRecording)information();
+      //else if(MacroRecording)information();
+      else information();
       if(!MacroExecuting )gw->editor->update(1);
       }
   else if(action == 20) // Remove handler
@@ -366,18 +391,19 @@ int pigaleWindow::postHandler(int action,int drawingType,int saveType)
           if(debug())Twait((const char *)getPigaleErrorString().toAscii()); 
           }
       }
-  return action;
+  qApp->processEvents();
+  pigaleThread->run(0); 
+  return;
   }
 int & pigaleWindow::getResultHandler()
   {static int _value = 0;
   return _value;
   }
+
 /************************************************************/
 PigaleThread::PigaleThread(QObject *parent) 
-    : QThread (parent)
-  {restart = false;
-  abort = false;
-  }
+    : QThread (parent),abort(false),previous_action(0),action(0)
+  { }
 PigaleThread::~PigaleThread()
   {stop();
   }
@@ -387,45 +413,45 @@ void PigaleThread::stop()
   condition.wakeOne();
   mutex.unlock();
   wait();
-  //cout<<"stop computing thread"<<endl;
   }
-void PigaleThread:: run(int action,int N,int N1,int N2,int M,int delay)
+void PigaleThread:: run(int _action,int _N,int _N1,int _N2,int _M,int _delay)
   {QMutexLocker locker(&mutex);
-  this->action   =  action;
-  this->N  = N;
-  this->N1 = N1;
-  this->N2 = N2;
-  this->M  = M;
-  this->delay = delay;
+  previous_action = action;
+  action = _action;
+  N  = _N;
+  N1 = _N1;
+  N2 = _N2;
+  M  = _M;
+  delay = _delay;
   if(!isRunning()) 
       start();
-  else 
-      {restart = true;
+  else
       condition.wakeOne();
-      }
   }
 void PigaleThread::run()
   {int ret,saveType,drawingType;
-  ret = saveType = drawingType = 0;
+  
   for(;;)
-      {mutex.lock();
+      {QMutexLocker locker(&mutex);
       int action = this->action;
       int N      = this->N;
       int N1     = this->N1;
       int N2     = this->N2;
       int M      = this->M;
       delay      = this->delay; 
-      mutex.unlock();
 
       if(abort)return;
+      if(action && previous_action)
+          Tprintf("Warning: %d %d",action,previous_action);
+      
       if(action)
-          {//cout <<"thread:"<<(const char*)mw->getActionString(action)<<endl;
+          {ret = saveType = drawingType = 0;
           mw->timer.start();
           
           if(action < A_AUGMENT_END)
               ret = AugmentHandler(mw->GC,action);
           else if(action < A_EMBED_END)
-              ret = EmbedHandler(mw->GC,action,drawingType);
+              ret = EmbedHandler(mw->GC,action,drawingType); 
           else if(action < A_GRAPH_END)
               {ret = DualHandler(mw->GC,action); 
               saveType = 1;
@@ -456,21 +482,15 @@ void PigaleThread::run()
                ret = 11;
           // post an event to execute the graphics
           mw->pigaleThreadRet = ret;
-          handlerEvent *e = new handlerEvent(ret,drawingType,saveType);
-          mutex.lock();
-          QApplication::postEvent(mw,e);
+          emit handlerSignal(ret,drawingType,saveType);
           }
-      else
-          mutex.lock();
-      if(!restart) condition.wait(&mutex);
-      restart = false;
-      mutex.unlock();
+      condition.wait(&mutex);
+      
       // ne s'execute que quand: condition.wakeOne();
       if(action)
           mw->getResultHandler() = mw->pigaleThreadRet;
       else
           continue;
-      
       if(mw->ServerExecuting)// will execute only when posthandler has finished
           {if(getPigaleError())
               {mw->threadServer->writeClientEvent(":ERROR "+getPigaleErrorString()+" : "+mw->getActionString(action));
@@ -480,12 +500,40 @@ void PigaleThread::run()
               }
           else
               {if(action ==  A_TRANS_SEND_PNG)
+                  {
+// #ifdef _WIN32
+//                   QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);
+//                   PngFileName = universalFileName(PngFileName);
+//                   uint size = QFileInfo(PngFileName).size();
+//                   int retry = 0;
+//                   while((size = QFileInfo(PngFileName).size()) < 1000)
+//                       {msleep(100);
+//                       Tprintf("-> png size:%d retry:%d",size,retry);
+//                       if(++retry > 20)break;
+//                       }
+//                   if(retry)Tprintf("---> png size:%d retry=%d",size,retry);
+// #endif
                   mw->threadServer->Png();
+                  }
               else if(action ==  A_TRANS_SEND_PS)
+                  {
+
+// #ifdef _WIN32
+//                   QString PngFileName =  QString("/tmp/server%1.ps").arg(mw->ServerClientId);
+//                   PngFileName = universalFileName(PngFileName);
+//                   uint size = QFileInfo(PngFileName).size();
+//                   int retry = 0;
+//                   while((size = QFileInfo(PngFileName).size()) < 1000)
+//                       {msleep(100);
+//                       Tprintf("-> pdf size:%d retry:%d",size,retry);
+//                       if(++retry > 20)break;
+//                       }
+//                   if(retry)Tprintf("---> pdf size:%d retry=%d",size,retry);
+// #endif
                   mw->threadServer->Ps();
+                  }
               else
                   {mw->threadServer->writeClientEvent(QString("!%1 S").arg(mw->getActionString(action)));
-                  //cout <<"      -> end thread:"<<(const char*)mw->getActionString(action)<<endl;
                   mw->threadServer->serverReady();
                   }
               }

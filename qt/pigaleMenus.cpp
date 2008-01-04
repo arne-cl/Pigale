@@ -78,7 +78,6 @@ pigaleWindow::pigaleWindow()
     ,ServerExecuting(false),ServerClientId(0) // end public
     ,GraphIndex1(1)
     //start private
-    ,pigaleThread(this) // ?
     ,server(NULL)
     ,pGraphIndex(&GraphIndex1),GraphIndex2(1)
     ,UndoIndex(0),UndoMax(0)
@@ -97,17 +96,11 @@ pigaleWindow::pigaleWindow()
   // Modify settings according to passed arguments
   ParseArguments();
   // Create a printer
-  printer = new QPrinter; //(QPrinter::HighResolution);
-  if(PrinterOrientation == QPrinter::Portrait)
-      printer->setOrientation(QPrinter::Portrait); 
-  else
-      printer->setOrientation(QPrinter::Landscape); 
-
-  if(PrinterColorMode == QPrinter::GrayScale)
-      printer->setColorMode(QPrinter::GrayScale);
-  else
-      printer->setColorMode(QPrinter::Color);
-
+  printer = new QPrinter; 
+  printer->setOrientation(QPrinter::Portrait); 
+  printer->setColorMode(QPrinter::Color);
+  printer->setDocName("Pigale (C) 2001");
+   
   // mainWidget
   QWidget *mainWidget = new QWidget(this);  mainWidget->setAutoFillBackground(true);
   setCentralWidget(mainWidget);
@@ -143,10 +136,6 @@ void pigaleWindow::whenReady()
   else
       load(0);
   }
-pigaleWindow::~pigaleWindow()
-  {
-   cout<<"END"<<endl;
-  }
 int pigaleWindow::setId(QAction * action,int Id)
   {action->setData(Id);
   menuIntAction[Id] = action;
@@ -161,15 +150,16 @@ void pigaleWindow::initPigale()
   // Macros
   MacroActions.resize(0,4); MacroActions.SetName("MacroActions");
 #ifdef _WINDOWS
-   initGraphDebug();// as the compiler does not initialize static ...
+   initGraphDebug();// as the Microsoftcompiler does not initialize static ...
 #endif
    DefinepigaleWindow(this); // only used by EmbedCurve
   //thread
-  pigaleThread.mw = this;
+   createThread();
+
   //qApp->setMainWidget(this); // to be able to retrieve the mainWidget
-  mapActionsInit();// Create the actions map
-  Init_IO();// Initialize input/output drivers
-  Init_IOGraphml();
+   mapActionsInit();// Create the actions map
+   Init_IO();// Initialize input/output drivers
+   Init_IOGraphml();
 
 
   QFileInfo fi0 =  QFileInfo(InputFileName);
@@ -784,14 +774,12 @@ void pigaleWindow::createMenus()
   initMenuTest();
   }
 void pigaleWindow::closeEvent(QCloseEvent *event)
-  {
-  if(server)
+  {if(server)
       {server->close();
-      //cout<<"closing server"<<endl;
       delete server;
       }
-  pigaleThread.terminate();pigaleThread.wait();
-  //pigaleThread.deleteLater(); -> bad free
+  pigaleThread->terminate();pigaleThread->wait();
+  //pigaleThread->deleteLater();
   UndoErase();
   LogPrintf("END\n");
   delete printer;
@@ -871,37 +859,83 @@ void pigaleWindow::about()
 void pigaleWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
   }
+bool pigaleWindow::InitPrinter(QPrinter* printer)
+  {if(ServerExecuting)
+      {QString FileName = QString("/tmp/server%1.ps").arg(ServerClientId);
+      printer->setOrientation(QPrinter::Portrait);
+      printer->setColorMode(QPrinter::Color);
+      printer->setOutputFileName(FileName);
+      }
+  else 
+      {QString FileName = staticData::dirPdf + QDir::separator() + "image.pdf";
+      printer->setOutputFileName(FileName);
+      QPrintDialog printDialog(printer,this);
+      if(printDialog.exec() != QDialog::Accepted) 
+          return false;
+      QString OutputFileName = printer->outputFileName();
+      if(!OutputFileName.isNull())
+          staticData::dirPdf = QFileInfo(OutputFileName).absolutePath();
+      }
+  return true;
+  }
 void pigaleWindow::print()
   {switch(tabWidget->currentIndex())
       {case 0:
+          if(!InitPrinter(printer))return;
           gw->editor->print(printer);
           break;
       case 1:
+          if(!InitPrinter(printer))return;
           mypaint->print(printer);
           break;
+      case 2:
+          if(!InitPrinter(printer))return;
+          graphgl->print(printer);
+          break;
       case 3:
+          if(!InitPrinter(printer))return;
           graphsym->print(printer);
           break;
       default:
           break;
       }
   }
+bool pigaleWindow::InitPng()
+  {if(!ServerExecuting)
+      {staticData::filePng = QFileDialog::
+      getSaveFileName(this,
+                      tr("Choose a file to save under"),
+                      staticData::dirPng,
+                      "Images (*.png)");
+      if(staticData::filePng.isEmpty())return false; 
+      if(QFileInfo(staticData::filePng).suffix() != (const char *)"png")
+	  staticData::filePng += (const char *)".png";
+      staticData::dirPng = QFileInfo(staticData::filePng).absolutePath();
+      }
+  else
+      staticData::filePng = QString("/tmp/server%1.png").arg(ServerClientId);
+  return true;
+  }
 void pigaleWindow::png()
   {QRect geo;
   switch(tabWidget->currentIndex())
       {case 0:
+          if(!InitPng())return;
           gw->editor->png(staticData::sizePng);
           break;
       case 1:
+          if(!InitPng())return;
           geo = mypaint->geometry();
           mypaint->resize(staticData::sizePng,staticData::sizePng);
           mypaint->png();
           mypaint->setGeometry(geo);
           break;
       case 2:
+          if(!InitPng())return;
           graphgl->png(staticData::sizePng);
           break;
       case 3:
+          if(!InitPng())return;
           graphsym->png(staticData::sizePng);
           break;
       default:

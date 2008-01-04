@@ -127,53 +127,8 @@ static void CountVerticesDoubles(TopologicalGraph &G,  const SchnyderWood &SW,
 
 
 int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
-{ 
-
-  /*  for (int i = 100;i <=10000; i = i+50) {
-      GraphContainer *pGC;
-      //pGC = GenerateSchaeffer(i*2,1,3); // Triconnected
-      //pGC = GenerateSchaeffer(i*3/2,3,3); // Cubic
-      
-      GraphContainer *pGC2 = 0;
-      pGC2 = GenerateSchaeffer(i*3,3,3); // Triangulated
-      GeometricGraph GG(*pGC2);
-      pGC = GG.DualGraph();
-      
-      TopologicalGraph G(*pGC);
-      tvertex v;
-      G.MakeConnected();
-      if(!G.CheckPlanar())
-	return -1;
-
-      int nb_mergesB = 0, nb_mergesR = 0, nb_mergesG = 0;
-      int nb_unpointed1, nb_unpointed2;
-      tbrin FirstBrin = G.extbrin();
-      SchnyderWood SW(G, FirstBrin);
-      nb_unpointed1 = SW.CountUnpointedFaces();
-      ForAllVertices(v,G) {
-	if (SW.cw_merge(v,Blue)) {
-	  nb_mergesB++;
-	}
-	if (SW.cw_merge(v,Green)) {
-	  nb_mergesG++;
-	}
-	if (SW.cw_merge(v,Red)) {
-	  nb_mergesR++;
-	}
-      }
-      int DeltaSmoothCCW_after= SW.CountDeltaSmoothCCW();
-      nb_unpointed2 = SW.CountUnpointedFaces();
-      cout << "n :\t" << G.nv () << "\tm : " << G.ne();
-      cout << "\tnb_merges " << nb_mergesR + nb_mergesB + nb_mergesG;
-      cout << "\tdelta " <<   DeltaSmoothCCW_after;
-      cout << "\tnb_up1 " << nb_unpointed1 << "\t nb_up2 " << nb_unpointed2 << endl;
-      delete pGC;
-      if (pGC2 != 0)
-	delete pGC2;
-	}*/
-
- if(!G.CheckPlanar()){setPigaleError(-1,"not planar: CheckPlanar");return -1;}
- if(! G.CheckTriconnected()){setPigaleError(-1,"not 3-connected: CheckTriconnected");return -1;}
+  {if(!G.CheckPlanar()){setPigaleError(-1,"not planar: CheckPlanar");return -1;}
+  if(! G.CheckTriconnected()){setPigaleError(-1,"not 3-connected: CheckTriconnected");return -1;}
   tvertex v;
   tbrin FirstBrin = G.extbrin();
   SchnyderWood SW(G, FirstBrin);

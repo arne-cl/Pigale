@@ -245,7 +245,7 @@ int EmbedFPP_Rect(TopologicalGraph &G,bool schnyderLongestFace)
   {int OldNumEdge = G.ne();
   PSet1  propSave(G.Set());
   G.MakeConnected();
-  if(!G.CheckPlanar())return -1;
+  if(!G.CheckPlanar())return -5;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin ee;
@@ -501,11 +501,11 @@ int Recti::lrver(void)
 
 int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace)
   {if(G.nv() < 3)return -1;
-  if(!G.CheckSimple())return -1;
+  if(!G.CheckSimple())return -2;
   int OldNumEdge = G.ne();
  PSet1  propSave(G.Set());
   G.MakeConnected();
-  if(!G.CheckPlanar())return -1;
+  if(!G.CheckPlanar())return -3;
   bool MaxPlanar = (G.ne() != 3 * G.nv() - 6) ? false : true;
   int len;
   tbrin ee;
@@ -513,7 +513,7 @@ int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace)
       G.LongestFace(ee,len);
   else
       ee = G.extbrin();
-  if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -2;
+  if(!MaxPlanar && G.ZigZagTriangulate() < 0)return -4;
   tvertex iv,iv1,iv2,iv3;
 
   //init with the leftmost brin incident to tha last vertxex to be packed
@@ -528,7 +528,7 @@ int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace)
   tbrin left,nleft,pright,right;
   tvertex ivl,nivl,pivr,ivr;
   for(int i = 3;i <= G.nv();i++)
-      {if((iv = SP.FindVertex(left,right)) == 0)return -3;
+      {if((iv = SP.FindVertex(left,right)) == 0)return -5;
       left = -left; right = -right;
       ivl = G.vin[left];nleft = G.acir[-G.acir[left]];nivl = G.vin[nleft];
       ivr = G.vin[right];pright = G.cir[-G.cir[right]];pivr = G.vin[pright];
@@ -579,6 +579,7 @@ int EmbedTContact(TopologicalGraph &G,bool schnyderLongestFace)
   if(G.nv() < 3){if(debug())DebugPrintf(" n < 3");return -1;}
   if(!G.CheckSimple()){if(debug())DebugPrintf("not simple");return -1;}
   int morg = G.ne();
+  PSet1  propSave(G.Set());
   G.MakeConnected();
   //int OldNumVertex = G.nv(); // cannot vertextriangulate if not 2-connected
   if(!G.CheckPlanar()){if(debug())DebugPrintf("not planar");return -1;}
@@ -650,6 +651,7 @@ int EmbedTContact(TopologicalGraph &G,bool schnyderLongestFace)
 
   // Erase triangulation edges
   for(tedge e = G.ne(); e > morg;e--)G.DeleteEdge(e);
+  G.Set() =  propSave;
   // define the boundaries
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
   Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);

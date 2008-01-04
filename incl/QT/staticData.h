@@ -37,6 +37,10 @@ public:
   static int  MaxND;
   static int  nCut;
   static int  sizePng;
+  static QString  filePng;
+  static QString  dirPng;
+  static QString  filePdf;
+  static QString  dirPdf;
 
 public:
   static bool & ShowArrow()

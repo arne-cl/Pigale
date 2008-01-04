@@ -222,6 +222,7 @@ int TopologicalGraph::Schnyder(bool schnyderRect,bool schnyderColor,bool schnyde
   {if(nv() < 3)return -1;
   if(!CheckSimple())return -1;
   int OldNumEdge = ne();
+  PSet1  propSave(Set());
   MakeConnected();
   if(!CheckPlanar())return -1;
   bool MaxPlanar = (ne() != 3 * nv() - 6) ? false : true;
@@ -247,7 +248,8 @@ int TopologicalGraph::Schnyder(bool schnyderRect,bool schnyderColor,bool schnyde
 
   // delete the edges added by Connexity and Triangulation
   for(tedge e = ne();e > OldNumEdge;e--)DeleteEdge(e);
-  extbrin() = extOld;
+  //extbrin() = extOld;
+  Set() =  propSave;
   return 0;
   }
 int TopologicalGraph::SchnyderXYZ(bool schnyderColor,bool schnyderLongestFace,

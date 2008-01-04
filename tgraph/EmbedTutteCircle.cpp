@@ -20,6 +20,7 @@ int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace)
   {if(!G.CheckSimple() || !G.CheckPlanar())return -1;
   int m = G.ne();
   int n = G.nv();
+  PSet1  propSave(G.Set());
   G.MakeConnected();
 //   Prop<short> marke(G.Set(tedge()),PROP_MARK); marke.clear();
 //   Prop<short> markv(G.Set(tvertex()),PROP_MARK);markv.clear();
@@ -98,6 +99,7 @@ int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace)
       G.DeleteVertex(v);
  for(tedge e = G.ne();e > m;e--)
      G.DeleteEdge(e);
-  return 0;
+ G.Set() =  propSave;
+ return 0;
   }
 

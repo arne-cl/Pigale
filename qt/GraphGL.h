@@ -37,6 +37,7 @@ public:
 public slots:
   int update();
   void png(int size);
+  void print(QPrinter* printer);
   void delayChanged(int i);
 private slots:
   void Reload();

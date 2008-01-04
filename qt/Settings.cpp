@@ -62,6 +62,10 @@ int staticData::MaxNS   = 500;
 int staticData::MaxND   = 500;
 int staticData::nCut    = 2;
 int staticData::sizePng = 500;
+QString staticData::dirPng = QString(PACKAGE_PATH)+QDir::separator()+"png";
+QString staticData::filePng = dirPng + QDir::separator() +"image.png";
+QString staticData::dirPdf = QString(PACKAGE_PATH)+QDir::separator()+"pdf";
+QString staticData::filePdf = dirPdf + QDir::separator() + "image.pdf";
 
 void pigaleWindow::SetDocumentationPath() // slot
   {DirFileDoc = QFileDialog::
@@ -159,12 +163,11 @@ void pigaleWindow:: SaveSettings()
   setting.endGroup();
   // Printer
   setting.beginGroup("printer");
-  setting.setValue("colormode",printer->colorMode());
-  setting.setValue("orientation",printer->orientation());
+  setting.setValue("dirPdf",staticData::dirPdf);
   setting.endGroup();
   // Png 
   setting.beginGroup("png");
-  setting.setValue("dirPng",DirFilePng);
+  setting.setValue("dirPng",staticData::dirPng);
   setting.setValue("width",staticData::sizePng);
   setting.endGroup();
    // Font
@@ -234,13 +237,23 @@ void pigaleWindow::LoadSettings()
   setting.endGroup();
   // Printer
   setting.beginGroup("printer");
-  PrinterColorMode = setting.value("colormode",0).toInt();
-  PrinterOrientation = setting.value("orientation",0).toInt();
+  staticData::dirPdf = setting.value("dirPdf",QString(PACKAGE_PATH)+QDir::separator()+"pdf").toString();
+  QDir pdf = QDir(staticData::dirPdf);
+  if(!pdf.exists())
+      {QFileInfo fi(staticData::dirPdf);
+      if(QDir(fi.path()).exists())QDir(fi.path()).mkdir(fi.fileName());
+      }
   setting.endGroup();
   // Png
   setting.beginGroup("png");
   staticData::sizePng =  setting.value("width",500).toInt();
-  DirFilePng = setting.value("dirPng",QString(PACKAGE_PATH)+QDir::separator()+"png").toString();
+  staticData::dirPng = setting.value("dirPng",QString(PACKAGE_PATH)+QDir::separator()+"png").toString();
+  staticData::filePng = staticData::dirPng+QDir::separator() + "image.png";
+  QDir png = QDir(staticData::dirPng);
+  if(!png.exists())
+      {QFileInfo fi(staticData::dirPng);
+      if(QDir(fi.path()).exists())QDir(fi.path()).mkdir(fi.fileName());
+      }
   setting.endGroup();
   // Font
   setting.beginGroup("font");

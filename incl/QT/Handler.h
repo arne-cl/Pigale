@@ -11,10 +11,22 @@
 
 /*!
 \file Handler.h
-\brief Handlers used to call the tgraph algorithms. 
+\brief Handlers used to call the algorithms.
 
-Handlers used to call the tgraph algorithms.
-Each algoritm to call is identify by a unique integer action defined in Action_def.h
+PigaleThread calls handler to select which algorithm to execute. <br>
+Each algorithm to call is identified by a unique integer action defined in Action_def.h.<br>
+The return value is used to known which action should be performed after.<br>
+The possible return values are:
+<ul>
+ <li>-1 if error   </li>
+ <li>O nothing to do   </li>
+ <li>1 update the editor   </li>
+ <li>2 update the editor and the graph properties   </li>
+ <li>20 update the editor, without any recomputing   </li>
+ <li>3 there is a drawing to do (pigalePaint)   </li>
+ <li>4 make a R<sup><small>d</small></sup> drawing  </li>
+ <li>5 look for symetries   </li>
+</ul>
 */
 
 #ifndef HANDLER_H

@@ -115,7 +115,7 @@ int GeometricGraph::ComputeGeometricCir()
   Prop1<int> maptype(Set(),PROP_MAPTYPE);
   maptype() = PROP_MAPTYPE_GEOMETRIC;
   if(genus == 0){planarMap() = 1; extbrin() = FindExteriorFace();}
-  else planarMap() = -genus;
+  else planarMap() = -1;
   return genus;
   }
 void ComputeGeometricCir(GeometricGraph &G,svector<tbrin> &cir)

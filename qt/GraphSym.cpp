@@ -753,54 +753,15 @@ int GraphSym::update()
   return 0;
   }
 void GraphSym::print(QPrinter *printer)
-  {QString FileName="";
-  QString OldFileName="";
-  QPrinter::Orientation orient=QPrinter::Portrait;
-  QPrinter::ColorMode cm=QPrinter::Color;
-  if(!d->is_init)return;
-  if(d->mw->ServerExecuting)
-      {FileName = QString("/tmp/server%1.ps").arg(d->mw->ServerClientId);
-      orient=printer->orientation();
-      cm=printer->colorMode();
-      printer->setOrientation(QPrinter::Portrait);
-      printer->setColorMode(QPrinter::Color);
-      OldFileName=printer->outputFileName();
-      printer->setOutputFileName(FileName);
-      }
-  else 
-      {QPrintDialog printDialog(printer,this);
-      if(printDialog.exec() != QDialog::Accepted) 
-          return;
-      }
-
-  d->editor->print(printer);
-  if(d->mw->ServerExecuting)
-      {printer->setOrientation(orient); 
-      printer->setColorMode(cm);
-      printer->setOutputFileName(OldFileName);
-      }
+  {d->editor->print(printer);
   }
 
 void GraphSym::png(int size)
   {QRect geo = d->editor->geometry();
   d->editor->resize(size,size);
   qApp->processEvents();
-  QString FileName;
-  if(!d->mw->ServerExecuting)
-      {FileName = QFileDialog::
-      getSaveFileName(this,
-                      tr("Choose a file to save under"),
-                      d->mw->DirFilePng,
-                      "Images(*.png)");
-      if(FileName.isEmpty()){d->editor->setGeometry(geo);return;}
-      if(QFileInfo(FileName).suffix() != (const char *)"png")
-	  FileName += (const char *)".png";
-      d->mw->DirFilePng = QFileInfo(FileName).absolutePath();
-      }
-  else
-      FileName = QString("/tmp/server%1.png").arg(d->mw->ServerClientId);
   QPixmap pixmap = QPixmap::grabWidget (d->editor); 
-  pixmap.save(FileName,"PNG");
+  pixmap.save(staticData::filePng,"PNG");
   d->editor->setGeometry(geo);
   }
 void GraphSym::resizeEvent(QResizeEvent* e)
@@ -1048,5 +1009,5 @@ void SymWindow::Normalise()
   }
 void SymWindow::print(QPrinter *printer)
   {QPainter pp(printer);
-    this->update(&pp);
+  this->update(&pp);
   }
