@@ -14,6 +14,7 @@ win32 {
 
 CONFIG = thread static
 INCLUDEPATH = ../incl
+unix::INCLUDEPATH += /usr/X11R6/include
 DEPENDPATH = ../incl
 
 SOURCES =\
