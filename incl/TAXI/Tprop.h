@@ -567,6 +567,10 @@ class vProp1
     /*!< \param elmt element to export
      * \retval edup copy of the element
      */
+    virtual void copy(void *src, void *dest) const = 0; //!< copies an element
+    /*!< \param src element to copy
+     * \param dest destination element
+     */
     virtual ~vProp1() {}
     };
 //! Template class for virtual access point to single properties
@@ -592,10 +596,17 @@ class vP1 : public vProp1
      void * edup(void *p) const
          { return (void *) new T(*(T *)p);
          }
-    //!< duplicates an element
     /*!<
      *   \param p pointer to the element to duplicate
      */  
+    //!< duplicates an element
+     void copy(void *src, void *dest) const
+         { *(T *)dest=*(T *)src;
+         }
+    //!< copies an element
+    /*!< \param src pointer to the element to copy
+     * \param dest pointer to the destination element
+     */
     };
 //! Set of single properties
 /*!
@@ -631,8 +642,8 @@ class PSet1
     //! copy operator
     PSet1 & operator=(const PSet1 &P)
         { if (&P == this) return *this;
-        clear();
-        copy(P);
+	  reset(); // clear all the properties without keep flag
+	  copy(P);
         return *this;
         }
     //! exchange the content of two property sets.

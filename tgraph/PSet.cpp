@@ -69,9 +69,14 @@ void PSet1::copy(const PSet1 &P)
   for (int i=tab.starti(); i<tab.stopi(); i++)
       {vp = P.vtab[i];
       if (vp != (vProp1 *)0)
-          {vtab[i] = vp->dup();
-          tab[i] = vp->edup(P.tab[i]);
-          }
+	{ if (vtab[i] == (vProp1 *)0)
+	    {vtab[i] = vp->dup();
+	      tab[i] = vp->edup(P.tab[i]);
+	    }
+	  else { // kept property should REALLY be copied
+	    vp->copy(P.tab[i],tab[i]);
+	  }
+	}    
       }
   keep = P.keep;
   }
