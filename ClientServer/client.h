@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*!
+\file 
+\brief  Client and threadRead  class definition
+*/
+
 #ifndef CLIENT_H 
 #define CLIENT_H
 #include <config.h>
@@ -29,17 +34,18 @@
 #include <QtNetwork>
 
 class Client;
+//! Thread whose task is to read the input data
 class threadRead : public QThread 
-/*! Thread whose task is to red the input data
- */
 {
 public:
   virtual void run();
   Client* pclient; 
 };
 
-class Client : public QWidget
-/*! USAGE
+
+/*! 
+\brief Creates a Thread to read input data, and a QTcpSocket to dialog with the server.
+ \section usage Usage
 The default port used for connection is 4242
 
 In the input:
@@ -58,6 +64,7 @@ When reading from the server
 - lines starting by : are diplayed in the text window
 otherwise they are output to the terminal 
 */
+class Client : public QWidget
 {Q_OBJECT
 public:
   Client( const QString &host, quint16 port);

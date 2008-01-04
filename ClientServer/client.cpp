@@ -9,6 +9,11 @@
 **
 *****************************************************************************/
 
+/*!
+\file 
+\brief  Client and threadRead class implementation
+*/
+
 
 #include "client.h"
 #include <qtextstream.h>
@@ -49,7 +54,7 @@ Client::Client(const QString &_host, quint16 _port)
   // create the socket and connect various of its signals
   socket = new QTcpSocket(this);
   socket->connectToHost(host,port);
-  clo.setDevice(socket); clo.setVersion(QDataStream::Qt_4_0);
+  clo.setDevice(socket); clo.setVersion(QDataStream::Qt_4_3);
   connect(socket,SIGNAL(connected()),SLOT(socketConnected()));
   connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
@@ -66,7 +71,6 @@ void Client::exit()
   } 
 void Client::socketConnected()
   {infoText->append("Connected to server");
-  //ActionsToDo = 0;
   stack.push("Server Ready");
   ChangeActionsToDo(1);
   ThreadRead.pclient = this;
@@ -85,6 +89,7 @@ void Client::askCloseConnection()
   {if(socket->state() != QAbstractSocket::ConnectedState)return;
   QString str = "!";
   sendToServer(str);
+  stop();
   }
 void Client::closeConnection()
   {if(socket->state() == QAbstractSocket::ClosingState )
@@ -95,7 +100,11 @@ void Client::socketError(QAbstractSocket::SocketError e)
   {if(e == QAbstractSocket::ConnectionRefusedError)
       infoText->append(QString("Connection refused"));
   else if(e  == QAbstractSocket::HostNotFoundError) 
-      infoText->append(QString("Host not found"));           
+      infoText->append(QString("Host not found")); 
+  else if(e == QAbstractSocket::SocketTimeoutError)
+      infoText->append(QString("Socket timeout"));
+  else 
+      infoText->append(QString("Socket error:%1").arg(e)); 
   }
 
 void Client::customEvent(QEvent * e) 
@@ -144,15 +153,13 @@ int Client::ChangeActionsToDo(int delta)
   mutex.lock();
   i=(ActionsToDo += delta);
   mutex.unlock();
-
   if(delta == 0)return i;
 
   if(delta < 0)
       {if(stack.isEmpty())
           {writeClient(QString("ERROR:-STACK EMPTY %1 ").arg(i));
-          mutex.lock();
+          QMutexLocker locker(&mutex);
           ActionsToDo = 0;
-          mutex.unlock();
           return 0;
           }
       stack.pop(); 
@@ -164,7 +171,11 @@ int Client::ChangeActionsToDo(int delta)
   return i; 
   } 
 void Client:: debug(bool b) 
-  {mutex.lock(); dbg=b; mutex.unlock();
+  { 
+  mutex.lock(); 
+  dbg=b; 
+  mutex.unlock();
+  
   QString str = QString("S_DEBUG;%1").arg(b);
   sendToServer(str);
   }
@@ -181,7 +192,6 @@ void Client::sendToServer(QString &str)
       writeServerEvent(str);
       return;
       }
-  //QStringList fields = QStringList::split(ACTION_SEP,str);//not qt4
   QStringList fields = str.split(ACTION_SEP);
   for(int i = 0; i < (int)fields.count();i++)
       {fields[i].simplified();
@@ -197,7 +207,6 @@ void Client::sendToServer(QString &str)
   }
 int Client::sendToServerGraph(QString &data)
   {if(socket->state() != QAbstractSocket::ConnectedState)return -1;
-  //QStringList fields = QStringList::split(PARAM_SEP,data);
   QStringList fields =data.split(PARAM_SEP);
   if(fields.count() < 2){writeClient("MISSING ARGUMENT");return -1;}
   QString FileName = fields[1].simplified();
@@ -220,21 +229,28 @@ int Client::sendToServerGraph(QString &data)
   writeServerEvent(buff,size);
   return 0;
   }
+/*
 uint Client::readBuffer(char*  &buffer)
-  {uint size;
-  while(socket->bytesAvailable() < (int)sizeof(uint))socket->waitForReadyRead(10);
+  {uint nb;
+  while((nb = socket->bytesAvailable()) < (int)sizeof(uint))
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
+      socket->waitForReadyRead(10);
+      }
+  uint size;
   clo >> size;
   buffer = new char[size+1];
   char *pbuff = buffer;
   int retry = 0;
   uint nread = 0; 
   uint size0 = 0;
-  uint nb;
   while(nread  < size)
-      {socket->waitForReadyRead(10);
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
       nb = socket->bytesAvailable();
       if(nb == 0)
           {if(++retry > 1000){writeClient("TIMEOUT");ChangeActionsToDo(-1);return 0;}
+          socket->waitForReadyRead(10);
           continue;
           }
       retry = 0;
@@ -248,6 +264,26 @@ uint Client::readBuffer(char*  &buffer)
           writeClient(QString("%1 % (%2 / %3)").arg(percent).arg(nread).arg(size));
           }
       }
+  return size;
+  }
+*/
+uint Client::readBuffer(char*  &buffer)
+  {uint nb;
+  while((nb = socket->bytesAvailable()) < (int)sizeof(uint))
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
+      socket->waitForReadyRead(10);
+      }
+  uint size;
+  clo >> size;
+  buffer = new char[size+1];
+  char *pbuff = buffer;
+  while((nb = socket->bytesAvailable()) < size)
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
+      socket->waitForReadyRead(100);
+      }
+  clo.readRawData(pbuff,nb);
   return size;
   }
 void Client::socketReadyRead()
@@ -291,8 +327,7 @@ void Client::socketReadyRead()
           char * buffer = NULL;
           uint size = readBuffer(buffer);
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
-          //int pos = str.find(PARAM_SEP);//not QT4
-          int pos = str.indexOf(PARAM_SEP);//not QT4
+          int pos = str.indexOf(PARAM_SEP);
           QString graphFile = str.mid(pos+1);
           QFile file(graphFile);  
           //QFileInfo fi = QFileInfo(graphFile);   if(fi.exists())file.remove();
@@ -347,9 +382,9 @@ void threadRead::run()
   while(!stream.atEnd())
       {int retry = 0;
       while(pclient->ChangeActionsToDo(0) > 0)
-          {msleep(10);// milliseconds
-          if(++retry %200 == 0 && pclient->debug())
-              pclient->writeClient(QString("Waiting %1s (%2:%3)").arg(retry/100)
+          {msleep(100);// milliseconds
+          if(++retry %10 == 0 && pclient->debug())
+              pclient->writeClient(QString("Waiting %1s (%2:%3)").arg(retry/10)
                   .arg(pclient->stack.top()).arg(pclient->ChangeActionsToDo(0)));
           }
       str = stream.readLine(); 
