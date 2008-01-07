@@ -334,7 +334,7 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   
   // png
   QSpinBox *spinPNG = new QSpinBox();     
-  spinPNG->setRange(100,1600); spinPNG->setSingleStep(50);  spinPNG->setValue(staticData::sizePng);
+  spinPNG->setRange(100,1600); spinPNG->setSingleStep(50);  spinPNG->setValue(staticData::sizeImage);
   connect(spinPNG,SIGNAL(valueChanged(int)),SLOT(spinPNGChanged(int)));
 
   // Add to the Layout
@@ -347,7 +347,7 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   // minimum Height window = 640
   // minimum Width window  = 800
       {gSettings->setMinimumHeight(495);
-      gSettings->setMaximumHeight(600);
+      gSettings->setMaximumHeight(640);// 600
       }
   else
   // minimum Height window = 600
@@ -379,7 +379,8 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
  
   int row = -1;
   // General
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>General settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)
+      setLayout->addWidget(new QLabel(tr("<b>General settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
   setLayout->addWidget(box1,++row,1);  setLayout->addWidget(box2,row,2); //debug,undo
   setLayout->addWidget(chkOrient,++row,1);  setLayout->addWidget(box7,row,2); // orientation,arrowq
   setLayout->addWidget(box8,++row,1);  setLayout->addWidget(box11,row,2); // exterioredge, longest face
@@ -389,8 +390,11 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   setLayout->addWidget(spin_MaxND,++row,1); setLayout->addWidget(spin_MaxNS,row,2);
   
   // generators
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Graph Generators</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)
+      {setLayout->addWidget(new QLabel(" ",0),++row,1);
+      setLayout->addWidget(new QLabel(tr("<b>Graph Generators</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+      //setLayout->addWidget(new QLabel(" ",0),++row,1);
+      }
   setLayout->addWidget(new QLabel("N1",0),++row,1);    setLayout->addWidget(spin_N1,row,2);
   setLayout->addWidget(new QLabel("N2",0),++row,1);    setLayout->addWidget(spin_N2,row,2);
   setLayout->addWidget(new QLabel("M",0),++row,1);     setLayout->addWidget(spin_M,row,2);
@@ -399,27 +403,36 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   setLayout->addWidget(box5,++row,1); // random seed
 
   // macro
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Macro Settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)
+      {setLayout->addWidget(new QLabel(" ",0),++row,1);
+      setLayout->addWidget(new QLabel(tr("<b>Macro Settings</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+      //setLayout->addWidget(new QLabel(" ",0),++row,1);
+      }
   setLayout->addWidget(new QLabel(tr("Delay (1/10 seconds)"),0),++row,1);  setLayout->addWidget(spinDelay,row,2);
   setLayout->addWidget(new QLabel(tr("Repeat"),0),++row,1);setLayout->addWidget(spinRepeat,row,2);
 
   //Factorial Analysis
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel(tr("<b>Factorial analysis</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)
+      {setLayout->addWidget(new QLabel(" ",0),++row,1);
+      setLayout->addWidget(new QLabel(tr("<b>Factorial analysis</b>"),0),++row,1,1,2,Qt::AlignHCenter);
+      //setLayout->addWidget(new QLabel(" ",0),++row,1);
+      }
   setLayout->addWidget(new QLabel(tr("Distance"),0),++row,1);  setLayout->addWidget(new QLabel(tr("Number of classes"),0),row,2);
   setLayout->addWidget(comboDistance,++row,1);setLayout->addWidget(spin_N,row,2);
   
   // PNG
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  setLayout->addWidget(new QLabel(tr("Png size"),0),++row,1);
+  if(bigScreen)
+      setLayout->addWidget(new QLabel(" ",0),++row,1);
+  setLayout->addWidget(new QLabel(tr("Image size"),0),++row,1);
   setLayout->addWidget(spinPNG,++row,1);
   
   // Schnyder
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
-  if(bigScreen)setLayout->addWidget(new QLabel("<b>Schyder</b>",0),++row,1,1,2,Qt::AlignHCenter);
+  if(bigScreen)
+      {setLayout->addWidget(new QLabel(" ",0),++row,1);
+      setLayout->addWidget(new QLabel("<b>Schnyder</b>",0),++row,1,1,2,Qt::AlignHCenter);
+      //setLayout->addWidget(new QLabel(" ",0),++row,1);
+      }
   setLayout->addWidget(box9,++row,1); setLayout->addWidget(box10,row,2); //Schnyder rect,color
-  if(bigScreen)setLayout->addWidget(new QLabel(" ",0),++row,1);
   //cout<<"row:"<<row<<endl;
   }
 void pigaleWindow::createToolBar()
@@ -452,10 +465,10 @@ void pigaleWindow::createToolBar()
   printAct->setStatusTip(tr("Print the graph"));
   connect(printAct, SIGNAL(triggered()),this,SLOT(print()));
   tb->addAction(printAct);
-  QAction *pngAct = new QAction(filmIcon, tr("Png"), this);
-  pngAct->setStatusTip(tr("Save image"));
-  connect(pngAct, SIGNAL(triggered()),this,SLOT(png()));
-  tb->addAction(pngAct);
+  QAction *imageAct = new QAction(filmIcon, tr("Image"), this);
+  imageAct->setStatusTip(tr("Save image"));
+  connect(imageAct, SIGNAL(triggered()),this,SLOT(image()));
+  tb->addAction(imageAct);
   // INFO
   QAction *infoAct = new QAction(infoIcon, tr("&Information"), this);
   infoAct->setStatusTip(tr("Information"));
@@ -811,7 +824,7 @@ void pigaleWindow::spinMChanged(int val)
 void pigaleWindow::spinNChanged(int val)
   {staticData::nCut = val;}
 void pigaleWindow::spinPNGChanged(int val)
-  {staticData::sizePng = val;}
+  {staticData::sizeImage = val;}
 void pigaleWindow::spinDelayChanged(int val)
   {staticData::macroDelay = val;}
 void pigaleWindow::spinMaxNSChanged(int i)
@@ -867,14 +880,14 @@ bool pigaleWindow::InitPrinter(QPrinter* printer)
       printer->setOutputFileName(FileName);
       }
   else 
-      {QString FileName = staticData::dirPdf + QDir::separator() + "image.pdf";
+      {QString FileName = staticData::dirImage + QDir::separator() + "image.pdf";
       printer->setOutputFileName(FileName);
       QPrintDialog printDialog(printer,this);
       if(printDialog.exec() != QDialog::Accepted) 
           return false;
       QString OutputFileName = printer->outputFileName();
       if(!OutputFileName.isNull())
-          staticData::dirPdf = QFileInfo(OutputFileName).absolutePath();
+          staticData::dirImage = QFileInfo(OutputFileName).absolutePath();
       }
   return true;
   }
@@ -900,43 +913,66 @@ void pigaleWindow::print()
           break;
       }
   }
-bool pigaleWindow::InitPng()
-  {if(!ServerExecuting)
-      {staticData::filePng = QFileDialog::
-      getSaveFileName(this,
-                      tr("Choose a file to save under"),
-                      staticData::dirPng,
-                      "Images (*.png)");
-      if(staticData::filePng.isEmpty())return false; 
-      if(QFileInfo(staticData::filePng).suffix() != (const char *)"png")
-	  staticData::filePng += (const char *)".png";
-      staticData::dirPng = QFileInfo(staticData::filePng).absolutePath();
+bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
+  {if(ServerExecuting)
+      {staticData::fileImage = QString("/tmp/server%1.png").arg(ServerClientId);
+      suffix = "png";
+      return true;
       }
-  else
-      staticData::filePng = QString("/tmp/server%1.png").arg(ServerClientId);
-  return true;
+  QString filter;
+  staticData::fileImage = QFileDialog::
+  getSaveFileName(this,
+                  tr("Choose a file to save under"),
+                  staticData::dirImage,
+                  formats,&filter);
+
+  if(staticData::fileImage.isEmpty())return false; 
+  staticData::dirImage = QFileInfo(staticData::fileImage).absolutePath();
+  suffix = QFileInfo(staticData::fileImage).suffix();
+  if(suffix.length() == 0) 
+      {suffix = filter.mid(filter.indexOf('.')+1);
+      suffix = suffix.left(suffix.indexOf('\)'));
+      staticData::fileImage += "."+suffix; 
+  // verifier si existe
+
+      }
+  // construct lis of allowed suffixes
+  QStringList suffixes = formats.split(";;");
+  for(int i = 0; i < suffixes.count();i++)
+      {QString str = suffixes[i].mid(suffixes[i].indexOf('.')+1);
+      str = str.left(str.indexOf('\)'));
+      if(str == suffix)
+          {if(suffix == "pdf" || suffix == "ps")
+              {printer->setOrientation(QPrinter::Portrait);
+              printer->setColorMode(QPrinter::Color);
+              printer->setOutputFileName(staticData::fileImage);
+              }
+          return true;
+          }
+      }
+  QString msg = "Unknown extension: " + suffix;
+  Twait((const char *)msg.toAscii());
+  return false;
   }
-void pigaleWindow::png()
-  {QRect geo;
+void pigaleWindow::image()
+  {QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
+  QString suffix;
   switch(tabWidget->currentIndex())
       {case 0:
-          if(!InitPng())return;
-          gw->editor->png(staticData::sizePng);
+          if(!InitPicture(formats,suffix))return;
+          gw->editor->image(printer,suffix);
           break;
       case 1:
-          if(!InitPng())return;
-          geo = mypaint->geometry();
-          mypaint->resize(staticData::sizePng,staticData::sizePng);
-          mypaint->png();
-          mypaint->setGeometry(geo);
+          if(!InitPicture(formats,suffix))return;
+           mypaint->image(printer,suffix);
           break;
       case 2:
-          if(!InitPng())return;
-          graphgl->png(staticData::sizePng);
+          if(!InitPicture(formats,suffix))return;
+          graphgl->image(printer,suffix);
           break;
       case 3:
-          if(!InitPng())return;
-          graphsym->png(staticData::sizePng);
+          if(!InitPicture(formats,suffix))return;
+          graphsym->image(printer,suffix);
           break;
       default:
           break;

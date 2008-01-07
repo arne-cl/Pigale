@@ -25,6 +25,7 @@
 #include <QT/Misc.h> 
 
 #include <QInputDialog>
+#include <QSvgGenerator>
 //#include <QGLWidget>
 
 GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
@@ -35,6 +36,7 @@ GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
     ,zoom(1.),ShowGrid(false),FitToGrid(false),SizeGrid(100)
   {
   CreatePenBrush();
+  //setBackgroundBrush(QBrush(Qt::white)); 
   setFocusPolicy(Qt::ClickFocus);
   setRenderHints(QPainter::Antialiasing);
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //faster (no antialiasing if no Samplebuffers)
@@ -704,14 +706,36 @@ void GraphEditor::clear()
   GridDrawn = false;
   }
 
-void GraphEditor::png(int size)
+void GraphEditor::image(QPrinter* printer, QString suffix)
   {QRect geo = geometry();
+  int size = staticData::sizeImage;
   resize(size+space+sizerect+5,size+4);
   load(true);
   qApp->processEvents();
-  QPixmap pixmap = QPixmap::grabWidget
-  (this,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
-  pixmap.save(staticData::filePng,"PNG",0);
+  if(suffix == "png" || suffix == "jpg")
+      {QPixmap pixmap = QPixmap::grabWidget
+      (this,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
+      pixmap.save(staticData::fileImage);
+      }
+  else if(suffix == "svg") 
+      {QSvgGenerator *svg = new QSvgGenerator();
+      svg->setFileName(staticData::fileImage);
+      svg->setResolution(90); //ecran 
+      //svg->setResolution(physicalDpiX()); //ecran 101
+      int nx = (int)gwp->canvas->width()-space-sizerect-10;
+      int ny = (int)gwp->canvas->height();
+      svg->setSize(QSize(nx,ny));
+      QPainter pp(svg);
+      pp.setBrush(QBrush(Qt::white));
+      pp.drawRect(QRect(0,0,nx,ny));
+      render(&pp,QRectF(0,0,nx,ny),QRect(0,0,nx,ny));
+      }
+  else if(suffix == "pdf" || suffix == "ps")
+      {QPainter pp(printer);
+      int nx = (int)gwp->canvas->width()-space-sizerect-10;
+      int ny = (int)gwp->canvas->height();
+      render(&pp,QRectF(0,0,printer->width(),printer->height()),QRect(0,0,nx,ny));
+      }
   setGeometry(geo);
   load(true);
   }

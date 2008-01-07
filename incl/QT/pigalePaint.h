@@ -47,7 +47,7 @@ public:
   void update(int index,bool NewDrawing = true);
   void update();
   void print(QPrinter *printer);
-  void png();
+  void image(QPrinter* printer, QString suffix);
 
 private:
   void drawIt(QPainter *);

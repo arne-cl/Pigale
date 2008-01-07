@@ -63,6 +63,7 @@ public:
   void DrawSym();
   void Axes(int i1,int i2);
   void print(QPrinter *printer);
+  void image(QPrinter* printer, QString suffix);
 private:
   void paintEvent(QPaintEvent *e);
   void showEvent(QShowEvent*);

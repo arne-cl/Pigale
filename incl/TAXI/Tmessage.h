@@ -13,6 +13,8 @@
 #define _TMESSAGE_H_INCLUDED_
 #include  <TAXI/graphs.h>
 
+class QString;
+
 class GraphDebug {
  public:
   virtual void DrawGraph(Graph &) {}
@@ -20,6 +22,7 @@ class GraphDebug {
   virtual int wait(const char *) {return 0;}
   virtual void clear(void) {}
   virtual void printf(const char *,...) {}
+  virtual void printf(QString &) {}
   static GraphDebug *gd;
   GraphDebug() {if (gd==(GraphDebug *)0) gd=this;}
   virtual ~GraphDebug() {}

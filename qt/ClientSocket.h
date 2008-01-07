@@ -50,7 +50,7 @@ public slots:
 /*!
 ClientSocket is responsible to dialog with a client connected through a tcp socket, 
 and execute the commands received.<br>
-This class derives from  QThread.
+This class derives from  QOBJECT.
 */
 class ClientSocket : public QObject
 {Q_OBJECT

@@ -36,7 +36,7 @@ int EmbedTContact(TopologicalGraph &G,bool schnyderLongestFace);
 int EmbedTriangle(TopologicalGraph &G);
 int EmbedFPPRecti(TopologicalGraph &G,bool schnyderLongestFace);
 int EmbedFPP(TopologicalGraph &G,bool schnyderRect,bool schnyderLongestFace);
-int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact);
+int EmbedCCD(TopologicalGraph &G,bool compact);
 int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace);
 int FindNPSet(TopologicalGraph &);
 int split(Graph &G0,int &NumberOfClasses,int usedDistance);

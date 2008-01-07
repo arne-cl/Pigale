@@ -126,7 +126,7 @@ static void CountVerticesDoubles(TopologicalGraph &G,  const SchnyderWood &SW,
 }
 
 
-int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
+int EmbedCCD(TopologicalGraph &G, bool compact)
   {if(!G.CheckPlanar()){setPigaleError(-1,"not planar: CheckPlanar");return -1;}
   if(! G.CheckTriconnected()){setPigaleError(-1,"not 3-connected: CheckTriconnected");return -1;}
   tvertex v;
@@ -269,24 +269,26 @@ int EmbedCCD(TopologicalGraph &G, GeometricGraph &G0, bool compact)
   a21 = 0.0;
   a22 = 1.0;
   Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
+  Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
+  Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
   tedge e;
-
-  ForAllEdges(e,G0) {
-    G0.ewidth[e] = 2;
+  ForAllEdges(e,G) {
+    ewidth[e] = 2;
     if (SW.IsSimple(e)) {
       short c1,c2;
       SW.GetEdgeColors(e.firsttbrin(),c1,c2);
       if (c2 != Black) 
 	c1 = c2;
-      G0.ecolor[e] = c1;
+      ecolor[e] = c1;
       ecolor2[e] = c1;
       
     }
     else {
-      G0.ecolor[e] = SW.GetBrinColor(e.firsttbrin());
+      ecolor[e] = SW.GetBrinColor(e.firsttbrin());
       ecolor2[e] = SW.GetBrinColor(e.secondtbrin());
     }
   }
+
     ForAllVertices(v,G) {
       
     int nb_verticesG = SumDescG_R[v] + SumDescG_B[v] - DescendantsG[v];

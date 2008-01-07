@@ -61,11 +61,9 @@ int staticData::Gen_M   = 30;
 int staticData::MaxNS   = 500;
 int staticData::MaxND   = 500;
 int staticData::nCut    = 2;
-int staticData::sizePng = 500;
-QString staticData::dirPng = QString(PACKAGE_PATH)+QDir::separator()+"png";
-QString staticData::filePng = dirPng + QDir::separator() +"image.png";
-QString staticData::dirPdf = QString(PACKAGE_PATH)+QDir::separator()+"pdf";
-QString staticData::filePdf = dirPdf + QDir::separator() + "image.pdf";
+int staticData::sizeImage = 500;
+QString staticData::dirImage = QString(PACKAGE_PATH)+QDir::separator()+"png";
+QString staticData::fileImage = dirImage + QDir::separator() +"image.png";
 
 void pigaleWindow::SetDocumentationPath() // slot
   {DirFileDoc = QFileDialog::
@@ -162,13 +160,12 @@ void pigaleWindow:: SaveSettings()
   setting.setValue("macroDir",DirFileMacro);
   setting.endGroup();
   // Printer
-  setting.beginGroup("printer");
-  setting.setValue("dirPdf",staticData::dirPdf);
-  setting.endGroup();
+//   setting.beginGroup("printer");
+//   setting.endGroup();
   // Png 
-  setting.beginGroup("png");
-  setting.setValue("dirPng",staticData::dirPng);
-  setting.setValue("width",staticData::sizePng);
+  setting.beginGroup("image");
+  setting.setValue("dirImage",staticData::dirImage);
+  setting.setValue("width",staticData::sizeImage);
   setting.endGroup();
    // Font
   setting.beginGroup("font");
@@ -236,22 +233,16 @@ void pigaleWindow::LoadSettings()
   staticData::RandomUseGeneratedCir() = setting.value("GeneratedCir",true).toBool();
   setting.endGroup();
   // Printer
-  setting.beginGroup("printer");
-  staticData::dirPdf = setting.value("dirPdf",QString(PACKAGE_PATH)+QDir::separator()+"pdf").toString();
-  QDir pdf = QDir(staticData::dirPdf);
-  if(!pdf.exists())
-      {QFileInfo fi(staticData::dirPdf);
-      if(QDir(fi.path()).exists())QDir(fi.path()).mkdir(fi.fileName());
-      }
-  setting.endGroup();
+//   setting.beginGroup("printer");
+//   setting.endGroup();
   // Png
-  setting.beginGroup("png");
-  staticData::sizePng =  setting.value("width",500).toInt();
-  staticData::dirPng = setting.value("dirPng",QString(PACKAGE_PATH)+QDir::separator()+"png").toString();
-  staticData::filePng = staticData::dirPng+QDir::separator() + "image.png";
-  QDir png = QDir(staticData::dirPng);
-  if(!png.exists())
-      {QFileInfo fi(staticData::dirPng);
+  setting.beginGroup("image");
+  staticData::sizeImage =  setting.value("width",500).toInt();
+  staticData::dirImage = setting.value("dirImage",QString(PACKAGE_PATH)+QDir::separator()+"images").toString();
+  staticData::fileImage = staticData::dirImage+QDir::separator() + "image.png";
+  QDir dir = QDir(staticData::dirImage);
+  if(!dir.exists())
+      {QFileInfo fi(staticData::dirImage);
       if(QDir(fi.path()).exists())QDir(fi.path()).mkdir(fi.fileName());
       }
   setting.endGroup();

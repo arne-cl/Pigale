@@ -165,7 +165,7 @@ private:
   void initMenuTest();
   void UpdatePigaleColors();
   bool InitPrinter(QPrinter* printer);
-  bool InitPng();
+  bool InitPicture(QString & formats,QString & suffix);
 public slots:
   void handler(QAction *action);
   void banner();
@@ -174,7 +174,7 @@ public slots:
   void computeInformation();
   void information(bool erase = true);
   void print();
-  void png();
+  void image();
   int  handler(int action);
   void NewGraph();
 protected:

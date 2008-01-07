@@ -24,6 +24,7 @@
 #include <QCheckBox>
 #include <QBoxLayout>
 #include <QPainter>
+#include <QSvgGenerator>
 
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
@@ -756,13 +757,8 @@ void GraphSym::print(QPrinter *printer)
   {d->editor->print(printer);
   }
 
-void GraphSym::png(int size)
-  {QRect geo = d->editor->geometry();
-  d->editor->resize(size,size);
-  qApp->processEvents();
-  QPixmap pixmap = QPixmap::grabWidget (d->editor); 
-  pixmap.save(staticData::filePng,"PNG");
-  d->editor->setGeometry(geo);
+void GraphSym::image(QPrinter* printer, QString suffix)
+  {d->editor->image(printer,suffix);
   }
 void GraphSym::resizeEvent(QResizeEvent* e)
   {if(d->editor)d->editor->initialize(); 
@@ -1005,9 +1001,30 @@ void SymWindow::Normalise()
       {xcoord[i] = xmul*xcoord[i] + xtr;
        ycoord[i] = ymul*ycoord[i] + ytr;
       }
-  
   }
 void SymWindow::print(QPrinter *printer)
   {QPainter pp(printer);
-  this->update(&pp);
+  update(&pp);
+  }
+void SymWindow::image(QPrinter* printer, QString suffix)
+  {QRect geo = geometry();
+  resize(staticData::sizeImage,staticData::sizeImage);
+  qApp->processEvents();
+  if(suffix == "png" || suffix == "jpg")
+      {QPixmap pixmap = QPixmap::grabWidget(this); 
+      pixmap.save(staticData::fileImage);
+      }
+  else if(suffix == "svg") 
+      {QSvgGenerator *svg = new QSvgGenerator();
+      svg->setFileName(staticData::fileImage);
+      svg->setResolution(90); 
+      svg->setSize(QSize(width(),height()));
+      QPainter pp(svg);
+      update(&pp);
+      }
+  else if(suffix == "pdf" || suffix == "ps")
+      {QPainter pp(printer);
+      update(&pp);
+      }
+  setGeometry(geo);
   }

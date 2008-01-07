@@ -31,7 +31,7 @@ public:
   GraphSym( QWidget *parent,pigaleWindow* mw);
   ~GraphSym();
   void print(QPrinter *printer);
-  void png(int size);
+  void image(QPrinter* printer, QString suffix);
 
 public slots:
   int update();

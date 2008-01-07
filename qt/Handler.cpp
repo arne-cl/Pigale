@@ -240,10 +240,10 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           err = EmbedFPP(G,staticData::SchnyderRect(),staticData::SchnyderLongestFace());
           break;
       case A_EMBED_CD:ret = 1;
-          err = EmbedCCD(G, G0, false);
+          err = EmbedCCD(G,false);
           break;
       case A_EMBED_CCD:ret = 1;
-          err = EmbedCCD(G, G0, true);
+          err = EmbedCCD(G,true);
           break;
       case A_EMBED_TUTTE_CIRCLE:ret = 1;
           EmbedTutteCircle(G,staticData::SchnyderLongestFace());

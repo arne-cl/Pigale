@@ -224,7 +224,7 @@ void ClientSocket::xhandler(const QString& dataAction)
   //cout<<(const char *)dataAction.toAscii()<<endl;
   // call the right handler
   if(action == 0)
-      setPigaleError(UNKNOWN_COMMAND,"action:0 !!");
+      setPigaleError(-1,"action:0 !!");
   else if(action > A_INFO && action < A_INFO_END)
       handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
@@ -248,7 +248,7 @@ void ClientSocket::xhandler(const QString& dataAction)
   else if (action > A_PROP_DEFAULT && action < A_PROP_DEFAULT_END)
       {QStringList fields = dataParam.split(PARAM_SEP);
       if(fields.count() != 3)
-          {setPigaleError(WRONG_PARAMETERS,"Bad number of parameters");
+          {setPigaleError(-1,"Bad number of parameters");
           writeClientEvent(":ERROR "+getPigaleErrorString()+"action: "+mw->getActionString(action));
           setPigaleError();
           writeClientEvent(QString("!%1 P").arg(action));
@@ -257,7 +257,7 @@ void ClientSocket::xhandler(const QString& dataAction)
           }
       bool ok =true;
       int setnum = fields[0].toInt(&ok); if (ok && (setnum<0 || setnum>2)) ok=false;
-      if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong set number");
+      if(!ok)setPigaleError(-1,"Wrong set number");
       PSet *set=(PSet *)0;
       switch(setnum) 
           {case 0:
@@ -271,7 +271,7 @@ void ClientSocket::xhandler(const QString& dataAction)
               break;
           }
       int pnum=fields[1].toInt(&ok); if (ok && (pnum<0 || pnum > 255)) ok=false;
-      if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong property number");
+      if(!ok)setPigaleError(-1,"Wrong property number");
       switch(action)
          {case A_PROP_DEF_SHORT:
              {Prop<short> x(*set,pnum);
@@ -284,10 +284,10 @@ void ClientSocket::xhandler(const QString& dataAction)
              }
              break;
          default:
-             setPigaleError( UNKNOWN_COMMAND,"unknown command");
+             setPigaleError(-1,"unknown command");
              ok=true;
          }
-      if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong second parameter");
+      if(!ok)setPigaleError(-1,"Wrong second parameter");
       }
   else if(action > A_TRANS && action < A_TRANS_END)
       {if(action == A_TRANS_SEND_PNG || action ==  A_TRANS_SEND_PS)
@@ -298,7 +298,7 @@ void ClientSocket::xhandler(const QString& dataAction)
               size = fields[0].toInt(&ok);
               if(!ok)size = 500;
               }
-          staticData::sizePng = size;
+          staticData::sizeImage = size;
           mw->handler(action);return;
           }
       else if(action == A_TRANS_GET_CGRAPH) 
@@ -307,7 +307,7 @@ void ClientSocket::xhandler(const QString& dataAction)
           int index = 1;
           bool ok =true;
           if(fields.count() > 1)index = fields[1].toInt(&ok);
-          if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong parameters");
+          if(!ok)setPigaleError(-1,"Wrong parameters");
           else   readClientGraph(index);
           return;
           }
@@ -315,14 +315,14 @@ void ClientSocket::xhandler(const QString& dataAction)
           // save the graph and send it to the client
           {QStringList fields = dataParam.split(PARAM_SEP);
           if(fields.count() > 1)
-              setPigaleError(WRONG_PARAMETERS,"Wrong parameters");
+              setPigaleError(-1,"Wrong parameters");
           else sendSaveGraph(fields[0]);
           }
       }
   else if(action > A_SET_GEN && action < A_SET_GEN_END)
       {QStringList fields = dataParam.split(PARAM_SEP);
       if(fields.count() < 1)
-          {setPigaleError(WRONG_PARAMETERS,"Missing  parameter");
+          {setPigaleError(-1,"Missing  parameter");
           writeClientEvent(":ERROR "+ getPigaleErrorString()+ "action:"+mw->getActionString(action));
           setPigaleError();
           writeClientEvent(QString("!%1 G").arg(action));
@@ -331,7 +331,7 @@ void ClientSocket::xhandler(const QString& dataAction)
           }
       bool ok =true;
       int value  = fields[0].toInt(&ok);
-      if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong parameters");
+      if(!ok)setPigaleError(-1,"Wrong parameters");
       else
           switch(action)
               {case A_SET_GEN_N1:
@@ -348,23 +348,23 @@ void ClientSocket::xhandler(const QString& dataAction)
                   randomSetSeed() = value;
 		  break;
               default:
-                  setPigaleError( UNKNOWN_COMMAND,"unknown command");
+                  setPigaleError(-1,"unknown command");
                   break;
               }
       }
   else if(action == SERVER_DEBUG)
       {QStringList fields = dataParam.split(PARAM_SEP);
       if(fields.count() != 1)
-          setPigaleError(WRONG_PARAMETERS,"Bad number of parameters");
+          setPigaleError(-1,"Bad number of parameters");
       else
           {bool ok =true;
           int setnum = fields[0].toInt(&ok); 
-          if(!ok)setPigaleError(WRONG_PARAMETERS,"Wrong parameter");
+          if(!ok)setPigaleError(-1,"Wrong parameter");
           else sdebug = setnum;
           }
       }
   else
-      setPigaleError( UNKNOWN_COMMAND,"unknown command");
+      setPigaleError(-1,"unknown command");
  
   if(getPigaleError())
       {if(action)
@@ -397,12 +397,12 @@ void ClientSocket::readClientGraph(int indexRemoteGraph)
 int ClientSocket::readServerGraph(QString &dataParam)
   {QStringList fields = dataParam.split(PARAM_SEP);
   int nfield = (int)fields.count();
-  if(nfield == 0){setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return -1;}
+  if(nfield == 0){setPigaleError(-1,"Wrong parameters");return -1;}
   bool ok = true;
   int num = 1;
   if(nfield > 1)
       {num = fields[1].toInt(&ok);
-      if(!ok){setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return -1;}
+      if(!ok){setPigaleError(-1,"Wrong parameters");return -1;}
       }
   mw->InputFileName = universalFileName(fields[0]);
   mw->GraphIndex1 = num;
@@ -483,7 +483,7 @@ void ClientSocket::handlerInput(int action,const QString& dataParam)
           {int n = 1;
           if(nfield > 0)
               {n = fields[0].toInt(&ok);
-              if(!ok){setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return;}
+              if(!ok){setPigaleError(-1,"Wrong parameters");return;}
               }
           TopologicalGraph G(mw->GC);
           for(int i = 0;i < n;i++)G.NewVertex();
@@ -499,20 +499,20 @@ void ClientSocket::handlerInput(int action,const QString& dataParam)
           }
           break;
       case A_INPUT_NEW_EDGE:
-          {if(nfield < 2){setPigaleError(WRONG_PARAMETERS,"need 2 vertices");return;}
+          {if(nfield < 2){setPigaleError(-1,"need 2 vertices");return;}
           int v1 = fields[0].toInt(&ok);
-          if(!ok){setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return;}
+          if(!ok){setPigaleError(-1,"Wrong parameters");return;}
           int v2 = fields[1].toInt(&ok);
-          if(!ok){setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return;}
+          if(!ok){setPigaleError(-1,"Wrong parameters");return;}
           TopologicalGraph G(mw->GC);
           if(v1 > G.nv() || v2 > G.nv() || v1 == v2)
-              {setPigaleError(WRONG_PARAMETERS,"Wrong parameters");return;}
+              {setPigaleError(-1,"Wrong parameters");return;}
           G.NewEdge((tvertex)v1,(tvertex)v2);
           mw->postDrawG();mw->information();
           }
           break;
       default:
-          setPigaleError( UNKNOWN_COMMAND,"unknown command");
+          setPigaleError(-1,"unknown command");
           break;
       }
   }
@@ -569,7 +569,7 @@ void ClientSocket::handlerInfo(int action)
           break;
       case A_INFO_COORD:
           {if(!G.Set(tvertex()).exist(PROP_COORD)) 
-              {setPigaleError(WRONG_PARAMETERS,"NO COORDS");
+              {setPigaleError(-1,"NO COORDS");
               lock.unlock();
               return;
               }
@@ -581,7 +581,7 @@ void ClientSocket::handlerInfo(int action)
           break;
       case A_INFO_VLABEL:
           {if(!G.Set(tvertex()).exist(PROP_LABEL))
-              {setPigaleError(WRONG_PARAMETERS,"NO LABEL");
+              {setPigaleError(-1,"NO LABEL");
               return;
               }
           Prop<long> label(G.Set(tvertex()),PROP_LABEL);

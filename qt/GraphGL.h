@@ -36,7 +36,7 @@ public:
   int init();
 public slots:
   int update();
-  void png(int size);
+  void image(QPrinter *printer,QString suffix);
   void print(QPrinter* printer);
   void delayChanged(int i);
 private slots:

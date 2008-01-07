@@ -27,7 +27,7 @@
 #include <QBoxLayout>
 #include <QPainter>
 #include <QPrinter>
-
+#include <QSvgGenerator>
 
 class GraphGLPrivate
 {public:
@@ -76,9 +76,9 @@ GraphGL::GraphGL(QWidget *parent,pigaleWindow *mw)
   }
 GraphGL::~GraphGL()
 { delete d;}
-void GraphGL::png(int size)
+void GraphGL::image(QPrinter *printer,QString suffix)
   {if(!d->is_init)return;
-  d->editor->png(size);
+  d->editor->image(printer,suffix);
   }
 void GraphGL::print(QPrinter* printer)
   {if(!d->is_init)return;
@@ -240,12 +240,25 @@ void GLWindow::print(QPrinter *printer)
   QPainter pp(printer);
   pp.drawPixmap(0,0,pixmap);
   }
-void GLWindow::png(int size)
+void GLWindow::image(QPrinter *printer,QString suffix)
   {QRect geo = geometry();
-  resize(size,size);
-  QPixmap pixmap = renderPixmap(); 
+  resize(staticData::sizeImage,staticData::sizeImage);
   qApp->processEvents();
-  pixmap.save(staticData::filePng ,"PNG");
+  QPixmap pixmap = renderPixmap(); 
+  if(suffix == "png" || suffix == "jpg")
+      pixmap.save(staticData::fileImage);
+  else if(suffix == "svg") 
+      {QSvgGenerator *svg = new QSvgGenerator();
+      svg->setFileName(staticData::fileImage);
+      svg->setResolution(90); 
+      svg->setSize(QSize(width(),height()));
+      QPainter pp(svg);
+      pp.drawPixmap(0,0,pixmap);
+      }
+  else if(suffix == "pdf" || suffix == "ps")
+      {QPainter pp(printer);
+      pp.drawPixmap(0,0,pixmap);
+      }
   setGeometry(geo);
   }
 void GLWindow::initializeGL()

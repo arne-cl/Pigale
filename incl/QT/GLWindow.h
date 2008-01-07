@@ -33,7 +33,7 @@ public:
   void animate();
   void setAnimationDelay(int ms);
   GLuint load(bool init);
-  void png(int size);
+  void image(QPrinter *printer,QString suffix);
   void print(QPrinter* printer);
 private:
   void loadFaces();

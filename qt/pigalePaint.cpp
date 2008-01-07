@@ -17,6 +17,8 @@
 
 #include <QPixmap>
 #include <QPainter>
+#include <QSvgGenerator>
+
 /*! \file 
 \brief To display non Fary drawings
  */
@@ -452,11 +454,29 @@ void pigalePaint::print(QPrinter* printer)
   QPainter pp(printer);
   drawIt(&pp);
   }
-void pigalePaint::png()
+
+void pigalePaint::image(QPrinter* printer, QString suffix)
   {if(index < 0)return;
   qApp->processEvents();
-  QPixmap pixmap = QPixmap::grabWidget (this); 
-  pixmap.save(staticData::filePng,"PNG",0);
+  QRect geo = geometry();
+  resize(staticData::sizeImage,staticData::sizeImage);
+  if(suffix == "png" || suffix == "jpg")
+      {QPixmap pixmap = QPixmap::grabWidget (this); 
+      pixmap.save(staticData::fileImage);
+      }
+  else if(suffix == "svg") 
+      {QSvgGenerator *svg = new QSvgGenerator();
+      svg->setFileName(staticData::fileImage);
+      svg->setResolution(90); 
+      svg->setSize(QSize(width(),height()));
+      QPainter pp(svg);
+      drawIt(&pp);
+      }
+  else if(suffix == "pdf" || suffix == "ps")
+      {QPainter pp(printer);
+      drawIt(&pp);
+      }
+  setGeometry(geo);
   }
 void pigalePaint::drawIt(QPainter *p)
   {if(index < 0)return;

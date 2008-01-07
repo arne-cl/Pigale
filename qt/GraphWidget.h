@@ -23,6 +23,7 @@
 #define _GRAPH_WIDGET_H_INCLUDED_
 
 #include <QPainter>
+#include <QPrinter>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QGraphicsView>
@@ -217,7 +218,7 @@ public:
   void clear();
   void load(bool initgrid = true);
   void print(QPrinter* printer);
-  void png(int size);
+  void image(QPrinter* printer, QString suffix);
   void Normalise();
   bool InitGrid(Tgrid &g);
   Tgrid ParamGrid(int nx);

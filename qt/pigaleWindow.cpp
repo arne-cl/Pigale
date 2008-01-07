@@ -377,7 +377,7 @@ void pigaleWindow::postHandler(int action,int drawingType,int saveType)
 
   //cases 10 create a png 11 create a ps
   else if(action == 10)
-      png();
+      image();
   else if(action == 11)
       print();
  
@@ -485,7 +485,6 @@ void PigaleThread::run()
           emit handlerSignal(ret,drawingType,saveType);
           }
       condition.wait(&mutex);
-      
       // ne s'execute que quand: condition.wakeOne();
       if(action)
           mw->getResultHandler() = mw->pigaleThreadRet;

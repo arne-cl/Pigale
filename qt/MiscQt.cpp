@@ -104,6 +104,10 @@ class QtGraphDebug : public GraphDebug
     va_end(arg_ptr);
     mw->postMessage(QString(texte_print));
     }
+  void printf(QString &s)
+    {if(!mw)return;
+    mw->postMessage(s);
+    }
 };
 static QtGraphDebug QtDefaultGraphDebug;
 // Only for windows
