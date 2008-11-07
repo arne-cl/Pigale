@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="fr_FR">
 <context>
+    <name></name>
+    <message>
+        <location filename="pigaleFile.cpp" line="232"/>
+        <source>Choose a filename to save under</source>
+        <translation type="obsolete">Choisir un fichier pour sauver le graphe</translation>
+    </message>
+</context>
+<context>
     <name>@default</name>
     <message>
         <location filename="pigaleCanvas.cpp" line="734"/>
@@ -1179,9 +1187,9 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Choisir un fichier</translation>
     </message>
     <message>
-        <location filename="pigaleFile.cpp" line="229"/>
+        <location filename="pigaleFile.cpp" line="230"/>
         <source>Choose a filename to save under</source>
-        <translation>Choisir un fichier pour sauver le graphe</translation>
+        <translation type="unfinished">Choisir un fichier pour sauver le graphe</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="711"/>
@@ -1796,7 +1804,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <translation>Rendre connexe (sommet)</translation>
     </message>
     <message>
-        <location filename="pigaleMenus.cpp" line="925"/>
+        <location filename="pigaleMenus.cpp" line="924"/>
         <source>Choose a file to save under</source>
         <translation>Choisir un fichier pour sauver</translation>
     </message>

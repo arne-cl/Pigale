@@ -298,9 +298,14 @@ QRectF NodeItem::boundingRect() const
   {return QRectF(rect());  
   }
 void NodeItem::paint(QPainter *painter,const QStyleOptionGraphicsItem * option,QWidget *)
-  {painter->setBrush(vcolor);
+  {tp->setColor(Black);
+  tp->setWidth(1);
+  painter->setPen(*tp);
+  tb->setColor(vcolor);
+  painter->setBrush(*tb);
   painter->drawRect(option->exposedRect);
-  painter->setPen(tcolor);
+  tp->setColor(tcolor);
+  painter->setPen(*tp);
   // if smartViewportUpdate:
   painter->drawText(rect(),Qt::AlignCenter,t);// so the text is completely redrawn
   //painter->drawText(option->exposedRect,Qt::AlignCenter,t);

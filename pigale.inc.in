@@ -6,5 +6,7 @@ DISTPATH = @PPATH@
 AWK = @AWK@
 ENABLE_STATIC = @enable_static@
 QMAKE_CXXFLAGS_RELEASE =  @CPU@
+#debug_level 1-normal (used for profiler) 2-check arrays (slow)
+DEBUG_LEVEL = 1
 
 

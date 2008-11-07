@@ -707,42 +707,53 @@ void GraphEditor::clear()
   }
 
 void GraphEditor::image(QPrinter* printer, QString suffix)
-  {QRect geo = geometry();
+  {if(!scene())return;
+  QRect geo = geometry();
   int size = staticData::sizeImage;
-  resize(size+space+sizerect+5,size+4);
+  resize(size+4,size+4);
   load(true);
   qApp->processEvents();
+  int rtt;
+  QList<QGraphicsItem *> list = gwp->canvas->items();
+  for(QList<QGraphicsItem *>::Iterator it=list.begin();it!=list.end(); ++it)
+      {rtt = (int)(*it)->type();
+      if(rtt == col_rtti || rtt == thick_rtti) 
+          (*it)->hide();
+      }
+  int nx = (int)gwp->canvas->width();
+  int ny = (int)gwp->canvas->height();
   if(suffix == "png" || suffix == "jpg")
-      {QPixmap pixmap = QPixmap::grabWidget
-      (this,0,0,(int)gwp->canvas->width()-space-sizerect-1,(int)gwp->canvas->height()); 
+      {QPixmap pixmap = QPixmap::grabWidget(this,2,2,nx,ny); 
       pixmap.save(staticData::fileImage);
       }
   else if(suffix == "svg") 
       {QSvgGenerator *svg = new QSvgGenerator();
       svg->setFileName(staticData::fileImage);
-      svg->setResolution(90); //ecran 
+      svg->setResolution(90); //ecran pts/pouce
       //svg->setResolution(physicalDpiX()); //ecran 101
-      int nx = (int)gwp->canvas->width()-space-sizerect-10;
-      int ny = (int)gwp->canvas->height();
       svg->setSize(QSize(nx,ny));
       QPainter pp(svg);
       pp.setBrush(QBrush(Qt::white));
+      pp.setPen(QPen(Qt::white));
       pp.drawRect(QRect(0,0,nx,ny));
-      render(&pp,QRectF(0,0,nx,ny),QRect(0,0,nx,ny));
+      pp.setPen(QPen(Qt::black));
+      render(&pp,QRectF(2,2,nx,ny),QRect(2,2,nx,ny));
       }
   else if(suffix == "pdf" || suffix == "ps")
       {QPainter pp(printer);
-      int nx = (int)gwp->canvas->width()-space-sizerect-10;
-      int ny = (int)gwp->canvas->height();
-      render(&pp,QRectF(0,0,printer->width(),printer->height()),QRect(0,0,nx,ny));
+      render(&pp,QRectF(0,0,printer->width(),printer->height()),QRect(2,2,nx,ny));
       }
   setGeometry(geo);
   load(true);
   }
 void GraphEditor::print(QPrinter *printer)
   {QPainter pp(printer);
-  int nx = (int)gwp->canvas->width()-space-sizerect-20;
+  int nx = (int)gwp->canvas->width();
   int ny = (int)gwp->canvas->height();
   gwp->canvas->render(&pp,QRectF(0,0,printer->width(),printer->height()),QRect(0,0,nx,ny));
   }
+
+
+
+
 

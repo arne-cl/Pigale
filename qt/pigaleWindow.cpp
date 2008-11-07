@@ -317,7 +317,7 @@ void pigaleWindow::postHandler(int action,int drawingType,int saveType)
   //Tprintf("action:%d drawing:%d",action,drawingType);
   qApp->processEvents();
   double Time = timer.elapsed()/1000.;
-  if(action <= 0) // error
+  if(action < 0) // error
       {blockInput(false);
       if(getPigaleError())
           {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
@@ -532,7 +532,7 @@ void PigaleThread::run()
                   mw->threadServer->Ps();
                   }
               else
-                  {mw->threadServer->writeClientEvent(QString("!%1 S").arg(mw->getActionString(action)));
+                  {mw->threadServer->writeClientEvent(QString("!%1 SSS").arg(mw->getActionString(action)));
                   mw->threadServer->serverReady();
                   }
               }

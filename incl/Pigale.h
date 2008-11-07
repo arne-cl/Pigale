@@ -61,6 +61,7 @@ GraphContainer *GenerateGrid(int a, int b);
 GraphContainer *GenerateCompleteGraph(int a);
 GraphContainer *GenerateCompleteBiGraph(int a,int b);
 GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges);
+GraphContainer *GenerateRandomGraph(int a,int b);
 
 //in SchaefferGen.cpp
 GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity

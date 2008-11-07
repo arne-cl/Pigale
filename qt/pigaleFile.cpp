@@ -164,16 +164,17 @@ int pigaleWindow::load(int pos)
   }
 int pigaleWindow::save(bool manual)
   {TopologicalGraph G(GC);
+  /* check overwite is already done
   if(manual) // check overwrite
       {QFileInfo fi =  QFileInfo(OutputFileName);
       if(!(IO_Capabilities(OutputDriver)&TAXI_FILE_RECORD_ADD) && fi.exists() )
           {if(QMessageBox::warning(this,"Pigale Editor"
-                                   ,"This file already exixts.<br>"
-                                   "Overwrite ?"
+                                   ,tr("This file already exixts.<br> Overwrite ?")
                                    ,QMessageBox::Ok 
                                    ,QMessageBox::Cancel) == QMessageBox::Cancel)return 0;
           }
       }
+  */
   if(manual)// ask for a title
       {Prop1<tstring> title(G.Set(),PROP_TITRE);
       QString titre(~title());
@@ -196,7 +197,7 @@ int pigaleWindow::save(bool manual)
 int pigaleWindow::publicSave(QString FileName)
   {TopologicalGraph G(GC);
   Prop1<tstring> title(G.Set(),PROP_TITRE);
-  title() = "G";
+  if(!title().length())title() = "no name";
   QFileInfo fi =  QFileInfo(FileName);
   QString fileExt =  fi.suffix();
   if(fileExt.length() < 3){setPigaleError(-1,"UNKNOWN EXTENSION");return -1;}
@@ -230,6 +231,7 @@ void pigaleWindow::saveAs()
                                                     fi.filePath(),
                                                     formats.join(";;"),
                                                     &selfilter);
+    // &selfilter,QFileDialog::DontConfirmOverwrite);
     if(FileName.isEmpty())return;
     QString ext="";
     int id=0;

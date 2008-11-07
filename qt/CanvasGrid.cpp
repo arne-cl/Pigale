@@ -69,7 +69,7 @@ double pgcd(double a, double b,double precision)
       }
   }
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphEditor
 
 void GraphEditor::showGrid(bool showgrid)

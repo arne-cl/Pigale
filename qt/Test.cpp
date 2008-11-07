@@ -28,7 +28,8 @@ static int Test3(GraphContainer &GC,int &drawing);
 
 void pigaleWindow:: initMenuTest()
   {setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x)");
-  setUserMenu(2,"1000xTesNewtPlanarity");
+  //setUserMenu(2,"1000xTesNewtPlanarity");
+  setUserMenu(2,"Terminaux");
   setUserMenu(3,"Properties");
   }
 int Test(GraphContainer &GC,int action,int &drawing)
@@ -45,32 +46,115 @@ int Test(GraphContainer &GC,int action,int &drawing)
 int Test1(GraphContainer &GC,int &drawing)
   {drawing = 0;
   TopologicalGraph G(GC);
-  bool _debug = debug();
+//   bool _debug = debug();
+//   QTime timer;timer.start();
+//   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestPlanar();}
+//   double Time1 = timer.elapsed(); // millisec
+//   if(Time1 < 10)
+//       {Tprintf("too short time to measure");
+//       debug() = _debug;
+//       return 1;
+//       }
+//   timer.start();
+//   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestNewPlanar();}
+//   double Time2 = timer.elapsed();
+//   Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
+//   debug() = _debug;
   QTime timer;timer.start();
-  for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestPlanar();}
-  double Time1 = timer.elapsed(); // millisec
-  if(Time1 < 10)
-      {Tprintf("too short time to measure");
-      debug() = _debug;
-      return 1;
+  for(int i = 0;i < 100;i++)
+      {G.TestPlanar();
       }
-  timer.start();
-  for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestNewPlanar();}
   double Time2 = timer.elapsed();
-  Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
-  debug() = _debug;
+  cout <<"time 100x:"<<Time2/1000<<endl;
   return 1;
   }
+
+int DFSterminal(TopologicalGraph &G,tbrin b0,int & h)
+  {// count terminal vertices of a DFS tree in a connected graph
+  tvertex v,w;
+  int n = G.nv();
+  int m = G.ne();
+  svector<tvertex> nvin(-m,m); 
+  svector<tbrin> tb(0,n); tb.clear(); 
+  svector<int> dfsnum(0,n); 
+  svector<int> height(1,n);height.clear();
+  tbrin b = b0;
+  tedge y = 1;
+  tvertex root =  v = G.vin[b0];
+  tb[v]= b0;
+  dfsnum[v] = 1;
+  for(;;)
+      {w = G.vin[-b];
+      if(tb[w]!=0)            
+          {if(b == tb[v])    // backtracking to w
+              {b.cross();
+              height(w) = Max(height(w),height(v)+1);
+              v = w;
+              if(v == root && y == n)break;
+              }
+          }
+          
+      else                   // discovering 
+          {b.cross();
+          tb[w] =b ;
+          nvin[y.firsttbrin()] = dfsnum[v];
+          y = dfsnum[w] = y() + 1;
+          v = w;
+          }
+      b = G.cir[b];
+      }
+  h = height(root);
+  // Compute # of terminal vertices
+  svector<bool> terminal(0,n);  terminal.SetName("GDFSRenu:terminal");
+  for(int i = 1;i<= n;i++)
+      terminal[i] = true;
+  for(int i = 1;i< n;i++)
+      terminal[nvin[i]] = false;
+  int nter = 0;
+  for(int i = 1;i<= n;i++)
+      if(terminal[i] == true)++nter;
+  return nter;
+  }
+
 int Test2(GraphContainer &GC,int &drawing)
   {drawing = 0;
   TopologicalGraph G(GC);
-  bool _debug = debug();
-  shuffleCir(G);
-  QTime timer;timer.start();
-  for(int i = 0;i < 1000;i++)G.TestNewPlanar();
-  Tprintf("Used time : %f",timer.elapsed()/1000.);
-  debug() = _debug;
-  return 0;
+  // compute isolated vertices
+  int isolated = 0;
+  for(tvertex v = 1;v <= G.nv();v++)
+      if(!G.Degree(v))isolated++;
+  G.MakeConnectedVertex();
+  int nt = 0;
+  int maxi = 100;
+  int max_nter = 0;
+  int min_nter = G.nv();
+  int max_h = 0;
+  int min_h = G.nv();
+  double hauteur = .0;
+  for(int i=1; i <= maxi;i++)
+      {shuffleCir(G);
+      randomStart();
+      tbrin b0 = randomGet(G.ne()); 
+      randomEnd();
+      int h;
+      int nter = DFSterminal(G,b0,h);
+      max_nter = Max(max_nter,nter);
+      min_nter = Min(min_nter,nter);
+      nt += nter;
+      hauteur += (double)h/maxi;
+      max_h = Max(max_h,h);
+      min_h = Min(min_h,h);
+      }
+  Tprintf("nter=%.2f / %d (%d,%d) prop=%2.2f",(double)nt/maxi,G.nv(),min_nter,max_nter,(100.*nt)/(maxi*G.nv()));
+  Tprintf("hauteur %d %d (%d) prop=%2.2f",min_h,max_h,(int)(hauteur+.5),100.*hauteur/G.nv());
+  if(isolated)Tprintf("isolated=%d",isolated);
+//   bool _debug = debug();
+//   shuffleCir(G);
+//   QTime timer;timer.start();
+//   for(int i = 0;i < 1000;i++)G.TestNewPlanar();
+//   Tprintf("Used time : %f",timer.elapsed()/1000.);
+//   debug() = _debug;
+  return 1;
   }
 
 int Test3(GraphContainer &GC,int &drawing)

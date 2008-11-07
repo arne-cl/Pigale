@@ -91,6 +91,7 @@ void  ClientSocket::customEvent(QEvent * ev)
       }
   }
 void ClientSocket::executeAction()
+//reads messages from client
   {QString str =  readLine();
   if(str.size() == 0){serverReady();return;}// never happens
   ++line;
@@ -122,12 +123,14 @@ void ClientSocket::writeClientEvent(char * buf,uint size)
   QApplication::postEvent(this,event);
   }
 void ClientSocket::writeClient(QString str)
+// send a message to the client
   {QWriteLocker locker(&lock);
   QString t = str+'\n'; 
   clo.writeRawData(t.toAscii(),t.length()); 
   socket->waitForBytesWritten(-1); 
   }
 void ClientSocket::writeClient(char * buff,uint size)
+// send a buffer to the client
   {QWriteLocker locker(&lock);
   if(socket->state() != QAbstractSocket::ConnectedState)
       {delete [] buff;return;}
@@ -157,7 +160,8 @@ uint ClientSocket::readBuffer(char * &buffer)
           {setPigaleError(-1,"client not connected");return 0;}
       socket->waitForReadyRead(100);
       }
-  clo.readRawData(pbuff,nb);
+  //clo.readRawData(pbuff,nb);
+  clo.readRawData(pbuff,size);
   return size;
   }
 
@@ -217,14 +221,13 @@ QString  ClientSocket::readLine()
   }
 void ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.indexOf(PARAM_SEP);
-  QString beg = dataAction.left(pos);
   QString dataParam = dataAction.mid(pos+1);
-  int action = mw->getActionInt(beg);
+  int action = mw->getActionInt( dataAction.left(pos));
   if(sdebug)Tprintf("%s ",(const char *)dataAction.toAscii());
   //cout<<(const char *)dataAction.toAscii()<<endl;
   // call the right handler
   if(action == 0)
-      setPigaleError(-1,"action:0 !!");
+      setPigaleError(-1,"unknown action !!");
   else if(action > A_INFO && action < A_INFO_END)
       handlerInfo(action);
   else if(action > A_INPUT && action < A_INPUT_END)
@@ -247,14 +250,9 @@ void ClientSocket::xhandler(const QString& dataAction)
       }
   else if (action > A_PROP_DEFAULT && action < A_PROP_DEFAULT_END)
       {QStringList fields = dataParam.split(PARAM_SEP);
-      if(fields.count() != 3)
-          {setPigaleError(-1,"Bad number of parameters");
-          writeClientEvent(":ERROR "+getPigaleErrorString()+"action: "+mw->getActionString(action));
-          setPigaleError();
-          writeClientEvent(QString("!%1 P").arg(action));
-          serverReady();
-          return;
-          }
+      if(pos == -1||fields.count() != 3)
+          setPigaleError(-1,"Bad number of parameters");
+
       bool ok =true;
       int setnum = fields[0].toInt(&ok); if (ok && (setnum<0 || setnum>2)) ok=false;
       if(!ok)setPigaleError(-1,"Wrong set number");
@@ -314,9 +312,12 @@ void ClientSocket::xhandler(const QString& dataAction)
       else  if(action == A_TRANS_SEND_GRAPH_SAVE) 
           // save the graph and send it to the client
           {QStringList fields = dataParam.split(PARAM_SEP);
-          if(fields.count() > 1)
+          if(pos == -1||fields.count() != 1)
               setPigaleError(-1,"Wrong parameters");
-          else sendSaveGraph(fields[0]);
+          else 
+              {sendSaveGraph(fields[0]);
+              return;
+              }
           }
       }
   else if(action > A_SET_GEN && action < A_SET_GEN_END)
@@ -371,11 +372,12 @@ void ClientSocket::xhandler(const QString& dataAction)
           writeClientEvent(":ERROR "+ getPigaleErrorString()+" action: "+mw->getActionString(action));
       else
           writeClientEvent(":ERROR "+ getPigaleErrorString()); 
-      writeClientEvent("!!"); // close 
+      //      writeClientEvent("!!"); // close 
       setPigaleError();
-      return;
       }
-  writeClientEvent(QString("!%1 C").arg(mw->getActionString(action)));
+  //cout <<action<<"++"<<(const char*)mw->getActionString(action).toAscii();
+  // needed for some actions likeS_DEBUG
+  writeClientEvent(QString("!%1 CCC").arg(mw->getActionString(action)));
   serverReady();
   }
 void ClientSocket::readClientGraph(int indexRemoteGraph)
@@ -416,17 +418,19 @@ void ClientSocket::sendSaveGraph(const QString &FileName)
   QFileInfo fi = QFileInfo(graphFileName);
   uint size = fi.size();
   if(size == 0)
-      {setPigaleError(-1,"no graph file");return;}
-  else if(sdebug)
-      writeClientEvent(":SENDING:"+FileName);
+      {setPigaleError(-1,"no graph file");
+      writeClientEvent("!!");serverReady();return;
+      }
+  Tprintf("graph size:%d",size);
   QFile file(graphFileName);
   file.open(QIODevice::ReadOnly);
   QDataStream stream(&file);
   char *buff = new char[size];
   stream.readRawData(buff,size); 
-  writeClientEvent("!GRAPH;"+FileName);
+  writeClientEvent("!RBUFFER;"+FileName);
   writeClientEvent(buff,size);
   file.remove();
+  serverReady();
   }
 void ClientSocket::Png()
   {QString PngFileName =  QString("/tmp/server%1.png").arg(mw->ServerClientId);

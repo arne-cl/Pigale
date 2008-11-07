@@ -919,28 +919,21 @@ bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
       suffix = "png";
       return true;
       }
-  QString filter;
-  staticData::fileImage = QFileDialog::
-  getSaveFileName(this,
-                  tr("Choose a file to save under"),
-                  staticData::dirImage,
-                  formats,&filter);
+  QString filter ="*.*";
+  staticData::fileImage = QFileDialog::getSaveFileName(this,
+                                                       tr("Choose a file to save under"),
+                                                       staticData::fileImage,
+                                                       formats,&filter);
 
   if(staticData::fileImage.isEmpty())return false; 
   staticData::dirImage = QFileInfo(staticData::fileImage).absolutePath();
   suffix = QFileInfo(staticData::fileImage).suffix();
-  if(suffix.length() == 0) 
-      {suffix = filter.mid(filter.indexOf('.')+1);
-      suffix = suffix.left(suffix.indexOf('\)'));
-      staticData::fileImage += "."+suffix; 
-  // verifier si existe
 
-      }
   // construct lis of allowed suffixes
-  QStringList suffixes = formats.split(";;");
-  for(int i = 0; i < suffixes.count();i++)
+  QStringList suffixes = formats.split(" ");
+  for(int i = 1; i < suffixes.count();i++)
       {QString str = suffixes[i].mid(suffixes[i].indexOf('.')+1);
-      str = str.left(str.indexOf('\)'));
+      str = str.left(str.indexOf(')'));
       if(str == suffix)
           {if(suffix == "pdf" || suffix == "ps")
               {printer->setOrientation(QPrinter::Portrait);
@@ -951,11 +944,12 @@ bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
           }
       }
   QString msg = "Unknown extension: " + suffix;
-  Twait((const char *)msg.toAscii());
+  QMessageBox::warning(this,"Pigale Editor",msg);
   return false;
   }
 void pigaleWindow::image()
-  {QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
+//{QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
+  {QString formats = "Image Files (*.png *.jpg *.svg *.ps *.pdf)";
   QString suffix;
   switch(tabWidget->currentIndex())
       {case 0:
@@ -978,3 +972,72 @@ void pigaleWindow::image()
           break;
       }
   }
+/*
+bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
+  {if(ServerExecuting)
+      {staticData::fileImage = QString("/tmp/server%1.png").arg(ServerClientId);
+      suffix = "png";
+      return true;
+      }
+  QString filter;
+  staticData::fileImage = QFileDialog::getSaveFileName(this,
+                                                       tr("Choose a file to save under"),
+                                                       staticData::dirImage,
+                                                       formats,&filter);
+
+  if(staticData::fileImage.isEmpty())return false; 
+  staticData::dirImage = QFileInfo(staticData::fileImage).absolutePath();
+  suffix = QFileInfo(staticData::fileImage).suffix();
+  if(suffix.length() == 0) 
+      {suffix = filter.mid(filter.indexOf('.')+1);
+      suffix = suffix.left(suffix.indexOf('\)'));
+      staticData::fileImage += "."+suffix; 
+      QFileInfo fi =  QFileInfo(staticData::fileImage);
+      if(fi.exists())
+          if(QMessageBox::warning(this,"Pigale Editor","This file already exixts.<br> Overwrite ?"
+                                  ,QMessageBox::Ok 
+                                  ,QMessageBox::Cancel) == QMessageBox::Cancel)return false;
+      }
+  // construct lis of allowed suffixes
+  QStringList suffixes = formats.split(";;");
+  for(int i = 0; i < suffixes.count();i++)
+      {QString str = suffixes[i].mid(suffixes[i].indexOf('.')+1);
+      str = str.left(str.indexOf('\)'));
+      if(str == suffix)
+          {if(suffix == "pdf" || suffix == "ps")
+              {printer->setOrientation(QPrinter::Portrait);
+              printer->setColorMode(QPrinter::Color);
+              printer->setOutputFileName(staticData::fileImage);
+              }
+          return true;
+          }
+      }
+  QString msg = "Unknown extension: " + suffix;
+  Twait((const char *)msg.toAscii());
+  return false;
+  }
+void pigaleWindow::image()
+{QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
+  QString suffix;
+  switch(tabWidget->currentIndex())
+      {case 0:
+          if(!InitPicture(formats,suffix))return;
+          gw->editor->image(printer,suffix);
+          break;
+      case 1:
+          if(!InitPicture(formats,suffix))return;
+           mypaint->image(printer,suffix);
+          break;
+      case 2:
+          if(!InitPicture(formats,suffix))return;
+          graphgl->image(printer,suffix);
+          break;
+      case 3:
+          if(!InitPicture(formats,suffix))return;
+          graphsym->image(printer,suffix);
+          break;
+      default:
+          break;
+      }
+  }
+ */

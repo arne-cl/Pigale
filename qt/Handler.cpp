@@ -478,7 +478,8 @@ int GenerateHandler(GraphContainer &GCC,int action,int n1_gen,int n2_gen,int m_g
           GC = GenerateCompleteBiGraph(n1_gen,n2_gen);
           break;
       case  A_GENERATE_RANDOM:
-          GC = GenerateRandomGraph(n1_gen,m_gen,staticData::RandomEraseMultipleEdges());
+          //GC = GenerateRandomGraph(n1_gen,m_gen,staticData::RandomEraseMultipleEdges());
+          GC = GenerateRandomGraph(n1_gen,m_gen);
           break;
           // Schaeffer generator
       case A_GENERATE_P:
