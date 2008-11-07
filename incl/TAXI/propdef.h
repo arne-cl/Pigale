@@ -151,5 +151,5 @@
 #endif
 //@}
 
-char *PropName(int s,int i);
-char *PropDesc(int s,int i);
+const char *PropName(int s,int i);
+const char *PropDesc(int s,int i);
