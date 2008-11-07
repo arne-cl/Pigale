@@ -12,6 +12,7 @@
 
 #include <TAXI/Tpoint.h>
 #include <TAXI/Tdebug.h>
+#include <TAXI/Tmessage.h>
 #include <TAXI/graphs.h>
 #include <TAXI/random.h>
 #include <TAXI/Tstack.h>
@@ -168,6 +169,52 @@ GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
   randomEnd();
   TopologicalGraph TG(GC);
   if(randomEraseMultipleEdges)TG.Simplify();
+  return &GC;
+}
+GraphContainer *GenerateRandomGraph(int a,int b)
+  {if(debug())DebugPrintf("\nGenerateRandomGraph %d",randomSetSeed());  
+  GraphContainer &GC = *new GraphContainer;
+  int n = a;
+  int maxm = n*(n-1)/2;
+  int m = (n > 1) ? b : 0;
+  m = Min(m,maxm);
+  GC.setsize(n,m);
+  Prop1<tstring> title(GC.Set(),PROP_TITRE);
+  char titre[256];
+  sprintf(titre,"Random_%ld",randomSetSeed());
+  title() = titre;
+  Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
+  Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
+  Prop<long> vlabel(GC.PV(),PROP_LABEL);
+  vlabel[0]=0;
+  double angle = 2.*acos(-1.)/n;
+  for(tvertex v = 1; v <= n; v++)
+    {vlabel[v]=v();
+    vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
+    }
+  randomStart();
+  int mm = 0;
+  for(tvertex v = 1;v < n;v++)
+      for(tvertex w = v+1;w <= n;w++)
+      {long p  = randomGet(maxm);
+      if(p <= m)
+          {if(mm < m)
+              {++mm;
+              vin[mm] = v;vin[-mm] = w;
+              }
+          else
+              {++mm;
+              vin(mm) = v;vin(-mm) = w;
+              }
+          }
+      }    
+  randomEnd();
+  GC.setsize(n,mm);
+  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  for(tedge e= 0; e <=mm; e++)
+    elabel[e]=e();
+  TopologicalGraph TG(GC);
+  if(debug())DebugPrintf("\n%d -> %d",m,TG.ne());
   return &GC;
 }
 ///////////////// GEN OUTERPLANAR /////////////////////////////

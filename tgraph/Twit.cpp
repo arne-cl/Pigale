@@ -15,7 +15,7 @@
 #define PRIVATE
 #include <TAXI/lralgo.h>
 #undef PRIVATE 
-
+#include <TAXI/Tmessage.h> 
 int _Twit::DeleteLeft(tvertex vi)
   {while(vi <= vin[Twin().ltop()])
       {if(Twin().MoreThanOne(TW_LEFT)) // droite a > 1 arete
@@ -131,7 +131,9 @@ void _Twit::Flipin(tedge ej)
   }
 
 void _Twit::Flipe(tedge ej) // toujours k=pile   bj=brin correspondant … ej
-  {do
+  {
+  //cout << "flipe"<<endl;
+  do
       {Hist.Link[PrevTwin().rbot()] = PrevTwin().ltop();
       PrevTwin().rbot() = PrevTwin().ltop();
       Hist.Flip[PrevTwin().ltop()]=(int)(1 ^ Hist.Flip[PrevTwin().ltop()]);
@@ -215,9 +217,9 @@ void _Twit::Drop()
 
 void _Twit::Mflip()
   {tedge lbt,rtp;
-
   lbt = Twin().lbot();
   rtp = Twin().rtop();
+  //cout << "mflip"<<endl;
   if(vin[rtp] == vin[lbt])                                /* effacement en cas d'egalite */
       {Hist.Dus[rtp] = (int)(1 ^ Hist.Flip[rtp] ^ Hist.Flip[lbt]);
       Hist.Flip[rtp] = -1;
@@ -237,7 +239,6 @@ void _Twit::Flick()
   {tedge cv;
   int SaveCurrent=_current;
   cv = Couve();
-
   for(;_current > _fork;--_current)
       {while(Twin().rtop()!=0)
           {if(side_flip(Twin().rtop(),Twin().lbot(),cv))
@@ -388,7 +389,7 @@ void _NewTwit::Align(tedge je,int flipin,tedge ej)
   }
 
 void _NewTwit::Thick()
-// align all lower cotree edges on the same side by fliping edges calling flick
+// align all lower cotree edges on the same side  calling flick
 // an obstruction to planarity may occur
   {int SaveCurrent = _current;
 
@@ -434,21 +435,25 @@ void _NewTwit::Mflip()
   }
 
 void _NewTwit::Flick()
-  {tedge cv;
+  {
   int SaveCurrent=_current;
-  cv = Couve();
+  //tedge cv = Couve();
 
   for(;_current > _fork;--_current)
-      {while(Twin().rtop()!=0)
-          {if(side_flip(Twin().rtop(),Twin().lbot(),cv))
-              Mflip();
-          else
-              {if(side_flip(Twin().ltop(),Twin().rbot(),cv))
-                  {Twin().Permute();Mflip();}
-              else
-                  Drop();
-              }
-          }
+      {
+//       while(Twin().rtop()!=0)
+//           {if(side_flip(Twin().rtop(),Twin().lbot(),cv))
+//               Mflip();
+//           else
+//               {if(side_flip(Twin().ltop(),Twin().rbot(),cv))
+//                   {Twin().Permute();Mflip();}
+//               else
+//                   Drop();
+//               }
+//           }
+      while(Twin().rtop()!=0)
+          Drop();
+
       if(_current < SaveCurrent)
           Hist.Link[NextTwin().lbot()] = Twin().ltop();
       }

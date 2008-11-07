@@ -60,10 +60,10 @@ int NumberOfParallelEdges(int n, int m, const svector<tvertex> &vin)
 int TopologicalGraph::Planarity(tbrin b0)
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::Planarity");
-#ifdef TDEBUG
-  if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-#endif
+// #ifdef TDEBUG
+//   if(!DebugCir())
+//       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+// #endif
   
   int m_origin = ne();
   MakeConnected();
@@ -151,10 +151,10 @@ int TopologicalGraph::TestPlanar()
   int m_origin = m;
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
   if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar");
-#ifdef TDEBUG
-  if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-#endif
+// #ifdef TDEBUG
+//   if(!DebugCir())
+//       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+// #endif
   svector<tvertex> nvin(-m,m); nvin.SetName("TestPlanar:nvin");
   // DFS calls GDFS after some initializations
 
@@ -190,10 +190,10 @@ int TopologicalGraph::TestPlanar()
 int TopologicalGraph::NewPlanarity(tbrin b0)
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::NewPlanarity");
-#ifdef TDEBUG
-  if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-#endif
+// #ifdef TDEBUG
+//   if(!DebugCir())
+//       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+// #endif
   
   int m_origin = ne();
   MakeConnected();
@@ -280,10 +280,10 @@ int TopologicalGraph::TestNewPlanar()
   int n = nv();
   int m_origin = m;
   if(m < 9 || n < 4){Prop1<int> isplanar(Set(),PROP_PLANAR); return 1;}
-#ifdef TDEBUG
-  if(!DebugCir())
-      {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-#endif
+// #ifdef TDEBUG
+//   if(!DebugCir())
+//       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+// #endif
   if(debug())DebugPrintf("Executing TopologicalGraph:NewTestPlanar");
   svector<tvertex> nvin(-m,m);nvin.SetName("TestNewPlanar:nvin");
   // DFS calls GDFS after some initializations

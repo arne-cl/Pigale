@@ -1,8 +1,8 @@
 #include <TAXI/propdef.h>
 #include <TAXI/Tsvector.h>
 struct _PropName {
-  svector<char *> name;
-  svector<char *> desc;
+  svector<const char *> name;
+  svector<const char *> desc;
   _PropName() : name(0,1023), desc(0,1023)
   {
    for (int i=0; i<1024; i++) desc[i]=name[i]="";
@@ -302,5 +302,5 @@ struct _PropName {
   }
 };
 static _PropName pname;
-char *PropName(int s, int i) { return pname.name[s*256+i];}
-char *PropDesc(int s, int i) { return pname.desc[s*256+i];}
+const char *PropName(int s, int i) { return pname.name[s*256+i];}
+const char *PropDesc(int s, int i) { return pname.desc[s*256+i];}

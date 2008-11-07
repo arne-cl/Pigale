@@ -18,7 +18,7 @@
 #include <TAXI/netcut.h>
 #include <TAXI/color.h>
 #include <TAXI/Tmessage.h>
-static char *ColorNames[] = 
+static const char *ColorNames[] = 
     {"White",
     "Black",
     "Red",
@@ -351,7 +351,7 @@ int EmbedRnGraph::ComputeAdjacenceMatrix()
   tbrin brin,pbrin;
   tvertex v, w;
 
-  // Mise à jour des listes triées (OrderCir)
+  // Mise ï¿½ jour des listes triï¿½es (OrderCir)
   for(e = 1; e <= ne(); e++)
       {v = vin[e]; w  = vin[-e()];
       // Autour de v
@@ -640,7 +640,7 @@ void SplitGraph::BuildClasses(int dimension, double& inertie,int& worst)
 	{c = j; xmin = difference; }
       }
     inertie += xmin;
-    l->Part.affect(i,c); //affectation du sommet i à la classe c
+    l->Part.affect(i,c); //affectation du sommet i ï¿½ la classe c
     
     //definition  de worst, sommet le plus eloigne du barycentre de sa classe
     if (xmin > xmax)
@@ -745,7 +745,7 @@ int SplitGraph::Segment()
 
   if(debug())
       {LogPrintf("\nRequested Number of Classes:%d):",NumberOfClasses);
-      DebugPrintf("\nOptimisations de %d à %d :",MinDimension,MaxDimension);
+      DebugPrintf("\nOptimisations de %d ï¿½ %d :",MinDimension,MaxDimension);
       }
 
   double ClassVarianceNumber = .0;

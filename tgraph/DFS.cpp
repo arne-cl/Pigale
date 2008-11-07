@@ -11,6 +11,7 @@
 
 
 #include <TAXI/Tbase.h>
+#include <TAXI/Tmessage.h>
 #include <TAXI/graphs.h>
 #include <TAXI/bicon.h>
 #include <TAXI/color.h>
@@ -80,7 +81,8 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
 
   if (y != n || z != n-1)
       {DebugPrintf("GDFSRenum z=%d y=%d n=%d",z(),y(),n); return 0;}
-  else return 1;
+
+  return 1;
   }
 
 // If v is a vertex of the original graph,

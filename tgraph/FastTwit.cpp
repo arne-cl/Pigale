@@ -179,7 +179,6 @@ void _FastTwit::Thick()
   }
 void _FastTwit::Mflip()
   {tedge lbt,rtp;
-
   lbt = Twin().lbot();
   rtp = Twin().rtop();
   if(vin[rtp] == vin[lbt])                                /* effacement en cas d'egalite */

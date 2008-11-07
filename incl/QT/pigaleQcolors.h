@@ -64,7 +64,7 @@ static ColorRepository color(sizeof(_color)/sizeof(struct Taxi_rgb), _color);
 
 #ifdef COLORNAMES
 
-static char *ColorName[] = 
+static const char *ColorName[] = 
     {"White",
     "Black",
     "Red",

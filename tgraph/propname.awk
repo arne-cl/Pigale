@@ -2,8 +2,8 @@ BEGIN {
 print "#include <TAXI/propdef.h>"
 print "#include <TAXI/Tsvector.h>"
 print "struct _PropName {"
-print "  svector<char *> name;"
-print "  svector<char *> desc;"
+print "  svector<const char *> name;"
+print "  svector<const char *> desc;"
 print "  _PropName() : name(0,1023), desc(0,1023)"
 print "  {"
 print "   for (int i=0; i<1024; i++) desc[i]=name[i]=\"\";"
@@ -34,7 +34,7 @@ END {
 print "  }";
 print "};"
 print "static _PropName pname;"
-print "char *PropName(int s, int i) { return pname.name[s*256+i];}"
-print "char *PropDesc(int s, int i) { return pname.desc[s*256+i];}"
+print "const char *PropName(int s, int i) { return pname.name[s*256+i];}"
+print "const char *PropDesc(int s, int i) { return pname.desc[s*256+i];}"
 } 
 

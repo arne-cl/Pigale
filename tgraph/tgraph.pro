@@ -79,15 +79,20 @@ contains(ENABLE_STATIC,"yes") {
 
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
+    contains(DEBUG_LEVEL , 2) {
     DEFINES += TDEBUG
+    QMAKE_CXXFLAGS_DEBUG= -g
+    } else {
+    QMAKE_CXXFLAGS_DEBUG=-o2 -g
+    }
     unix:OBJECTS_DIR = ./.odb
     win32:OBJECTS_DIR = ./odb
-    #message(tgraph: $$QMAKE_CXXFLAGS_DEBUG)
+    message(tgraph debug_level $$DEBUG_LEVEL: $$QMAKE_CXXFLAGS_DEBUG)
     }else {
     TARGET = tgraph
     unix:OBJECTS_DIR = ./.opt
     win32:OBJECTS_DIR = ./opt
-    #message(tgraph: $$QMAKE_CXXFLAGS_RELEASE)
+    message(tgraph: $$QMAKE_CXXFLAGS_RELEASE)
     }
 
 unix {

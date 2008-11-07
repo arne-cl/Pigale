@@ -179,7 +179,6 @@ int fastlralgo(int n, int m,svector<tvertex> &vin,const _Bicon &Bicon, _LrSort &
                   } 
               Twit.NextFork();                              // Looking for nex fork
               Twit.Fusion(ej);                              // fusion
-              // if(!Twit.planar())return Twit.planar();
               }
           else                                              // Backtraking along an articulation
               Twit.NextFork();
@@ -191,17 +190,8 @@ int fastlralgo(int n, int m,svector<tvertex> &vin,const _Bicon &Bicon, _LrSort &
           while(LrSort.tref[vii]!=0)vii = treetarget(LrSort.tref[vii]);
           // Going up in the tree along LrSort.tref edges
           vi = vii;
-          /* 
-             while(ctel[vi] >= n) 
-             {ej = ctel[vi];                                    // Treating a new cotree edge
-             ctel[vi] = LrSort.linkt[ctel[vi]];
-             Twit.NewTwin(ej);                                  // Create a new Twin
-             LrSort.num[ej] = ++ncotree;
-             }
-          */
           continue;
           }
-
       }
   } 
 void NewLralgoSort(int n, int m, svector<tvertex> &vin, const _Bicon &Bicon ,const svector<tvertex> &low,_LrSort &LrSort)
@@ -259,13 +249,8 @@ int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _Lr
   svector<tedge> ctel(LrSort.tel); ctel.SetName("ctel Lr-Algo.cpp");
   tvertex vi, vii;
   tedge ej;
-//   for(int i = 1;i <n ;i++)
-//       cout << "tree: " << i <<" " << vin[i] << " "<<vin[-i] << endl;
-//   for(int i = n;i <=m ;i++)
-//       cout << "cotree: " << i <<" " << vin[i] << " "<<vin[-i] << endl;
-  // Going up in the tree along LrSort.tref edges
+
   vi = 1;
-  //while(LrSort.tref[vi]!=0) vi=treetarget(LrSort.tref[vi]); 
   while((ej = LrSort.tref[vi])!=0 && ej < n ) vi=treetarget(ej);
   if(ej >= n)Twit.NewTwin(ej);                               // Create a new Twin
 
@@ -302,7 +287,6 @@ int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _Lr
           Twit.NewFork(vi);                                 // New tree fork
           ctel[vi] = LrSort.linkt[ctel[vi]];
           vi = vii;                                         // updating current vertex
-          //while(LrSort.tref[vi]!=0)vi = treetarget(LrSort.tref[vi]);
           while((ej = LrSort.tref[vi])!=0 && ej < n ) vii = vi = treetarget(ej);
           vii = vi;
           if(ej >= n)Twit.NewTwin(ej);
