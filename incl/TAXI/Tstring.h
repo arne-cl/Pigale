@@ -101,7 +101,8 @@ class tstring
       {return strcmp(x, y.p);}
    
   friend T_STD ostream& operator <<(T_STD ostream &os,const tstring &x)
-      {return os << x.p << T_STD endl;}
+      {return os << x.p;}
+      //{return os << x.p << T_STD endl;}
   friend T_STD istream& operator >> (T_STD istream &is, tstring & x)
       {char buff[256];
       is >> buff;
