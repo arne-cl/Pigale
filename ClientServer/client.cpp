@@ -295,7 +295,7 @@ void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
       str = str.simplified();
-      cout<<"read:"<<(const char*) str.toLatin1()<<endl;
+      //cout<<"read:"<<(const char*) str.toLatin1()<<endl;
       if(str.at(0) == ':' || str.at(0) == '?' )
           writeClient(str.mid(1));
 

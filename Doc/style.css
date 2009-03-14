@@ -34,7 +34,11 @@ h2.c1  {color: #33663C;
 	font-family: Helvetica, serif;
 	font-size: 144%;
 	}
-
+h3.c1  {color: #33663C;
+	background-color: #d0f0d0;
+	font-family: Helvetica, serif;
+	font-size: 120%;
+	}
 table.c2{color: #000000;
 	background-color: #d0f0d0;
 	width: 90%;

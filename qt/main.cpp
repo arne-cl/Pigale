@@ -45,7 +45,6 @@ int main(int argc,char * argv[])
   QGLFormat fmt;
   fmt.setSampleBuffers(true);
   QGLFormat::setDefaultFormat(fmt);
-
   //Translations
   QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
   // translation file for Qt

@@ -20800,7 +20800,7 @@ if test "${with_qt4+set}" = set; then
   withval=$with_qt4;   QT_PATH="$withval"
 else
 
-QT_PATH=$QT4DIR:/usr/local/Trolltech/Qt-4.4.2:/usr/local/Trolltech/Qt-4.4.1:/usr/local/Trolltech/Qt-4.4.0:/usr/local/Trolltech/Qt-4.3.3:/usr/local/Trolltech/Qt-4.3.2:/usr/share/qt4
+QT_PATH=$QT4DIR:/usr/local/Trolltech/Qt-4.5.0:/usr/local/Trolltech/Qt-4.4.2:/usr/local/Trolltech/Qt-4.4.1:/usr/local/Trolltech/Qt-4.4.0:/usr/local/Trolltech/Qt-4.3.3:/usr/local/Trolltech/Qt-4.3.2:/usr/share/qt4
 
 fi
 

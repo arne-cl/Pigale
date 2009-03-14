@@ -15,7 +15,8 @@ win32 {
       }
 
 INCLUDEPATH = ../incl
-DEPENDPATH =  ../incl $$MQTDIR/include/Qt 
+#DEPENDPATH =  ../incl $$MQTDIR/include/Qt 
+DEPENDPATH =  ../incl $$QTINCLUDE
 
 HEADERS = pigaleWindow.h \
     ClientSocket.h \
@@ -98,10 +99,10 @@ unix {
       TRANSLATIONS    = pigale_fr.ts 
       translation.target = $$TRANSLATIONS
       translation.depends = $$HEADERS $$SOURCES
-      translation.commands  =  $$MQTDIR/bin/lupdate pigale.pro 
+      translation.commands  =  $$QTLUPDATE pigale.pro 
       translationUp.target = pigale_fr.qm 
       translationUp.depends = $$TRANSLATIONS
-      translationUp.commands  =  $$MQTDIR/bin/lrelease -verbose $$TRANSLATIONS
+      translationUp.commands  =  $$QTLRELEASE -verbose $$TRANSLATIONS
       QMAKE_EXTRA_TARGETS += translation translationUp 
       # needed by ../makefile
       distdir.commands =

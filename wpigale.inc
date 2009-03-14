@@ -1,4 +1,4 @@
-MQTDIR=C:/Qt/4.3.3/
+MQTDIR=C:/Qt/4.5.0/
 MINGW=C:/MinGW
 DISTPATH=/pigale
 #to copy dll DLL=yes

@@ -1,4 +1,7 @@
-MQTDIR = /usr/local/Trolltech/Qt-4.4.2/
+MQTDIR = /usr/local/Trolltech/Qt-4.5.0
+QTINCLUDE= /usr/local/Trolltech/Qt-4.5.0/include/Qt
+QTLRELEASE= /usr/local/Trolltech/Qt-4.5.0/bin/lrelease
+QTLUPDATE= /usr/local/Trolltech/Qt-4.5.0/bin/lupdate
 #version of the library
 VERSION= 1.3.3
 MODE = release

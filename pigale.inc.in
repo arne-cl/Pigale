@@ -1,4 +1,7 @@
 MQTDIR = @QT4DIR@
+QTINCLUDE= @QT4DIR@/include/Qt
+QTLRELEASE= @QT4DIR@/bin/lrelease
+QTLUPDATE= @QT4DIR@/bin/lupdate
 #version of the library
 VERSION= @LIB_VERSION@
 MODE = @DEBUG@
