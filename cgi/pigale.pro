@@ -34,6 +34,7 @@ SOURCES =  client.cpp\
 HEADERS = client.h 
 
 CONFIG =  thread release moc
+TARGET=pigale.cgi
 unix:DESTDIR=.
 //unix:DESTDIR=/var/www/cgi-bin
 win32:DESTDIR=.

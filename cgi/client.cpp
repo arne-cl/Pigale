@@ -43,8 +43,7 @@ void Client::exit()
   QCoreApplication::quit();
   } 
 void Client::socketConnected()
-  {//cout<<"Connected to server"<<endl;
-  //ActionsToDo = 0;
+  {//ActionsToDo = 0;
   stack.push("Server Ready");
   ChangeActionsToDo(1);
   ThreadRead.pclient = this;
@@ -77,8 +76,7 @@ bool Client::event(QEvent * ev)
   }
 void Client:: customEvent(QEvent * e ) 
   {if( e->type() == (int)TEXT_EVENT )
-      {//textEvent *event  =  (textEvent  *)e;
-      //cout << (const char *)event->getString()<<endl;
+      {;
       }
   else if( e->type() == (int)WRITE_EVENT )
       {writeEvent *event  =  (writeEvent  *)e;
@@ -104,7 +102,6 @@ void Client::writeServerEvent(char * buf,uint size)
 void Client::writeServer(QString str)
   {QWriteLocker locker(&lock);
   QString t = str+'\n';
-  //cout<<"writeServer:"<<(const char*)str<<endl;
   clo.writeBytes(t.toAscii(),t.length()); 
   socket->waitForBytesWritten(-1); 
   }
@@ -189,33 +186,24 @@ int Client::sendToServerGraph(QString &data)
   return 0;
   }
 uint Client::readBuffer(char*  &buffer)
-  {uint size;
-  while(socket->bytesAvailable() < (int)sizeof(uint))socket->waitForReadyRead(10);
-  clo >> size;
-  buffer = new char[size+1];
-  char *pbuff = buffer;
-  int retry = 0;
-  uint nread = 0; 
-  uint size0 = 0;
-  uint nb;
-  while(nread  < size)
-      {socket->waitForReadyRead(10);
-      nb = socket->bytesAvailable();
-      if(nb == 0)
-          {if(++retry > 1000){writeClient("TIMEOUT");ChangeActionsToDo(-1);return 0;}
-          continue;
-          }
-      retry = 0;
-      if(nb > size-nread)nb = size-nread;
-      nread += nb;
-      clo.readRawData(pbuff,nb);
-      pbuff += nb;
-      if(nread >= size0 && debug())
-          {int percent = (int)(nread*100./size + .5);
-          size0 = nread + size/10; // we write when at least 10% more  is read
-          writeClient(QString("%1 % (%2 / %3)").arg(percent).arg(nread).arg(size));
-          }
+  {uint nb;
+  while((nb = socket->bytesAvailable()) < (int)sizeof(uint))
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
+      socket->waitForReadyRead(10);
       }
+  uint size;
+  clo >> size;
+  buffer = new char[size];
+  char *pbuff = buffer;
+  while((nb = socket->bytesAvailable()) < size)
+      {if(socket->state() != QAbstractSocket::ConnectedState)
+          {writeClient("client not connected");return 0;}
+      socket->waitForReadyRead(100);
+      }
+  clo.readRawData(pbuff,size);
+
+  if(nb == size)return size;
   return size;
   }
 void Client::socketReadyRead()
@@ -234,7 +222,6 @@ void Client::socketReadyRead()
           uint size = readBuffer(buffer);
           lock.unlock();
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
-          //QString PngFile = QString("image%1.png").arg(++numFiles);
           QString PngFile = outDir + QString("tmp%1.png").arg(identificateur);
           QFile file(PngFile);          
           file.open(QIODevice::WriteOnly |QIODevice::Truncate);
@@ -259,23 +246,21 @@ void Client::socketReadyRead()
           if(debug())writeClient("!PS");
           ChangeActionsToDo(-1);
           }
-      else if(str.contains("!GRAPH"))// receiving a graph
-          {stack.push("GET_GRAPH");
-          ChangeActionsToDo(1);
-          char * buffer = NULL;
+      else if(str.contains("!RBUFFER"))// receiving a graph
+          {char * buffer = NULL;
+          lock.lockForRead();
           uint size = readBuffer(buffer);
+          lock.unlock();
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           int pos = str.indexOf(PARAM_SEP);
-          QString graphFile = str.mid(pos+1);
-          QFile file(graphFile);  
-          QFileInfo fi = QFileInfo(graphFile);
-          if(fi.exists())file.remove();
-          file.open(QIODevice::ReadWrite);
+          QString File = str.mid(pos+1);
+          QFile file(File);  
+          file.open(QIODevice::WriteOnly | QIODevice::Truncate);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);
           file.close();
           delete [] buffer;
-          if(debug())writeClient(QString("GOT:%1").arg(graphFile));
+          if(debug())writeClient(QString("GOT:%1").arg(File));
           ChangeActionsToDo(-1);
           }
       else if(str == "!!")// server has finished everything
@@ -299,12 +284,8 @@ void Client::socketReadyRead()
                       {if(debug())writeClient("!"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1));
                       }
                   else 
-                      // some mysterious problems on some Windows systems:
-                      // the server may send twice the same message !!!
                       {writeClient("*** !"+stack.top()+QString(" (%1)").arg(ChangeActionsToDo(0)-1)+"   "+str);
-                      //cout << (const char *)stack.top()<< " != "<<(const char *)str<<endl;
                       ++warning;
-                      //if(ChangeActionsToDo(0) == 0)return;
                       }
                   }
               }
