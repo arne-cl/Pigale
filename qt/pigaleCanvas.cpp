@@ -26,7 +26,7 @@
 
 #include <QInputDialog>
 #include <QSvgGenerator>
-//#include <QGLWidget>
+#include <QGLWidget>
 
 GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
     :QGraphicsView(parent->canvas,parent)
@@ -39,11 +39,10 @@ GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
   //setBackgroundBrush(QBrush(Qt::white)); 
   setFocusPolicy(Qt::ClickFocus);
   setRenderHints(QPainter::Antialiasing);
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers))); //faster (no antialiasing if no Samplebuffers)
+  //much faster: but no antialiasing if no Samplebuffers
+  QGLWidget *qw = new QGLWidget();
+  if(QGLFormat::defaultFormat().sampleBuffers())setViewport(qw); 
   setViewportUpdateMode(FullViewportUpdate);
-#if QT_VERSION >= 0x040302
-  setOptimizationFlags(DontSavePainterState|DontClipPainter); //about same speed
-#endif
   }
 void GraphEditor::update(int compute)
 // called when loading a graph compute = 1 or -1

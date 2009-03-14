@@ -342,7 +342,6 @@ void NodeItem::moveTo(Tpoint &p,double eps)
   double dx = p.x() - qp.x();
   double dy = gwp->canvas->height() - p.y() - qp.y();
   if(Abs(dx) < eps && Abs(dy) < eps)return;
-  gwp->editor->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
   GeometricGraph & G = *(gwp->pGG);
   Prop<EdgeItem *> edgeitem(G.Set(tedge()),PROP_CANVAS_ITEM);
   double nx = p.x(); //new x position
@@ -371,13 +370,10 @@ void NodeItem::moveTo(Tpoint &p,double eps)
 	  }
       ei->arrow->ComputeCoord();
       }
-  gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);//slightly faster
-  //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
  void NodeItem::moveBy(double dx, double dy)
 //! /fn  modify vertex coordinates
-  {gwp->editor->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
-  QGraphicsRectItem::moveBy(dx,dy);
+  {QGraphicsRectItem::moveBy(dx,dy);
   GeometricGraph & G = *(gwp->pGG);
   G.vcoord[v].x() += dx;   G.vcoord[v].y() -= dy; 
   // Move incident edges
@@ -406,8 +402,6 @@ void NodeItem::moveTo(Tpoint &p,double eps)
 	  }
       ei->arrow->ComputeCoord();
       }
-  gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-  //gwp->editor->QGraphicsView::setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   }
 //*****************************************************
 void GraphEditor::DrawGrid(const Tgrid &grid)

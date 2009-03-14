@@ -626,15 +626,14 @@ void GLWindow::drawText(void * font,const char *txt)
 // void GLWindow::drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
 //   {QFont fnt = QFont("sans");
 //   fnt.setStyleStrategy(QFont::OpenGLCompatible); 
-//   fnt.setPixelSize(14);
+//   fnt.setPixelSize(70);
 //   QString t =  getVertexLabel(glp->GC(),v);
 //   if(t.isEmpty())return;
 //   qglColor(Qt::red);
-//   glPushMatrix();
-//   glPushMatrix();
-//   glTranslatef(x+size*.7,y,z);//glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
-//   renderText(.0,.0,.0,t,fnt);
-//   glPopMatrix();
-//   glPopMatrix();
+//   //glPushMatrix();
+//   //glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
+//   renderText(x,y,e,t,fnt);
+//   //renderText(.0,.0,.0,t,fnt);
+//   //glPopMatrix();
 //   }
 // #endif
