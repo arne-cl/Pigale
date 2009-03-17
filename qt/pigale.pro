@@ -14,8 +14,7 @@ win32 {
       DESTDIR=.
       }
 
-INCLUDEPATH = ../incl
-#DEPENDPATH =  ../incl $$MQTDIR/include/Qt 
+INCLUDEPATH += ../incl
 DEPENDPATH =  ../incl $$QTINCLUDE
 
 HEADERS = pigaleWindow.h \
@@ -83,7 +82,8 @@ CONFIG(debug, debug|release) {
 
 
 DEFINES += FREEGLUT FREEGLUT_STATIC
-unix:LIBS += $$DISTPATH/lib/libglut.a
+#unix:LIBS += $$DISTPATH/lib/libglut.a
+unix:LIBS += $$GLUTLIB
 win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 
 QT += opengl network xml svg
@@ -146,4 +146,5 @@ contains(ENABLE_STATIC,"yes") {
   message(configuring $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
 } else {
   message(configuring $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+message(configuring for $$SYSTEM)
 }
