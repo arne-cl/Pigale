@@ -1,7 +1,24 @@
-MQTDIR = @QT4DIR@
-QTINCLUDE= @QT4DIR@/include/Qt
-QTLRELEASE= @QT4DIR@/bin/lrelease
-QTLUPDATE= @QT4DIR@/bin/lupdate
+SYSTEM=@SYSTEM@
+contains(SYSTEM,"ubuntu") {
+        QTINCLUDE=/usr/include/qt4
+        GLUTLIB=/usr/lib/libglut.a
+        QTLRELEASE=/usr/share/qt4/bin/lrelease
+        QTLUPDATE=/usr/share/qt4/bin/lupdate
+        } else {
+        MQTDIR = @QT4DIR@
+        QTINCLUDE= @QT4DIR@/include/Qt
+        QTLRELEASE= @QT4DIR@/bin/lrelease
+        QTLUPDATE= @QT4DIR@/bin/lupdate
+        GLUTLIB=@PPATH@/lib/libglut.a
+        }
+
+###################### mac ##############################################
+#QTINCLUDE=/opt/local/libexec/qt4-mac/include/
+#GLUTLIB=
+#QTLRELEASE=
+#QTLUPDATE=/usr/share/qt4/bin/lupdate
+#in runqmake.sh modify QMAKE=$QT4DIR/bin/qmake -> QMAKE=/usr/bin/qmake-qt4
+####################### Nothing to edit after this line ##################
 #version of the library
 VERSION= @LIB_VERSION@
 MODE = @DEBUG@

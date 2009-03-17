@@ -81,6 +81,12 @@ Pigale uses GNU <b><tt>configure</tt></b> for the compilation and installation c
 	  <li>If you don't have a write permission, you must provide  another directory where 
 	    you have a write permission: <br><tt><b>./configure --prefix=/home/a_directory</b></tt>.</li>
 	  <li>Usually the location of the installation of Qt is defined by the environment variable <b>QT4DIR</b>.</li>
+          <li>If you are using <tt><b>Ubuntu</b></tt> and want to use the already installed
+                <tt><b>Qt4 package</b></tt> use the following option<br>
+            <tt><b>./configure --enable-ubuntu</b></tt>.<br>
+            You must habe installed the <tt><b>libqt4-dev</b></tt> <tt><b>libdt4-opengl-dev</b></tt> packages;
+          </li>
+
 	  <li>For more options run: <tt><b>./configure --help</b></tt> <br>
 	  These options, in particular, let you define the prefix, the mode (debug, static) etc.</li>
 	</ul>
@@ -110,9 +116,8 @@ Pigale uses GNU <b><tt>configure</tt></b> for the compilation and installation c
     </p>
 <h3 class="c1"> <b>Manual configuration</b></h3>
 <p>
-On some distributions  <tt><b>Qt4</b></tt> is installed, but some  <tt><b>Qt</tt></b> tools might
-have been renamed.
-For example, in <tt><b>Ubuntu</b></tt>> the command <tt><b>qmake</b></tt> is renamed <tt><b>qmake-qt4</b></tt>.
+On most distributions  <tt><b>Qt4</b></tt> is installed, 
+but some  <tt><b>Qt4</tt></b> tools might have been renamed.
 <br>
 In such case, you may 
       <ul>
@@ -126,6 +131,8 @@ In such case, you may
 	<li><tt><b>make install</b></tt>
         </ul>
     </ul>
+
+
 </p>
    <p>This program has also been compiled under different UNIX
       systems, using the gcc compilers.		
@@ -163,7 +170,7 @@ In such case, you may
          Patrice Ossona de Mendez</a></address></td>
       </tr></table>
     <hr><!-- hhmts start -->
-Last modified: Sat Mar 14 15:18:09 CET 2009
+Last modified: Tue Mar 17 17:38:38 CET 2009
 <!-- hhmts end -->
 </body>
 
