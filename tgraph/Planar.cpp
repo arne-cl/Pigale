@@ -348,7 +348,7 @@ int TopologicalGraph::RemoveIsthmus()
   MakeConnected();
   DFSGraph DG(DFSContainer,*this);
   DG.bicon();
-  Prop<char> status(DG.Set(tvertex()),PROP_TSTATUS);
+  Prop<int> status(DG.Set(tvertex()),PROP_TSTATUS);
   svector<bool> toerased(1,ne()); toerased.clear();
   int n = 0;
   for(int i = nv() -1;i > 0;i--)
