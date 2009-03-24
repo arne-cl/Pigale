@@ -77,10 +77,11 @@ int DFSGraph::DoDFS(tbrin b0)
   }
 
 int DFSGraph::bicon()
+// cotree edges are oriented from the root !!
   {if(debug())DebugPrintf("Executing DFSGraph:bicon");
-  Prop<tvertex> low(Set(tvertex()),PROP_LOW);
-  Prop<tedge> elow(Set(tvertex()),PROP_ELOW);
-  Prop<int> status(Set(tvertex()),PROP_TSTATUS);
+  Prop<tvertex> low(Set(tvertex()),PROP_LOW);low.SetName("DFSGraph:low");
+  Prop<tedge> elow(Set(tvertex()),PROP_ELOW);elow.SetName("DFSGraph:elow");
+  Prop<int> status(Set(tvertex()),PROP_TSTATUS);status.SetName("DFSGraph:status");
   status.clear();
   low.clear();
   int nbre_fine = 0;
@@ -93,32 +94,37 @@ int DFSGraph::bicon()
   for (z=nv();z<=ne();z++)
       {nfrom = nvin[z.firsttbrin()];
       nto = nvin[z.secondtbrin()];       
-      if (!low[nfrom]) {low[nfrom]=nfrom; elow[nfrom]=0;
-      }
+      if(!low[nfrom]){low[nfrom]=nfrom; elow[nfrom]=0;}
       nformer=0;
       while(!low[nto])
-          {status[nto-1]=PROP_TSTATUS_THIN; ++nbre_fine;
+          {
+          if(!nto)cout<<"hubert nto"<<endl;
+          status[nto-1]=PROP_TSTATUS_THIN; ++nbre_fine;
           low[nto]=nfrom; elow[nto]=z;
           nformer=nto; nto=nvin[nto-1];
           }
-      if (nto==nfrom)
-          {status[nformer-1]=PROP_TSTATUS_LEAF;
+      if(nto==nfrom)//fin du backtrack
+          {if(!nformer)//impossible
+              {cout<<"hubert nformer nto:"<<nto()<<" m:"<<ne()<<endl; 
+              abort();
+              }
+          status[nformer-1]=PROP_TSTATUS_LEAF;
           nbre_fine--;
           }
       else if (low[nto]!=nfrom)
-          while(status[nto-1]==PROP_TSTATUS_THIN)
+          {while(status[nto-1]==PROP_TSTATUS_THIN)
               {nformer = nto;
               nto=nvin[nto-1];
               if (nto==nfrom) break;
               status[nformer-1]=PROP_TSTATUS_THICK;
               }
+          }
       }
   // initialization of unintialized lows
   for (newv=2; newv<=nv();newv++)
-      if (!low[newv]) {low[newv]=newv; elow[newv]=0;
-      }
+      if(!low[newv]){low[newv]=newv; elow[newv]=0;}
   if (status[1]==PROP_TSTATUS_LEAF)
-      { tvertex v = nv();
+      {tvertex v = nv();
       tbrin b;
       do {b = treein(v);
       v = nvin[b];

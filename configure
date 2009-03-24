@@ -22439,6 +22439,7 @@ done
 
 
 echo "############### RESULTS: ######################"
+echo host=$host
 echo system=$SYSTEM
 echo qmake=$QT4
 echo QT4DIR=$QT4DIR

@@ -390,8 +390,8 @@ int TopologicalGraph::ColorConnectedComponents()
               }while((b = cir[b])!= b0);
           }
       }
- if(debug())DebugPrintf("END ColorConnectedComponents");
-  return ncc - 1;
+  if(debug())DebugPrintf("END ColorConnectedComponents");
+  return ncc;
   }
 bool TopologicalGraph::CheckBipartite(bool Color)
   {if(debug())DebugPrintf("    CheckBipartite Color=%d",(int)Color);

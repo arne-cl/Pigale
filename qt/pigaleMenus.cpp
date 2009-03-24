@@ -289,9 +289,9 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   connect(comboDistance,SIGNAL(activated(int)),SLOT(distOption(int)));
   // Limits
   QSpinBox *spin_MaxNS = new QSpinBox();     
-  spin_MaxNS->setRange(1,1000); spin_MaxNS->setSingleStep(100); spin_MaxNS->setValue(staticData::MaxNS); 
+  spin_MaxNS->setRange(1,50000); spin_MaxNS->setSingleStep(100); spin_MaxNS->setValue(staticData::MaxNS); 
   QSpinBox *spin_MaxND = new QSpinBox();        
-  spin_MaxND->setRange(1,1000); spin_MaxND->setSingleStep(100); spin_MaxND->setValue(staticData::MaxND);
+  spin_MaxND->setRange(1,5000); spin_MaxND->setSingleStep(100); spin_MaxND->setValue(staticData::MaxND);
   connect(spin_MaxNS,SIGNAL(valueChanged(int)),this,SLOT(spinMaxNSChanged(int)));
   connect(spin_MaxND,SIGNAL(valueChanged(int)),this,SLOT(spinMaxNDChanged(int)));
   // CheckBoxes

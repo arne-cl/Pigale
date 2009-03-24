@@ -316,6 +316,7 @@ int TopologicalGraph::TestNewPlanar()
   return ret;
   }
 int TopologicalGraph::TestPlanar2()
+// uses the class DFSGraph
   {if(debug())DebugPrintf("Executing TopologicalGraph:TestPlanar2");
   GraphContainer DFSContainer;
   int m = ne();
@@ -409,6 +410,7 @@ int TopologicalGraph::Kuratowski(svector<bool> &mark)
   return 0;
   }
 int TopologicalGraph::Kuratowski()
+// Kuratowski which color the edges of the configuration in Black
   {if(debug())DebugPrintf("Executing Kuratowski");
   Simplify();
   int m_origin = ne();
@@ -435,6 +437,7 @@ int TopologicalGraph::Kuratowski()
   return 0;
   }
 int TopologicalGraph::KKuratowski()
+// Kuratowski which erases edges not belonging to the configuration
   {if(debug())DebugPrintf("Executing KKuratowski");
   Simplify();
   int m_origin = ne();

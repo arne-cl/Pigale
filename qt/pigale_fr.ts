@@ -198,57 +198,57 @@
 <context>
     <name>pigalePaint</name>
     <message>
-        <location filename="pigalePaint.cpp" line="431"/>
+        <location filename="pigalePaint.cpp" line="452"/>
         <source>Visibility</source>
         <translation>Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="432"/>
+        <location filename="pigalePaint.cpp" line="453"/>
         <source>FPP Visibility</source>
         <translation>FPP Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="433"/>
+        <location filename="pigalePaint.cpp" line="454"/>
         <source>General Visibility</source>
         <translation>Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="434"/>
+        <location filename="pigalePaint.cpp" line="455"/>
         <source>Contact</source>
         <translation>Contact de segments</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="435"/>
+        <location filename="pigalePaint.cpp" line="456"/>
         <source>Polar</source>
         <translation>Polaire</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="436"/>
+        <location filename="pigalePaint.cpp" line="457"/>
         <source>T Contact</source>
         <translation>Contact de T</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="437"/>
+        <location filename="pigalePaint.cpp" line="458"/>
         <source>Polyline</source>
         <translation>Lignes Brisées</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="438"/>
+        <location filename="pigalePaint.cpp" line="459"/>
         <source>Curves</source>
         <translation>Courbes</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="441"/>
+        <location filename="pigalePaint.cpp" line="462"/>
         <source>default </source>
         <translation>défaut</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="439"/>
+        <location filename="pigalePaint.cpp" line="460"/>
         <source>Polrec</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="440"/>
+        <location filename="pigalePaint.cpp" line="461"/>
         <source>Triangle contact</source>
         <translation>Contact de triangles</translation>
     </message>
@@ -1116,7 +1116,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <location filename="Macro.cpp" line="225"/>
         <location filename="pigaleFile.cpp" line="230"/>
         <source>Choose a filename to save under</source>
-        <translation type="unfinished">Choisir un fichier pour sauver le graphe</translation>
+        <translation>Choisir un fichier pour sauver le graphe</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="711"/>
@@ -1468,7 +1468,7 @@ en minimisant l&apos;augmentation des degrès</translation>
     <message>
         <location filename="pigaleMenus.cpp" line="426"/>
         <source>Image size</source>
-        <translation type="unfinished">Taille image</translation>
+        <translation>Taille image</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="543"/>

@@ -76,7 +76,7 @@ contains(ENABLE_STATIC,"yes") {
  CONFIG += static
 }
 
-
+CONFIG += create_prl
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
     contains(DEBUG_LEVEL , 2) {

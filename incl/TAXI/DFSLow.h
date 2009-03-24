@@ -29,9 +29,9 @@ struct DFSLow : public DFSGraph
     DFSLow(DFSGraph &DG) : DFSGraph(DG),
         elow(Set(tvertex()),PROP_ELOW), 
         low(Set(tvertex()),PROP_LOW), status(Set(tvertex()),PROP_TSTATUS)
-        {elow.SetName("elow");
-        low.SetName("low");
-        status.SetName("status");
+        {elow.SetName("DFSLow:elow");
+        low.SetName("DFSLow:low");
+        status.SetName("DFSLow:status");
         bicon();
         }
     DFSLow(DFSLow &DL) : DFSGraph(DL),

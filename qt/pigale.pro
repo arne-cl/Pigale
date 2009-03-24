@@ -17,6 +17,7 @@ win32 {
 INCLUDEPATH += ../incl
 DEPENDPATH =  ../incl $$QTINCLUDE
 
+#files that need moc
 HEADERS = pigaleWindow.h \
     ClientSocket.h \
     glcontrolwidget.h \
@@ -52,6 +53,7 @@ SOURCES = main.cpp \
     Test.cpp
 
 CONFIG += qt thread $$MODE
+CONFIG += link_prl depend_prl
 
 CONFIG(debug, debug|release) {
     TARGET = pigale_debug
@@ -89,7 +91,7 @@ win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 QT += opengl network xml svg
 #unix::DESTDIR = .
 #win32:DESTDIR = $$DISTPATH/bin
-unix {
+unix {		
       # awk
       awk.target = ../incl/QT/Action.h
       awk.depends = ../incl/QT/Action_def.h Action.awk
@@ -143,8 +145,8 @@ win32 {
 }
 
 contains(ENABLE_STATIC,"yes") {
-  message(configuring $$TARGET (static) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
+  message(configuring $$TARGET (static) using QT version $$[QT_VERSION] under $$SYSTEM ($$OBJECTS_DIR ))
 } else {
-  message(configuring $$TARGET (dynamic) using QT version $$[QT_VERSION] ($$OBJECTS_DIR ))
-message(configuring for $$SYSTEM)
+  message(configuring $$TARGET (dynamic) using QT version $$[QT_VERSION] under $$SYSTEM ($$OBJECTS_DIR ))
 }
+

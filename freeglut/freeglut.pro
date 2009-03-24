@@ -13,6 +13,7 @@ win32 {
 }
 
 CONFIG = thread static
+CONFIG += create_prl
 INCLUDEPATH = ../incl
 unix::INCLUDEPATH += /usr/X11R6/include
 DEPENDPATH = ../incl

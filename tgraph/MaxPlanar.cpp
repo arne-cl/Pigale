@@ -75,7 +75,7 @@ tedge EraseMostMarkedEdge(TopologicalGraph& G0,svector<bool> &mark,
   Prop<tedge> initedge(G0.Set(tedge()),PROP_INITIALE);
   GraphContainer DFSContainer;
   DFSGraph DG(DFSContainer,G0);
-  DG.CotreeCritical();
+  //DG.CotreeCritical();
   DG.Kuratowski();
   Prop<bool> keep(DG.Set(tedge()),PROP_MARK); 
   int maxcount=0;
@@ -98,6 +98,7 @@ int FindNPSet(TopologicalGraph &G, svector<bool> &mark, svector<tedge>&tab)
   {tedge e; 
   int n=0;
   svector<int> count(0,G.ne()); count.clear();
+  count.SetName("FindNPSet:count");
   GraphContainer GC(G.Container());
   TopologicalGraph G0(GC);
   Prop<tedge> initedge(G0.Set(tedge()),PROP_INITIALE);
@@ -116,7 +117,7 @@ int FindNPSet(TopologicalGraph &G, svector<bool> &mark, svector<tedge>&tab)
   return newones ? n : -n;
   }
 int FindNPSet(TopologicalGraph &G)
-  {svector<tedge> tab(0,G.ne()); tab.SetName("tab");
+  {svector<tedge> tab(0,G.ne()); tab.SetName("FindNPSet:tab");
   G.Simplify();
   int m_origin = G.ne();
   G.MakeConnected();

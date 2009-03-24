@@ -225,42 +225,64 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
 
   QPen pn = p->pen();pn.setWidth(1);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  QPoint ps,pt;
-  ps = QPoint(paint->to_x(pmin().x()+1),paint->to_y(pmin().y()+1));
-  pt = QPoint(paint->to_x(pmax().x()-1),paint->to_y(pmax().y()-1));
+  QPoint ps,pt,ps2,pt2;
+
+  // Drawing the diagonal
+//   ps = QPoint(paint->to_x(pmin().x()+1),paint->to_y(pmin().y()+1));
+//   pt = QPoint(paint->to_x(pmax().x()-1),paint->to_y(pmax().y()-1));
+  ps = QPoint(paint->to_x(pmin().x()),paint->to_y(pmin().y()));
+  pt = QPoint(paint->to_x(pmax().x()),paint->to_y(pmax().y()));
   pn.setColor(color[Grey1]); p->setPen(pn);
   p->drawLine(ps,pt);
-  int dy = Min(12,paint->height()/(pmax().y()+1)-2);
-  int dx;
-  QFont font = QFont("sans",dy);
-  p->setFont(font);
+
+  // Drawing the vertices: horizontal and vertical segments
   for(tvertex v = 1;v <= G.nv();v++)
       {double delta = (h1[v] < h[v])?.45:-.45;
-      if(G.vcolor[v] == Red)
-          {if(h1[v] != h2[v])
-              {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
-              pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
+      pn.setColor(color[G.vcolor[v]]);
+      pn.setWidth(1);p->setPen(pn);
+      if(G.vcolor[v] == Red)//horizontales
+          {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
+          pt  = QPoint(paint->to_x(h2[v]),paint->to_y(h[v]));
+          if(h2[v] > h[v]  && h1[v] > h[v])
+              {ps2 = QPoint(paint->to_x(h[v]),paint->to_y(h[v]));
+              p->drawLine(ps2,pt);
               }
-          else
+          else if(h2[v] < h[v]  && h1[v] < h[v])
+              {pt2 = QPoint(paint->to_x(h[v]),paint->to_y(h[v]));
+              p->drawLine(ps,pt2);
+              }
+          if(h1[v] == h2[v])// isthme
               {ps = QPoint(paint->to_x(h1[v]),paint->to_y(h[v]));
               pt  = QPoint(paint->to_x(h2[v]+delta),paint->to_y(h[v]));
               }
+          pn.setWidth(2);p->setPen(pn);
+          p->drawLine(ps,pt);
           }
-      else
-          {if(h1[v] != h2[v])
-              {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
-              pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
+      else  // verticales
+          {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
+          pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]));
+          if(h2[v] > h[v]  && h1[v] > h[v])
+              {ps2 = QPoint(paint->to_x(h[v]),paint->to_y(h[v]));
+              p->drawLine(ps2,pt);
               }
-          else
+          else if(h2[v] < h[v]  && h1[v] < h[v])
+              {pt2 = QPoint(paint->to_x(h[v]),paint->to_y(h[v]));
+              p->drawLine(ps,pt2);
+              }
+          if(h1[v] == h2[v])// isthme
               {ps = QPoint(paint->to_x(h[v]),paint->to_y(h1[v]));
               pt  = QPoint(paint->to_x(h[v]),paint->to_y(h2[v]+delta));
               } 
+          pn.setWidth(2);p->setPen(pn);
+          p->drawLine(ps,pt);
           }
-      pn.setColor(color[G.vcolor[v]]); pn.setWidth(2);p->setPen(pn);
-      p->drawLine(ps,pt);
       }
+  //drawing labels
+  int dy = Min(12,paint->height()/(pmax().y()+1)-2);
+  QFont font = QFont("sans",dy);
+  p->setFont(font);
   pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
-  for(tvertex v = 1;v <= G.nv();v++)
+  for(tvertex v = 1;v <= G.nv();v++) //trace des labels
       {double delta = (h1[v] < h[v])?.9:-.9;
       if(G.vcolor[v] == Red)
           {if(h1[v] != h2[v])
@@ -283,9 +305,8 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
               } 
           }
       QString t = getVertexLabel(GC,v);
-      
-       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
-       dx =size.width() + 2;   dy =size.height() + 2;
+      QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
+      int dx =size.width() + 2;   dy =size.height() + 2;
       QRect rect = QRect((ps.x() + pt.x() - dx)/2,(ps.y() + pt.y() - dy)/2,dx,dy);
       pb.setColor(color[G.vcolor[v]]);
       p->setBrush(pb);

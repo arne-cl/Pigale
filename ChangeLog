@@ -1,9 +1,15 @@
+pigale-1.3.11:
+- improved representation of bipartite graphs so that all vertices touch
+  or cross the diagonal
+- pigale is relinked when libraries change
+- added the option --enable-ubuntu to configure
+- corrected a bug in RemoveIsthmus()
 pigale-1.3.10:
 - corrected a bug in the server when transfering a graph
 - when saving a graph as a text file, an extra line after the title was added
 - the random graph generator improved
 - when using Qt-4.5.0 the canvas was not properly updated
-- by default sample buffer are used if the graphic card is compatible
+- by default sample buffers are used if the graphic card is compatible
 	
 
 	
