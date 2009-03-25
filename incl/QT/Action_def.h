@@ -59,12 +59,13 @@ The comments defines the macronames which should not include whitespaces
 #define  A_EMBED_POLREC_BFS         (A_EMBED+15)        // POLREC_BFS
 #define  A_EMBED_VISION             (A_EMBED+50)        // VISION
 #define  A_EMBED_CONTACT_BIP        (A_EMBED+51)        // CONTACT_BIPARTI 
-#define  A_EMBED_POLAR              (A_EMBED+52)        // POLAR 
-#define  A_EMBED_FPP_RECTI          (A_EMBED+53)        // FPP_RECTI
-#define  A_EMBED_GVISION            (A_EMBED+54)        // GVISION 
-#define  A_EMBED_T_CONTACT          (A_EMBED+55)        // T_CONTACT
-#define  A_EMBED_TRIANGLE           (A_EMBED+56)        // TRIANGLE_CONTACT
-#define  A_EMBED_3dSCHNYDER         (A_EMBED+57)        // EMBED-3d_SCHNYDER
+#define  A_EMBED_BIP_2PAGES         (A_EMBED+52)        // 2_PAGES_BIPARTI 
+#define  A_EMBED_POLAR              (A_EMBED+53)        // POLAR 
+#define  A_EMBED_FPP_RECTI          (A_EMBED+54)        // FPP_RECTI
+#define  A_EMBED_GVISION            (A_EMBED+55)        // GVISION 
+#define  A_EMBED_T_CONTACT          (A_EMBED+56)        // T_CONTACT
+#define  A_EMBED_TRIANGLE           (A_EMBED+57)        // TRIANGLE_CONTACT
+#define  A_EMBED_3dSCHNYDER         (A_EMBED+58)        // EMBED-3d_SCHNYDER
 #define  A_EMBED_3d                 (A_EMBED+98)        // EMBED-3d
 #define  A_EMBED_END                (A_EMBED+99)
 

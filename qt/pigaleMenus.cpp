@@ -650,7 +650,8 @@ void pigaleWindow::createMenus()
   embed->addSeparator();
   action = embed->addAction(tr("&T Contact"));   setId(action,A_EMBED_T_CONTACT);
   action = embed->addAction(tr("&R Triangle Contact"));   setId(action,A_EMBED_TRIANGLE);
-  action = embed->addAction(tr("&Contact Biparti"));   setId(action,A_EMBED_CONTACT_BIP);
+  action = embed->addAction(tr("&Contact (Biparti)"));   setId(action,A_EMBED_CONTACT_BIP);
+  action = embed->addAction(tr("&2-Pages (Biparti)"));   setId(action,A_EMBED_BIP_2PAGES);
   embed->addSeparator();
   action = embed->addAction(tr("&Polyline"));   setId(action,A_EMBED_POLYLINE);
   action = embed->addAction(tr("&Curves"));   setId(action,A_EMBED_CURVES);

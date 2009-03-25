@@ -247,7 +247,8 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 #else
   allowAction( A_EMBED_GVISION,(G.nv() > 1) && NotBigD);//GVision
 #endif
-  allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti
+  allowAction(A_EMBED_CONTACT_BIP,(G.nv() > 1) && B && P && NotBigD);//Biparti contact
+  allowAction(A_EMBED_BIP_2PAGES,(G.nv() > 1) && B && P && NotBigD);//Biparti 2-pages
   allowAction(A_EMBED_FPP_RECTI,!SMALL && S && P && NotBigD);        //FPP vision
   allowAction(A_EMBED_T_CONTACT,!SMALL && S && P && NotBigD);        //T-contact
   allowAction(A_EMBED_TRIANGLE,!SMALL && S && P && NotBigD);        //Triangle

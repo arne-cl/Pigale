@@ -1,4 +1,5 @@
 pigale-1.3.11:
+- Added a representation of a bipartite graph on 2 pages
 - improved representation of bipartite graphs so that all vertices touch
   or cross the diagonal
 - pigale is relinked when libraries change

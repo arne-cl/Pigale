@@ -279,6 +279,10 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
           err = EmbedContactBip(G0);
           drawing = 3;
           break;
+      case A_EMBED_BIP_2PAGES:ret = 3;
+          err = EmbedContactBip(G0);
+          drawing = 11;
+          break;
       case A_EMBED_POLAR:ret = 3;
           err = Polar(G);
           drawing = 4;
@@ -312,6 +316,7 @@ int EmbedHandler(GraphContainer &GC,int action,int &drawing)
       case  A_EMBED_JACQUARD:ret = 8;
           break;
       default:
+          Tprintf("Handler.cpp unknown action:%d",action);
           return 0;
       }
   if(err > 0)err = -err;

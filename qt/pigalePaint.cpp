@@ -214,6 +214,67 @@ void DrawTContact(QPainter *p,pigalePaint *paint)
   for(v=1; v <= G.nv();v++)
       paint->DrawText(p,postxt[v],v,G.vcolor[v],0);
   }
+void DrawBip2Pages(QPainter *p,pigalePaint *paint)
+  {GraphContainer GC = paint->GCP;
+  GeometricGraph G(paint->GCP);
+  Prop<int> h(G.Set(tvertex()),PROP_DRAW_INT_1);
+  Prop<int> h1(G.Set(tvertex()),PROP_DRAW_INT_2);
+  Prop<int> h2(G.Set(tvertex()),PROP_DRAW_INT_3);
+  Prop1<Tpoint> pmax(G.Set(),PROP_POINT_MAX);
+  Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
+
+  QPen pn = p->pen();pn.setWidth(1);
+ 
+  QPoint ps,pt,ps2,pt2;
+  // horizontale
+  int yh = pmin().y()+ pmax().y()/2;
+  ps = QPoint(paint->to_x(pmin().x()),paint->to_y(yh));
+  pt = QPoint(paint->to_x(pmax().x()),paint->to_y(yh));
+  pn.setWidth(1);pn.setColor(color[Grey1]); p->setPen(pn);
+  p->drawLine(ps,pt);
+
+  pn.setColor(color[Black]);
+  pn.setWidth(1);p->setPen(pn);
+  // draw edges: 2 segments
+  double x1,x2,dh;
+  tvertex vmin,vmax;
+  for(tedge e = 1; e < G.ne();e++)
+      {tvertex v1 = G.vin[e];
+      tvertex v2 = G.vin[-e];
+      if(h[v1] <h[v2])
+          {vmin = v1;vmax = v2;}
+      else
+          {vmin = v2;vmax = v1;}
+
+      x1 = (double)Min(h[v1],h[v2]);
+      x2 = (double)Max(h[v1],h[v2]);
+      dh = Min((x2-x1)*paint->xscale,(x2-x1)*paint->yscale)/2;
+      QRect r = QRect(paint->to_x(x1),paint->to_y(yh)-dh/2,(x2-x1)*paint->xscale,dh);
+      if(G.vcolor[vmax] == Red)
+          p->drawArc(r,0,180*16);
+       else
+           p->drawArc(r,0,-180*16);
+      }
+  // Draw verticces
+  QBrush pb = p->brush();
+  pb.setStyle(Qt::SolidPattern);
+  int dy = Min(10,paint->height()/(pmax().y()+1)-2);
+  QFont font = QFont("sans",dy);
+  p->setFont(font);
+  pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
+  for(tvertex v = 1;v <= G.nv();v++)
+      {pb.setColor(color[G.vcolor[v]]);
+      p->setBrush(pb);
+      ps = QPoint(paint->to_x(h[v]),paint->to_y(yh));
+      QString t = getVertexLabel(GC,v);
+      QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
+      int dx =size.width() + 2;   dy =size.height();// + 2;
+      QRect rect = QRect(ps.x()-dx/2 ,ps.y()-dy/2,dx,dy);
+      p->drawRect(rect);
+      p->drawText(rect,Qt::AlignCenter,t);
+      }
+  }
+
 void DrawBipContact(QPainter *p,pigalePaint *paint)
   {GraphContainer GC = paint->GCP;
   GeometricGraph G(paint->GCP);
@@ -224,7 +285,9 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
   Prop1<Tpoint> pmin(G.Set(),PROP_POINT_MIN);
 
   QPen pn = p->pen();pn.setWidth(1);
-  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
+  QBrush pb = p->brush();
+  pb.setStyle(Qt::SolidPattern);
+ 
   QPoint ps,pt,ps2,pt2;
 
   // Drawing the diagonal
@@ -449,16 +512,18 @@ struct DrawThing {
 
 static DrawThing DrawFunctions[] = 
     {
-    {DrawVisibility,QT_TRANSLATE_NOOP("pigalePaint","Visibility")},
-    {DrawFPPVisibility,QT_TRANSLATE_NOOP("pigalePaint","FPP Visibility")},
-    {DrawGeneralVisibility,QT_TRANSLATE_NOOP("pigalePaint","General Visibility")},
-    {DrawBipContact,QT_TRANSLATE_NOOP("pigalePaint","Contact")},
-    {DrawPolar,QT_TRANSLATE_NOOP("pigalePaint","Polar")},
-    {DrawTContact,QT_TRANSLATE_NOOP("pigalePaint","T Contact")}, 
-    {DrawPolyline,QT_TRANSLATE_NOOP("pigalePaint", "Polyline")},
-    {DrawCurves,QT_TRANSLATE_NOOP("pigalePaint", "Curves")},
-    {DrawPolrec,QT_TRANSLATE_NOOP("pigalePaint", "Polrec")},
-    {DrawTriangle,QT_TRANSLATE_NOOP("pigalePaint", "Triangle contact")},
+    {DrawVisibility,QT_TRANSLATE_NOOP("pigalePaint","Visibility")},//0
+    {DrawFPPVisibility,QT_TRANSLATE_NOOP("pigalePaint","FPP Visibility")},//1
+    {DrawGeneralVisibility,QT_TRANSLATE_NOOP("pigalePaint","General Visibility")},//2
+    {DrawBipContact,QT_TRANSLATE_NOOP("pigalePaint","Contact")},//3
+    {DrawPolar,QT_TRANSLATE_NOOP("pigalePaint","Polar")},//4
+    {DrawTContact,QT_TRANSLATE_NOOP("pigalePaint","T Contact")},//5 
+    {DrawPolyline,QT_TRANSLATE_NOOP("pigalePaint", "Polyline")},//6
+    {DrawCurves,QT_TRANSLATE_NOOP("pigalePaint", "Curves")},//7
+    {DrawPolrec,QT_TRANSLATE_NOOP("pigalePaint", "Polrec")},//8
+    {DrawTriangle,QT_TRANSLATE_NOOP("pigalePaint", "Triangle contact")},//9
+    {DrawPolar,QT_TRANSLATE_NOOP("pigalePaint","Polar")},//10
+    {DrawBip2Pages,QT_TRANSLATE_NOOP("pigalePaint","2-Pages")},//11
     {0,QT_TRANSLATE_NOOP("pigalePaint","default ")}  
     };
 const int border = 20;
