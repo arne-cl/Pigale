@@ -305,7 +305,7 @@ void Client::socketReadyRead()
           uint size = readBuffer(buffer);
           lock.unlock();
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
-          QString PngFile = QString("image%1.png").arg(++numFiles);
+          QString PngFile = QString("image%1.png").arg(++numFiles,3,10,QLatin1Char('0'));
           QFile file(PngFile);          file.open(QIODevice::WriteOnly | QIODevice::Truncate);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);

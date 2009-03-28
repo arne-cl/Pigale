@@ -7,5 +7,6 @@ ENABLE_STATIC = yes
 MODE = release
 QTDEBUGLIB = no
 DEFINES += MINGW _WINDOWS
+SYSTEM=Windows
 
 

@@ -1,6 +1,12 @@
 :D
-RC_GRAPH;../tgf/graph.txt
+#generate a  4-regular 3-connected graph
+GEN_M;30
+GEN_PLANAR_4R_3C
 POLYLINE
+PNG
+SCHNYDER_E
+PNG
+SPRING_PM
 PNG
 TUTTE_CIRCLE
 CURVES
@@ -41,6 +47,8 @@ PNG
 #generate a 3-connected bipartite graph
 GEN_PLANAR_BIP_3C
 CONTACT_BIPARTI
+PNG
+2_PAGES_BIPARTI
 PNG
 POLAR
 PNG

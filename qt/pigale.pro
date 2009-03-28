@@ -6,14 +6,12 @@ win32 {
       QMAKE_CXXFLAGS_WARN_ON =  -Wall 
       DEFINES +=  __MINGW32__ _WIN32
       DEFINES += GLUT_NO_LIB_PRAGMA	
-      DESTDIR=$$DISTPATH/bin
       } else {
       include(../pigale.inc)
       MOC_DIR = .moc
       QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-      DESTDIR=.
       }
-
+DESTDIR=.
 INCLUDEPATH += ../incl
 DEPENDPATH =  ../incl $$QTINCLUDE
 
@@ -119,7 +117,7 @@ unix {
       DISTFILES += gnumakefile
       PRE_TARGETDEPS = pigale_fr.qm ../incl/QT/Action.h
 }
-win32 {
+win32 {  
       # Installation
       target.path =  $$DISTPATH/bin
       translations.files = pigale_fr.qm qt_fr.qm

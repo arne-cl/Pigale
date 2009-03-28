@@ -198,63 +198,63 @@
 <context>
     <name>pigalePaint</name>
     <message>
-        <location filename="pigalePaint.cpp" line="515"/>
+        <location filename="pigalePaint.cpp" line="518"/>
         <source>Visibility</source>
         <translation>Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="516"/>
+        <location filename="pigalePaint.cpp" line="519"/>
         <source>FPP Visibility</source>
         <translation>FPP Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="517"/>
+        <location filename="pigalePaint.cpp" line="520"/>
         <source>General Visibility</source>
         <translation>Visibilité</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="518"/>
+        <location filename="pigalePaint.cpp" line="521"/>
         <source>Contact</source>
         <translation>&quot;Contact de segments</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="526"/>
+        <location filename="pigalePaint.cpp" line="529"/>
         <source>2-Pages</source>
         <translation>2-Pages</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="519"/>
-        <location filename="pigalePaint.cpp" line="525"/>
+        <location filename="pigalePaint.cpp" line="522"/>
+        <location filename="pigalePaint.cpp" line="528"/>
         <source>Polar</source>
         <translation>Polaire</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="520"/>
+        <location filename="pigalePaint.cpp" line="523"/>
         <source>T Contact</source>
         <translation>Contact de T</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="521"/>
+        <location filename="pigalePaint.cpp" line="524"/>
         <source>Polyline</source>
         <translation>Lignes Brisées</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="522"/>
+        <location filename="pigalePaint.cpp" line="525"/>
         <source>Curves</source>
         <translation>Courbes</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="527"/>
+        <location filename="pigalePaint.cpp" line="530"/>
         <source>default </source>
         <translation>défaut</translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="523"/>
+        <location filename="pigalePaint.cpp" line="526"/>
         <source>Polrec</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="pigalePaint.cpp" line="524"/>
+        <location filename="pigalePaint.cpp" line="527"/>
         <source>Triangle contact</source>
         <translation>Contact de triangles</translation>
     </message>
@@ -450,7 +450,8 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="653"/>
-        <source>&amp;Contact Biparti</source>
+        <source>&amp;Contact (Biparti)</source>
+        <oldsource>&amp;Contact Biparti</oldsource>
         <translation>Contact (&amp;biparti)</translation>
     </message>
     <message>
@@ -1616,7 +1617,8 @@ en minimisant l&apos;augmentation des degrès</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="654"/>
-        <source>&amp;2-Pages Biparti</source>
+        <source>&amp;2-Pages (Biparti)</source>
+        <oldsource>&amp;2-Pages Biparti</oldsource>
         <translation>&amp;2-Pages (Biparti)</translation>
     </message>
     <message>
@@ -1731,7 +1733,7 @@ en minimisant l&apos;augmentation des degrès</translation>
         <location filename="pigaleWindow.cpp" line="68"/>
         <location filename="pigaleWindow.cpp" line="81"/>
         <source>Close server</source>
-        <translation>Fremer le serveur</translation>
+        <translation>Fermer le serveur</translation>
     </message>
     <message>
         <location filename="pigaleMenus.cpp" line="468"/>

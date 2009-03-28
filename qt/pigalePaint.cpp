@@ -87,7 +87,7 @@ void DrawPolar(QPainter *p,pigalePaint *paint)
   Prop<double> Etheta1(G.Set(tedge()),PROP_DRAW_DBLE_2);
   Prop<double> Etheta2(G.Set(tedge()),PROP_DRAW_DBLE_3);
   Prop1<double> nw(G.Set(),PROP_DRAW_DBLE_1);
-
+  Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
   int m = G.ne(); 
   int ox,oy,nx,ny,theta,dt;
   QPen pn = p->pen();pn.setWidth(1);
@@ -126,7 +126,7 @@ void DrawPolar(QPainter *p,pigalePaint *paint)
       {double x = Vcoord[v].x()-dx*.5;
       double y = Vcoord[v].y()-dx*.5;
       Tpoint pt(x,y);
-      paint->DrawText(p,pt, v,Yellow,1);
+      paint->DrawText(p,pt, v,vcolor[v],1);
       }
   }
 void DrawPolyline(QPainter *p,pigalePaint *paint)
@@ -249,7 +249,7 @@ void DrawBip2Pages(QPainter *p,pigalePaint *paint)
       x1 = (double)Min(h[v1],h[v2]);
       x2 = (double)Max(h[v1],h[v2]);
       dh = Min((x2-x1)*paint->xscale,(x2-x1)*paint->yscale)/2;
-      QRect r = QRect(paint->to_x(x1),paint->to_y(yh)-dh/2,(x2-x1)*paint->xscale,dh);
+      QRect r = QRect(paint->to_x(x1),paint->to_y(yh)-dh/2,(int)((x2-x1)*paint->xscale),(int)dh);
       if(G.vcolor[vmax] == Red)
           p->drawArc(r,0,180*16);
        else
@@ -258,19 +258,22 @@ void DrawBip2Pages(QPainter *p,pigalePaint *paint)
   // Draw verticces
   QBrush pb = p->brush();
   pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[White]);
+  p->setBrush(pb);
   int dy = Min(10,paint->height()/(pmax().y()+1)-2);
   QFont font = QFont("sans",dy);
   p->setFont(font);
-  pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
+  pn.setWidth(1);
   for(tvertex v = 1;v <= G.nv();v++)
-      {pb.setColor(color[G.vcolor[v]]);
-      p->setBrush(pb);
-      ps = QPoint(paint->to_x(h[v]),paint->to_y(yh));
+      {ps = QPoint(paint->to_x(h[v]),paint->to_y(yh));
       QString t = getVertexLabel(GC,v);
       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
       int dx =size.width() + 2;   dy =size.height();// + 2;
+      if(t.length() == 0)dx = dy= 8;
       QRect rect = QRect(ps.x()-dx/2 ,ps.y()-dy/2,dx,dy);
+      pn.setColor(color[G.vcolor[v]]);p->setPen(pn);
       p->drawRect(rect);
+      pn.setColor(color[Black]);p->setPen(pn);
       p->drawText(rect,Qt::AlignCenter,t);
       }
   }
@@ -291,8 +294,6 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
   QPoint ps,pt,ps2,pt2;
 
   // Drawing the diagonal
-//   ps = QPoint(paint->to_x(pmin().x()+1),paint->to_y(pmin().y()+1));
-//   pt = QPoint(paint->to_x(pmax().x()-1),paint->to_y(pmax().y()-1));
   ps = QPoint(paint->to_x(pmin().x()),paint->to_y(pmin().y()));
   pt = QPoint(paint->to_x(pmax().x()),paint->to_y(pmax().y()));
   pn.setColor(color[Grey1]); p->setPen(pn);
@@ -344,7 +345,9 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
   int dy = Min(12,paint->height()/(pmax().y()+1)-2);
   QFont font = QFont("sans",dy);
   p->setFont(font);
-  pn.setColor(color[Black]); pn.setWidth(1);p->setPen(pn);
+  pb.setColor(color[White]);
+  p->setBrush(pb);
+  pn.setWidth(1);
   for(tvertex v = 1;v <= G.nv();v++) //trace des labels
       {double delta = (h1[v] < h[v])?.9:-.9;
       if(G.vcolor[v] == Red)
@@ -370,12 +373,12 @@ void DrawBipContact(QPainter *p,pigalePaint *paint)
       QString t = getVertexLabel(GC,v);
       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
       int dx =size.width() + 2;   dy =size.height() + 2;
+      if(t.length() == 0)dx = dy= 8;
       QRect rect = QRect((ps.x() + pt.x() - dx)/2,(ps.y() + pt.y() - dy)/2,dx,dy);
-      pb.setColor(color[G.vcolor[v]]);
-      p->setBrush(pb);
+      pn.setColor(color[G.vcolor[v]]);p->setPen(pn);
       p->drawRect(rect);
+      pn.setColor(color[Black]);p->setPen(pn);
       p->drawText(rect,Qt::AlignCenter,t);
-      //paint->DrawText(p,(ps.x() + pt.x() - dx)/2.,(ps.y() + pt.y() - dy)/2.,dx,dy, v,G.vcolor[v]);
       }
   }
 void DrawFPPVisibility(QPainter *p,pigalePaint *paint)
@@ -687,17 +690,23 @@ void pigalePaint::DrawText(QPainter *p,Tpoint &a,tvertex v,int col,int center)
   QPen pn = p->pen();pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   QSize size = QFontMetrics(p->font()).size(Qt::AlignCenter,t);
   double nx = size.width() + 4; double ny = size.height();
+  if(t.length() == 0)nx = ny= 8;
   QRect rect;
   //if pn.setWidth() > 1 => rect increase
   if(center)
       rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny/2+.5),(int)(nx+.5),(int)(ny+.5));
   else
       rect = QRect((int)(to_x(a.x())-nx/2+.5),(int)(to_y(a.y())-ny+1.),(int)(nx+.5),(int)(ny+.5));
-  QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  pb.setColor(color[bound(col,0,16)]);p->setBrush(pb);
-  pn.setWidth(1);p->setPen(pn);
+  QBrush pb = p->brush();
+  pb.setStyle(Qt::SolidPattern);
+  pb.setColor(color[bound(col,0,16)]);
+  //pb.setColor(color[White]);
+  p->setBrush(pb);
+  //pn.setColor(color[col]);pn.setWidth(1);p->setPen(pn);
+  pn.setWidth(1);pn.setColor(color[Black]);p->setPen(pn);
   p->drawRect(rect);
-  if(ny >= 6){ pn.setWidth(1);p->setPen(pn);p->drawText(rect,Qt::AlignCenter,t);}
+  if(ny < 6)return;
+  p->drawText(rect,Qt::AlignCenter,t);
   }
 void pigalePaint::DrawText(QPainter *p,double x,double y,double nx,double ny,tvertex v,int col)
 // draw centered text in rectangle left at x,y of size: nx,ny

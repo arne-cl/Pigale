@@ -1,2 +1,2 @@
-set PATH=%PATH%;c:\Qt\4.3.3\bin;c:\MinGW\bin
+set PATH=%PATH%;c:\Qt\4.5.0\bin;c:\MinGW\bin
 

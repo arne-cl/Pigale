@@ -7,9 +7,7 @@ win32 {
       include(../pigale.inc)
       MOC_DIR = .moc
       QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-      DESTDIR=$$DISTPATH/bin
       }
-
 
 
 INCLUDEPATH = ../incl

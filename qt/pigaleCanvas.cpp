@@ -36,7 +36,6 @@ GraphEditor::GraphEditor(GraphWidget* parent,pigaleWindow *_mywindow)
     ,zoom(1.),ShowGrid(false),FitToGrid(false),SizeGrid(100)
   {
   CreatePenBrush();
-  //setBackgroundBrush(QBrush(Qt::white)); 
   setFocusPolicy(Qt::ClickFocus);
   setRenderHints(QPainter::Antialiasing);
   //much faster: but no antialiasing if no Samplebuffers
@@ -704,7 +703,6 @@ void GraphEditor::clear()
       }
   GridDrawn = false;
   }
-
 void GraphEditor::image(QPrinter* printer, QString suffix)
   {if(!scene())return;
   QRect geo = geometry();
@@ -722,7 +720,13 @@ void GraphEditor::image(QPrinter* printer, QString suffix)
   int nx = (int)gwp->canvas->width();
   int ny = (int)gwp->canvas->height();
   if(suffix == "png" || suffix == "jpg")
-      {QPixmap pixmap = QPixmap::grabWidget(this,2,2,nx,ny); 
+      {QPixmap pixmap = QPixmap(nx,ny);
+      QPainter pp(&pixmap);
+      pp.setBrush(QBrush(Qt::white));
+      pp.setPen(QPen(Qt::white));
+      pp.drawRect(QRect(0,0,nx,ny));
+      pp.setPen(QPen(Qt::black));
+      render(&pp,QRectF(2,2,nx,ny),QRect(2,2,nx,ny));
       pixmap.save(staticData::fileImage);
       }
   else if(suffix == "svg") 
