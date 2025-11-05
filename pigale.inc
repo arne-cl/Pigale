@@ -22,7 +22,7 @@ contains(SYSTEM,"ubuntu") {
 #version of the library
 VERSION= 1.3.3
 MODE = release
-DISTPATH = /home/pigale/pigale
+DISTPATH = $$PWD
 AWK = gawk
 ENABLE_STATIC = yes
 #QMAKE_CXXFLAGS_RELEASE =  -march=i686
