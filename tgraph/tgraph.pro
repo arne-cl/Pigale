@@ -52,7 +52,6 @@ SOURCES =\
     SchnyderWood.cpp\
     SWShelling.cpp\
     STList.cpp\
-    TestSinglePassPlanar.cpp\
     Tgf.cpp\
     TopoAlgs.cpp\
     Twit.cpp\

@@ -86,7 +86,7 @@ DEFINES += FREEGLUT FREEGLUT_STATIC
 unix:LIBS += $$GLUTLIB
 win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 
-QT += opengl network xml svg
+QT += opengl network xml svg printsupport
 #unix::DESTDIR = .
 #win32:DESTDIR = $$DISTPATH/bin
 unix {		

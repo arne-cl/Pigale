@@ -14,7 +14,7 @@ win32 {
       MOC_DIR = .moc
       OBJECTS_DIR = .opt   
       QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-//static      LIBS +=  $$MQTDIR/lib/libQtNetwork.a $$MQTDIR/lib/libQtCore.a
+#static      LIBS +=  $$MQTDIR/lib/libQtNetwork.a $$MQTDIR/lib/libQtCore.a
       LIBS +=  $$MQTDIR/lib/libQtNetwork.so $$MQTDIR/lib/libQtCore.so
       LIBS += -lz -lm  -ldl
       }
@@ -36,6 +36,6 @@ HEADERS = client.h
 CONFIG =  thread release moc
 TARGET=pigale.cgi
 unix:DESTDIR=.
-//unix:DESTDIR=/var/www/cgi-bin
+#unix:DESTDIR=/var/www/cgi-bin
 win32:DESTDIR=.
 message(configuring pigale.cgi using QT version $$[QT_VERSION] ($$OBJECTS_DIR))

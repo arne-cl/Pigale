@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 case "$OSTYPE" in
-  solaris*) SYSTEM"solaris" ;;
-  darwin*)  SYSTEM="osx" ;; 
+  solaris*) SYSTEM="solaris" ;;
+  darwin*)  SYSTEM="osx" ;;
   linux*)   SYSTEM="linux" ;;
   bsd*)     SYSTEM="bsd" ;;
   msys*)    SYSTEM="windows" ;;
-  *)        SYSTEM"unknown: $OSTYPE" ;;
+  *)        SYSTEM="unknown: $OSTYPE" ;;
 esac
 
 echo $SYSTEM
@@ -22,22 +22,24 @@ QMAKE=$QTDIR/bin/qmake
 
 if [ $SYSTEM  = "osx" ]; then
     echo "Creating Xcode projects qtdir:$QTDIR"
-    ${QMAKE}  -spec macx-xcode  pigale.pro    
+    # Skip root pigale.pro if it doesn't exist
+    # ${QMAKE}  -spec macx-xcode  pigale.pro
     cd tgraph
     ${QMAKE}  -spec macx-xcode  tgraph.pro
     cd ../qt
-    ${QMAKE}  -spec macx-xcode  qt.pro
+    ${QMAKE}  -spec macx-xcode  pigale.pro
     cd ../ClientServer
-    ${QMAKE}  -spec macx-xcode  ClientServer.pro
+    ${QMAKE}  -spec macx-xcode  client.pro
     cd ../UsingTgraph
-    ${QMAKE}  -spec macx-xcode  UsingTgraph.pro
+    ${QMAKE}  -spec macx-xcode  ex.pro
     cd ../cgi
-    ${QMAKE}  -spec macx-xcode  cgi.pro
+    ${QMAKE}  -spec macx-xcode  pigale.pro
     cd ..
 fi
 
 echo "Creating Makefiles"
-${QMAKE}  -o Makefile  pigale.pro
+# Skip root pigale.pro if it doesn't exist
+# ${QMAKE}  -o Makefile  pigale.pro
 echo $VERSIONH>version.h
 cd tgraph
 ${QMAKE}  -o Makefile  tgraph.pro
@@ -47,11 +49,11 @@ if [ $SYSTEM  != "osx" ]; then
 	fi
 cd ../qt
 echo $VERSIONH>version.h
-${QMAKE}  -o Makefile  qt.pro
+${QMAKE}  -o Makefile  pigale.pro
 cd ../ClientServer
-${QMAKE}  -o Makefile  ClientServer.pro
+${QMAKE}  -o Makefile  client.pro
 cd ../cgi
-${QMAKE}  -o Makefile  cgi.pro
+${QMAKE}  -o Makefile  pigale.pro
 cd ../UsingTgraph
-${QMAKE}  -o Makefile  UsingTgraph.pro
+${QMAKE}  -o Makefile  ex.pro
 cd ..
