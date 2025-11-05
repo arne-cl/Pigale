@@ -1,0 +1,65 @@
+name: Build Pigale
+
+on:
+  push:
+    branches: [ main, master, develop, claude/** ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          qtbase5-dev \
+          qt5-qmake \
+          libqt5opengl5-dev \
+          libqt5svg5-dev \
+          libqt5printsupport5 \
+          freeglut3-dev \
+          libgl1-mesa-dev \
+          gawk \
+          libxxf86vm-dev \
+          libxi-dev \
+          libxfixes-dev
+
+    - name: Configure build
+      run: |
+        export QTDIR=/usr
+        ./runqmake.sh
+
+    - name: Build tgraph library
+      run: |
+        cd tgraph
+        make -j$(nproc)
+
+    - name: Build pigale application
+      run: |
+        cd qt
+        make -j$(nproc)
+
+    - name: Check binary
+      run: |
+        file qt/pigale
+        ls -lh qt/pigale
+
+    - name: Upload pigale binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: pigale-linux-x86_64
+        path: qt/pigale
+        retention-days: 30
+
+    - name: Build client
+      run: |
+        cd ClientServer
+        make -j$(nproc) || true
+      continue-on-error: true
