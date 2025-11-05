@@ -1,0 +1,202 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, master, 'claude/**', 'fix/**' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    name: Run Tests on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Qt5 and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          qtbase5-dev \
+          qt5-qmake \
+          libqt5svg5-dev \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          googletest
+
+    - name: Build Google Test (if needed)
+      run: |
+        # On some systems, gtest needs to be built
+        if [ ! -f /usr/lib/libgtest.a ] && [ ! -f /usr/lib/x86_64-linux-gnu/libgtest.a ]; then
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib/
+        fi
+
+    - name: Build tgraph library
+      run: |
+        cd tgraph
+        qmake tgraph.pro
+        make -j$(nproc)
+        cd ..
+
+    - name: Verify tgraph library
+      run: |
+        echo "Checking tgraph library..."
+        ls -lh lib/
+        file lib/libtgraph*.a || echo "Warning: tgraph library not found"
+
+    - name: Build tests with CMake
+      run: |
+        cd tests
+        mkdir -p build
+        cd build
+        cmake ..
+        make -j$(nproc)
+
+    - name: Run unit tests
+      run: |
+        cd tests/build
+        ./unit_tests --gtest_output=xml:unit_test_results.xml
+
+    - name: Run integration tests
+      run: |
+        cd tests/build
+        ./integration_tests --gtest_output=xml:integration_test_results.xml
+
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: tests/build/*_test_results.xml
+        check_name: Test Results
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: tests/build/*_test_results.xml
+        retention-days: 30
+
+  test-macos:
+    name: Run Tests on macOS
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Qt5 and dependencies
+      run: |
+        brew install qt@5
+        brew install cmake
+        brew install googletest
+
+    - name: Set up Qt environment
+      run: |
+        echo "Qt5_DIR=$(brew --prefix qt@5)" >> $GITHUB_ENV
+        export PATH="$(brew --prefix qt@5)/bin:$PATH"
+
+    - name: Build tgraph library
+      run: |
+        cd tgraph
+        $(brew --prefix qt@5)/bin/qmake tgraph.pro
+        make -j$(sysctl -n hw.ncpu)
+        cd ..
+
+    - name: Build tests with CMake
+      run: |
+        cd tests
+        mkdir -p build
+        cd build
+        cmake ..
+        make -j$(sysctl -n hw.ncpu)
+
+    - name: Run unit tests
+      run: |
+        cd tests/build
+        ./unit_tests --gtest_output=xml:unit_test_results.xml
+
+    - name: Run integration tests
+      run: |
+        cd tests/build
+        ./integration_tests --gtest_output=xml:integration_test_results.xml
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-macos
+        path: tests/build/*_test_results.xml
+        retention-days: 30
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          qtbase5-dev \
+          qt5-qmake \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          googletest \
+          lcov
+
+    - name: Build Google Test
+      run: |
+        if [ ! -f /usr/lib/libgtest.a ] && [ ! -f /usr/lib/x86_64-linux-gnu/libgtest.a ]; then
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib/
+        fi
+
+    - name: Build tgraph library with coverage
+      run: |
+        cd tgraph
+        qmake tgraph.pro CONFIG+=debug QMAKE_CXXFLAGS+=--coverage QMAKE_LFLAGS+=--coverage
+        make -j$(nproc)
+        cd ..
+
+    - name: Build tests with coverage
+      run: |
+        cd tests
+        mkdir -p build
+        cd build
+        cmake -DENABLE_COVERAGE=ON ..
+        make -j$(nproc)
+
+    - name: Run tests
+      run: |
+        cd tests/build
+        ./unit_tests
+        ./integration_tests
+
+    - name: Generate coverage report
+      run: |
+        cd tests/build
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/googletest/*' --output-file coverage.info
+        lcov --list coverage.info
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: tests/build/coverage.info
+        flags: unittests
+        name: codecov-pigale
+        fail_ci_if_error: false

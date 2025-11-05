@@ -1,0 +1,6 @@
+%!PS-TGRAPH
+%
+% Single edge graph (2 vertices)
+%
+{2 1}
+{1 2}

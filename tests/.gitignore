@@ -1,0 +1,51 @@
+# Build directories
+build/
+build-*/
+debug/
+release/
+
+# Test executables
+unit_tests
+integration_tests
+pigale_tests
+pigale_tests_debug
+
+# Test results
+*_test_results.xml
+*.xml
+
+# Coverage files
+coverage.info
+coverage/
+coverage_html/
+*.gcov
+*.gcda
+*.gcno
+
+# Object files
+*.o
+*.obj
+
+# Qt generated files
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
