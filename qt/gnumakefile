@@ -44,7 +44,7 @@ PIGALELIB =  -L$(PIGALEPATH)/lib    -l$(L)$(OPT) -ltgraph$(OPT)
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3  $(PIC) $(CPU)
 #CFLAGSopt +=  -Wall -Wpointer-arith  -pipe
-CFLAGSopt +=  -Wall -Wpointer-arith -Werror  -pipe
+CFLAGSopt +=  -Wall -Wpointer-arith -Werror -Wno-error=stringop-overflow -Wno-error=class-memaccess  -pipe
 CFLAGSopt +=  -fomit-frame-pointer 
 CFLAGSopt +=  -DQT -DVERSION_$(NVERSION) 
 CFLAGSopt +=  -DQT_THREAD_SUPPORT -D_REENTRANT
@@ -80,7 +80,7 @@ ALLOBJ        = $(wildcard $(VPATH)/*.$(OPT))
 ALLOBJ        += $(wildcard $(PIGALEPATH)/tgraph/.obj/*.$(OPT))
 SLIBOBJ       = $(filter-out $(VPATH)/main.$(OPT), $(OBJ))
 
-all : md depend $(P) 
+all : md $(P) 
 
 $(PIGALEPATH)/incl/QT/Action.h:$(PIGALEPATH)/incl/QT/Action_def.h Action.awk
 	$(AWK) -f Action.awk $(PIGALEPATH)/incl/QT/Action_def.h > $(PIGALEPATH)/incl/QT/Action.h
