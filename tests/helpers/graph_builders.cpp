@@ -15,7 +15,7 @@ GraphContainer* BuildK4() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(4, 6);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Add all edges between 4 vertices
     for(int i = 1; i <= 4; i++) {
@@ -32,7 +32,7 @@ GraphContainer* BuildK5() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(5, 10);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Add all edges between 5 vertices
     for(int i = 1; i <= 5; i++) {
@@ -49,7 +49,7 @@ GraphContainer* BuildK33() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(6, 9);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Vertices 1,2,3 in one partition, 4,5,6 in the other
     for(int i = 1; i <= 3; i++) {
@@ -66,7 +66,7 @@ GraphContainer* BuildPetersenGraph() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(10, 15);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Outer pentagon: vertices 1-5
     for(int i = 1; i <= 5; i++) {
@@ -91,7 +91,7 @@ GraphContainer* BuildWheelGraph(int spokes) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(spokes + 1, 2 * spokes);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     tvertex center(1);
 
@@ -118,7 +118,7 @@ GraphContainer* BuildPath(int n) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, n - 1);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     for(int i = 1; i < n; i++) {
         G.NewEdge(tvertex(i), tvertex(i + 1));
@@ -132,7 +132,7 @@ GraphContainer* BuildCycle(int n) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, n);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     for(int i = 1; i <= n; i++) {
         G.NewEdge(tvertex(i), tvertex(i % n + 1));
@@ -146,7 +146,7 @@ GraphContainer* BuildTree(int n) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, n - 1);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Create a simple binary-ish tree
     for(int i = 2; i <= n; i++) {
@@ -164,7 +164,7 @@ GraphContainer* BuildStar(int n) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n + 1, n);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     tvertex center(1);
     for(int i = 2; i <= n + 1; i++) {
@@ -179,7 +179,7 @@ GraphContainer* BuildOuterplanar(int n) {
     GraphContainer* gc = BuildCycle(n);
 
     if(n >= 4) {
-        TopologicalGraph G(gc);
+        TopologicalGraph G(*gc);
         // Add a chord to make it interesting but keep it outerplanar
         G.NewEdge(tvertex(1), tvertex(3));
     }
@@ -195,7 +195,7 @@ GraphContainer* BuildMaximalPlanar(int n) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, 3 * n - 6);  // Maximal planar has 3n-6 edges
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Initial triangle
     G.NewEdge(tvertex(1), tvertex(2));
@@ -237,7 +237,7 @@ GraphContainer* BuildSingleEdge() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(2, 1);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
     G.NewEdge(tvertex(1), tvertex(2));
 
     return gc;
@@ -250,7 +250,7 @@ GraphContainer* BuildDisconnectedGraph(int components, int verticesPerComponent)
     GraphContainer* gc = new GraphContainer();
     gc->setsize(totalVertices, totalEdges);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Create each component as a path
     for(int c = 0; c < components; c++) {
@@ -267,7 +267,7 @@ GraphContainer* BuildGraphWithMultipleEdges() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(2, 2);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Add two edges between the same vertices
     G.NewEdge(tvertex(1), tvertex(2));
@@ -280,7 +280,7 @@ GraphContainer* BuildGraphWithSelfLoops() {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(2, 2);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Add self-loop
     G.NewEdge(tvertex(1), tvertex(1));
@@ -305,7 +305,7 @@ GraphContainer* BuildFromAdjacencyMatrix(const std::vector<std::vector<int>>& ad
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, m);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Add edges (1-based indexing in Pigale)
     for(int i = 0; i < n; i++) {
@@ -323,7 +323,7 @@ GraphContainer* BuildFromEdgeList(int n, const std::vector<std::pair<int, int>>&
     GraphContainer* gc = new GraphContainer();
     gc->setsize(n, edges.size());
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     for(const auto& edge : edges) {
         // Convert from 0-based to 1-based indexing

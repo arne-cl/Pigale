@@ -28,13 +28,13 @@ bool PropertyValidator::ValidateAllProperties(const GraphContainer& gc) {
     return true;
 }
 
-bool PropertyValidator::ValidateCirAcir(const TopologicalGraph& G) {
+bool PropertyValidator::ValidateCirAcir(TopologicalGraph& G) {
     if(!G.Exist(PROP_CIR) || !G.Exist(PROP_ACIR)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(), PROP_CIR);
-    Prop<tbrin> acir(G.Set(), PROP_ACIR);
+    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
+    Prop<tbrin> acir(G.Set(tbrin()), PROP_ACIR);
 
     // Check invariant for all brins
     for(tedge e = 1; e <= G.ne(); e++) {
@@ -55,13 +55,13 @@ bool PropertyValidator::ValidateCirAcir(const TopologicalGraph& G) {
     return true;
 }
 
-bool PropertyValidator::ValidateVinPbrin(const TopologicalGraph& G) {
+bool PropertyValidator::ValidateVinPbrin(TopologicalGraph& G) {
     if(!G.Exist(PROP_VIN) || !G.Exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tvertex> vin(G.Set(), PROP_VIN);
-    Prop<tbrin> pbrin(G.Set(), PROP_PBRIN);
+    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
+    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
 
     // Check that pbrin points to a brin incident to the vertex
     for(tvertex v = 1; v <= G.nv(); v++) {
@@ -83,12 +83,12 @@ bool PropertyValidator::ValidateVinPbrin(const TopologicalGraph& G) {
     return true;
 }
 
-bool PropertyValidator::ValidateCoordinates(const GeometricGraph& G) {
+bool PropertyValidator::ValidateCoordinates(GeometricGraph& G) {
     if(!G.Exist(PROP_COORD)) {
         return false;
     }
 
-    Prop<Tpoint> vcoord(G.Set(), PROP_COORD);
+    Prop<Tpoint> vcoord(G.Set(tvertex()), PROP_COORD);
 
     for(tvertex v = 1; v <= G.nv(); v++) {
         Tpoint p = vcoord[v];
@@ -114,17 +114,17 @@ bool PropertyValidator::ValidatePropertyBounds(const GraphContainer& gc) {
     return true;
 }
 
-bool CheckCircularInvariant(const TopologicalGraph& G) {
+bool CheckCircularInvariant(TopologicalGraph& G) {
     return PropertyValidator::ValidateCirAcir(G);
 }
 
-bool CheckCircularCompleteness(const TopologicalGraph& G) {
+bool CheckCircularCompleteness(TopologicalGraph& G) {
     if(!G.Exist(PROP_CIR) || !G.Exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(), PROP_CIR);
-    Prop<tbrin> pbrin(G.Set(), PROP_PBRIN);
+    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
+    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
 
     // For each vertex, follow the circular order and verify it forms a complete cycle
     for(tvertex v = 1; v <= G.nv(); v++) {
@@ -166,14 +166,14 @@ bool CheckCircularCompleteness(const TopologicalGraph& G) {
     return true;
 }
 
-bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G) {
+bool CheckAllBrinsInCircularOrder(TopologicalGraph& G) {
     if(!G.Exist(PROP_CIR) || !G.Exist(PROP_VIN) || !G.Exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(), PROP_CIR);
-    Prop<tvertex> vin(G.Set(), PROP_VIN);
-    Prop<tbrin> pbrin(G.Set(), PROP_PBRIN);
+    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
+    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
+    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
 
     // Collect all brins in circular orders
     std::set<tbrin> brinsInOrders;
@@ -205,16 +205,16 @@ bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G) {
 // Note: Template functions moved to header if needed
 // This was a placeholder - proper implementation would be type-specific
 
-bool AreCoordinatesFinite(const GeometricGraph& G) {
+bool AreCoordinatesFinite(GeometricGraph& G) {
     return PropertyValidator::ValidateCoordinates(G);
 }
 
-bool AreColorsValid(const GeometricGraph& G) {
+bool AreColorsValid(GeometricGraph& G) {
     if(!G.Exist(PROP_COLOR)) {
         return true;  // No colors defined is OK
     }
 
-    Prop<short> vcolor(G.Set(), PROP_COLOR);
+    Prop<short> vcolor(G.Set(tvertex()), PROP_COLOR);
 
     // Basic check - colors should be non-negative
     for(tvertex v = 1; v <= G.nv(); v++) {

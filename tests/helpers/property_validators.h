@@ -25,9 +25,9 @@ public:
     static bool ValidateAllProperties(const GraphContainer& gc);
 
     // Property-specific validators
-    static bool ValidateCirAcir(const TopologicalGraph& G);
-    static bool ValidateVinPbrin(const TopologicalGraph& G);
-    static bool ValidateCoordinates(const GeometricGraph& G);
+    static bool ValidateCirAcir(TopologicalGraph& G);
+    static bool ValidateVinPbrin(TopologicalGraph& G);
+    static bool ValidateCoordinates(GeometricGraph& G);
 
     // Check property bounds (values within expected ranges)
     static bool ValidatePropertyBounds(const GraphContainer& gc);
@@ -38,13 +38,13 @@ public:
  */
 
 // Check that cir[acir[b]] == b for all brins
-bool CheckCircularInvariant(const TopologicalGraph& G);
+bool CheckCircularInvariant(TopologicalGraph& G);
 
 // Check that each vertex's circular order forms a complete cycle
-bool CheckCircularCompleteness(const TopologicalGraph& G);
+bool CheckCircularCompleteness(TopologicalGraph& G);
 
 // Check that all incident brins are in the circular order
-bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G);
+bool CheckAllBrinsInCircularOrder(TopologicalGraph& G);
 
 /**
  * @brief Property value checks
@@ -54,10 +54,10 @@ bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G);
 // and better handled by specific validators like AreCoordinatesFinite, etc.
 
 // Check that coordinates are finite (not NaN or infinity)
-bool AreCoordinatesFinite(const GeometricGraph& G);
+bool AreCoordinatesFinite(GeometricGraph& G);
 
 // Check that color values are valid (non-negative)
-bool AreColorsValid(const GeometricGraph& G);
+bool AreColorsValid(GeometricGraph& G);
 
 } // namespace TestHelpers
 

@@ -12,7 +12,7 @@
 
 namespace TestHelpers {
 
-bool IsIsomorphic(const Graph& G1, const Graph& G2) {
+bool IsIsomorphic(Graph& G1, Graph& G2) {
     // TODO: Full isomorphism testing is NP-complete
     // This is a basic check only - just checks counts match
     // For proper isomorphism testing, would need to implement
@@ -28,7 +28,7 @@ bool IsIsomorphic(const Graph& G1, const Graph& G2) {
     return true;  // Placeholder - needs full implementation
 }
 
-bool HasSameEmbedding(const TopologicalGraph& G1, const TopologicalGraph& G2) {
+bool HasSameEmbedding(TopologicalGraph& G1, TopologicalGraph& G2) {
     if(G1.nv() != G2.nv() || G1.ne() != G2.ne()) {
         return false;
     }
@@ -38,17 +38,17 @@ bool HasSameEmbedding(const TopologicalGraph& G1, const TopologicalGraph& G2) {
     return true;  // Placeholder
 }
 
-bool HasSameCounts(const Graph& G1, const Graph& G2) {
+bool HasSameCounts(Graph& G1, Graph& G2) {
     return G1.nv() == G2.nv() && G1.ne() == G2.ne();
 }
 
-bool ValidateCircularOrder(const TopologicalGraph& G) {
+bool ValidateCircularOrder(TopologicalGraph& G) {
     if(!G.Exist(PROP_CIR) || !G.Exist(PROP_ACIR)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(), PROP_CIR);
-    Prop<tbrin> acir(G.Set(), PROP_ACIR);
+    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
+    Prop<tbrin> acir(G.Set(tbrin()), PROP_ACIR);
 
     // Check invariant: cir[acir[b]] == b
     for(tedge e = 1; e <= G.ne(); e++) {
@@ -73,7 +73,7 @@ bool ValidateCircularOrder(const TopologicalGraph& G) {
     return true;
 }
 
-bool ValidatePlanarMap(const TopologicalGraph& G) {
+bool ValidatePlanarMap(TopologicalGraph& G) {
     if(!G.Exist(PROP_PLANARMAP) || !G.Set(PROP_PLANARMAP)) {
         return false;
     }
@@ -81,12 +81,12 @@ bool ValidatePlanarMap(const TopologicalGraph& G) {
     return ValidateCircularOrder(G);
 }
 
-bool ValidateCoordinates(const GeometricGraph& G) {
+bool ValidateCoordinates(GeometricGraph& G) {
     if(!G.Exist(PROP_COORD)) {
         return false;
     }
 
-    Prop<Tpoint> vcoord(G.Set(), PROP_COORD);
+    Prop<Tpoint> vcoord(G.Set(tvertex()), PROP_COORD);
 
     for(tvertex v = 1; v <= G.nv(); v++) {
         Tpoint p = vcoord[v];
@@ -101,7 +101,7 @@ bool ValidateCoordinates(const GeometricGraph& G) {
     return true;
 }
 
-bool CheckNoEdgeCrossings(const GeometricGraph& G) {
+bool CheckNoEdgeCrossings(GeometricGraph& G) {
     // TODO: Implement edge crossing detection
     // This requires checking all pairs of non-adjacent edges for intersection
     // Algorithm:
@@ -115,11 +115,11 @@ bool CheckNoEdgeCrossings(const GeometricGraph& G) {
     return true;
 }
 
-bool VerifyGraphInvariants(const Graph& G) {
+bool VerifyGraphInvariants(Graph& G) {
     return VerifyVertexEdgeCounts(G) && VerifyBrinIncidence(G);
 }
 
-bool VerifyVertexEdgeCounts(const Graph& G) {
+bool VerifyVertexEdgeCounts(Graph& G) {
     int nv = G.nv();
     int ne = G.ne();
 
@@ -131,12 +131,12 @@ bool VerifyVertexEdgeCounts(const Graph& G) {
     return true;
 }
 
-bool VerifyBrinIncidence(const TopologicalGraph& G) {
+bool VerifyBrinIncidence(TopologicalGraph& G) {
     if(!G.Exist(PROP_VIN)) {
         return false;
     }
 
-    Prop<tvertex> vin(G.Set(), PROP_VIN);
+    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
 
     for(tedge e = 1; e <= G.ne(); e++) {
         tbrin b1 = e();
@@ -157,7 +157,7 @@ bool VerifyBrinIncidence(const TopologicalGraph& G) {
     return true;
 }
 
-bool VerifyDegreeSequence(const Graph& G, const std::vector<int>& expectedDegrees) {
+bool VerifyDegreeSequence(Graph& G, const std::vector<int>& expectedDegrees) {
     if((int)expectedDegrees.size() != G.nv()) {
         return false;
     }
@@ -171,13 +171,13 @@ bool VerifyDegreeSequence(const Graph& G, const std::vector<int>& expectedDegree
     return true;
 }
 
-bool VerifyPbrinConsistency(const TopologicalGraph& G) {
+bool VerifyPbrinConsistency(TopologicalGraph& G) {
     if(!G.Exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tbrin> pbrin(G.Set(), PROP_PBRIN);
-    Prop<tvertex> vin(G.Set(), PROP_VIN);
+    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
+    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
 
     for(tvertex v = 1; v <= G.nv(); v++) {
         tbrin b = pbrin[v];
@@ -198,7 +198,7 @@ bool VerifyPbrinConsistency(const TopologicalGraph& G) {
     return true;
 }
 
-bool VerifyEulerFormula(const TopologicalGraph& G) {
+bool VerifyEulerFormula(TopologicalGraph& G) {
     if(!G.Exist(PROP_PLANARMAP) || !G.Set(PROP_PLANARMAP)) {
         return false;  // Not a planar map
     }
@@ -211,7 +211,7 @@ bool VerifyEulerFormula(const TopologicalGraph& G) {
     return (v - e + f == 2);
 }
 
-bool CheckPlanarBound(const Graph& G) {
+bool CheckPlanarBound(Graph& G) {
     int n = G.nv();
     int m = G.ne();
 
@@ -223,12 +223,12 @@ bool CheckPlanarBound(const Graph& G) {
     return m <= 3 * n - 6;
 }
 
-bool ValidateFaceOrientation(const TopologicalGraph& G) {
+bool ValidateFaceOrientation(TopologicalGraph& G) {
     // Placeholder for face orientation check
     return true;
 }
 
-bool ValidateExteriorFace(const TopologicalGraph& G) {
+bool ValidateExteriorFace(TopologicalGraph& G) {
     if(!G.Exist(PROP_EXTBRIN)) {
         return false;
     }
@@ -248,7 +248,7 @@ bool ValidateExteriorFace(const TopologicalGraph& G) {
     return true;
 }
 
-void PrintGraphInfo(const Graph& G) {
+void PrintGraphInfo(Graph& G) {
     std::cout << "Graph Info:" << std::endl;
     std::cout << "  Vertices: " << G.nv() << std::endl;
     std::cout << "  Edges: " << G.ne() << std::endl;
@@ -262,14 +262,14 @@ void PrintGraphInfo(const Graph& G) {
     std::cout << std::endl;
 }
 
-void PrintCircularOrder(const TopologicalGraph& G, tvertex v) {
+void PrintCircularOrder(TopologicalGraph& G, tvertex v) {
     if(!G.Exist(PROP_CIR) || !G.Exist(PROP_PBRIN)) {
         std::cout << "Circular order not available" << std::endl;
         return;
     }
 
-    Prop<tbrin> cir(G.Set(), PROP_CIR);
-    Prop<tbrin> pbrin(G.Set(), PROP_PBRIN);
+    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
+    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
 
     std::cout << "Circular order for vertex " << v() << ": ";
 
@@ -296,7 +296,7 @@ void PrintCircularOrder(const TopologicalGraph& G, tvertex v) {
     std::cout << std::endl;
 }
 
-void PrintFaces(const TopologicalGraph& G) {
+void PrintFaces(TopologicalGraph& G) {
     if(!G.Exist(PROP_PLANARMAP) || !G.Set(PROP_PLANARMAP)) {
         std::cout << "Not a planar map" << std::endl;
         return;
