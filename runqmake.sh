@@ -1,12 +1,12 @@
 #!/bin/sh
 
 case "$OSTYPE" in
-  solaris*) SYSTEM"solaris" ;;
-  darwin*)  SYSTEM="osx" ;; 
+  solaris*) SYSTEM="solaris" ;;
+  darwin*)  SYSTEM="osx" ;;
   linux*)   SYSTEM="linux" ;;
   bsd*)     SYSTEM="bsd" ;;
   msys*)    SYSTEM="windows" ;;
-  *)        SYSTEM"unknown: $OSTYPE" ;;
+  *)        SYSTEM="unknown: $OSTYPE" ;;
 esac
 
 echo $SYSTEM
@@ -41,7 +41,7 @@ ${QMAKE}  -o Makefile  pigale.pro
 echo $VERSIONH>version.h
 cd tgraph
 ${QMAKE}  -o Makefile  tgraph.pro
-if [ $SYSTEM  != "osx" ]; then
+if [ $SYSTEM = "windows" ]; then
 	cd ../freeglut
 	${QMAKE}  -o Makefile  freeglut.pro
 	fi
