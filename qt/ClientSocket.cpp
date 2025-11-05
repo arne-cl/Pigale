@@ -126,7 +126,7 @@ void ClientSocket::writeClient(QString str)
 // send a message to the client
   {QWriteLocker locker(&lock);
   QString t = str+'\n'; 
-  clo.writeRawData(t.toAscii(),t.length()); 
+  clo.writeRawData(t.toLatin1(),t.length());
   socket->waitForBytesWritten(-1); 
   }
 void ClientSocket::writeClient(char * buff,uint size)
@@ -223,7 +223,7 @@ void ClientSocket::xhandler(const QString& dataAction)
   {int pos = dataAction.indexOf(PARAM_SEP);
   QString dataParam = dataAction.mid(pos+1);
   int action = mw->getActionInt( dataAction.left(pos));
-  if(sdebug)Tprintf("%s ",(const char *)dataAction.toAscii());
+  if(sdebug)Tprintf("%s ",(const char *)dataAction.toLatin1());
   //cout<<(const char *)dataAction.toAscii()<<endl;
   // call the right handler
   if(action == 0)
@@ -385,7 +385,7 @@ void ClientSocket::readClientGraph(int indexRemoteGraph)
   uint size = readBuffer(buffer);
   if(getPigaleError()){delete [] buffer;return;}
   QString  GraphFileName;
-  GraphFileName.sprintf("/tmp/graph%d.tmp",mw->ServerClientId);
+  GraphFileName = QString("/tmp/graph%1.tmp").arg(mw->ServerClientId);
   GraphFileName = universalFileName(GraphFileName);
   QFile file(GraphFileName);  //file.remove();
   file.open(QIODevice::WriteOnly  | QIODevice::Truncate);
@@ -492,7 +492,7 @@ void ClientSocket::handlerInput(int action,const QString& dataParam)
           TopologicalGraph G(mw->GC);
           for(int i = 0;i < n;i++)G.NewVertex();
           // Labels
-          Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+          Prop<int> vlabel(G.Set(tvertex()),PROP_LABEL);
           for(int i = 0;i <= n;i++)vlabel[i] = i;
           // Calcul des coordonnes
           Prop<Tpoint> vcoord(G.PV(),PROP_COORD);
@@ -588,7 +588,7 @@ void ClientSocket::handlerInfo(int action)
               {setPigaleError(-1,"NO LABEL");
               return;
               }
-          Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+          Prop<int> label(G.Set(tvertex()),PROP_LABEL);
           writeClientEvent("?"+mw->getActionString(action)+":");
           for(tvertex v = 1;v <= G.nv();v++)
               writeClientEvent("?"+QString("%1").arg(label[v]));

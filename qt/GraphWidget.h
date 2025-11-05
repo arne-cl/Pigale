@@ -23,10 +23,12 @@
 #define _GRAPH_WIDGET_H_INCLUDED_
 
 #include <QPainter>
-#include <QPrinter>
+//#include <QPrinter>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QGraphicsView>
+#include <QPixmap>
+#include <QGraphicsPixmapItem>
 #include <QList>
 #include <QStyleOptionGraphicsItem>
 #include <TAXI/graphs.h> 
@@ -46,8 +48,10 @@ const int edge_rtti    = min_rtti+7;//!Type indentifier of a EdgeItem
 const int curs_rtti    = min_rtti+8;//!Type indentifier of a CursorItem
 const int info_rtti    = min_rtti+9;//!Type indentifier of a InfoItem
 const int thick_rtti   = min_rtti+9;//!Type indentifier of a ThickItem
+const int pixmap_rtti  = min_rtti+21;//!Type indentifier of a ThickItem
 
 const int grid_z     =   1; //!Z-coordinate of the grid
+const int pixmap_z   =   2; //!Z-coordinate of the grid
 const int node_z     = 127; //!Z-coordinate of a  NodeItem
 const int col_z      = 2;   //!Z-coordinate of a ColorItem
 const int thick_z    = 2;   //!Z-coordinate of a ThickItem
@@ -58,10 +62,7 @@ const int inforect_z = 131; //!Z-coordinate of a rect containing the info
 const int info_z     = 132; //!Z-coordinate of a InfoItem
 
 const double xorient = .4;  //! constant used to draw an arrow
-const int sizerect   = 12;  //!size and space are used to draw the color palets
-const int sizerecth  = 8;   //!size and space are used to draw the thick palets
 const int space      = 1;   //!spece + sizerect <= 13 for screens 800x600
-const int BORDER     = 30;  //!free space around the graph drawing 
 
 class pigaleWindow; 
 class QPrinter;
@@ -69,6 +70,8 @@ class NodeItem;
 class EdgeItem;
 class GraphEditor;
 class GraphWidget;
+int sizeRectColor();
+int sizeBorder();
 
 //!used to display an arrow whose size and loaction depends on the edge length
 class ArrowItem: public QGraphicsPolygonItem
@@ -126,7 +129,13 @@ class InfoItem: public QGraphicsSimpleTextItem
   int type() const {return info_rtti;}
   QGraphicsRectItem* rectitem;
 };
-
+//Pixmap
+class PixmapItem:public QGraphicsPixmapItem
+{public:
+  PixmapItem(GraphWidget* g,QPixmap bgPixmap);
+  int type() const override {return pixmap_rtti ;}
+};
+ 
 //!Are the coloured rectangles used to define the colors of vertices and edges
 class ColorItem: public QGraphicsRectItem
 {public:
@@ -143,7 +152,7 @@ private:
 //!Used to modify  the width of an edge
 class ThickItem: public QGraphicsRectItem
 {public:
-  ThickItem(GraphWidget* g,QRectF &rect,int ewidth,int brush_color);
+  ThickItem(GraphWidget* g,const QRectF &rect,int ewidth,int brush_color);
   ~ThickItem() {}
   int type() const {return thick_rtti;}
   void SetBrushColor(int bcolor);
@@ -244,13 +253,15 @@ public slots:
   void ForceToGrid();
   void UndoGrid();
   void sizegridChanged(int i);
+  void loadImage();
+  void clearImage();
+  void opacityImage(int opacity);
 
 private:
   void mousePressEvent(QMouseEvent*);
   void mouseReleaseEvent(QMouseEvent*);
   void mouseMoveEvent(QMouseEvent*);
   void wheelEvent(QWheelEvent *event);
-
   void UpdateSizeGrid();
   void keyPressEvent(QKeyEvent *k);
 
@@ -258,7 +269,8 @@ private:
   pigaleWindow *mywindow;
   QPoint start_position;
   bool DoNormalise;
-  bool is_init;
+  //bool IsInitColThick = false;
+  bool is_init = false;
   short color_node;
   short color_edge;
   int width_edge;
@@ -270,7 +282,8 @@ private:
   double xstep,ystep;
   double undoxstep,undoystep;
   int key_pressed;
-  bool IsGrid;
+ bool IsGrid;
+  bool IsImage = false;
   double zoom;
   int nxstep,nystep;
   bool GridDrawn;

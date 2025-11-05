@@ -14,7 +14,6 @@
 
 #include <TAXI/graphs.h> 
 
-
 class pigaleWindow;
 class QPrinter;
 
@@ -63,7 +62,7 @@ private:
 private:
   pigaleWindow *mw;
   bool isHidden;
-  QPrinter* printer;
+  //QPrinter* printer;
   int index;
   double zoom;
   QPoint posClick;

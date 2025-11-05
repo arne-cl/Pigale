@@ -19,7 +19,7 @@ struct DFSKura : public DFSGraph
     Prop<int> ewidth;
     Prop<short> ecolor;
     Prop<short> vcolor;
-    Prop<int> elabel;
+    Prop<long> elabel;
     tedge e1,e2,np;
     bool isplanar;
     bool EgaliteBasse;
@@ -59,7 +59,7 @@ class DFSKura2 : public DFSKura
     tvertex l1,l2,lp,t1,t2;
     bool Success;
     int RetVal;
-    short lastc;
+    //hub short lastc;
     tedge laste;
 
 public:

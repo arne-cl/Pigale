@@ -44,6 +44,8 @@ Utilisation:
 
 #ifndef TMAP_H
 #define TMAP_H
+
+
 #include <TAXI/Tsvector.h>
 
 template <class T>
@@ -66,7 +68,7 @@ class smap : public svector<T>
 
     
     int IndexByKey(long l)
-        { int i=ComputeHash(l);
+        {int i=ComputeHash(l);
         int j=Hash[i]-1;
         int k=0;
         
@@ -94,11 +96,11 @@ class smap : public svector<T>
         int ExistingIndexByKey(long l)
         { int i=ComputeHash(l);
         int j=Hash[i]-1;
-        int k;
+        //int k;
         
         if (j<0) return -1;
         else while (j>=0)
-            {k=j;
+            {//k=j;
             if (Key[j]==l) return j;
             else j=Next[j];
             }

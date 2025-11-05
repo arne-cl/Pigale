@@ -461,7 +461,7 @@ class Prop : public rsvector<T>
        */
     static _svector & get (PSet &X, int num)
     	{if (X(num)==(vProp *)0)
-		    if (X[num]==(_svector *)0) // do not exist
+		    {if (X[num]==(_svector *)0) // do not exist
             	X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish()));
 			else
 				{X.reg(num,new vP<T>); // unregistered
@@ -471,6 +471,7 @@ class Prop : public rsvector<T>
         			myabort();}
 #endif
 				}
+		    }
 #ifdef TDEBUG
 		else if (X(num)->size_elmt() != sizeof(T))
 		{DPRINTF(("Prop #%d size_elmt : %d instead of %d",num,X(num)->size_elmt(),sizeof(T)))//;
@@ -489,7 +490,7 @@ class Prop : public rsvector<T>
        */
     static _svector & get (PSet &X, int num,const T& value)
     	{if (X(num)==(vProp *)0)
-		    if (X[num]==(_svector *)0) // do not exist
+		    {if (X[num]==(_svector *)0) // do not exist
    	         	X.reg(num,new vP<T>,new svector<T>(X.start(),X.finish(),value));
 		    else
 		       	{X.reg(num,new vP<T>); // unregistered
@@ -500,6 +501,7 @@ class Prop : public rsvector<T>
         			myabort();}
 #endif
 				}
+		}
 #ifdef TDEBUG
 		else if (X(num)->size_elmt() != sizeof(T))
 		{DPRINTF(("Prop #%d size_elmt : %d instead of %d",num,X(num)->size_elmt(),sizeof(T)))//;
@@ -787,7 +789,7 @@ class Prop1
     static T & get (PSet1 &X, int num, const T& value)
 	{
     if (X(num)==(vProp1 *)0)
-	    if (X[num]==(void *)0) // do not exist
+	    {if (X[num]==(void *)0) // do not exist
             X.reg(num,new vP1<T>,new T(value));
 	    else
 	        { _svector *p = (_svector *)X[num];
@@ -795,6 +797,7 @@ class Prop1
 		    TypeHandler<T>::Import(*(T *)X[num],p);
             delete p;
 		    }
+		}
 	return *(T *)X[num];
 	}
       //! get a property
@@ -808,7 +811,7 @@ class Prop1
     static T & get (PSet1 &X, int num)
 	{
     if (X(num)==(vProp1 *)0)
-	    if (X[num]==(void *)0) // do not exist
+	    {if (X[num]==(void *)0) // do not exist
             X.reg(num,new vP1<T>,new T);
 	    else
 	        { _svector *p = (_svector *)X[num];
@@ -816,6 +819,7 @@ class Prop1
 		    TypeHandler<T>::Import(*(T *)X[num],p);
             delete p;
 		    }
+		}
 	return *(T *)X[num];
 	}
       //! constructor

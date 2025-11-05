@@ -1,6 +1,8 @@
 #include <Pigale.h>
+#include <limits>
 
 
+    
 int main ()
 {   
   GraphContainer GC; // defined in TAXI/graph.h
@@ -24,10 +26,8 @@ int main ()
   vin[3] = 2; vin[-3] = 3; 
   vin[4] = 3; vin[-4] = 4; 
   vin[5] = 2; vin[-5] = 4;  // vin[-5] = 4 could be written vin[(tbrin)-5] = (tvertex)4;
-
   // create a topological graph access
   TopologicalGraph G(GC); // defined in TAXI/graphs.h
-
   // print the number of vertices and edges
   cout << "Nodes: " << G.nv() << "\tEdges: " << G.ne()<< endl;
 
@@ -38,10 +38,12 @@ int main ()
 
   // at this point loops are FORBIDDEN. You can remove them:
   // int nloops = RemoveLoops();
-
+   cout<<"**********"<<endl;
   // Compute a planar embedding or return -1
   if(G.Planarity() == 0) 
     {cout << "not planar" << endl; return -1;}
+  else
+    cout << "planar graph" << endl;
 
   // At each vertex v  there is a tbrin G.pbrin[v] incident to it: G.vin[G.pbrin[v]] = v;
   // So we can print the planar map (cirular order of half edges around each  vertex)
@@ -65,7 +67,7 @@ int main ()
 	{cout << G.vin[-b]() << " ";
 	}while((b = G.cir[b]) != first);
       cout << endl;
-    }
+    } 
   return 0;      
   }
 

@@ -17,5 +17,7 @@ void randomInitSeed();             // called once, when program  start
 void randomStart();                // called when needed randoms number
 void randomEnd();                  // save a new seed
 long randomGet(long range);        // returns an integer >= 1 && <= range  
+long randomGet();
 void randomShuffle(svector<int> &tab); // randomly permuts the elements of tab
+unsigned long randomMax();
 #endif

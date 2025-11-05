@@ -174,13 +174,13 @@ void Embed::FillUpperHalfEdges()
                   break;
 
                   case CAS(GAUCHE,DROITE) :/* feeding toprif with flipped edges */
-                      if(LrSort.tref[vi] == 0 || LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN)
+                      if(LrSort.tref[vi] == 0 || (LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN))
                           {ins_top(ee,botli,topli);break;}
                       ins_top(ee,botrif,toprif);
                       break;
 
                   case CAS(DROITE,GAUCHE) :/* feeding botlif with flipped edges */
-                      if(LrSort.tref[vi] == 0 || LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN)
+                      if(LrSort.tref[vi] == 0 || (LrSort.tref[vi] < n  &&  status[LrSort.tref[vi]] < PROP_TSTATUS_THIN))
                           {ins_bot(ee,botri,topri);break;}
                       ins_bot(ee,botlif,toplif);
                       break;

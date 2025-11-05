@@ -21,19 +21,18 @@ UndoMax  : # of save graphs
 UndoSave : index of graph to restore [1,UndoMax]
 Should always be possible to restore 1
 */
-#include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include <TAXI/Tgf.h>
 #include <QT/Action_def.h>
 
 
-//static char undofile[L_tmpnam] = "/tmp/undo_XXXXXX" ;
-//#if defined(_WINDOWS) || defined(_WIN32)
+
+#if defined(_WINDOWS) || defined(_WIN32)
 static char undofile[L_tmpnam] = "_undo.tgf" ;
-// #else
-// static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
-// #endif
+#else
+static char undofile[L_tmpnam] = "/tmp/_undo.tgf" ;
+#endif
 
 void pigaleWindow::UndoInit()
   {Tgf undo_tgf;

@@ -34,8 +34,9 @@ struct DFSGraph : public GraphAccess
     GraphAccess(GC), G(GG), Gvin(GG.Set(tbrin()),PROP_VIN),
     nvin(Set(tbrin()),PROP_VIN), _ib(Set(tedge()),PROP_INITIALB), uptree(G.nv(),G.ne())
   {setsize(G.nv(),G.ne());
-  nvin.SetName("DFSGraph:1:nvin");
-  _ib.SetName("DFSGraph:1:_ib");
+  nvin.SetName("DFSGraph:nvin");
+  _ib.SetName("DFSGraph:_ib");
+  uptree.SetName("DFSGraph:uptree");
   DoDFS(b0);
   } 
 

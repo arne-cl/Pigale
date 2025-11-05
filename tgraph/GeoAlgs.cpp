@@ -241,8 +241,8 @@ GraphContainer * GeometricGraph::GeometricDualGraph()
   tbrin b,bb;
   Prop<tvertex> dvin(Dual.PB(),PROP_VIN);      dvin.clear();
   Prop<Tpoint> dcoord(Dual.PV(),PROP_COORD);   dcoord.clear();
-  Prop<long> dvlabel(Dual.PV(),PROP_LABEL);
-  Prop<long> delabel(Dual.PE(),PROP_LABEL);
+  Prop<int> dvlabel(Dual.PV(),PROP_LABEL);
+  Prop<int> delabel(Dual.PE(),PROP_LABEL);
   svector<int> fdegree(1,nn);    fdegree.clear();
   svector<int> mark(-m,m);       mark.clear();
   svector<tedge> DualEdge(1,m);  DualEdge.clear();
@@ -305,8 +305,8 @@ GraphContainer * GeometricGraph::DualGraph()
   tbrin b,bb;
   Prop<tvertex> dvin(Dual.PB(),PROP_VIN);    dvin.clear();
   Prop<Tpoint> dcoord(Dual.PV(),PROP_COORD); dcoord.clear();
-  Prop<long> dvlabel(Dual.PV(),PROP_LABEL);
-  Prop<long> delabel(Dual.PE(),PROP_LABEL);
+  Prop<int> dvlabel(Dual.PV(),PROP_LABEL);
+  Prop<int> delabel(Dual.PE(),PROP_LABEL);
   svector<int> fdegree(1,m-n+2);             fdegree.clear();
   tvertex nf = 0;
   for (b = -m; b <= m; b++)
@@ -355,8 +355,8 @@ GraphContainer * GeometricGraph::GeometricAngleGraph()
   tbrin b,bb;
   Prop<tvertex> dvin(Angle.PB(),PROP_VIN);     dvin.clear();
   Prop<Tpoint> dcoord(Angle.PV(),PROP_COORD);  dcoord.clear();
-  Prop<long> dvlabel(Angle.PV(),PROP_LABEL);         
-  Prop<long> delabel(Angle.PE(),PROP_LABEL);
+  Prop<int> dvlabel(Angle.PV(),PROP_LABEL);         
+  Prop<int> delabel(Angle.PE(),PROP_LABEL);
   svector<int> fdegree(n,m+1);                 fdegree.clear();
   svector<int> mark(-m,m);                     mark.clear();
 
@@ -415,8 +415,8 @@ GraphContainer * GeometricGraph::AngleGraph()
   tbrin b,bb;
   Prop<tvertex> dvin(Angle.PB(),PROP_VIN);    dvin.clear();
   Prop<Tpoint> dcoord(Angle.PV(),PROP_COORD); dcoord.clear();
-  Prop<long> dvlabel(Angle.PV(),PROP_LABEL);   
-  Prop<long> delabel(Angle.PE(),PROP_LABEL);   
+  Prop<int> dvlabel(Angle.PV(),PROP_LABEL);   
+  Prop<int> delabel(Angle.PE(),PROP_LABEL);   
   svector<int> fdegree(n,nn); fdegree.clear();      
   svector<int> mark(-m,m);  mark.clear();   mark.SetName("Mark");
   tvertex nf = n;

@@ -37,6 +37,12 @@ public:
   static int  MaxND;
   static int  nCut;
   static int  sizeImage;
+  static int  Ew;
+  static int  Vw;
+  static int  fog;
+  static int  trsp;
+  static int  opacityLevel;
+  static double  yscale;
   static QString  fileImage;
   static QString  dirImage;
 

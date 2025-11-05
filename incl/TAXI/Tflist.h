@@ -25,7 +25,7 @@ class flist {
     int head, tail, len, current;
     tarray<int> next;
     tarray<int> prev;
-    stack<int> unused;
+    tstack<int> unused;
 
     public:
 
@@ -113,7 +113,7 @@ class flist {
         return cur_valid();
         }
     inline int operator++(int i) const
-        {for (operator++(); i && cur_valid(); (operator++(), i--));
+        {for (operator++(); i && cur_valid(); (operator++(), i--)){;}
         return cur_valid();
         }
     int operator--() const
@@ -123,7 +123,7 @@ class flist {
         return cur_valid();
         }
     inline int operator--(int i) const
-        {for (operator--(); i && current; (operator--(), i--));
+        {for (operator--(); i && current; (operator--(), i--)){;}
         return cur_valid();
         }
     inline void cyclic_succ()
@@ -221,7 +221,7 @@ class flist {
         {table.clear(); head = tail = current = -1;
         len = 0; next.clear(); prev.clear(); unused.clear();
         }
-    inline const char * const class_name() const
+    inline const char *  class_name() const
         {return "flist"; }
 };
 

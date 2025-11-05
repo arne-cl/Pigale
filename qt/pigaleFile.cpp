@@ -15,7 +15,6 @@
 \brief Loading and saving a graph
 */
 
-#include <config.h>
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
 #include <TAXI/Tgf.h>
@@ -35,21 +34,22 @@ void pigaleWindow::load()
   QStringList formats;
   QString filter, selfilter;
   selfilter = "All (*)";
-  for (int  i = 0; i< IO_n();i++)
-      {filter = IO_Name(i);
-      filter += "(*";
-      if (QString(IO_Ext(i)) != "!") {filter += "."; filter += IO_Ext(i);}
-      filter += ")";
-      formats += filter;
-      if(filter.contains(extension))selfilter=filter;
-      }
+  LogPrintf("dir:%s  \n",(const char*)fi.path().toLatin1());
+  if(fi.exists()) 
+      for (int  i = 0; i< IO_n();i++)
+         {filter = IO_Name(i);
+         filter += "(*";
+         if (QString(IO_Ext(i)) != "!") {filter += "."; filter += IO_Ext(i);}
+         filter += ")";
+         formats += filter;
+         if(filter.contains(extension))selfilter=filter;
+         }
     formats += "All (*)";
     QString FileName = QFileDialog::getOpenFileName(this
                                                     ,tr("Choose a file to open")
-                                                    ,fi.filePath()
+                                                    ,fi.filePath() //,fi.path()
                                                     ,formats.join(";;")
                                                     ,&selfilter);
-
     if(!FileName.isEmpty())
       {InputFileName = FileName;
       int i = 0;
@@ -57,24 +57,26 @@ void pigaleWindow::load()
           {if (selfilter==*it) break;
           }
       if (i == IO_n()) // All
-          {i = IO_WhoseIs((const char *)FileName.toAscii());
+          {i = IO_WhoseIs((const char *)FileName.toLatin1());
           if (i<0) 
-              {QString m;
-              m.sprintf("Could not read:%s",(const char *)InputFileName.toAscii());
-              statusBar()->showMessage(m,2000);
-              LogPrintf("%s: unrecognized format\n",(const char *)InputFileName.toAscii());
+              {
+              //QString m; m.sprintf("Could not read:%s",(const char *)InputFileName.toLatin1());
+              QString m = QString("Could not read:%1").arg((const char *)InputFileName.toLatin1() );
+              statusBar()->showMessage(m,5000);
+              LogPrintf("%s: unrecognized format\n",(const char *)InputFileName.toLatin1());
               return;
               }	  
           }
+          
       InputDriver = i;
       *pGraphIndex = 1;
-      int NumRecords = IO_GetNumRecords(i,(const char *)InputFileName.toAscii());
+      int NumRecords = IO_GetNumRecords(i,(const char *)InputFileName.toLatin1());
       if(NumRecords > 1)
-          {bool ok = FALSE;
+          {bool ok = false;
           QStringList titles;
           QString item;
           for (int j=1; j<=NumRecords; j++)
-              {item.sprintf("%d: %s",j,(const char *)IO_Title(i,(const char *)InputFileName.toAscii(),j));
+              {item = QString("%1: %2").arg(j).arg((const char *)IO_Title(i,(const char *)InputFileName.toLatin1(),j));
               titles+=item;
               }
           QString res = QInputDialog::getItem(this,
@@ -97,31 +99,31 @@ int pigaleWindow::publicLoad(int pos)
   {QFileInfo fi(InputFileName);
   QString m;
    if(!fi.exists() || fi.size() == 0)
-       {m = QString("file -%1- does not exist").arg(InputFileName);
-       LogPrintf("%s\n",(const char *)m.toAscii());
+       {m = QString("file: -%1- does not exist").arg(InputFileName);
+       LogPrintf("%s\n",(const char *)m.toLatin1());
        setPigaleError(-1,"Non existing file");
        return -1;
       } 
-   int i = IO_WhoseIs((const char *)InputFileName.toAscii());
+   int i = IO_WhoseIs((const char *)InputFileName.toLatin1());
    if(i < 0) 
        {m = QString("%1: unrecognized format").arg(InputFileName);
-     LogPrintf("%s\n",(const char *)m.toAscii());
+     LogPrintf("%s\n",(const char *)m.toLatin1());
      setPigaleError(-1,"unrecognized format");
      return -1;
      }
    InputDriver = i;
-  int NumRecords =IO_GetNumRecords(i,(const char *)InputFileName.toAscii());
+  int NumRecords =IO_GetNumRecords(i,(const char *)InputFileName.toLatin1());
   *pGraphIndex = pos;
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
-  if(IO_Read(i,GC,(const char *)InputFileName.toAscii(),NumRecords,*pGraphIndex) != 0)
+  if(IO_Read(i,GC,(const char *)InputFileName.toLatin1(),NumRecords,*pGraphIndex) != 0)
       {m = QString("Could not read:%1").arg(InputFileName);
-      LogPrintf("%s\n",(const char *)m.toAscii());
+      LogPrintf("%s\n",(const char *)m.toLatin1());
       return -2;
       }
   QFile file(InputFileName);
   file.remove();
-  if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName.toAscii(),*pGraphIndex,NumRecords);
+  if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName.toLatin1(),*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   return *pGraphIndex;
@@ -131,29 +133,37 @@ int pigaleWindow::load(int pos)
   QString m;
   QFileInfo fi(InputFileName);
   if(!fi.exists() || fi.size() == 0)
-      {m = QString("file -%1- does not exist").arg(InputFileName);
-      if(!ServerExecuting)statusBar()->showMessage(m,2000);
-      LogPrintf("%s\n",(const char *)m.toAscii());
+      {m = QString("file:: -%1- does not exist").arg(InputFileName);
+      if(!ServerExecuting)statusBar()->showMessage(m,9000);
+      LogPrintf("%s\n",(const char *)m.toLatin1());
       return -1;
     }      
-  if (!IO_IsMine(InputDriver,(const char *)InputFileName.toAscii()))
-    {m.sprintf("file -%s- is not a valid %s",(const char *)InputFileName.toAscii(),IO_Name(InputDriver));
+  if (!IO_IsMine(InputDriver,(const char *)InputFileName.toLatin1()))
+    {m = QString("file -%1- is not a valid %2").arg((const char *)InputFileName.toLatin1()).arg(IO_Name(InputDriver));
     if(!ServerExecuting)statusBar()->showMessage(m,2000);
-    LogPrintf("%s\n",(const char *)m.toAscii());
+    LogPrintf("%s\n",(const char *)m.toLatin1());
       return -1;
     }
   UndoClear();UndoSave();
-  int NumRecords =IO_GetNumRecords(InputDriver,(const char *)InputFileName.toAscii());
+  int NumRecords =IO_GetNumRecords(InputDriver,(const char *)InputFileName.toLatin1());
   if(pos == 1)++(*pGraphIndex);
   else if(pos == -1)--(*pGraphIndex);
   if(*pGraphIndex > NumRecords)*pGraphIndex = 1;
   else if(*pGraphIndex < 1)*pGraphIndex += NumRecords;
-  if(IO_Read(InputDriver,GC,(const char *)InputFileName.toAscii(),NumRecords,*pGraphIndex) != 0)
+  //
+  if(InputDriver == 0 && !fi.isWritable())//Tgf file
+      {LogPrintf("%s TGF file not writable:\n",(const char *)m.toLatin1());
+      m = QString("File is not writable:%1").arg(InputFileName);
+      if(!ServerExecuting)Twait((const char *)m.toLatin1());
+      return -2;
+      }
+  if(IO_Read(InputDriver,GC,(const char *)InputFileName.toLatin1(),NumRecords,*pGraphIndex) != 0)
       {m = QString("Could not read:%1").arg(InputFileName);
       if(!ServerExecuting)statusBar()->showMessage(m,2000);
+      LogPrintf("%s\n",(const char *)m.toLatin1());
       return -2;
     }
-  if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName.toAscii(),*pGraphIndex,NumRecords);
+  if(debug())DebugPrintf("\n**** %s: %d/%d",(const char *)InputFileName.toLatin1(),*pGraphIndex,NumRecords);
   Prop<bool> eoriented(GC.Set(tedge()),PROP_ORIENTED,false);
   TopologicalGraph G(GC);
   UndoSave();
@@ -178,19 +188,20 @@ int pigaleWindow::save(bool manual)
   if(manual)// ask for a title
       {Prop1<tstring> title(G.Set(),PROP_TITRE);
       QString titre(~title());
-      bool ok = TRUE;
+      bool ok = true;
       titre = QInputDialog::getText(this,
                                     "Pigale","Enter the graph name",
                                     QLineEdit::Normal,titre, &ok);
-      if(ok && !titre.isEmpty()) title() = (const char *)titre.toAscii();
+      if(ok && !titre.isEmpty()) title() = (const char *)titre.toLatin1();
       else if(!ok) return -1;
       }
  
-  if(IO_Save(OutputDriver,G,(const char *)OutputFileName.toAscii()) == 1)
-      {setPigaleError(-1,QString("Cannot open file:%1").arg(OutputFileName).toAscii());
+  if(IO_Save(OutputDriver,G,(const char *)OutputFileName.toLatin1()) == 1)
+      {setPigaleError(-1,QString("Cannot open file:%1").arg(OutputFileName).toLatin1());
+      Tprintf("ERROR SAVE:%s NOT FOUND",(const char *)OutputFileName.toLatin1());
       return -1;
       }
-  GraphIndex2 = IO_GetNumRecords(OutputDriver,(const char *)OutputFileName.toAscii());
+  GraphIndex2 = IO_GetNumRecords(OutputDriver,(const char *)OutputFileName.toLatin1());
   banner();
   return 0;
   }
@@ -230,7 +241,8 @@ void pigaleWindow::saveAs()
                                                     tr("Choose a filename to save under"),
                                                     fi.filePath(),
                                                     formats.join(";;"),
-                                                    &selfilter);
+                                                    &selfilter,
+                                                    QFileDialog::DontConfirmOverwrite);
     // &selfilter,QFileDialog::DontConfirmOverwrite);
     if(FileName.isEmpty())return;
     QString ext="";
@@ -244,16 +256,17 @@ void pigaleWindow::saveAs()
       FileName += IO_Ext(id);
       }
     OutputFileName = FileName;
+    Tprintf("OutputFile:%s",(const char *)OutputFileName.toLatin1());
     OutputDriver = id;
     save();
   }
 void pigaleWindow::deleterecord()
   {if (IO_Capabilities(InputDriver)&TAXI_FILE_RECORD_DEL)
-      IO_DeleteRecord(InputDriver,(const char *)InputFileName.toAscii(),*pGraphIndex);
+      IO_DeleteRecord(InputDriver,(const char *)InputFileName.toLatin1(),*pGraphIndex);
     else
       {QString m=(const char *)IO_Name(InputDriver);
 	m += " does not allow record deletion";
-	Twait((const char *)m.toAscii());
+    Twait((const char *)m.toLatin1());
       }
     banner();
   }
@@ -263,7 +276,9 @@ void pigaleWindow::switchInputOutput()
   Tswap(GraphIndex1,GraphIndex2);
   pGraphIndex   =  &GraphIndex1;
   load(0);
-}
+  Tprintf("InputFile:\n%s",(const char *)InputFileName.toLatin1());
+  Tprintf("OutputFile:\n%s",(const char *)OutputFileName.toLatin1());
+  }
 void pigaleWindow::NewGraph()
   {setPigaleError();
   statusBar()->showMessage("New graph");

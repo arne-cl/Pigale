@@ -15,7 +15,6 @@
 \brief Events and Threads
 */
 
-#include <config.h>
 #include "ClientSocket.h"
 #include "pigaleWindow.h"
 #include "GraphWidget.h"
@@ -66,7 +65,7 @@ void pigaleWindow::initServer()
           {port = server->serverPort();
           Tprintf("Server using port%d",port);
           menuIntAction[A_SERVER_INIT]->setText(tr("Close server"));
-          showMinimized();
+          //showMinimized();
           }
       }
   else if(!server->isListening ())
@@ -90,7 +89,8 @@ void pigaleWindow::initServer()
   }
 void pigaleWindow::customEvent(QEvent * ev)
   {ev->accept();
-  switch(ev->type())
+  int itype = ev->type();
+  switch(itype)
       {case  TEXT_EVENT:
           {textEvent *event  =  (textEvent  *)ev;
           Message(event->getString());
@@ -107,9 +107,15 @@ void pigaleWindow::customEvent(QEvent * ev)
       case WAIT_EVENT:
           {waitEvent *event  =  (waitEvent  *)ev;
           QString msg = event->getString();
-          int rep = QMessageBox::information (this,"Wait",msg,"","CANCEL","EXIT",0,0);
-          if(rep == 2)close();
+          //int rep = QMessageBox::information (this,"Wait",msg,"","CANCEL","EXIT",0,0);
+          int rep = QMessageBox::information (this,"Wait",msg,"OK","CANCEL","EXIT");
+          //rep 0-1-2
+          if(rep == 2)
+            {close();
+            QApplication::quit();
+            }
           }
+          break;
       case DRAWG_EVENT:
           gw->editor->update(1);
           break;
@@ -138,15 +144,18 @@ void pigaleWindow::customEvent(QEvent * ev)
   }
 void pigaleWindow::banner()
   {QString msg;  
-  int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName.toAscii());
-    int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName.toAscii());
-    msg.sprintf("Input: %s %d/%d  Output: %s %d Undo:%d/%d"
-                ,(const char *)InputFileName.toAscii()
-                ,*pGraphIndex,NumRecords
-                ,(const char *)OutputFileName.toAscii()
-                ,NumRecordsOut
-                ,UndoIndex,UndoMax);
+  int NumRecords =IO_GetNumRecords(0,(const char *)InputFileName.toLatin1());
+  int NumRecordsOut =IO_GetNumRecords(0,(const char *)OutputFileName.toLatin1());
+   msg = QString("Input: %1 %2/%3  Output: %4 %5 Undo:%6/%7")
+                .arg((const char *)InputFileName.toLatin1())
+                .arg(*pGraphIndex)
+                .arg(NumRecords)
+                .arg((const char *)OutputFileName.toLatin1())
+                .arg(NumRecordsOut)
+                .arg(UndoIndex)
+                .arg(UndoMax);
   bannerEvent *e = new bannerEvent(msg);
+  Tprintf("Input:%s \n%d/%d",(const char *)InputFileName.toLatin1(),*pGraphIndex,NumRecords);
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::postMessage(const QString &msg)
@@ -205,6 +214,8 @@ void pigaleWindow::computeInformation()
   Prop1<int> maptype(G.Set(),PROP_MAPTYPE,PROP_MAPTYPE_UNKNOWN);
   G.planarMap() = 0;
   postMessageClear();setPigaleError(0);
+  postMessage("InputFile:\n"+InputFileName);
+  postMessage("OutputFile:\n"+OutputFileName);
   graph_properties->update(GC,true);
   }
 void pigaleWindow::information(bool erase)
@@ -255,8 +266,11 @@ void pigaleWindow::settingsHandler(int action)
   QApplication::postEvent(this,e);
   return;
   }
+//#include <QWhatsThis>  
 void pigaleWindow::handler(QAction *qaction)
   {int Id = getId(qaction);
+  //if(QWhatsThis::inWhatsThisMode()){return;}
+  //QWhatsThis::enterWhatsThisMode();
   if(Id)handler(Id);
   }
 int pigaleWindow::handler(int action)
@@ -320,7 +334,7 @@ void pigaleWindow::postHandler(int action,int drawingType,int saveType)
   if(action < 0) // error
       {blockInput(false);
       if(getPigaleError())
-          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
+          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toLatin1());
           setPigaleError(0);
           }
       else
@@ -386,9 +400,9 @@ void pigaleWindow::postHandler(int action,int drawingType,int saveType)
   if(!MacroLooping && !MacroRecording && !ServerExecuting)
       {Tprintf("Used time:%3.3f (G+I:%3.3f)",Time,TimeG);
       if(getPigaleError())
-          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toAscii());
+          {Tprintf("Handler Error:%s",(const char *)getPigaleErrorString().toLatin1());
           setPigaleError(0);
-          if(debug())Twait((const char *)getPigaleErrorString().toAscii()); 
+          if(debug())Twait((const char *)getPigaleErrorString().toLatin1());
           }
       }
   qApp->processEvents();
@@ -438,7 +452,7 @@ void PigaleThread::run()
       int N1     = this->N1;
       int N2     = this->N2;
       int M      = this->M;
-      delay      = this->delay; 
+      //delay      = this->delay;
 
       if(abort)return;
       if(action && previous_action)

@@ -30,19 +30,18 @@ QString  universalFileName(QString const & fileName)
 QString  getPigaleErrorString()
   {QString m;
   if(getPigaleErrorMsg() &&  strlen(getPigaleErrorMsg()))
-      m.sprintf("Error:%d '%s' in %s:%d",getPigaleError(),getPigaleErrorMsg(),getPigaleErrorFile(),getPigaleErrorLine());
+      m = QString("Error:%1 '%2' in %3:%4").arg(getPigaleError()).arg(getPigaleErrorMsg()).arg(getPigaleErrorFile()).arg(getPigaleErrorLine());
   else
-      m.sprintf("Error:%d in %s:%d",getPigaleError(),getPigaleErrorFile(),getPigaleErrorLine());
+      m = QString("Error:%1 in %s:%2").arg(getPigaleError()).arg(getPigaleErrorFile()).arg(getPigaleErrorLine());
   return m;
   }
-
 QString getVertexLabel(GraphContainer &GC,tvertex v)
   {QString t;
   int prop = staticData::ShowVertex();
   if(prop == -3)
        t = "";
   else if(prop == -2)
-      t.sprintf("%2.2d",v());
+      t = QString("%1").arg(v(),2,10,QLatin1Char('0'));
   else if(prop == -1)
       {if(GC.Set().exist(PROP_VSLABEL) && GC.Set(tvertex()).exist(PROP_SLABEL))
           {Prop<int> slabel(GC.Set(tvertex()),PROP_SLABEL);
@@ -61,11 +60,18 @@ QColor OppCol(QColor & col)
 // to draw text on vertices
   {int hue,sat,val;
   col.getHsv(&hue,&sat,&val);
-  val = (val <= 192) ? 255 : 0;
+  val = (val <= 32) ? 255 : 0;
   QColor col1;
-  col1.setHsv((hue+180)%360,sat/2,val); 
+  col1.setHsv((hue+180)%360,sat,val); 
   return col1;
   }
+/*
+  {if(col.red() + col.green() +col.blue() > 255)
+      return QColor(9,9,0);
+   else
+      return QColor(255,255,255);
+  }
+*/
 QColor Desaturate(QColor & col)
   {int hue,sat,val;
   col.getHsv(&hue,&sat,&val);

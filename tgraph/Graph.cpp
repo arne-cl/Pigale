@@ -464,7 +464,7 @@ bool TopologicalGraph::DebugCir()
   
   for(tvertex v = 1;v <= nv();v++)
       {int degree = Degree(v);
-      if(!degree){DebugPrintf("DCisolated vertex v=%d",v());continue;}
+      if(!degree){DebugPrintf("DC isolated vertex v=%d",v());continue;}
       if(!pbrin[v]){DebugPrintf("DC no pbrin at v=%d",v());return false;}
       tbrin b0 = pbrin[v];
       tbrin b = b0;
@@ -484,6 +484,16 @@ bool TopologicalGraph::DebugCir()
                   }while((b = cir[b])!=b0);  
               return false;
               }
+          if(cir[acir[b]]!=b)
+              {DebugPrintf("DC1 at v=%d b=%d cir=%d acir[cir]=%d",v(),b(),cir[b](),acir[cir[b]]());
+              b = b0;
+              DebugPrintf("DC1 Around v=%d",v());
+              do
+                  {DebugPrintf("    %d cir:%d acir:%d",b(),cir[b](),acir[b]());
+                  }while((b = cir[b])!=b0);  
+              return false;
+              }
+              
           b = cir[b];
           i++;
           }while (b!=b0);

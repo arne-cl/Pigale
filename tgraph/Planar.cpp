@@ -64,7 +64,6 @@ int TopologicalGraph::Planarity(tbrin b0)
 //   if(!DebugCir())
 //       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
 // #endif
-  
   int m_origin = ne();
   MakeConnected();
   int m = ne();
@@ -83,7 +82,7 @@ int TopologicalGraph::Planarity(tbrin b0)
       setPigaleError(A_ERRORS_GDFSRENUM,"GDFSRenum ERROR");return A_ERRORS_GDFSRENUM;
       }
   nvin.Tswap(vin);
-  _Bicon Bicon(n);
+  _Bicon Bicon(n); 
   int ret = bicon(n,m,vin,Bicon,low);
   if(ret) Prop1<int> isbicon(Set(),PROP_BICONNECTED);
   _LrSort LrSort(n,m);
@@ -95,10 +94,13 @@ int TopologicalGraph::Planarity(tbrin b0)
   if(debug())DebugPrintf("Executing Embed lralgo = %d (1-Planar 0-NonPlanar)",ret);
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
+
   nvin.Tswap(vin);
-  Prop<long> ivl(PV(),PROP_LABEL);
-  Prop<long> iel(PE(),PROP_LABEL);
+  Prop<int> ivl(PV(),PROP_LABEL);
+  Prop<int> iel(PE(),PROP_LABEL);
+  //Prop<tbrin> iel(PE(),PROP_LABEL);
   tbrin b;
+  
   for (b = 1; b <= ne(); b++)
       { tbrin b2 = cir[b];
       if (b2<0) xcir[iel[b]] = -iel[-b2];
@@ -107,6 +109,7 @@ int TopologicalGraph::Planarity(tbrin b0)
       if (b2<0) xcir[-iel[b]] = -iel[-b2];
       else xcir[-iel[b]] = iel[b2];
       }
+    
   xcir[0]=0;
   // the lralgo cir is clockwise
   xcir.Tswap(cir);
@@ -190,13 +193,15 @@ int TopologicalGraph::TestPlanar()
 int TopologicalGraph::NewPlanarity(tbrin b0)
   {if(!ne())return 1;
   if(debug())DebugPrintf("Executing TopologicalGraph::NewPlanarity");
-// #ifdef TDEBUG
-//   if(!DebugCir())
-//       {DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
-// #endif
   
   int m_origin = ne();
   MakeConnected();
+ /* 
+ #ifdef TDEBUG
+   if(!DebugCir()){DebugPrintf("input Cir is wrong");setPigaleError(A_ERRORS_BAD_INPUT);return A_ERRORS_BAD_INPUT;}
+ #endif
+ */
+  
   int m = ne();
   int n = nv();
 #ifdef TDEBUG
@@ -226,8 +231,9 @@ int TopologicalGraph::NewPlanarity(tbrin b0)
   Embed Embedder(me(),Bicon,LrSort,Hist);
   Embedder();
   nvin.Tswap(vin);
-  Prop<long> ivl(PV(),PROP_LABEL);
-  Prop<long> iel(PE(),PROP_LABEL);
+  Prop<int> ivl(PV(),PROP_LABEL);
+  Prop<int> iel(PE(),PROP_LABEL);
+  //Prop<tbrin> iel(PE(),PROP_LABEL);
   tbrin b;
   for (b = 1; b <= ne(); b++)
       { tbrin b2 = cir[b];

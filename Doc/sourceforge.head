@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="Author" CONTENT="Hubert de Fraysseix">
-    <title>PIGALE 1.3.10 Documentation</title>
+    <title>PIGALE 1.3.14 Documentation</title>
     <link href="doxygen.css" rel="stylesheet" type="text/css">
     <link href="tabs.css" rel="stylesheet" type="text/css">
   </head>
@@ -14,7 +14,7 @@
 <center>
 <font size="+3"><b>P.I.G.A.L.E.</b></font>
 <font>
-<br><b>1.3.10</b><br>
+<br><b>1.3.14</b><br>
 <b>P</b>ublic <b>I</b>mplementation of a <b>G</b>raph <b>A</b>lgorithm
 <br>
 <b>L</b>ibrary and <b>E</b>ditor </font>

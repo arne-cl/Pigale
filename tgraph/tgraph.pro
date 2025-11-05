@@ -1,18 +1,6 @@
 TEMPLATE = lib
 
-win32 {
-      include(..\wpigale.inc)
-      DESTDIR=.
-      QMAKE_CXXFLAGS_WARN_ON =  -Wall -Wextra
-      message(Windows $$DISTPATH)
-      }else{
-      include(../pigale.inc)
-      QMAKE_CXXFLAGS_WARN_ON = -pedantic -ansi -Werror -Wall -Wextra
-      QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-      message(Linux $$DISTPATH)
-}
-
-
+      
 INCLUDEPATH = ../incl
 DEPENDPATH = ../incl
 
@@ -64,6 +52,7 @@ SOURCES =\
     SchnyderWood.cpp\
     SWShelling.cpp\
     STList.cpp\
+    TestSinglePassPlanar.cpp\
     Tgf.cpp\
     TopoAlgs.cpp\
     Twit.cpp\
@@ -71,44 +60,35 @@ SOURCES =\
     Vision.cpp
 
 
-CONFIG = thread $$MODE
-contains(ENABLE_STATIC,"yes") {
- CONFIG += static
-}
+CONFIG += static
+CONFIG -=qt
+CONFIG += debug_and_release
+macx:DEFINES += OSX
+macx:CONFIG+=sdk_no_version_check
+#QMAKE_CXXFLAGS += -Wnull-dereference
 
-CONFIG += create_prl
 CONFIG(debug, debug|release)  {
     TARGET = tgraph_debug
-    contains(DEBUG_LEVEL , 2) {
-    DEFINES += TDEBUG
-    QMAKE_CXXFLAGS_DEBUG= -g
-    } else {
-    QMAKE_CXXFLAGS_DEBUG=-o2 -g
-    }
-    unix:OBJECTS_DIR = ./.odb
-    win32:OBJECTS_DIR = ./odb
-    message(tgraph debug_level $$DEBUG_LEVEL: $$QMAKE_CXXFLAGS_DEBUG)
+    OBJECTS_DIR = ./debug
+    #to debug every thing
+    #DEFINES += TDEBUG
     }else {
     TARGET = tgraph
-    unix:OBJECTS_DIR = ./.opt
-    win32:OBJECTS_DIR = ./opt
-    message(tgraph: $$QMAKE_CXXFLAGS_RELEASE)
+    OBJECTS_DIR = ./release
     }
+    
+DESTDIR=../lib
 
 unix {
      distdir.commands =
      QMAKE_EXTRA_TARGETS += distdir
-     DESTDIR=$$DISTPATH/lib
       # awk
-      awk.target = PropName.cpp
-      awk.depends = propname.awk ../incl/TAXI/propdef.h
-      awk.commands = $$AWK -f propname.awk ../incl/TAXI/propdef.h > PropName.cpp
-      QMAKE_EXTRA_TARGETS += awk
-      PRE_TARGETDEPS =  PropName.cpp
+      #awk.target = PropName.cpp
+      #awk.depends = propname.awk ../incl/TAXI/propdef.h
+      #awk.commands = gawk -f propname.awk ../incl/TAXI/propdef.h > PropName.cpp
+      #QMAKE_EXTRA_TARGETS += awk
+      #PRE_TARGETDEPS =  PropName.cpp
 }
 
-contains(ENABLE_STATIC,"yes") {
-  message(configuring the static library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
-}else{
-  message(configuring the library $$TARGET version:$$VERSION ($$OBJECTS_DIR))
-}
+message($$TARGET)
+

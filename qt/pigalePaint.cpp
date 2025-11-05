@@ -18,6 +18,8 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QSvgGenerator>
+#include <QPrinter>
+
 
 /*! \file 
 \brief To display non Fary drawings
@@ -36,7 +38,7 @@ void DrawPolrec(QPainter *p,pigalePaint *paint)
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR);
   Prop<bool> isTree(G.Set(tedge()),PROP_ISTREE); 
-  Prop<long> elabel(G.Set(tedge()),PROP_LABEL); 
+  Prop<int> elabel(G.Set(tedge()),PROP_LABEL); 
   Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
 
   bool drawTextEdges = (G.ne() < 100);
@@ -225,7 +227,8 @@ void DrawBip2Pages(QPainter *p,pigalePaint *paint)
 
   QPen pn = p->pen();pn.setWidth(1);
  
-  QPoint ps,pt,ps2,pt2;
+//  QPoint ps,pt,ps2,pt2;
+  QPoint ps,pt;
   // horizontale
   int yh = pmin().y()+ pmax().y()/2;
   ps = QPoint(paint->to_x(pmin().x()),paint->to_y(yh));
@@ -538,20 +541,39 @@ pigalePaint::pigalePaint(QWidget *parent,pigaleWindow *f):
   {index = -1;
   setFocusPolicy(Qt::ClickFocus); 
   }
+/*
 void pigalePaint::print(QPrinter* printer)
   {if(index < 0)return;
   QPainter pp(printer);
   drawIt(&pp);
   }
-
+*/
+void pigalePaint::print(QPrinter* printer)
+  {if(index < 0)return;
+  QRect geo = geometry();
+  resize(printer->width(),printer->width());
+  QPainter pp(printer);
+  drawIt(&pp);
+  setGeometry(geo);
+  }
 void pigalePaint::image(QPrinter* printer, QString suffix)
   {if(index < 0)return;
   qApp->processEvents();
   QRect geo = geometry();
   resize(staticData::sizeImage,staticData::sizeImage);
+  /*
   if(suffix == "png" || suffix == "jpg")
       {QPixmap pixmap = QPixmap::grabWidget (this); 
+      pixmap = pixmap.scaled(staticData::sizeImage,staticData::sizeImage,Qt::KeepAspectRatio,Qt::SmoothTransformation);
       pixmap.save(staticData::fileImage);
+      }
+   */
+ if(suffix == "png" || suffix == "jpg")
+      {QPixmap *pixmap = new QPixmap(QSize(width(),height())); 
+      QPainter pp(pixmap);
+      drawIt(&pp);
+      //pixmap = pixmap.scaled(staticData::sizeImage,staticData::sizeImage,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+      pixmap->save(staticData::fileImage);
       }
   else if(suffix == "svg") 
       {QSvgGenerator *svg = new QSvgGenerator();

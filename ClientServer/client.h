@@ -16,7 +16,6 @@
 
 #ifndef CLIENT_H 
 #define CLIENT_H
-#include <config.h>
 #include <QApplication>
 #include <QThread>
 #include <QFile>
@@ -52,6 +51,7 @@ In the input:
 - lines starting by '#' are treated as comments
 - lines starting by ':' are treated by the client
 - line  starting by ':!' signals the end of file
+- line  starting by ':|' stops the client
 - line  starting by ':D' signals the client to echo the comments
 - line  starting by ':d' signals the client not to echo the comments
 - line  starting by ':X' stops the client

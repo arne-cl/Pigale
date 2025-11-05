@@ -92,7 +92,7 @@ void macroDefColors(int record)
 */
 int pigaleWindow::macroLoad(QString FileName)
   {if(FileName.isEmpty())return -1;
-  if(QFileInfo(FileName).isReadable() == FALSE)return -1; 
+  if(QFileInfo(FileName).isReadable() == false)return -1;
   QFile file( FileName);
   file.open(QIODevice::ReadOnly);
   QTextStream stream(&file);
@@ -101,7 +101,7 @@ int pigaleWindow::macroLoad(QString FileName)
   if(str == "Macro Version:1")
       stream.readLine();
   else if(str != "Macro Version:2")
-      {Tprintf("Wrong Macro File -%s-",(const char *)str.toAscii());return -1;}
+      {Tprintf("Wrong Macro File -%s-",(const char *)str.toLatin1());return -1;}
   if(stream.atEnd())return -1;
   MacroNumActions = 0;
   int action;
@@ -109,8 +109,8 @@ int pigaleWindow::macroLoad(QString FileName)
       {str = stream.readLine();
       action = getActionInt(str);
       if(action < 99 || action > A_TEST_END)
-          {Tprintf("Unknown action:%s",(const char *)str.toAscii());continue;}
-      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str.toAscii());
+          {Tprintf("Unknown action:%s",(const char *)str.toLatin1());continue;}
+      Tprintf("Action (%d):%s",MacroNumActions,(const char *)str.toLatin1());
       MacroActions(++MacroNumActions) = action;
       }
   return 0;
@@ -120,7 +120,7 @@ void pigaleWindow::macroRecord(int action)
   {if(action > A_SERVER)return;
   MacroActions(++MacroNumActions) = action;
   QString str_action = getActionString(action);
-  Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action.toAscii());
+  Tprintf("Recording action (%d):%s",MacroNumActions,(const char *)str_action.toLatin1());
 //   GeometricGraph G(GC);
 //   short ecol;  G.ecolor.getinit(ecol); MacroEcolor(MacroNumActions) = ecol;
 //   short vcol;  G.vcolor.getinit(vcol); MacroVcolor(MacroNumActions) = vcol;
@@ -133,7 +133,8 @@ void pigaleWindow::macroHandler(QAction *qaction)
   int i;
   unsigned j;
   double Time;
-  QTime t0;
+  QElapsedTimer t0;
+  QTime t1;
   QString msg0,msg1;
   int repeat0,record;
   bool _debug = debug();
@@ -162,12 +163,14 @@ void pigaleWindow::macroHandler(QAction *qaction)
           postMessageClear();
           DebugPrintf("PLAY times=%d MacroNumActions:%d",repeat,MacroNumActions);
           t0.start();
+          
 #ifndef _WINDOWS
-          msg0 = QString("Macro started at %1").arg(t0.toString(Qt::TextDate));
+          t1 = QTime::currentTime();
+          msg0 = QString("Macro started at %1").arg(t1.toString(Qt::TextDate));
 #else
           msg0 = "Macro started";
 #endif
-          DebugPrintf("%s",(const char *)msg0.toAscii()); 
+          DebugPrintf("%s",(const char *)msg0.toLatin1());
           MacroLooping = true;
           if(repeat == 0)debug() = false;
           else if(debug())
@@ -198,13 +201,14 @@ void pigaleWindow::macroHandler(QAction *qaction)
           if(InfoNeedUpdate){information();InfoNeedUpdate = false;}
           MacroLooping = false;
 #ifndef _WINDOWS
-          msg1 = QString("Macro stopped at %1").arg(t0.toString(Qt::TextDate));
+          t1 = QTime::currentTime();
+          msg1 = QString("Macro stopped at %1").arg(t1.toString(Qt::TextDate));
 #else
           msg1 ="Macro stopped"; 
 #endif
           DebugPrintf("Ellapsed time:%.3f mean:%f",Time,Time/j);
-          Tprintf("%s",(const char *)msg0.toAscii()); 
-          DebugPrintf("%s",(const char *)msg1.toAscii()); 
+          Tprintf("%s",(const char *)msg0.toLatin1());
+          DebugPrintf("%s",(const char *)msg1.toLatin1());
           if(!getPigaleError())
               DebugPrintf("END PLAY OK iter:%d",j);
           else
@@ -218,7 +222,7 @@ void pigaleWindow::macroHandler(QAction *qaction)
           postMessageClear();
           for(record = 1;record <= MacroNumActions;record++)
               Tprintf("Action (%d/%d):%s",record,MacroNumActions
-                       ,(const char *)getActionString(MacroActions[record]).toAscii());
+                       ,(const char *)getActionString(MacroActions[record]).toLatin1());
           break;
       case 7://save
           {QString FileName = QFileDialog::getSaveFileName(this
@@ -238,10 +242,10 @@ void pigaleWindow::macroHandler(QAction *qaction)
                   }
               }
           DirFileMacro = QFileInfo(FileName).absolutePath();
-          FILE *out = fopen((const char *)FileName.toAscii(),"wt");
+          FILE *out = fopen((const char *)FileName.toLatin1(),"wt");
           fprintf(out,"Macro Version:2\n");
           for(record = 1;record <= MacroNumActions;record++)
-              fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]).toAscii());
+              fprintf(out,"%s\n",(const char *)getActionString(MacroActions[record]).toLatin1());
           fclose(out);
           }
           break;
@@ -273,7 +277,7 @@ void pigaleWindow::macroPlay(bool start)
   MacroRecording = MacroWait = false;
   
   // Load next graph if no generator is called
-  if(!start && MacroActions[1] < A_GENERATE || MacroActions[1] >  A_GENERATE_END)
+  if((!start && MacroActions[1] < A_GENERATE) || (MacroActions[1] >  A_GENERATE_END))
       {load(1); EditNeedUpdate =  InfoNeedUpdate = false;}
 
   for(int record = 1;record <= MacroNumActions;++record)
@@ -281,14 +285,14 @@ void pigaleWindow::macroPlay(bool start)
       if(action != A_PAUSE && action < A_TEST && !graph_properties->actionAllowed(action))
           {if(debug())
               {DebugPrintf("%s:initial conditons not satisfied\n"
-                           ,(const char *)getActionString(action).toAscii());
+                           ,(const char *)getActionString(action).toLatin1());
               InfoNeedUpdate = false; // do not hide the error message 
               blockInput(false);
               return;
               }
           ++record;continue;
           }
-      if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action).toAscii());
+      if(debug())LogPrintf("macro action:%s\n",(const char *)getActionString(action).toLatin1());
       if(!MacroExecuting)break;
       // Execute the macro
       if(action ==  A_PAUSE)
@@ -316,7 +320,7 @@ void pigaleWindow::macroPlay(bool start)
       else if(ret_handler == 7 || ret_handler == 8)
           EditNeedUpdate = false;
       if(getPigaleError())
-          {DebugPrintf("MACRO %s",(const char *)getPigaleErrorString().toAscii());
+          {DebugPrintf("MACRO %s",(const char *)getPigaleErrorString().toLatin1());
           setPigaleError();
           MacroWait = MacroLooping = false;
           InfoNeedUpdate = false; // do not hide the error message

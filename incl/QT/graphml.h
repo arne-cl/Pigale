@@ -31,7 +31,7 @@ struct key_desc {
   QString setid() { if (pnum==0) return "V"; else if (pnum==1) return "E"; else return "B";}
   QString xsetid() { if (pnum==0) return "node"; else if (pnum==1) return "edge"; else return "???";}
   QString id() { 
-    QString num; num.sprintf("%d",prop);
+    QString num; num.asprintf("%d",prop);
     return "Pigale/"+setid()+"/"+num;
   }
   public:
@@ -68,23 +68,23 @@ protected:
     bool warning ( const QXmlParseException & e) 
     {  delete exception;
        exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
-       type="Warning"; return TRUE;}
+       type="Warning"; return true;}
     bool error ( const QXmlParseException & e)
     {  delete exception;
        exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
-       type="Error";return FALSE;}
+       type="Error";return false;}
     bool fatalError ( const QXmlParseException & e)
     {  delete exception;
        exception=new QXmlParseException(e.message(),e.columnNumber(),e.lineNumber(),e.publicId(),e.systemId());
-       type="Fatal error";return FALSE;}
+       type="Fatal error";return false;}
 public:
     MyErrorHandler() : exception(0) {}
       ~MyErrorHandler() { delete exception;}
 
   QString errorString () const
   { QString s; 
-    s.sprintf("%s %s : line %d, column %d",
-              (const char *)type.toAscii(), (const char *)exception->message().toAscii(),
+    s.asprintf("%s %s : line %d, column %d",
+              (const char *)type.toLatin1(), (const char *)exception->message().toLatin1(),
 	      exception->lineNumber(), exception->columnNumber()); return s;
   }
 };
@@ -179,7 +179,7 @@ class GraphmlParser : public QXmlDefaultHandler
     if (it==coords.end() || (p.x()=(*it).toDouble(&ok),!ok) 
 	|| ++it==coords.end() || (p.y()=(*it).toDouble(&ok),!ok)
 	|| ++it!=coords.end())
-      { LogPrintf("Badly formed coordinates: %s\n",(const char *)s.toAscii());
+      { LogPrintf("Badly formed coordinates: %s\n",(const char *)s.toLatin1());
 	read_error(); return false;
       }
     return true;
@@ -254,7 +254,7 @@ class GraphmlReader : public GraphmlParser {
 	  {Prop<bool> eoriented(G.Set(tedge()),PROP_ORIENTED,false);}
 	else
 	  { LogPrintf("unknown value for graph/edgedefault : %s\n",
-		      (const char *)top.att["edgedefault"].toAscii());
+              (const char *)top.att["edgedefault"].toLatin1());
 	    read_error();
 	  }
       }
@@ -320,7 +320,7 @@ class GraphmlReader : public GraphmlParser {
       }
     Prop1<svector<tstring *> > vslabel(G.Set(),PROP_VSLABEL);
     bool has_labels = G.Set(tvertex()).exist(PROP_LABEL);
-    Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL,0);
+    Prop<int> vlabel(G.Set(tvertex()),PROP_LABEL,0);
     Prop<int> slabel(G.Set(tvertex()),PROP_SLABEL,0);
     vslabel().resize(0,nv);
     vslabel().definit(*(new (tstring *) (0)));
@@ -331,7 +331,7 @@ class GraphmlReader : public GraphmlParser {
         {if(!has_labels)
             vlabel[it.value()]=it.value();
       slabel[it.value()]=it.value();
-      vslabel()[it.value()]=new tstring((const char *)it.key().toAscii());
+      vslabel()[it.value()]=new tstring((const char *)it.key().toLatin1());
       }
   }
 };

@@ -29,19 +29,20 @@ Client::Client(const QString &_host, quint16 _port,QList <QString>  *_todo
   // create the socket and connect various of its signals
   socket = new QTcpSocket(this);
   socket->connectToHost(host,port);
-  clo.setDevice(socket); clo.setVersion(QDataStream::Qt_4_0);
+  clo.setDevice(socket); clo.setVersion(QDataStream:: Qt_5_14);
   connect(socket,SIGNAL(connected()),SLOT(socketConnected()));
-  connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
+  connect(socket,SIGNAL(disconnected()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
   connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),SLOT(socketError(QAbstractSocket::SocketError)));
+  //socket->waitForConnected(10000);
   }
 void Client::stop()
   {ThreadRead.terminate();ThreadRead.wait();
   }
 void Client::exit()
-  {
+{
   QCoreApplication::quit();
-  } 
+} 
 void Client::socketConnected()
   {//ActionsToDo = 0;
   stack.push("Server Ready");
@@ -64,15 +65,22 @@ void Client::closeConnection()
    else
        socketClosed();
   }
-void Client::socketError(QAbstractSocket::SocketError )
-  {
+void Client::socketError(QAbstractSocket::SocketError e)
+  {if(e == QAbstractSocket::ConnectionRefusedError)
+      cout<<"Connection refused"<<endl;
+  else if(e  == QAbstractSocket::HostNotFoundError) 
+       cout<<"Host no found"<<endl;
+  else if(e == QAbstractSocket::SocketTimeoutError)
+       cout<<"CSocket timeout"<<endl;
+       cout<<"Socket error "<<endl;
+     //infoText->append(QString("Socket error:%1").arg(e));
   }
 bool Client::event(QEvent * ev)
   {if(ev->type() >=  QEvent::User)
       {customEvent(ev);
-      return TRUE;
+      return true;
       }
-  return FALSE;
+  return false;
   }
 void Client:: customEvent(QEvent * e ) 
   {if( e->type() == (int)TEXT_EVENT )
@@ -89,10 +97,12 @@ void Client:: customEvent(QEvent * e )
   }
 void Client::writeClient(QString str)
   {textEvent *e = new textEvent(str);
+  //cout<<"writeclient:"<<(const char*)str.toLatin1()<<"<br>"<<endl;
   QCoreApplication::postEvent(this,e);
   }
 void Client::writeServerEvent(QString str)
   {writeEvent *e = new writeEvent(str);
+  //cout<<"writeserver:"<<(const char*)str.toLatin1()<<"<br>"<<endl; 
   QCoreApplication::postEvent(this,e);
   }
 void Client::writeServerEvent(char * buf,uint size)
@@ -102,7 +112,7 @@ void Client::writeServerEvent(char * buf,uint size)
 void Client::writeServer(QString str)
   {QWriteLocker locker(&lock);
   QString t = str+'\n';
-  clo.writeBytes(t.toAscii(),t.length()); 
+  clo.writeBytes(t.toLatin1(),t.length());
   socket->waitForBytesWritten(-1); 
   }
 void Client::writeServer(char * buff,quint32 size)
@@ -150,7 +160,7 @@ void Client::sendToServer(QString &str)
       }
   QStringList fields = str.split(ACTION_SEP);
   for(int i = 0; i < (int)fields.count();i++)
-      {fields[i].simplified();
+      {fields[i]= fields[i].simplified();
       if(fields[i].contains("RC_GRAPH"))
           sendToServerGraph(fields[i]); 
       //if the file exists sendToServerGraph will add the command on the stack
@@ -187,6 +197,7 @@ int Client::sendToServerGraph(QString &data)
   }
 uint Client::readBuffer(char*  &buffer)
   {uint nb;
+  //cout<<"readBUFFER"<<endl;  
   while((nb = socket->bytesAvailable()) < (int)sizeof(uint))
       {if(socket->state() != QAbstractSocket::ConnectedState)
           {writeClient("client not connected");return 0;}
@@ -202,7 +213,7 @@ uint Client::readBuffer(char*  &buffer)
       socket->waitForReadyRead(100);
       }
   clo.readRawData(pbuff,size);
-
+  //cout<<"nb:"<<nb<<" size:"<<size<<endl;
   if(nb == size)return size;
   return size;
   }
@@ -210,6 +221,7 @@ void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
       str = str.simplified();
+      //cout<<"read:"<<(const char*) str.toLatin1()<<"<br>"<<endl;
       if(str.at(0) == ':')
           writeClient(str.mid(1));
       else if(str.at(0) == '?') // answer to a question
@@ -223,10 +235,13 @@ void Client::socketReadyRead()
           lock.unlock();
           if(size == 0){delete [] buffer;ChangeActionsToDo(-1);return;}
           QString PngFile = outDir + QString("tmp%1.png").arg(identificateur);
-          QFile file(PngFile);          
-          file.open(QIODevice::WriteOnly |QIODevice::Truncate);
+          //cout<<"write:-"<<(const char*) PngFile.toLatin1()<<"- size:"<<size<<"<br>"<<endl;
+          QFile file(PngFile);         
+          //bool success = file.open(QIODevice::ReadWrite);
+          file.open(QIODevice::ReadWrite);
           QDataStream stream(&file);
           stream.writeRawData(buffer,size);
+          //cout<<"writebuffer:"<<success<<"->"<<wrote<<"<br>"<<endl;      
           file.close();
           delete [] buffer;
           if(debug())writeClient("!PNG");
@@ -260,7 +275,8 @@ void Client::socketReadyRead()
           stream.writeRawData(buffer,size);
           file.close();
           delete [] buffer;
-          if(debug())writeClient(QString("GOT:%1").arg(File));
+          //if(debug())writeClient(QString("GOT:%1").arg(File));
+          writeClient(QString("GOT:%1").arg(File));
           ChangeActionsToDo(-1);
           }
       else if(str == "!!")// server has finished everything

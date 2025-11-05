@@ -38,7 +38,8 @@
 #include <QString>
 #include <QMap>
 #include <QEvent>
-#include <QTimer>
+//#include <QTimer>
+#include <QElapsedTimer>
 #include <QSettings>
 #include <QTextStream>
 
@@ -144,6 +145,7 @@ private slots:
   void ResetSettings();
   void SetDocumentationPath();
   void postHandler(int ret,int drawingType,int saveType);
+
 private:
   void createThread();
   void initPigale();
@@ -165,7 +167,7 @@ private:
   void initMenuTest();
   void UpdatePigaleColors();
   bool InitPrinter(QPrinter* printer);
-  bool InitPicture(QString & formats,QString & suffix);
+  bool InitPicture(QPrinter* printer,QString & formats,QString & suffix);
 public slots:
   void handler(QAction *action);
   void banner();
@@ -220,9 +222,11 @@ public:
   QString OutputFileName;
   int InputDriver;
   int OutputDriver;
+  int *pGraphIndex,GraphIndex2,UndoIndex,UndoMax;
   bool ServerExecuting;
   int ServerClientId;
-  QTime timer;
+//  QTime timer;
+  QElapsedTimer timer;
   ClientSocket *threadServer;
   int GraphIndex1;
   int pigaleThreadRet;
@@ -236,10 +240,9 @@ private:
   QCheckBox *chkOrient;
   QWidget *gInfo,*gSettings;
   QMenu *userMenu; 
-  QPrinter *printer;
+  //QPrinter *printer;
   QString DirFileMacro;
   QString MacroFileName;
-  int *pGraphIndex,GraphIndex2,UndoIndex,UndoMax;
   QString DirFileDoc;
   svector<int> MacroActions;
   bool EditNeedUpdate,InfoNeedUpdate;

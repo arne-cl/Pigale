@@ -167,12 +167,13 @@ class _svector
       
 
       if (init)
-        if (nsize_elmt == size_elmt) {
+        {if (nsize_elmt == size_elmt) {
           memcpy((void*) nbuff, buff, size_elmt);
           init = nbuff;
         }
         else
           init = 0;
+          }
 
 #ifndef _CONSTRUCTOR
 	delete (char *) buff;
@@ -418,7 +419,7 @@ public:
   svector(const svector& v): _svector(v) {}
   svector(int a, int b,const T *p): _svector(a,b,sizeof(T)) 
       {if(p == 0)myabort();
-      memcpy(me().begin(),p,me().getsize());
+      else memcpy(me().begin(),p,me().getsize());
       }
   ~svector() {}
 

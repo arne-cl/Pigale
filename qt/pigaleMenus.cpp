@@ -16,9 +16,9 @@
 \brief Menus, Toolbar and most widgets
 */
 
-#include <config.h>
 #include "pigaleWindow.h"
 #include <TAXI/Tgf.h>
+#include <TAXI/Tdebug.h>
 #include "GraphWidget.h"
 #include "GraphGL.h"
 #include "GraphSym.h"
@@ -62,12 +62,14 @@
 #include "icones/sright.xpm"
 #include "icones/sreload.xpm"
 #include "icones/help.xpm"
+#include "icones/whatsthis.xpm"
 #include "icones/xman.xpm"
 #include "icones/sleftarrow.xpm"
 #include "icones/srightarrow.xpm"
 #include "icones/sfilesave.xpm"
 #include "icones/macroplay.xpm"
 #include "icones/film.xpm"
+#include "version.h"
 
 void Init_IOGraphml();
 void UndoErase();
@@ -75,62 +77,55 @@ void initGraphDebug();
 
 pigaleWindow::pigaleWindow()
     :QMainWindow()
-    ,ServerExecuting(false),ServerClientId(0) // end public
-    ,GraphIndex1(1)
+    ,pGraphIndex(&GraphIndex1),GraphIndex2(1)         
+    ,UndoIndex(0),UndoMax(0)  
+    ,ServerExecuting(false)  
+    ,ServerClientId(0) 
+    ,GraphIndex1(1)   
     //start private
     ,server(NULL)
-    ,pGraphIndex(&GraphIndex1),GraphIndex2(1)
-    ,UndoIndex(0),UndoMax(0)
     ,MacroNumActions(0),MacroRecording(false),MacroLooping(false)
     ,MacroExecuting(false),MacroPlay(false),_key(0),Server(false)
     ,numMessages(0)
   {setObjectName("Main Pigale Window");
   // set Title
 #ifdef TDEBUG
-  setWindowTitle(tr("Qt4 Pigale Editor:")+" "+PACKAGE_VERSION+" "+tr("Debug Mode"));
+  setWindowTitle(tr("Qt5 Pigale Editor:")+" "+VERSION+" "+tr("Debug Mode"));
 #else
-  setWindowTitle(tr("Qt4 Pigale Editor:")+" "PACKAGE_VERSION);
+  setWindowTitle(tr("Qt5 Pigale Editor:")+" "+VERSION);
 #endif
   // Load settings
   LoadSettings();
   // Modify settings according to passed arguments
   ParseArguments();
-  // Create a printer
-  printer = new QPrinter; 
-  printer->setOrientation(QPrinter::Portrait); 
-  printer->setColorMode(QPrinter::Color);
-  printer->setDocName("Pigale (C) 2001");
-   
   // mainWidget
   QWidget *mainWidget = new QWidget(this);  mainWidget->setAutoFillBackground(true);
   setCentralWidget(mainWidget);
   mainWidget->setFocus();
   setAutoFillBackground(true);
-
   // toolBar
   createToolBar();
-
   // create all widgets
   createLayout(mainWidget);
-
   // menus
   createMenus();
-
  // progressBar
   progressBar = new QProgressBar(statusBar());
   progressBar->hide();
   progressBar->setGeometry(QRect(0,0,width()*2/3,30)); 
-
   UpdatePigaleColors();  
-  initPigale();
+  //initPigale();
   gw->editor->update(1);
   // post a message to know when initialization complete
   readyEvent *e = new readyEvent();
   QApplication::postEvent(this,e);
   }
 void pigaleWindow::whenReady()
-  {if(MacroPlay && macroLoad(MacroFileName) != -1)
-      {load(0);macroPlay(true);}
+  {initPigale();
+  LogPrintf("pigale: width:%d height:%d\n",width(),height());
+  if(MacroPlay && macroLoad(MacroFileName) != -1)
+       //{LogPrintf("-load\n");load(0);LogPrintf("+load\n");}
+       {load(0);}
   else if(Server)
       initServer();
   else
@@ -161,29 +156,44 @@ void pigaleWindow::initPigale()
    Init_IO();// Initialize input/output drivers
    Init_IOGraphml();
 
-
   QFileInfo fi0 =  QFileInfo(InputFileName);
   QFileInfo fi = QFileInfo(fi0.absolutePath());
+  	
   if(!fi.exists() || !fi.isDir())
-      {QString DirFile = QFileDialog::
+      {LogPrintf("Could not find tgf file:%s\n",(const char *)InputFileName.toLatin1());
+      QString msg = QString("Could not find tgf file:\n") +InputFileName;
+      Twait((const char *)msg.toLatin1());
+//if native dialog -> no caption      
+      QString DirFile = QFileDialog::
       getExistingDirectory(this
                            ,tr("Choose the TGF directory")
-                           ,"."
-                           ,QFileDialog::ShowDirsOnly);
+                           ,QDir::homePath()
+                           ,QFileDialog::ShowDirsOnly
+//                           ,QFileDialog::DontUseNativeDialog
+                           );
+           
       InputFileName = DirFile + QDir::separator() + fi0.fileName();
       OutputFileName = InputFileName;
       }
+   QFileInfo fi1 =  QFileInfo(InputFileName);      
+   if(!fi1.exists())  
+      {Twait("File not found\n Choose a file");
+      load();
+      }                   
   // Load inpu/output drivers
-  InputDriver = IO_WhoseIs((const char *)InputFileName.toAscii());
+  InputDriver = IO_WhoseIs((const char *)InputFileName.toLatin1());
   if (InputDriver<0) InputDriver=0;
-  OutputDriver = IO_WhoseIs((const char *)OutputFileName.toAscii());
+  OutputDriver = IO_WhoseIs((const char *)OutputFileName.toLatin1());
   if (OutputDriver<0) OutputDriver=0;
 
   // Init random generator
   if(staticData::RandomSeed())randomInitSeed();
-  //Check for documentation repertory
+  //Check for documentation directory
   CheckDocumentationPath();
-  if(CheckLogFile() == -1)Twait("Impossible to write in log.txt");
+  if(CheckLogFile() == -1)
+      {QString msg = QString("Impossible to write in ")+logfile();
+      Twait((const char *)msg.toLatin1());
+      }
   UndoInit();// Create a tgf file with no records
   LogPrintf("Init seed:%ld\n",randomSetSeed());
   }
@@ -193,25 +203,35 @@ void pigaleWindow::createLayout(QWidget *mainWidget)
   leftLayout->addWidget(tabWidget,1);
   tabWidget->setMinimumSize(465,425);
   mypaint =  new pigalePaint(0,this);
-  gw = new  GraphWidget(0,this);    gw->setAutoFillBackground(true);
-  graphgl  = new GraphGL(0,this);   graphgl->setAutoFillBackground(true);
+  gw = new  GraphWidget(0,this);   gw->setAutoFillBackground(true);
+  graphgl  = new GraphGL(mainWidget,this);   graphgl->setAutoFillBackground(true);
   graphsym = new GraphSym(0,this);  graphsym->setAutoFillBackground(true);
   browser = new QTextBrowser(0);    browser->setAutoFillBackground(true);
-  QPalette bop(QColorDialog::customColor(3));
+  QPalette bop(QColorDialog::customColor(4));
   browser->setPalette(bop);
   gw->setPalette(bop);
   tabWidget->addTab(gw,tr("Graph Editor"));
   tabWidget->addTab(mypaint,"");
-  tabWidget->addTab(graphgl,""); 
-  tabWidget->addTab(graphsym,""); 
-  tabWidget->addTab(browser,tr("User Guide")); 
+  tabWidget->addTab(graphgl,"");
+  tabWidget->addTab(graphsym,"");
+  tabWidget->addTab(browser,tr("User Guide"));
   createRightLayout(leftLayout);
   }
 void pigaleWindow::createRightLayout(QHBoxLayout * leftLayout)
   {rtabWidget = new  QTabWidget(); 
   gSettings = new QWidget();  gSettings->setAutoFillBackground(true);  
-  gInfo = new QWidget(); gInfo->setAutoFillBackground(true);               
-  rtabWidget->setMaximumWidth(300);  rtabWidget->setMinimumWidth(300);  rtabWidget->setMinimumHeight(500); 
+  gInfo = new QWidget(); gInfo->setAutoFillBackground(true); 
+/* 
+  QRect rec = QApplication::desktop()->screenGeometry();
+  int height = rec.height();
+  int width = rec.width(); 
+*/  
+   QDesktopWidget *desktop = QApplication::desktop();
+  int height = desktop->height();
+  int width = desktop->width(); 
+ 
+  //LogPrintf("h:%d w:%d\n",height,width);
+  rtabWidget->setMaximumWidth(width/4.5);  rtabWidget->setMinimumWidth(width/4.5);  rtabWidget->setMinimumHeight(height/2); 
   leftLayout->addWidget(rtabWidget,2);
   rtabWidget->addTab(gInfo,tr("Information"));
   rtabWidget->addTab(gSettings,tr("Settings"));
@@ -224,6 +244,7 @@ void pigaleWindow::createPageInfo(QWidget *gInfo)
   messages = new QTextEdit(gInfo);
   QBrush pb(QColorDialog::customColor(1));
   messages->setReadOnly(true);
+  messages->setTextColor(Qt::darkBlue);
   //graph_properties
   graph_properties = new Graph_Properties(gInfo,menuBar(),this);
   graph_properties->setAutoFillBackground(true); 
@@ -236,11 +257,14 @@ void pigaleWindow::createPageInfo(QWidget *gInfo)
   rightLayout->addWidget(mouse_actions,2,0,1,2);
   }
 void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayout)
-  {  //generators
+  {QDesktopWidget *desktop = QApplication::desktop();
+  //int width = desktop->width(); 
+  
+   //generators
   QSpinBox *spin_N1 = new QSpinBox();  
-  spin_N1->setRange(1,100000); spin_N1->setSingleStep(1); spin_N1->setValue(staticData::Gen_N1);  
+  spin_N1->setRange(1,65000); spin_N1->setSingleStep(1); spin_N1->setValue(staticData::Gen_N1);  
   QSpinBox *spin_N2 = new QSpinBox();  
-  spin_N2->setRange(1,100000); spin_N2->setSingleStep(1); spin_N2->setValue(staticData::Gen_N2);  
+  spin_N2->setRange(1,65000); spin_N2->setSingleStep(1); spin_N2->setValue(staticData::Gen_N2);  
   QSpinBox *spin_M = new QSpinBox();     
   spin_M->setRange(1,300000); spin_M->setSingleStep(1); spin_M->setValue(staticData::Gen_M); 
   connect(spin_N1,SIGNAL(valueChanged(int)),SLOT(spinN1Changed(int)));
@@ -270,6 +294,8 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   comboLabel->addItem(tr("Label"));
   int current = staticData::ShowVertex();current += 3;
   comboLabel->setCurrentIndex(current);showLabel(current);
+  //comboLabel->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  //comboLabel->setMinimumWidth(width/20);
   connect(comboLabel,SIGNAL(activated(int)),SLOT(showLabel(int)));
   // Partition
   QSpinBox *spin_N = new QSpinBox();  
@@ -277,7 +303,8 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   connect(spin_N,SIGNAL(valueChanged(int)),SLOT(spinNChanged(int)));
   // Distances
   QComboBox *comboDistance  = new QComboBox(0);
-  comboDistance->addItem(tr("Czekanovski-Dice"));
+  //comboDistance->addItem(tr("Czekanovski-Dice"));
+  comboDistance->addItem(tr("Czekanovski"));
   comboDistance->addItem(tr("Bisect"));
   comboDistance->addItem(tr("Adjacence"));
   comboDistance->addItem(tr("Adjacence M"));
@@ -285,6 +312,7 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   comboDistance->addItem(tr("Q-distance"));
   comboDistance->addItem(tr("Oriented"));
   comboDistance->addItem(tr("R2"));
+  //comboDistance->setMinimumWidth(width/20);
   comboDistance->setCurrentIndex(staticData::UseDistance());distOption(staticData::UseDistance());
   connect(comboDistance,SIGNAL(activated(int)),SLOT(distOption(int)));
   // Limits
@@ -338,27 +366,28 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   connect(spinPNG,SIGNAL(valueChanged(int)),SLOT(spinPNGChanged(int)));
 
   // Add to the Layout
-  QDesktopWidget *desktop = QApplication::desktop();
+  //QDesktopWidget *desktop = QApplication::desktop();
   bool bigScreen = (desktop->height() >= 768); //630
   //bigScreen=false;
-  const int mw = 100;
-  const int mh = 18;
+  const int mw = 100*(staticData::yscale);
+  const int mh = 18*(staticData::yscale);
   if(bigScreen)
   // minimum Height window = 640
   // minimum Width window  = 800
       {gSettings->setMinimumHeight(495);
-      gSettings->setMaximumHeight(640);// 600
+      gSettings->setMaximumHeight(desktop->height()/1.2);// 600
       }
   else
   // minimum Height window = 600
   // minimum Width window  = 780
       {gSettings->setMaximumHeight(485);
-      tb->setIconSize(QSize(14,14));
       leftLayout->setMargin(0);
       }
       
   comboLabel->setMaximumWidth(mw);comboLabel->setMinimumHeight(mh);
-  comboDistance->setMaximumWidth(mw+40);comboDistance->setMinimumHeight(mh);
+  //comboDistance->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+  comboDistance->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  comboDistance->setMinimumHeight(mh);
   seedEdit->setMaximumWidth(mw);seedEdit->setMinimumHeight(mh);
   spin_N->setMaximumWidth(mw);spin_N->setMinimumHeight(mh);
   spin_N1->setMaximumWidth(mw);spin_N1->setMinimumHeight(mh);
@@ -437,17 +466,30 @@ void pigaleWindow::createPageSettings(QWidget *gSettings,QHBoxLayout * leftLayou
   }
 void pigaleWindow::createToolBar()
   {//Pixmaps
-  QIcon openIcon = QIcon(fileopen),newIcon = QIcon(filenew),saveIcon = QIcon(filesave);
-  QIcon leftIcon = QIcon(sleft),   rightIcon = QIcon(sright);
-  QIcon reloadIcon = QIcon(sreload);
-  QIcon infoIcon = QIcon(info), helpIcon = QIcon(help),printIcon = QIcon(fileprint);
-  QIcon xmanIcon = QIcon(xman), undoLIcon = QIcon(sleftarrow);
-  QIcon undoSIcon = QIcon(sfilesave),undoRIcon = QIcon(srightarrow);
-  QIcon macroplayIcon = QIcon(macroplay),filmIcon = QIcon(film);
-  
+  int ix = (staticData::yscale)*22;
+  //LogPrintf("menu %d %f\n",ix,staticData::yscale);
+  QIcon openIcon = QPixmap(fileopen).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,newIcon = QPixmap(filenew).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,saveIcon = QPixmap(filesave).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,leftIcon = QPixmap(sleft).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,rightIcon = QPixmap(sright).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,reloadIcon = QPixmap(sreload).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,infoIcon = QPixmap(info).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,helpIcon = QPixmap(whatsthis).scaled(ix*.9,ix*.9,Qt::KeepAspectRatio)
+  ,printIcon = QPixmap(fileprint).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,xmanIcon = QPixmap(xman).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,undoLIcon = QPixmap(sleftarrow).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,undoSIcon = QPixmap(sfilesave).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,undoRIcon = QPixmap(srightarrow).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,macroplayIcon = QPixmap(macroplay).scaled(ix,ix,Qt::KeepAspectRatio)
+  ,filmIcon = QPixmap(film).scaled(ix,ix,Qt::KeepAspectRatio);
+
   //ToolBar
   // NEW LOAD SAVE
   tb = new QToolBar(this);  addToolBar(tb);  tb->setMovable(true); 
+  //mymenuBar->setMinimumHeight(2*ix);
+  tb->setIconSize(QSize(1.5*ix,1.7*ix));
+
   QAction *newAct = new QAction(newIcon, tr("&New"), this);
   newAct->setStatusTip(tr("New graph"));
   connect(newAct, SIGNAL(triggered()),this,SLOT(NewGraph()));
@@ -511,19 +553,30 @@ void pigaleWindow::createToolBar()
   tb->addAction(macroAct);
   // Help
   QAction *helpAct =  QWhatsThis::createAction(); 
+  helpAct->setIcon(helpIcon);
+  //QAction *helpAct = new QAction(helpIcon, tr("Help"), this); 
   //connect(helpAct, SIGNAL(triggered()),this,SLOT(whatsThis()));
   helpAct->setShortcut(Qt::SHIFT+Qt::Key_F1);
   tb->addAction(helpAct);
   }
 void pigaleWindow::createMenus()
-  {connect(menuBar(),SIGNAL(triggered(QAction *)),this,SLOT(handler(QAction *)));
+  {
+  QMenuBar *mymenuBar = new QMenuBar(0);
+  setMenuBar(mymenuBar);
+  connect(mymenuBar,SIGNAL(triggered(QAction *)),this,SLOT(handler(QAction *)));
   QAction *action;
+  //QRect rec = QApplication::desktop()->screenGeometry();
+  //int ix = (rec.height()/900)*10; 
   //Pixmaps
-  QIcon openIcon = QIcon(fileopen),newIcon = QIcon(filenew),saveIcon = QIcon(filesave);
-  QIcon helpIcon = QIcon(help),printIcon = QIcon(fileprint);
-  QIcon xmanIcon = QIcon(xman),infoIcon = QIcon(info);
+  QIcon openIcon = QPixmap(fileopen)
+  ,newIcon = QPixmap(filenew)
+  ,saveIcon = QPixmap(filesave)
+  ,helpIcon = QPixmap(help)
+  ,printIcon = QPixmap(fileprint)
+  ,xmanIcon = QPixmap(xman)
+  ,infoIcon = QPixmap(info);
 
-  QMenu *file = menuBar()->addMenu( tr("&File"));  //-> inutil
+  QMenu *file = mymenuBar->addMenu( tr("&File"));  //-> inutil
   file->addAction(newIcon,tr("&New Graph"),this, SLOT(NewGraph()));
   action = file->addAction(openIcon,tr("&Open"),this, SLOT(load()));
   action->setWhatsThis(fileopen_txt);
@@ -533,6 +586,10 @@ void pigaleWindow::createMenus()
   file->addAction(tr("Delete current record"),this,SLOT(deleterecord()));
   file->addAction(tr("Switch Input/Output files"),this,SLOT(switchInputOutput()));
   file->addSeparator();
+  file->addAction(tr("Load Image"),gw->editor,SLOT(loadImage()));
+  file->addAction(tr("Clear Image"),gw->editor,SLOT(clearImage()));
+  file->addSeparator();
+  
   file->addAction(printIcon,tr("&Print"),this, SLOT(print()));
   file->addSeparator();
   //file->addAction(tr("Init server"),this, SLOT(initServer()));
@@ -592,9 +649,14 @@ void pigaleWindow::createMenus()
 
   augment->addSeparator();
   action = augment->addAction(xmanIcon,tr("&Bisect all edges")); 
+  //action = augment->addAction(tr("&Bisect all edges")); 
   setId(action,A_AUGMENT_BISSECT_ALL_E);
+  action->setWhatsThis(tr("Bisect all edges"));
+//hubert
+//QAction *helpAct0 =  QWhatsThis::createAction(); 
+//augment->addAction(helpAct0);  
   
-  QMenu *remove = menuBar()->addMenu( tr("&Remove")); 
+  QMenu *remove = mymenuBar->addMenu( tr("&Remove"));
   action = remove->addAction(tr("&Isolated vertices")); 
   setId(action,A_REMOVE_ISOLATED_V);
   action = remove->addAction(tr("&Multiple edges")); 
@@ -606,10 +668,12 @@ void pigaleWindow::createMenus()
   setId(action,A_REMOVE_COLOR_V);
   action = remove->addAction(tr("Colored &edges")); 
   setId(action,A_REMOVE_COLOR_E);
-
-  QMenu *embed = menuBar()->addMenu( tr("E&mbed")); 
+//hubert
+  QMenu *embed = mymenuBar->addMenu( tr("E&mbed")); 
+  //embed->setToolTipsVisible(true);
   action = embed->addAction(xmanIcon,tr("&FPP Fary")); 
-  action->setWhatsThis(tr(fpp_txt));
+  //action->setWhatsThis(tr(fpp_txt));
+  action->setStatusTip(tr(fpp_txt));
   setId(action,A_EMBED_FPP);
   action = embed->addAction(xmanIcon,tr("&Schnyder")); 
   action->setWhatsThis(tr(schnyder_txt));
@@ -659,11 +723,11 @@ void pigaleWindow::createMenus()
   action = embed->addAction(xmanIcon,tr("Spring (Map Preserving)")); 
   action->setWhatsThis(tr(springPM_txt));  
   setId(action,A_EMBED_SPRING_PM);
-#ifdef VERSION_ALPHA
-  action = embed->addAction(xmanIcon,tr("Spring Planar")); 
-  action->setWhatsThis(tr(jacquard_txt));  
-  setId(action,A_EMBED_JACQUARD);
-#endif
+//#ifdef VERSION_ALPHA
+  //action = embed->addAction(xmanIcon,tr("Spring Planar")); 
+  //action->setWhatsThis(tr(jacquard_txt));  
+  //setId(action,A_EMBED_JACQUARD);
+//#endif
   //#ifdef VERSION_ALPHA
   action = embed->addAction(xmanIcon,tr("Spring")); 
   action->setWhatsThis(tr(spring_txt));  
@@ -677,7 +741,7 @@ void pigaleWindow::createMenus()
   action->setWhatsThis(tr(embed3dSchnyder_txt));  
   setId(action,A_EMBED_3dSCHNYDER);
  
-  QMenu *dual = menuBar()->addMenu(tr("&Dual/Angle")); 
+  QMenu *dual = mymenuBar->addMenu(tr("&Dual/Angle")); 
   action = dual->addAction(tr("&Dual"));   setId(action,A_GRAPH_DUAL);
   action = dual->addAction(xmanIcon,tr("Geometric Dual")); 
   action->setWhatsThis(tr(dual_g_txt));  
@@ -688,7 +752,7 @@ void pigaleWindow::createMenus()
   action->setWhatsThis(tr(angle_g_txt));  
   setId(action,A_GRAPH_ANGLE_G);
 
-  QMenu *algo = menuBar()->addMenu(tr("&Algo")); 
+  QMenu *algo = mymenuBar->addMenu(tr("&Algo")); 
   action = algo->addAction(tr("Find &Kuratowski"));   setId(action,A_ALGO_KURATOWSKI);
   action = algo->addAction(tr("Find &Cotree Critical"));   setId(action, A_ALGO_COTREE_CRITICAL);
   action = algo->addAction(tr("Color red  non critical edges"));   setId(action,A_ALGO_COLOR_NON_CRITIC);
@@ -707,7 +771,7 @@ void pigaleWindow::createMenus()
   algo->addSeparator();
   action = algo->addAction(tr("&Partition"));   setId(action, A_ALGO_NETCUT);
  
-  QMenu *orient = menuBar()->addMenu(tr("&Orient")); 
+  QMenu *orient = mymenuBar->addMenu(tr("&Orient")); 
   action = orient->addAction(tr("&Orient all edges"));   setId(action,A_ORIENT_E);
   action = orient->addAction(tr("&Unorient all edges"));   setId(action, A_ORIENT_NOE);
   action = orient->addAction(tr("&Color Poles"));   setId(action,A_ORIENT_SHOW);
@@ -720,7 +784,7 @@ void pigaleWindow::createMenus()
   action = orient->addAction(tr("BipolarOrient"));   setId(action,A_ORIENT_BIPOLAR_NP);
   action = orient->addAction(tr("BFS Orientation"));   setId(action,A_ORIENT_BFS);
 
-  QMenu *generate = menuBar()->addMenu(tr("&Generate")); 
+  QMenu *generate = mymenuBar->addMenu(tr("&Generate")); 
   QMenu *outer    = generate->addMenu(tr("&Outer Planar"));
   action = outer->addAction(tr("&Outer Planar (N1)"));   setId(action, A_GENERATE_P_OUTER_N);
   action = outer->addAction(tr("O&uter Planar (N1,M))"));   setId(action,A_GENERATE_P_OUTER_NM);
@@ -748,7 +812,7 @@ void pigaleWindow::createMenus()
   generate->addSeparator();
   action = generate->addAction(tr("&Random (N1,M)"));   setId(action,A_GENERATE_RANDOM);
 
-  QMenu *macro = menuBar()->addMenu(tr("&Macro")); 
+  QMenu *macro = mymenuBar->addMenu(tr("&Macro")); 
   connect(macro,SIGNAL(triggered(QAction *)),SLOT(macroHandler(QAction *)));
   action = macro->addAction(tr("Start recording"));action->setData(1);
   action = macro->addAction(tr("Stop  recording"));action->setData(2);
@@ -761,12 +825,12 @@ void pigaleWindow::createMenus()
   action = macro->addAction(tr("Insert a Pause"));action->setData(5);
   action = macro->addAction(tr("Repeat macro"));action->setData(4);
 
-  userMenu = menuBar()->addMenu(tr("&User menu")); 
+  userMenu = mymenuBar->addMenu(tr("&User menu")); 
   action = userMenu->addAction(tr("Test &1"));   setId(action,A_TEST_1);
   action = userMenu->addAction(tr("Test &2"));   setId(action,A_TEST_2);
   action = userMenu->addAction(tr("Test &3"));   setId(action,A_TEST_3);
 
-  QMenu *set = menuBar()->addMenu(tr("&Settings")); 
+  QMenu *set = mymenuBar->addMenu(tr("&Settings")); 
   QMenu *profile = set->addMenu(tr("&Pigale colors")); 
   profile->addAction(tr("&Edit Pigale Colors"),this,SLOT(EditPigaleColors()));
   profile->addAction(tr("&Gray profile"),this,SLOT(SetPigaleColorsProfile1()));
@@ -776,7 +840,7 @@ void pigaleWindow::createMenus()
   set->addAction(tr("&Save Settings"),this,SLOT(SaveSettings()));
   set->addAction(tr("&Reset Settings"),this,SLOT(ResetSettings()));
 
-  QMenu *help = menuBar()->addMenu(tr("&Information")); 
+  QMenu *help = mymenuBar->addMenu(tr("&Information")); 
   QAction *helpAct =  QWhatsThis::createAction(); 
   help->addAction(infoIcon,tr("&Graph properties"),this,SLOT(computeInformation()),Qt::SHIFT+Qt::Key_F2);
   help->addSeparator();
@@ -796,7 +860,6 @@ void pigaleWindow::closeEvent(QCloseEvent *event)
   //pigaleThread->deleteLater();
   UndoErase();
   LogPrintf("END\n");
-  delete printer;
   event->accept();
   }
 void pigaleWindow::AllowAllMenus()
@@ -843,7 +906,7 @@ void  pigaleWindow::setShowOrientation(bool val)
   }
 void pigaleWindow::SetPigaleFont()
  {bool ok;
-  QFont font = QFontDialog::getFont( &ok, this->font(), this );
+  QFont font = QFontDialog::getFont( &ok, this->font(), this ,"",QFontDialog::DontUseNativeDialog);
   if(!ok)return;
   QApplication::setFont(font);
   setFont(font);
@@ -862,13 +925,24 @@ void pigaleWindow::showLabel(int show)
           }
       }
   }
+ 
 void pigaleWindow::about()
-  {QMessageBox::about(this,tr("Pigale Editor"), 
-                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+PACKAGE_VERSION+")"
+  {if(sizeof(void*)==8)
+      QMessageBox::about(this,tr("Pigale Editor"), 
+                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+VERSION+")"
+                      "<br><b>version 64 bits</b>"
                       "<br><b>Copyright (C) 2001</b>"
                       +"<br>Hubert de Fraysseix"
 	    +"<br>Patrice Ossona de Mendez "
 	    +"<br> See <em>license.html</em>");
+	else
+	      QMessageBox::about(this,tr("Pigale Editor"), 
+                      "<b>"+tr("Pigale Editor")+"</b> (version:  "+VERSION+")"
+                      "<br><b>version 32 bits</b>"
+                      "<br><b>Copyright (C) 2001</b>"
+                      +"<br>Hubert de Fraysseix"
+	    +"<br>Patrice Ossona de Mendez "
+	    +"<br> See <em>license.html</em>"); 
   }
 void pigaleWindow::aboutQt()
   {QMessageBox::aboutQt(this,"Qt Toolkit");
@@ -882,39 +956,37 @@ bool pigaleWindow::InitPrinter(QPrinter* printer)
       }
   else 
       {QString FileName = staticData::dirImage + QDir::separator() + "image.pdf";
-      printer->setOutputFileName(FileName);
       QPrintDialog printDialog(printer,this);
-      if(printDialog.exec() != QDialog::Accepted) 
-          return false;
-      QString OutputFileName = printer->outputFileName();
-      if(!OutputFileName.isNull())
-          staticData::dirImage = QFileInfo(OutputFileName).absolutePath();
+      if(printDialog.exec() != QDialog::Accepted) return false;
+       //printer->setOutputFileName(FileName);
+       QString OutputFileName = printer->outputFileName();
+       if(!OutputFileName.isNull())staticData::dirImage = QFileInfo(OutputFileName).absolutePath();
       }
   return true;
   }
 void pigaleWindow::print()
-  {switch(tabWidget->currentIndex())
-      {case 0:
-          if(!InitPrinter(printer))return;
-          gw->editor->print(printer);
+  {if(tabWidget->currentIndex() > 3)return;
+   QPrinter printer;
+   //printer.setResolution(QPrinter::HighResolution);
+   if(!InitPrinter(&printer))return;
+    switch(tabWidget->currentIndex())
+      {case 0:  
+          gw->editor->print(&printer);
           break;
       case 1:
-          if(!InitPrinter(printer))return;
-          mypaint->print(printer);
+          mypaint->print(&printer);
           break;
       case 2:
-          if(!InitPrinter(printer))return;
-          graphgl->print(printer);
+          graphgl->print(&printer);
           break;
       case 3:
-          if(!InitPrinter(printer))return;
-          graphsym->print(printer);
+          graphsym->print(&printer);
           break;
       default:
           break;
       }
   }
-bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
+bool pigaleWindow::InitPicture(QPrinter* printer,QString & formats,QString & suffix)
   {if(ServerExecuting)
       {staticData::fileImage = QString("/tmp/server%1.png").arg(ServerClientId);
       suffix = "png";
@@ -952,93 +1024,25 @@ void pigaleWindow::image()
 //{QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
   {QString formats = "Image Files (*.png *.jpg *.svg *.ps *.pdf)";
   QString suffix;
+  QPrinter printer;
   switch(tabWidget->currentIndex())
       {case 0:
-          if(!InitPicture(formats,suffix))return;
-          gw->editor->image(printer,suffix);
+          if(!InitPicture(&printer,formats,suffix))return;
+          gw->editor->image(&printer,suffix);
           break;
       case 1:
-          if(!InitPicture(formats,suffix))return;
-           mypaint->image(printer,suffix);
+          if(!InitPicture(&printer,formats,suffix))return;
+           mypaint->image(&printer,suffix);
           break;
       case 2:
-          if(!InitPicture(formats,suffix))return;
-          graphgl->image(printer,suffix);
+          if(!InitPicture(&printer,formats,suffix))return;
+          graphgl->image(&printer,suffix);
           break;
       case 3:
-          if(!InitPicture(formats,suffix))return;
-          graphsym->image(printer,suffix);
+          if(!InitPicture(&printer,formats,suffix))return;
+          graphsym->image(&printer,suffix);
           break;
       default:
           break;
       }
   }
-/*
-bool pigaleWindow::InitPicture(QString & formats,QString & suffix)
-  {if(ServerExecuting)
-      {staticData::fileImage = QString("/tmp/server%1.png").arg(ServerClientId);
-      suffix = "png";
-      return true;
-      }
-  QString filter;
-  staticData::fileImage = QFileDialog::getSaveFileName(this,
-                                                       tr("Choose a file to save under"),
-                                                       staticData::dirImage,
-                                                       formats,&filter);
-
-  if(staticData::fileImage.isEmpty())return false; 
-  staticData::dirImage = QFileInfo(staticData::fileImage).absolutePath();
-  suffix = QFileInfo(staticData::fileImage).suffix();
-  if(suffix.length() == 0) 
-      {suffix = filter.mid(filter.indexOf('.')+1);
-      suffix = suffix.left(suffix.indexOf('\)'));
-      staticData::fileImage += "."+suffix; 
-      QFileInfo fi =  QFileInfo(staticData::fileImage);
-      if(fi.exists())
-          if(QMessageBox::warning(this,"Pigale Editor","This file already exixts.<br> Overwrite ?"
-                                  ,QMessageBox::Ok 
-                                  ,QMessageBox::Cancel) == QMessageBox::Cancel)return false;
-      }
-  // construct lis of allowed suffixes
-  QStringList suffixes = formats.split(";;");
-  for(int i = 0; i < suffixes.count();i++)
-      {QString str = suffixes[i].mid(suffixes[i].indexOf('.')+1);
-      str = str.left(str.indexOf('\)'));
-      if(str == suffix)
-          {if(suffix == "pdf" || suffix == "ps")
-              {printer->setOrientation(QPrinter::Portrait);
-              printer->setColorMode(QPrinter::Color);
-              printer->setOutputFileName(staticData::fileImage);
-              }
-          return true;
-          }
-      }
-  QString msg = "Unknown extension: " + suffix;
-  Twait((const char *)msg.toAscii());
-  return false;
-  }
-void pigaleWindow::image()
-{QString formats = "Png (*.png);;Jpeg (*.jpg);;Svg (*.svg);;Ps (*.ps);;Pdf (*.pdf)";
-  QString suffix;
-  switch(tabWidget->currentIndex())
-      {case 0:
-          if(!InitPicture(formats,suffix))return;
-          gw->editor->image(printer,suffix);
-          break;
-      case 1:
-          if(!InitPicture(formats,suffix))return;
-           mypaint->image(printer,suffix);
-          break;
-      case 2:
-          if(!InitPicture(formats,suffix))return;
-          graphgl->image(printer,suffix);
-          break;
-      case 3:
-          if(!InitPicture(formats,suffix))return;
-          graphsym->image(printer,suffix);
-          break;
-      default:
-          break;
-      }
-  }
- */

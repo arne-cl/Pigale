@@ -20,6 +20,7 @@
 #include <TAXI/Tbase.h>
 #include <TAXI/Tsvector.h>
 
+typedef int LongInt;
 
 //! \brief TGF uses a very primitive dynamic array:
 template<class T> class TSArray
@@ -72,7 +73,7 @@ const int NRECORDS = 200;
 union UnionLongWord
     {double d;
     float f;
-    long l;
+    LongInt l;
     int i;
     short s;
     char c;
@@ -86,14 +87,14 @@ struct StructHeader
     short IfdNum;           //!< number of Ifd
     short RecordNum;        //!< number of records
     short LenSubHeader;     //!< size of SubHeader (16 by default)
-    long FstIfdOffs;        //!< offset of the first Ifd 
+    LongInt FstIfdOffs;        //!< offset of the first Ifd 
     };
 
 // FIELD
 struct StructField
     {short tag;             //2 bytes
     short attrib;           //2 bytes
-    long len;               //4 bytes
+    LongInt len;               //4 bytes
     UnionLongWord word;     //8 bytes
     StructField() : tag(0),attrib(0),len(0),word(){}
     };
@@ -104,8 +105,8 @@ struct  StructIfdHeader
     short FieldNumTotal;    //2 bytes
     short FieldNum;         //2 bytes      # de champs de l'Ifd
     short unused;           //2 bytes      unused
-    long NextIfd;           //4 bytes
-    long NextRecord;        //4 bytes
+    LongInt NextIfd;           //4 bytes
+    LongInt NextRecord;        //4 bytes
     StructIfdHeader() : tag(0),FieldNumTotal(0),FieldNum(0),unused(0),NextIfd(0),NextRecord(0) {}
     };
 
@@ -120,7 +121,7 @@ struct StructIfd :  StructIfdHeader
 struct StructTagList
     {short number;
     TSArray<short> tag;
-    TSArray<long>  len;
+    TSArray<LongInt>  len;
     StructTagList() : number(0),tag(0),len(0) {}
     };
 
@@ -172,15 +173,15 @@ class Tgf {
         int       new_ifd;
         int       new_data;                //utiliser seulement por SeekWrite
         int       seek;
-        long CurrentIfdOffset;
-        TSArray<long> IfdOffset;   //IfdOffset[i] = offset du record i
-        long offset_new_data;
+        LongInt CurrentIfdOffset;
+        TSArray<LongInt> IfdOffset;   //IfdOffset[i] = offset du record i
+        LongInt offset_new_data;
 
         int ReadHeader();
         int WriteHeader();
-        int IfdRead(long offset);
-        int IfdReadAll(long offset);
-        int IfdWrite(long offset);
+        int IfdRead(LongInt offset);
+        int IfdReadAll(LongInt offset);
+        int IfdWrite(LongInt offset);
         int ReadOffsets();                 //Lecture des Offset de tous les records
         int Flush();
     public:
@@ -223,29 +224,29 @@ class Tgf {
         int SetRecord(int num);
         int DeleteRecord(int num);
         
-        long GetTagLength(int Tag);
+        LongInt GetTagLength(int Tag);
 
-        int SeekWrite(short t,long NumberBytes);
-        int FieldWrite(short t,const char *pointeur,long NumberBytes);
+        int SeekWrite(short t,LongInt NumberBytes);
+        int FieldWrite(short t,const char *pointeur,LongInt NumberBytes);
 
         int FieldWrite(short t,const char c)    {return FieldWrite(t, &c, sizeof(char));}
         int FieldWrite(short t,const short i)   {return FieldWrite(t, (char *)&i, sizeof(short));}
         int FieldWrite(short t,const int i)     {return FieldWrite(t, (char *)&i, sizeof(int));}
-        int FieldWrite(short t,const long l)    {return FieldWrite(t, (char *)&l, sizeof(long));}
+        //int FieldWrite(short t,const LongInt l)    {return FieldWrite(t, (char *)&l, sizeof(LongInt));}
         int FieldWrite(short t,const float f)   {return FieldWrite(t, (char *)&f, sizeof(float));}
         int FieldWrite(short t,const double d)  {return FieldWrite(t, (char *)&d, sizeof(double));}
         int FieldWrite(short t,const char *str) {return FieldWrite(t, str, strlen(str)+1);}
 
         // FieldRead renvoie la longueur de ce qu'on a lu
-        int SeekRead(short t,long NumberBytes);
-        int FieldRead(short t,char *pointeur,long NumberBytes);
+        int SeekRead(short t,LongInt NumberBytes);
+        int FieldRead(short t,char *pointeur,LongInt NumberBytes);
 
         int SeekRead(short t)                   {return SeekRead(t,GetTagLength(t));}
         int FieldRead(short t,char *pointeur)   {return FieldRead(t,pointeur,GetTagLength(t));}
         int FieldRead(short t,char &c)          {return FieldRead(t, &c, sizeof(char));}
         int FieldRead(short t,short &i)         {return FieldRead(t, (char *)&i, sizeof(short));}
         int FieldRead(short t,int &i)           {return FieldRead(t, (char *)&i, sizeof(int));}
-        int FieldRead(short t,long &l)          {return FieldRead(t, (char *)&l, sizeof(long));}
+        //int FieldRead(short t,LongInt &l)          {return FieldRead(t, (char *)&l, sizeof(LongInt));}
         int FieldRead(short t,float &f)         {return FieldRead(t, (char *)&f, sizeof(float));}
         int FieldRead(short t,double &d)        {return FieldRead(t, (char *)&d, sizeof(double));}
     };

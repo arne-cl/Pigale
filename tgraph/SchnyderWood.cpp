@@ -376,10 +376,9 @@ bool SchnyderWood::is_cw_face(tvertex v)  const {
 }
 
 bool SchnyderWood::reverse_cw_face(tvertex v) {
-  if (!is_cw_face(v)) 
-    return false;
-    tbrin b1,b2,b3;
-    tvertex u,w;
+  if (!is_cw_face(v))return false;
+  tbrin b1,b2,b3;
+  tvertex u,w;
   b1 = ParentR[v];
   b2 = G.cir[-b1];
   b3 = G.cir[-b2];
@@ -642,7 +641,7 @@ tvertex SchnyderWood::GetFirstChild( tvertex v, short c)  const {
     assert(!IsSimple(GetParentE(v,c_left)));
     return GetParentV(v, c_left);
   }
-  for(b_next = -G.acir[p_left]; IsBlack(b_next.GetEdge()); b_next = -G.acir[-b_next]);
+  for(b_next = -G.acir[p_left]; IsBlack(b_next.GetEdge()); b_next = -G.acir[-b_next]){;}
   tvertex child = G.vin[b_next];
   if (GetParentV(child,c) == v)
     return child;
@@ -656,7 +655,7 @@ tvertex SchnyderWood::GetNextChild (tvertex current_child, short c) const  {
   tbrin bp = GetParentBr(current_child, c);
   if (bp == 0)
     return 0;
-  for(b_next = -G.acir[-bp]; IsBlack(b_next.GetEdge()); b_next = -G.acir[-b_next]);
+  for(b_next = -G.acir[-bp]; IsBlack(b_next.GetEdge()); b_next = -G.acir[-b_next]){;}
   tvertex child = G.vin[b_next];
   if (GetParentV(child,c) == GetParentV(current_child,c)) {
     if (child != GetFirstChild(GetParentV(current_child,c),c))

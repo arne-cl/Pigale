@@ -105,7 +105,7 @@ class tarray {
     //        { qsort((void *)&(ary[head]), tail-head+1, sizeof(T), compare); }
 
     inline virtual void clear() { for (int i = 0; i < size; i++) ary[i] = init; }
-    inline virtual const char * const ClassName() const { return "tarray"; }
+    inline virtual const char * ClassName() const { return "tarray"; }
 };
 
 #endif

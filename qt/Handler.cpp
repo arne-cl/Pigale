@@ -431,12 +431,11 @@ int DualHandler(GraphContainer &GC,int action)
 int RemoveHandler(GraphContainer &GC,int action)
   {TopologicalGraph G(GC);
   GeometricGraph GG(GC);
-  int n;
   tvertex v;
   tedge e;
   switch(action)
       {case A_REMOVE_ISOLATED_V:
-          n = G.RemoveIsolatedVertices();
+          G.RemoveIsolatedVertices();
           break;
       case A_REMOVE_LOOPS:
           G.RemoveLoops();

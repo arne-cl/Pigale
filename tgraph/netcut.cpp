@@ -391,7 +391,7 @@ double EmbedRnGraph::ComputeCzekanovskiDistance(int vertex1,int vertex2)
   {int position1 = 1, position2 = 1;
   int NCommonVertices = 0;
   int v1,v2;
-  bool adjacent = false;
+  //bool adjacent = false;
   while(position1 <= degree[vertex1] + 1 && position2 <= degree[vertex2] + 1)
       {v1 = vvadj[vertex1][position1]; v2 = vvadj[vertex2][position2];
       if(v1 < v2)
@@ -401,7 +401,7 @@ double EmbedRnGraph::ComputeCzekanovskiDistance(int vertex1,int vertex2)
       else 
           {++NCommonVertices;
           ++position1; ++position2;
-	  if(v1 == vertex1)adjacent = true;
+	       //if(v1 == vertex1)adjacent = true;
           }
       }
   int SymDiff = degree[vertex1] + degree[vertex2] + 2 -2*NCommonVertices;

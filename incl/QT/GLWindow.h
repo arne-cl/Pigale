@@ -47,11 +47,12 @@ private:
   void drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor &col);
   void drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size);
   void drawText(void * font,const char *txt);
-private:
+
+private: 
   GraphGLPrivate *glp;
   bool is_init;
   GLuint object;
-  int CharSize;
+  //int CharSize;
 };
 
 #endif

@@ -18,8 +18,7 @@
 int DFSGraph::CotreeCritical()
   {int retval;
   bool found;
-  {
-  DFSKura2 DK(*this);
+  {DFSKura2 DK(*this);
   retval = DK.GetRetVal();
   found = DK.KuraFound();
   }
@@ -27,13 +26,18 @@ int DFSGraph::CotreeCritical()
       {MarkFundTree();
       Shrink();
       }
-  else retval=0;
+  //else retval=0;
 
   Set(tedge()).erase(PROP_MARK);
   Set(tvertex()).erase(PROP_LOW);
   Set(tvertex()).erase(PROP_ELOW);
   Set(tvertex()).erase(PROP_TSTATUS);
   Set(tvertex()).erase(PROP_DUALORDER);
+  if(!found)
+  	{setPigaleError(-1,"CotreeCritical NOT Found");
+  	cout<<"CotreeCritical NOT Found retval:"<<retval<<endl;
+  	retval=0;
+    }
   return retval;
   }
 
@@ -210,9 +214,17 @@ tedge DFSKura2::FindLastInterlaced(tedge e,tvertex lv,tvertex tv)
   while (1)
       {if (nvin[e]>=tv) return 0;
       if ((nvin[e] == lv) || (ancestor[nvin[-e]] < tv))
-          {/*Flash(e,orange);*/ e++; if (e>ne()) return 0; else continue;}
+          {/*Flash(e,orange);*/ 
+          e++; 
+          if (e>ne()) return 0; 
+          else continue;
+          }
       if (((vason = ancestor_son[nvin[-e]])==0) || (low[vason] >= l1)) 
-          {/*Flash(e,cyan);*/ e++; if (e>ne()) return 0; else continue;}
+          {/*Flash(e,cyan);*/ 
+          e++; 
+          if (e>ne()) return 0; 
+          else continue;
+          }
       break;
       }
   return e;
@@ -232,7 +244,7 @@ void DFSKura2::Compute()
   ComputeImportantVertices();
   tedge hc1 = HighestCove(branch,fils1);
   tedge hc2 = HighestCove(branch,fils2);
-  /*
+ /* 
    if(debug())
         {Tprintf("fils1=%d fils2=%d",iv(fils1)(),iv(fils2)());
         Tprintf("elow=%d elow=%d",ie(elow[fils1])(),ie(elow[fils2])());
@@ -247,13 +259,13 @@ void DFSKura2::Compute()
         DebugPrintf("iv npattach=%d",iv(npattach)());
         DebugPrintf("iv t1=%d",iv(t1)());
         // coloration de qqes sommets
-        vcolor[iv(branch)]=blue;
-        vcolor[iv(npattach)]=green;
-        vcolor[iv(t1)]=pink;
+        vcolor[iv(branch)]=Blue;
+        vcolor[iv(npattach)]=Green;
+        vcolor[iv(t1)]=Pink;
         DrawGraph();
         Twait("Commencement");
         }
-    */
+*/    
     // Ici commencent les differents cas
 
   ComputeAncestors();
@@ -356,8 +368,8 @@ void DFSKura2::Compute()
   // entrelacement
   //if(debug())Tprintf("On cherche de l'entrelacement vers t1");
   //if(debug())Tprintf("down_edge:%d",ie(down_edge)());
-  /*Flash(down_edge,cyan);*/
-
+  //Flash(down_edge,Cyan);
+ 
   tedge previous_pink=0;
   tedge e = e2;
   tvertex lv = l2;
@@ -430,8 +442,10 @@ void DFSKura2::Compute()
       e = previous_pink;
       f = FindLastInterlaced(e,nvin[e],ancestor[nvin[-e]]);
       if (f==0)
-          {//if(debug())Tprintf("No interlcament found");
+          {cout <<"No interlecament found"<<endl;
           Success=false;
+          DrawGraph();Twait("coucou");
+          //if(debug())myabort();
           return;
           }
       }

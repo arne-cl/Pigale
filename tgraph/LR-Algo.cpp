@@ -250,16 +250,20 @@ int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _Lr
   tvertex vi, vii;
   tedge ej;
 
+  //for(tedge ej =1 ; ej <= m;ej++)    DebugPrintf("%d  %d %d",ej(),vin[ej](),vin[-ej]());
+
   vi = 1;
   while((ej = LrSort.tref[vi])!=0 && ej < n ) vi=treetarget(ej);
+  //while((ej = LrSort.tref[vi])!=0 && ej < n ) {vi=treetarget(ej);DebugPrintf("Climbing to:%d",vi());}
   if(ej >= n)Twit.NewTwin(ej);                               // Create a new Twin
-
+   //DebugPrintf("edge:%d  %d %d",ej(),vin[ej](),vin[-ej]());
   for(;;)
       {if(ctel[vi] == 0)                                    // No more Edge
           {if(vi == 1)return Twit.planar();                 // No bactracking from 1
           if(OnlyTest && !Twit.planar())return Twit.planar();
           vii =vi;
           vi = vin[treein(vi)];                             // Bactracking to the father of vi
+          //DebugPrintf("Backtracking to:%d",vi());
           Twit.Deletion(vi);                                // Delete cotree edges
           if(LrSort.tref[vi] == treein(vii))                // Backtracking along a reference edge
               continue;
@@ -275,6 +279,7 @@ int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _Lr
                   }
               Hist.Link[treein(vii)] = Twit.Twin().ltop();  // Hist.Link edge to left top
               Twit.NextFork();                              // We remove the fork and Look for nex fork
+              //DebugPrintf("FUSION %d  %d %d",ej(),vin[ej](),vin[-ej]());
               Twit.Fusion(ej);                              // fusion
               }
           else                                              // Backtacking along an isthmus
@@ -284,17 +289,21 @@ int Newlralgo(int n, int m, svector<tvertex> &vin,const _Bicon &Bicon, const _Lr
           }
       else if(ctel[vi] < n)                                 // Going up in the tree
           {vii = treetarget(ctel[vi]);
+          //DebugPrintf("Climbing to:%d",vii());
           Twit.NewFork(vi);                                 // New tree fork
           ctel[vi] = LrSort.linkt[ctel[vi]];
           vi = vii;                                         // updating current vertex
           while((ej = LrSort.tref[vi])!=0 && ej < n ) vii = vi = treetarget(ej);
+          //while((ej = LrSort.tref[vi])!=0 && ej < n ) {vii = vi = treetarget(ej);DebugPrintf("Climbing to:%d",vi());}
           vii = vi;
+          //if(ej >= n){Twit.NewTwin(ej);DebugPrintf("NEWTWIN A:%d  %d %d",ej(),vin[ej](),vin[-ej]());}
           if(ej >= n)Twit.NewTwin(ej);
           // Going up in the tree along LrSort.tref edges
           continue;
           }
       else
           {ej = ctel[vi];                                    // Treating a new cotree edge
+          //DebugPrintf("NEWTWIN B:%d  %d %d",ej(),vin[ej](),vin[-ej]());
           ctel[vi] = LrSort.linkt[ctel[vi]];
           Twit.NewTwin(ej);                                  // Create a new Twin
           if(!Twit.FirstLink())Twit.Fusion(ej);              // Fusion

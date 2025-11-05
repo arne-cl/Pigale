@@ -46,9 +46,11 @@ void WriteTGF(PSet1 &X,Tgf &file,int PNum)
 void ReadTGF(PSet &X, Tgf &file, int PNum)
   {pset_header h;
   if (!file.FieldRead(PSetHeaderTag(PNum),(char *)&h, sizeof(h)))
-      {DebugPrintf("could not readTGF::PNum;%d",PNum);return;}
+      {DebugPrintf("could not readTGF::PNum;%d",PNum);return;
+      }
   X.clear();
   X.resize(h.start,h.finish);
+  //cout<<"PSET **********************"<<endl;
   for (int i=X.PStart(); i< X.PEnd(); i++)
       {if (i==128) break;
       long size = file.GetTagLength(PSetTag(PNum,i));
@@ -61,9 +63,10 @@ void ReadTGF(PSet &X, Tgf &file, int PNum)
   }
 void ReadTGF(PSet1 &X, Tgf &file, int PNum)
   {X.clear();
+  //cout<<"PSET1 ********************** PNum:"<<PNum<<endl;
   for (int i=X.PStart(); i< X.PEnd(); i++)
       {if (i==128) break;
-      long size = file.GetTagLength(PSet1Tag(PNum,i));
+      long size = file.GetTagLength(PSet1Tag(PNum,i));      
       if (!size) continue;
       svector<char> v((int)size);
       file.FieldRead(PSet1Tag(PNum,i),v.begin());

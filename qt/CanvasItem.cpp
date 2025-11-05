@@ -14,19 +14,23 @@
 \ingroup editor
 \brief  All QGraphicsItem used by QGraphicsScene *canvas
 */
-
+   
 #include "pigaleWindow.h"
 #include "mouse_actions.h"
 #include "GraphWidget.h"
 #include <TAXI/Tprop.h>
 #include <QT/pigaleQcolors.h> 
 #include <QT/Misc.h> 
+#include <QT/staticData.h> 
 
 //! The brush used by all QGraphicsItem
 static QBrush *tb = 0;
 //! The pen used by all QGraphicsItem
 static QPen *tp = 0;
+static int nsizerect,nsizerecth;
 
+int sizeRectColor(){return nsizerect;}
+int sizeBorder(){return nsizerect*1.5;};
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Methods of GraphWidget
 GraphWidget::GraphWidget(QWidget *parent,pigaleWindow *_mywindow)
@@ -58,9 +62,11 @@ void CreatePenBrush()
   if(!tp) tp = new QPen( Qt::black );
   }
 ColorItem:: ColorItem(GraphWidget* g,QRectF &rect,int pcolor,int bcolor,bool is_node)
-  :QGraphicsRectItem(rect,0,g->canvas)
+    :QGraphicsRectItem(rect)
+//hub    :QGraphicsRectItem(rect,0,g->canvas)
     ,brush_color(bcolor),node(is_node)
   {gwp = g;
+  g->canvas->addItem(this);
   tp->setColor(color[pcolor]);  tp->setWidth(3); setPen(*tp);
   tb->setColor(color[bcolor]);  setBrush(*tb); 
   setZValue(col_z);
@@ -71,35 +77,40 @@ void ColorItem::SetPenColor(int pcolor)
 void CreateColorItems(GraphWidget* gwp,int color_node,int color_edge)
 //! creates the coloured rectangles used to recolor edges and vertices
   {ColorItem *coloritem;
-  int x = (int)gwp->canvas->width() - sizerect -space;
+  
+  nsizerect = (int)(gwp->canvas->height())/(32+8);
+  nsizerecth = nsizerect -2;
+  int x = (int)gwp->canvas->width() - nsizerect -space;
   int y = space;
   int i;
   // ColorItems for vertices
   for(i = 1;i <= 16;i++)
-      {QRectF rect(x,y,sizerect,sizerect);
+      {QRectF rect(x,y,nsizerect,nsizerect);
       if(i == color_node)
 	  coloritem = new ColorItem(gwp,rect,i,i,true);
       else
 	  coloritem = new ColorItem(gwp,rect,White,i,true);
       gwp->NodeColorItem[i] = coloritem;
-      y = y + sizerect + space;
+      y = y + nsizerect + space;
       }
   // ColorItems for edges
-  y = (int)gwp->canvas->height() - 20*(sizerect + space);
+  y = (int)gwp->canvas->height() - 20*(nsizerect + space);
   for(i = 1;i <= 16;i++)
-      {QRectF rect(x,y,sizerect,sizerect);
+      {QRectF rect(x,y,nsizerect,nsizerect);
       if(i == color_edge)
 	  coloritem = new ColorItem(gwp,rect,i,i,false);
       else
 	  coloritem = new ColorItem(gwp,rect,White,i,false);
       gwp->EdgeColorItem[i] = coloritem;
-      y = y + sizerect + space;
+      y = y + nsizerect + space;
       }
   }
-ThickItem:: ThickItem(GraphWidget* g,QRectF &rect,int ewidth,int bcolor)
-  :QGraphicsRectItem(rect,0,g->canvas)
+ThickItem:: ThickItem(GraphWidget* g,const QRectF &rect,int ewidth,int bcolor)
+    :QGraphicsRectItem(rect)
+//hub    :QGraphicsRectItem(rect,0,g->canvas)
   ,brush_color(bcolor),width(ewidth)
   {gwp = g;
+  g->canvas->addItem(this);
   tp->setColor(color[Black]);  tp->setWidth(ewidth); setPen(*tp);
   tb->setColor(color[bcolor]);  setBrush(*tb); 
   setZValue(thick_z);
@@ -109,10 +120,11 @@ void ThickItem::SetBrushColor(int bcolor)
   }
 void CreateThickItems(GraphWidget* gwp,int width_edge)
   {ThickItem *thickitem;
+  int sizerect = sizeRectColor();
   int x = (int)gwp->canvas->width() - sizerect -space;
   int y = (int)gwp->canvas->height() - 3*(sizerect + space);
   for(int i = 1;i <= 3;i++)
-      {QRectF rect(x,y,sizerect,sizerecth);
+      {QRectF rect(x,y,nsizerect,nsizerecth);
       if(i == width_edge)
 	  thickitem = new ThickItem(gwp,rect,i,Yellow);
       else
@@ -123,13 +135,16 @@ void CreateThickItems(GraphWidget* gwp,int width_edge)
   }
 //*****************************************************
 LineItem::LineItem(GraphWidget* g)
-  :QGraphicsLineItem(0,g->canvas)
-{}
+    :QGraphicsLineItem()
+//hub    :QGraphicsLineItem(0,g->canvas)
+{g->canvas->addItem(this);}
 //*****************************************************
 CursItem::CursItem(tvertex &_v,QPoint &p,GraphWidget* g)
-  :QGraphicsLineItem(0,g->canvas)
+    :QGraphicsLineItem()
+//hub    :QGraphicsLineItem(0,g->canvas)
 
   {v = _v;
+  g->canvas->addItem(this);
   tp->setColor(Qt::green);tp->setWidth(2);setPen(*tp);
   setLine(p.x(),p.y(),p.x(),p.y());
   setZValue(curs_z);
@@ -138,9 +153,18 @@ void CursItem::setToPoint(int x,int y)
   {setLine(line().p1().x(),line().p1().y(),x,y);
   }
 //*****************************************************
+PixmapItem::PixmapItem(GraphWidget* g,QPixmap bgPixmap)
+   :QGraphicsPixmapItem(bgPixmap)
+  {g->canvas->addItem(this);
+  setOpacity((staticData::opacityLevel)/100.);
+  setZValue(pixmap_z); 
+  }
+//*****************************************************
 InfoItem::InfoItem(GraphWidget* g,QString &t,QPoint &p)
-  :QGraphicsSimpleTextItem(t,0,g->canvas)
-  {  setFont(QFont("sans",g->fontsize));
+  :QGraphicsSimpleTextItem(t)
+//hub  :QGraphicsSimpleTextItem(t,0,g->canvas)
+  {g->canvas->addItem(this);
+  setFont(QFont("sans",g->fontsize));
   tb->setColor(Qt::blue);  setBrush(*tb); 
   setPos(p.x(),p.y());
   setZValue(info_z); 
@@ -153,7 +177,9 @@ InfoItem* CreateInfoItem(GraphWidget* gwp,QString &t,QPoint &p)
   p.rx() = bound(p.x(),dx/2,gwp->canvas->width()-dx/2);
   p.ry() = bound(p.y(),dy/2,gwp->canvas->height()-dy/2);
   QRectF rect = QRectF(p.x()-dx/2,p.y()-dy/2,dx,dy);
-  QGraphicsRectItem *rectitem = new QGraphicsRectItem(rect,0,gwp->canvas);
+  QGraphicsRectItem *rectitem = new QGraphicsRectItem(rect);
+  gwp->canvas->addItem(rectitem);
+//hub  QGraphicsRectItem *rectitem = new QGraphicsRectItem(rect,0,gwp->canvas);
   QPoint q  = QPoint(p.x()-dx/2+2,p.y()-size.height()/2);
   InfoItem *infoitem  = new InfoItem(gwp,t,q);
   tp->setWidth(2); tp->setColor(Qt::red); tb->setColor(Qt::white);
@@ -164,7 +190,8 @@ InfoItem* CreateInfoItem(GraphWidget* gwp,QString &t,QPoint &p)
   }
 //*****************************************************
 ArrowItem::ArrowItem(EdgeItem *edgeitem)
-    :QGraphicsPolygonItem(0,edgeitem->scene())
+    :QGraphicsPolygonItem(edgeitem)
+  //hub  :QGraphicsPolygonItem(0,edgeitem->scene())
   {edgeItem= edgeitem;
   pts.resize(4);
   ComputeCoord();
@@ -181,10 +208,13 @@ void ArrowItem::ComputeCoord()
   else if(ml > 100) {diviseur = (diviseur*ml)/100;}
   diviseur = Max(diviseur,1);
   QPointF v = QPointF(-u.y()/diviseur,u.x()/diviseur);
-  QPointF p0 = pts[0] = edgeItem->line().p2();
-  QPointF p1 = pts[1] =  p0 - v -(u*2)/diviseur;
+  QPointF p0 =  edgeItem->line().p2();
+  pts[0] = p0;
+  QPointF p1 =  p0 - v -(u*2)/diviseur;
+  pts[1] = p1;
   pts[2] = p0  -u/diviseur;
-  QPointF p3 = pts[3] = p0 + v - (u*2)/diviseur;
+  QPointF p3 = p0 + v - (u*2)/diviseur;
+  pts[3] = p3;
   setPolygon(pts);
   }
 void ArrowItem::SetColor(QColor col)
@@ -231,8 +261,10 @@ EdgeItem* CreateEdgeItem(tedge &e,GraphWidget* g)
   }
 EdgeItem::EdgeItem(GraphWidget* g,tedge &ee,double x_from,double y_from,double x_to,double y_to
                    ,bool _lower,NodeItem *_node)
-    :QGraphicsLineItem(0,g->canvas)
+    :QGraphicsLineItem()
+//hub    :QGraphicsLineItem(0,g->canvas)
   {gwp = g;
+  g->canvas->addItem(this);
   lower = _lower;
   e = ee;
   node = _node;
@@ -285,8 +317,10 @@ void EdgeItem::setToPoint(double x,double y)
   }
 //*****************************************************
 NodeItem::NodeItem(tvertex &_v,GraphWidget* g,QRectF &rect,QColor &col,QString &_t)
-  :QGraphicsRectItem(rect,0,g->canvas)
+    :QGraphicsRectItem(rect)
+//hub    :QGraphicsRectItem(rect,0,g->canvas)
   {gwp = g;
+  g->canvas->addItem(this);
   v = _v;
   t = _t;
   vcolor = col;
@@ -409,9 +443,10 @@ void GraphEditor::DrawGrid(const Tgrid &grid)
   compute xstep and the grid
 */
   {if(GridDrawn)clearGrid();
-  if( grid.delta.x() < 7 ||  grid.delta.y() < 7){clearGrid();return;}
+  if( grid.delta.x() < 6 ||  grid.delta.y() < 6){clearGrid();return;}
   QGraphicsLineItem *line;
   tp->setColor(color[Grey2]);tp->setWidth(1);
+  int sizerect = sizeRectColor();
   double x0 = grid.orig.x() - (int)(grid.orig.x()/grid.delta.x())*grid.delta.x();
   double dy = gwp->canvas->height()- grid.orig.y();
   double y0 = dy - (int)(dy/grid.delta.y())*grid.delta.y();

@@ -200,7 +200,7 @@ tbrin  SWShelling::GetLeftConnection(tvertex Candidate, int &length) {
 //        = k (>=1): the number of vertices on the leftConnection
 int SWShelling::FindNext(tbrin &left, tbrin &right, tbrin &LeftConnection, int &leftActive, int& rightActive) {
 
-  int count, f, i=0;
+  int count, f;
   tbrin b,b0,LastB,StopB;
   tvertex  Candidate;
 

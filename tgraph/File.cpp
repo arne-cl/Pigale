@@ -56,29 +56,13 @@ int IO_n() {return  FileIOHandler->n();}
 // TAG 526 reserved
 
 // reserve TAG de 4096 a 8191
-//#if defined(__WATCOMC__) || defined(__GNUC__)
 
-#if defined(__toto__)
-//#pragma pack (4);
-
-struct coord   {
-  int label; 
-  double x __attribute__ ((aligned(4) )); 
-  double y __attribute__ ((aligned(4) ));
-};
-struct e_struct{
-  long v1;
-  long v2 __attribute__ ((aligned(4) )); 
-  long color __attribute__ ((aligned(4) )); 
-  long width __attribute__ ((aligned(4) ));
-};
-#else
-#ifdef _WINDOWS
 #pragma pack(4)
-#endif
+// pragma is needed on 64 bits compiler to read old tgf files where sizeof(coord)=20
+// otherwise sizeof(coord)=24
 struct coord   {int label; double x,y ;};
-struct e_struct{long v1,v2,color,width;};
-#endif
+struct e_struct{LongInt v1,v2,color,width;};
+
 int IsFileAscii(const char *name)
   {char ID[4];
   fstream stream;
@@ -150,6 +134,7 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   G.clear();
   short version;
   if(!file.FieldRead(TAG_VERSION,version))version = 0;
+
   if(version >= 1)
       {ReadTGF(G.Set(),file,0);
       Prop1<int> n(G.Set(),PROP_N);
@@ -182,22 +167,28 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   smap<int> map_label;                   //label -> index
 
   // Creation des aretes
-  Prop<long> elabel(G.Set(tedge()),PROP_LABEL);
-  Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+  Prop<int> elabel(G.Set(tedge()),PROP_LABEL);
+  Prop<int> vlabel(G.Set(tvertex()),PROP_LABEL);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR,Black);
   Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH,1);
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
 
   e_struct *es = new e_struct[m+1];
+//  int bytes =  file.FieldRead(TAG_ELIST, (char *)&es[1]);
   file.FieldRead(TAG_ELIST, (char *)&es[1]);
   int a;
   int nloops = 0;
   for (j = 1,i=1; j <= m; j++)
       {if (es[j].v1 == es[j].v2){++nloops;continue;}   // skip loops
       if (map_label.ExistingIndexByKey(es[j].v1) < 0)
-          {vlabel[i]=es[j].v1; map_label[es[j].v1]=i++;}
+          {vlabel[i]=es[j].v1; 
+          map_label[es[j].v1]=i++;
+          }
       if (map_label.ExistingIndexByKey(es[j].v2) < 0)
-          {vlabel[i]=es[j].v2; map_label[es[j].v2]=i++;}
+          {vlabel[i]=es[j].v2; 
+          map_label[es[j].v2]=i++;
+          }         
+          
       vin[j] = map_label[es[j].v1];
       vin[-j] = map_label[es[j].v2];
       elabel[j] = j;
@@ -218,15 +209,17 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
   Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
   vcoord.SetName("TFILE:vcoord");
   coord *coords = new coord[n+1];
-   
+ //  
   file.FieldRead(TAG_COORDLAB, (char *)&coords[1]);
+  
   for(j = 1;j <= n;j++)
       {if(Abs(coords[j].x) < DBL_EPSILON )coords[j].x=.0;
       if(Abs(coords[j].y) < DBL_EPSILON )coords[j].y=.0;
-      if(map_label.ExistingIndexByKey(coords[j].label) < 0)
-	map_label[coords[j].label] = i++; 
+      // isolated vertices have no map_label
+      if(map_label.ExistingIndexByKey(coords[j].label) < 0) map_label[coords[j].label] = i++; 
       vcoord[map_label[coords[j].label]] = Tpoint(coords[j].x,coords[j].y);
       }
+      
   delete [] coords;
 
   short LedaGraph = file.FieldRead(TAG_LEDA,LedaGraph) ? 1 : 0;
@@ -245,7 +238,7 @@ int ReadTgfGraph(GraphContainer& G,tstring fname,int& NumRecords,int& GraphIndex
       }
 
   // Lecture des couleurs des sommets
-  if(file.GetTagLength(TAG_VCOLOR) == (long)(n*sizeof(short)))
+  if(file.GetTagLength(TAG_VCOLOR) == (LongInt)(n*sizeof(short)))
       {Prop<short> vcolor(G.Set(tvertex()),PROP_COLOR,Yellow);
       file.FieldRead(TAG_VCOLOR, (char *)&vcolor[1]);
       }
@@ -320,7 +313,7 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   file.FieldWrite(TAG_M, m);
   file.FieldWrite(TAG_LEDA,(short)1);
 
-  Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+  Prop<int> vlabel(G.Set(tvertex()),PROP_LABEL);
   Prop<short> ecolor(G.Set(tedge()),PROP_COLOR);
   Prop<int> ewidth(G.Set(tedge()),PROP_WIDTH);
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
@@ -331,8 +324,8 @@ int SaveGraphTgf(GraphAccess& G,tstring filename,int tag)
   for(i=1;i<=m;i++)
       {elist[i].v1 = vlabel[vin[i]];
       elist[i].v2 = vlabel[vin[-i]];
-      elist[i].color = (long)ecolor[i];
-      elist[i].width = (long)ewidth[i];
+      elist[i].color = (LongInt)ecolor[i];
+      elist[i].width = (LongInt)ewidth[i];
       }
   file.FieldWrite(TAG_ELIST,(char *)&elist[1],m * sizeof(e_struct));
   delete [] elist;
@@ -387,7 +380,6 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   if(!stream)return -1;
   char titre[80];
   int i,ch,iv1,iv2;
-
   G.clear();
   // Lecture du header (1 ligne)
   for(i = 0;i < 80;i++)
@@ -412,15 +404,16 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
   title() = titre;
 
   smap<int>  map_label;      //label -> index
-  svector<long> map_index;   //index -> long
+  svector<int> map_index;   //index -> LongInt
 
   streampos pos = stream.tellg();
   int m = 0;
   int n = 0;
+  // Lecture des aretes
   for(;;)
       {if(!stream.good())return 1;
       stream >> iv1 >> iv2;
-      if(!iv1)break;
+      if(!iv1 && !iv2)break;
       if(iv1 == iv2)continue;
       if(map_label.ExistingIndexByKey(iv1)< 0)
           {map_label[iv1] = ++n;
@@ -433,20 +426,22 @@ int ReadGraphAscii(GraphContainer& G,tstring filename)
       ++m;
       }
   G.setsize(n,m);
-  
-  Prop<long> vlabel(G.PV(),PROP_LABEL);
-  Prop<long> elabel(G.PE(),PROP_LABEL);
+  Prop<int> vlabel(G.PV(),PROP_LABEL);
+  Prop<int> elabel(G.PE(),PROP_LABEL);
   Prop<tvertex> vin(G.PB(),PROP_VIN);
   stream.seekg(pos, ios::beg);
-  // Lecture des aretes
+
+  // Re-lecture des aretes
   tbrin b = 0;
+  int m1=0;
   for(;;)
       {stream >> iv1 >> iv2;
-      if(iv1 == 0)break;
+      if(!iv1 && !iv2)break;
       if(iv1 == iv2)continue;
       ++b;
       vin[b] = (tvertex)map_label[iv1];
       vin[-b] = (tvertex)map_label[iv2];
+      ++m1;
       }
   vin[0]=0;
   for (i=0; i<=m;i++) elabel[i] = i;
@@ -469,7 +464,7 @@ int SaveGraphAscii(GraphAccess& G,tstring filename)
   out << title() <<endl;
   Prop<tvertex> vin(G.Set(tbrin()),PROP_VIN);
   bool existVlabel = G.Set(tvertex()).exist(PROP_LABEL);
- Prop<long> vlabel(G.Set(tvertex()),PROP_LABEL);
+ Prop<int> vlabel(G.Set(tvertex()),PROP_LABEL);
  if(!existVlabel)for(int i = 0;i <= G.nv();i++)vlabel[i] = i;
   // write edge list
   for(int e = 1;e <= G.ne();e++)

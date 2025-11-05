@@ -18,18 +18,21 @@
     email                : hf@ehess.fr
  ***************************************************************************/
 
-
-
-
-#include <config.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
+
+#ifdef Q_OS_DARWIN
+#include <GLUT/glut.h>
+#else
 #include <GL/freeglut.h>
+#endif
 
 #include <QApplication>
 #include <QTranslator>
 #include <QGLFormat>
-
+#include <QStyle>
+#include <QStyleFactory>
+//#include <QWindowsStyle>
 #ifdef _WIN32
 #undef PACKAGE_PATH
 #define PACKAGE_PATH ".."
@@ -38,26 +41,47 @@
 
 int main(int argc,char * argv[])
   {QApplication app(argc,argv);
+  QApplication::setOrganizationName("EHESS-CNRS");
+  QApplication::setApplicationName("Pigale");
   QApplication::setDesktopSettingsAware(true);
-  //QApplication::setStyle("motif");
+  //QCoreApplication::setAttribute(Qt::AA_DontUseNativeMenuBar,true);
+  
+#if defined(Q_OS_MAC)
+  QApplication::setStyle(QStyleFactory::create("Fusion"));
+  QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs,true);
+#else
+  QApplication::setStyle(QStyleFactory::create("Windows"));
+#endif
   // glut,openGL
+#ifndef Q_OS_DARWIN  
   glutInit(&argc,argv);
+#endif  
   QGLFormat fmt;
   fmt.setSampleBuffers(true);
   QGLFormat::setDefaultFormat(fmt);
+	
   //Translations
-  QString transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
+  QString transDict;
+#if defined(Q_OS_MAC)
+   QDir dir(QApplication::applicationDirPath()); 
+   dir.cdUp();
+   transDict = dir.absolutePath() + QDir::separator() + QString("Resources") + QDir::separator();
+#else
+  transDict= QString(PACKAGE_PATH)+ QDir::separator()+"translations"+ QDir::separator();
+#endif
   // translation file for Qt
   QTranslator qt(0);
   QString locale = QLocale::system().name();
+  LogPrintf("locale:%s\n",(const char *)locale.toLatin1());  
   //QString locale = QLocale::c().name(); // anglais
-  qt.load(QString("qt_") + locale,transDict);
+  qt.load(QString("qt_") + locale.toLatin1(),transDict);
   app.installTranslator( &qt );
   // translation file for application strings
   QTranslator myapp(0);
-  myapp.load( QString("pigale_" ) + locale,transDict);
+  myapp.load( QString("pigale_" ) + locale.toLatin1(),transDict);
   app.installTranslator( &myapp );
   pigaleWindow *mw = new pigaleWindow();
+  //mw->setWindowFlags (Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint);
   mw->show();
   app.connect( &app, SIGNAL(lastWindowClosed()),&app,SLOT(quit()));
   return app.exec();

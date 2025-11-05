@@ -39,6 +39,7 @@ int Tgf::open(const char *name,open_mode mode)
       stream.close();
       stream.open(name,ios::in|ios::out|ios::binary); 
       IsOpen = stream.is_open();
+      if(!IsOpen)cout<<name<<" is write  protected"<<IsOpen<<endl;
       if(!IsOpen)return 0;
       }
   else
@@ -61,7 +62,7 @@ int Tgf::open(const char *name,open_mode mode)
   if(ReadOffsets() == BADFILE)return(-1);
   
   stream.seekp(0, ios::end);
-  offset_new_data  = stream.tellp();
+  offset_new_data  = (LongInt)stream.tellp();
   if(mode == create) return 1;
   return Header.RecordNum;
   }
@@ -93,7 +94,7 @@ int Tgf::WriteHeader()
   return(1);
   }
 int Tgf::ReadOffsets()    //Lecture des Offset de tous les records
-  {long offset;
+  {LongInt offset;
   int nrecord;  
 
   nrecord = 1;
@@ -111,7 +112,7 @@ int Tgf::ReadOffsets()    //Lecture des Offset de tous les records
   if(nrecord != Header.RecordNum)return(0);
   return(nrecord);
   }
-int Tgf::IfdRead(long offset)    //Lecture d'un record
+int Tgf::IfdRead(LongInt offset)    //Lecture d'un record
   {if(!IsGood) return(0);
   stream.seekg(offset, ios::beg);
   stream.read((char *)&(Ifd.Header), sizeof(StructIfdHeader));
@@ -126,7 +127,7 @@ int Tgf::IfdRead(long offset)    //Lecture d'un record
   if(!stream.good()){stream.clear();IsGood = 0;return(0);}
   return(1);
   }
-int Tgf::IfdReadAll(long offset)    //Lecture d'un record
+int Tgf::IfdReadAll(LongInt offset)    //Lecture d'un record
   {if(!IsGood) return(0);
   stream.seekg(offset, ios::beg);
   CurrentIfdOffset = offset;
@@ -150,7 +151,7 @@ int Tgf::IfdReadAll(long offset)    //Lecture d'un record
       stream.read((char *)&(Ifd.Header), sizeof(StructIfdHeader));
       }
   }
-long Tgf::GetTagLength(int Tag)
+LongInt Tgf::GetTagLength(int Tag)
   {for(int i = 1;i <= TagList.number;i++)
       if(Tag == TagList.tag[i])return TagList.len[i];
   return 0;
@@ -162,7 +163,7 @@ int Tgf::CreateRecord()
   // so that the tgf file behave like a stack
   // The end of data is just after the last Ifd
   if(Header.RecordNum)//hf  modified 15/05/2002 before always else case
-      {long OffsetLast = IfdOffset[Header.RecordNum];
+      {LongInt OffsetLast = IfdOffset[Header.RecordNum];
       stream.seekg(OffsetLast, ios::beg);
       StructIfdHeader header0;
       stream.read((char *)&(header0), sizeof(StructIfdHeader));
@@ -171,7 +172,7 @@ int Tgf::CreateRecord()
       }
   else
       {stream.seekp(0, ios::end); 
-      offset_new_data  = stream.tellp();
+      offset_new_data  = (LongInt)stream.tellp();
       }
   ++Header.RecordNum;
   ++Header.IfdNum;
@@ -185,7 +186,7 @@ int Tgf::CreateRecord()
   new_ifd = 1;
   return(1);
   }
-int Tgf::SeekWrite(short t,long NumberBytes)
+int Tgf::SeekWrite(short t,LongInt NumberBytes)
 //On n'ecrit effectivement que les grands enregistrements (avant l'Ifd correspondant)
   {int field,align,ii;
 
@@ -209,8 +210,8 @@ int Tgf::SeekWrite(short t,long NumberBytes)
               {stream.put('0');++ii;}
           offset_new_data += ii;
           }
-      Ifd.field[field].word.l = (long)offset_new_data;
-      offset_new_data = (long)stream.tellp() + NumberBytes;
+      Ifd.field[field].word.l = (LongInt)offset_new_data;
+      offset_new_data = (LongInt)stream.tellp() + NumberBytes;
       seek = 1;
       }
   //LE TAG EXISTE DEJA ou est 0
@@ -232,8 +233,8 @@ int Tgf::SeekWrite(short t,long NumberBytes)
                   {stream.put('0');++ii;}
               offset_new_data += ii;
               }
-          Ifd.field[field].word.l = (long)offset_new_data;
-          offset_new_data = (long)stream.tellp() + NumberBytes;
+          Ifd.field[field].word.l = (LongInt)offset_new_data;
+          offset_new_data = (LongInt)stream.tellp() + NumberBytes;
           seek = 1;
           }
       }
@@ -241,7 +242,7 @@ int Tgf::SeekWrite(short t,long NumberBytes)
   return 1;
   }
 
-int Tgf::FieldWrite(short t,const char *pointeur,long NumberBytes)
+int Tgf::FieldWrite(short t,const char *pointeur,LongInt NumberBytes)
 //On n'ecrit effectivement que les grands enregistrements (avant l'Ifd correspondant)
   {int field,align,ii;
 
@@ -271,11 +272,11 @@ int Tgf::FieldWrite(short t,const char *pointeur,long NumberBytes)
               offset_new_data += ii;
               seek = 0;
               }
-          Ifd.field[field].word.l = (long)offset_new_data;
+          Ifd.field[field].word.l = (LongInt)offset_new_data;
           stream.write((char *)pointeur, NumberBytes);
           for(align = (NumberBytes - 1) % 4 + 1; align < 4; align++)
               stream.put('0');
-          offset_new_data = stream.tellp();
+          offset_new_data = (LongInt)stream.tellp();
           }
       }
   //LE TAG EXISTE DEJA ou est 0
@@ -305,11 +306,11 @@ int Tgf::FieldWrite(short t,const char *pointeur,long NumberBytes)
               offset_new_data += ii;
               seek = 0;
               }
-          Ifd.field[field].word.l = (long)offset_new_data;
+          Ifd.field[field].word.l = (LongInt)offset_new_data;
           stream.write((char *)pointeur, NumberBytes);
           for(align = (NumberBytes - 1) % 4 + 1; align < 4; align++)
               stream.put('0');
-          offset_new_data = stream.tellp();
+          offset_new_data = (LongInt)stream.tellp();
           }
       }
   new_data = 1;
@@ -320,7 +321,7 @@ int Tgf::Flush()     //MODIFIE HEADER ou PRECEDENT  et ECRIT IFD
   {if(!new_data)return 1;
 
   if(!new_ifd){new_data = 0;return(IfdWrite(CurrentIfdOffset));}
-  long offset;
+  LongInt offset;
   short tag;
 
   //Padding si seek
@@ -349,7 +350,7 @@ int Tgf::Flush()     //MODIFIE HEADER ou PRECEDENT  et ECRIT IFD
   //Ecriture du nouvel ifd
   return(IfdWrite(offset_new_data));
   }
-int Tgf::IfdWrite(long offset)
+int Tgf::IfdWrite(LongInt offset)
   {if(!IsGood) return(0);
   CurrentIfdOffset = offset;
   stream.seekp(offset, ios::beg);
@@ -365,13 +366,13 @@ int Tgf::IfdWrite(long offset)
   if(!stream.good()){IsGood = 0;stream.clear();return(0);}
 
   if(offset == offset_new_data)      //car si l'Ifd existait on le reecrit
-      offset_new_data = stream.tellp();
+      offset_new_data = (LongInt)stream.tellp();
   return(1);
   }
-int Tgf::SeekRead(short t,long NumberBytes)
+int Tgf::SeekRead(short t,LongInt NumberBytes)
 //Suppose que l'on a lu Ifd complet
   {int i;
-  long offset;
+  LongInt offset;
 
   for(i = 0; i < Ifd.Header.FieldNum; i++)
       if (Ifd.field[i].tag == t) break;
@@ -383,10 +384,10 @@ int Tgf::SeekRead(short t,long NumberBytes)
   stream.seekg(offset,ios::beg);
   return(NumberBytes);
   }
-int Tgf::FieldRead(short t,char *pointeur,long NumberBytes)
+int Tgf::FieldRead(short t,char *pointeur,LongInt NumberBytes)
 //Suppose que l'on a lu Ifd complet
   {int i;
-  long offset;
+  LongInt offset;
   if(!pointeur)return(0);
   for(i = 0; i < Ifd.Header.FieldNum; i++)
       if (Ifd.field[i].tag == t) break;
@@ -426,8 +427,8 @@ int Tgf::DeleteRecord(int num)
       WriteHeader();
       return 1;
       }
-  //long next = (num < Header.RecordNum) ?  next = IfdOffset[num+1] : 0L;
-  long next = (num < Header.RecordNum) ?  IfdOffset[num+1] : 0L;
+  //LongInt next = (num < Header.RecordNum) ?  next = IfdOffset[num+1] : 0L;
+  LongInt next = (num < Header.RecordNum) ?  IfdOffset[num+1] : 0L;
   if(num > 1)
       {stream.seekp(IfdOffset[num - 1]+12, ios::beg);
       stream.write((char *)&next, 4);

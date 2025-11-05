@@ -74,7 +74,7 @@ int KantShelling::FindNext(tbrin &left, tbrin &right)
           return 0; // no more vertex or face to shell.
           }
       i = Candidates.pop();
-      }while (i > 0 &&  (MarkedF[i] || Brin2Face[-FirstBrin] == i) || (i < 0 && MarkedV[-i]) );
+      }while (i > 0 &&  ((MarkedF[i] || Brin2Face[-FirstBrin] == i) || (i < 0 && MarkedV[-i])) );
   // skip marked faces, the face incident to v_1 and v_2, and marked vertices
 
   // list of the faces which were not separating faces before the shelling.  
@@ -372,7 +372,7 @@ LMCShelling::LMCShelling(Graph &G0, tbrin bref) : KantShelling(G0, bref), LeftBr
   } while(NbBrin[i-1] != 0);
   nb_sets = i-2;
 
-  stack<tvertex>  OuterFace; // List of vertices of on the outerface
+  tstack<tvertex>  OuterFace; // List of vertices of on the outerface
 
   // for each vertex v, the list of set-index such that it is its rightvertex
   //IntList RightVertexSets[G0.nv()+1];

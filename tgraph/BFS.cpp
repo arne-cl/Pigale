@@ -22,10 +22,10 @@ GraphContainer &ExtractBall(TopologicalGraph &G,
  title() = "Sub Graph";
  svector<tvertex> queue=Root;
  svector<tvertex> vin(0,0); vin[0]=0;
- svector<long> nlabel(0,0); nlabel[0]=0;
- svector<long> nlabele(0,0); nlabele[0]=0;
- Prop<long> label(G.Set(tvertex()),PROP_LABEL);
- Prop<long> labele(G.Set(tedge()),PROP_LABEL);
+ svector<int> nlabel(0,0); nlabel[0]=0;
+ svector<int> nlabele(0,0); nlabele[0]=0;
+ Prop<int> label(G.Set(tvertex()),PROP_LABEL);
+ Prop<int> labele(G.Set(tedge()),PROP_LABEL);
  svector<tvertex> nnum(0,0); nnum[0]=0;
  svector<tedge> nnume(0,0); nnume[0]=0;
  smap<tvertex> BFSnum;

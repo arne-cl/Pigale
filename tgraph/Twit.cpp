@@ -408,6 +408,7 @@ void _NewTwit::Drop()
   {isnotplanar=1;
   tedge rtp = Twin().rtop();
   tedge lbt = Twin().lbot();
+  //DebugPrintf("NOT PLANAR: rtp:%d lbt%d",rtp(),lbt());
   Twin().rtop() = Hist.Link[rtp];
   Hist.Link[rtp] = lbt;
   Hist.Dus[rtp] =  (int)(1 ^ Hist.Flip[rtp] ^ Hist.Flip[lbt]);
@@ -435,24 +436,20 @@ void _NewTwit::Mflip()
   }
 
 void _NewTwit::Flick()
-  {
-  int SaveCurrent=_current;
-  //tedge cv = Couve();
+  {int SaveCurrent=_current;
+  tedge cv = Couve();
 
   for(;_current > _fork;--_current)
-      {
-//       while(Twin().rtop()!=0)
-//           {if(side_flip(Twin().rtop(),Twin().lbot(),cv))
-//               Mflip();
-//           else
-//               {if(side_flip(Twin().ltop(),Twin().rbot(),cv))
-//                   {Twin().Permute();Mflip();}
-//               else
-//                   Drop();
-//               }
-//           }
-      while(Twin().rtop()!=0)
-          Drop();
+      {while(Twin().rtop()!=0)
+           {if(side_flip(Twin().rtop(),Twin().lbot(),cv))
+               Mflip();
+           else
+               {if(side_flip(Twin().ltop(),Twin().rbot(),cv))
+                   {Twin().Permute();Mflip();}
+               else
+                   Drop();
+               }
+           }
 
       if(_current < SaveCurrent)
           Hist.Link[NextTwin().lbot()] = Twin().ltop();

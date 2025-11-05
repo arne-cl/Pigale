@@ -18,7 +18,6 @@
 #define CLIENTSOCKET_H
 
 
-#include <config.h>
 #include "pigaleWindow.h"
 #include <QT/Misc.h>
 #include <QT/Action_def.h>

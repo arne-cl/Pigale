@@ -22,10 +22,6 @@ int EmbedTutteCircle(TopologicalGraph &G,bool schnyderLongestFace)
   int n = G.nv();
   PSet1  propSave(G.Set());
   G.MakeConnected();
-//   Prop<short> marke(G.Set(tedge()),PROP_MARK); marke.clear();
-//   Prop<short> markv(G.Set(tvertex()),PROP_MARK);markv.clear();
-//   markv.definit(1);
-    
   tbrin FirstBrin;
   int len;
   if(schnyderLongestFace)

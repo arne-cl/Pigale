@@ -110,7 +110,7 @@ class _Kuratowski : public _DFS
     Prop<int> ewidth;
     Prop<short> ecolor;
     Prop<short> vcolor;
-    Prop<long> elabel;
+    Prop<int> elabel;
     Prop<bool> mark;
     svector<tvertex> ancestor;
     svector<tvertex> ancestor_son;

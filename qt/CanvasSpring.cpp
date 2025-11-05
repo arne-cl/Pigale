@@ -25,7 +25,9 @@
 #include <QT/clientEvent.h>
 
 #include <QProgressBar>
-
+#ifdef _MSC_VER
+#define isnan _isnan
+#endif
 
 int ComputeBounds(GeometricGraph &G,double &xmin,double &xmax, double &ymin,double &ymax
 		  ,double & dx,double & dy)
@@ -47,7 +49,8 @@ void GraphEditor::Spring()
   DoNormalise = true;
   int h = (int)gwp->canvas->height();
   int w = (int)gwp->canvas->width();
-  double mhw = Min(w,h) - 2*BORDER;
+  int sizerect = sizeRectColor();
+  double mhw = Min(w,h) - 2*sizeBorder();
   Tpoint center((w - space - sizerect)/2.,h/2.); 
   int n_red,n = G.nv(),m =G.ne();
   double len,len02 = mhw*mhw/n;
@@ -195,12 +198,12 @@ t current tanslation of v0
       {mw->progressBar->setRange(0,G.nv());
       mw->progressBar->setValue(0);
       mw->progressBar->show();
-      setRenderHints(!QPainter::Antialiasing);
+      setRenderHints(0);
       }
   DoNormalise = true;
   //int option = Twait("option");
   int h = (int)gwp->canvas->height(),w = (int)gwp->canvas->width();
-  double mhw = Min(w,h) - 2*BORDER;
+  double mhw = Min(w,h) - 2*sizeBorder();
   int n_red,n = G.nv(),m =G.ne();
   double len=.0,len02 = mhw*mhw/n;
   // during iteration keeep the drawing size
@@ -210,6 +213,7 @@ t current tanslation of v0
   int iter,niter = 2000;
   double dist2,strength,dx,dy,dep = .0;
   double xmin,xmax,ymin,ymax,sizex,sizey,sizex0,sizey0;
+  int sizerect = sizeRectColor();
   Tpoint p0,p,t,tt,center((w - space - sizerect)/2.,h/2.);
   double force = 1.;
   int stop = 0;
@@ -320,7 +324,7 @@ t current tanslation of v0
                   double d3=Determinant(p0-p1,p2-p1);
                   double d4=Determinant(p0+t-p1,p2-p1);
                   double x1 = d1*d2; double x2=d3*d4;
-                  if (x1<=0 && x2<0 || x1<0 && x2<=0)
+                  if ((x1<=0 && x2<0) || (x1<0 && x2<=0))
                       {found=true; break; }
                   }
               if (!found)
@@ -337,7 +341,7 @@ t current tanslation of v0
                           double d3=Determinant(pp0-p0,p-p0);
                           double d4=Determinant(t,p-p0);
                           double x1 = d1*d2; double x2=d3*d4;
-                          if (x1<0 && x2<=0 || x1<=0 && x2<0)
+                          if ((x1<0 && x2<=0) || (x1<=0 && x2<0))
                               {	dobrk=true; break;}
                           }
                       if (dobrk) {found=true; break;}
@@ -973,7 +977,7 @@ static double tryMove(tvertex v, svector<Tpoint> &sumDep, tk &k, TopologicalGrap
 
   return dTotal.x()*dTotal.x()+dTotal.y()*dTotal.y();
   }
-
+//#define isnan isNaN
 int GraphEditor::SpringJacquard()			
   {int maxgen      = MAX_GENERATIONS;
   double k_angle   = K_ANGLE;
@@ -1022,7 +1026,7 @@ int GraphEditor::SpringJacquard()
 	      return generations;
 	      }
           deplacement = tryMove(v,SumDep,k,VAV,CEG,extvertex,G);
-          if (isnan(G.vcoord[v].x()) || isnan(G.vcoord[v].y())) 
+          if (isnan(G.vcoord[v].x()) || isnan(G.vcoord[v].y()))
 	      {DebugPrintf("Error in Jacquard: Emergency exit at v=%d",v());
 	      //gwp->mywindow->blockInput(false);
 	      return generations;

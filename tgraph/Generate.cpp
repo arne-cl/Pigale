@@ -16,6 +16,7 @@
 #include <TAXI/graphs.h>
 #include <TAXI/random.h>
 #include <TAXI/Tstack.h>
+#include <limits>
 
 GraphContainer *GenerateGrid(int a, int b)
   {if(debug())DebugPrintf("\nGenerateGrid");   
@@ -29,8 +30,8 @@ GraphContainer *GenerateGrid(int a, int b)
   title() = t;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
   Prop<tbrin> cir(GC.PB(),PROP_CIR); cir[0]=0;
   Prop<tbrin> acir(GC.PB(),PROP_ACIR); acir[0]=0;
   Prop<tbrin> pbrin(GC.PV(),PROP_PBRIN); pbrin[0]=0;
@@ -79,8 +80,8 @@ GraphContainer *GenerateCompleteGraph(int a)
   title() = t;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
   tvertex v;
   tedge e;
   vlabel[0]=0;
@@ -111,8 +112,8 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   title() = t;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
   tvertex v;
   tedge e;
   vlabel[0]=0;
@@ -135,7 +136,7 @@ GraphContainer *GenerateCompleteBiGraph(int a,int b)
   return &GC;
 }
 GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
-  {if(debug())DebugPrintf("\nGenerateRandomGraph %d",randomSetSeed());  
+  {if(debug())DebugPrintf("\nGenerateRandomGraph seed:%d",randomSetSeed());  
   GraphContainer &GC = *new GraphContainer;
   int n = a;
   int m = (n > 1) ? b : 0;
@@ -146,8 +147,8 @@ GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
   title() = titre;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
 
   tvertex v,w;
   tedge e;
@@ -163,7 +164,7 @@ GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
   randomStart();
   for(tbrin bb = 1;bb <= m;bb++)
       {v = randomGet(n);
-      while((w = randomGet(n)) == v);
+      while((w = randomGet(n)) == v){;}
       vin[bb] = v;vin[-bb] = w;
       }    
   randomEnd();
@@ -172,12 +173,15 @@ GraphContainer *GenerateRandomGraph(int a,int b,bool randomEraseMultipleEdges)
   return &GC;
 }
 GraphContainer *GenerateRandomGraph(int a,int b)
-  {if(debug())DebugPrintf("\nGenerateRandomGraph %d",randomSetSeed());  
+  {if(debug())DebugPrintf("\nGenerateRandomGraph seed:%d n:%d m:%d",randomSetSeed(),a,b); 
+  //DebugPrintf("\n max int:%d",std::numeric_limits<int>::max() ); 
+  //DebugPrintf("\n max long:%ld",std::numeric_limits<long>::max() ); 
   GraphContainer &GC = *new GraphContainer;
   int n = a;
-  int maxm = n*(n-1)/2;
-  int m = (n > 1) ? b : 0;
-  m = Min(m,maxm);
+  unsigned int maxm = (unsigned int)n*((unsigned int)n-1)/2;  
+  
+  int m = (n > 1) ? b : 0; 
+  //m = Min(m,maxm);
   GC.setsize(n,m);
   Prop1<tstring> title(GC.Set(),PROP_TITRE);
   char titre[256];
@@ -185,19 +189,26 @@ GraphContainer *GenerateRandomGraph(int a,int b)
   title() = titre;
   Prop<tvertex> vin(GC.PB(),PROP_VIN); vin[0]=0;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
   vlabel[0]=0;
   double angle = 2.*acos(-1.)/n;
+  
   for(tvertex v = 1; v <= n; v++)
     {vlabel[v]=v();
     vcoord[v]=Tpoint(cos(angle*(v()-1)),sin(angle*(v()-1)));
     }
+    
   randomStart();
   int mm = 0;
+  double p = randomMax()/(double)maxm; 
+  unsigned long pro = (unsigned long)(m*p +.5);
+  //DebugPrintf("\nmax:%ld pro:%ld maxm:%u",randomMax(),pro,maxm);
+  //unsigned long cumul = 0;
   for(tvertex v = 1;v < n;v++)
       for(tvertex w = v+1;w <= n;w++)
-      {long p  = randomGet(maxm);
-      if(p <= m)
+      {unsigned long p  = randomGet();
+      //cumul += p;
+      if(p <= pro)
           {if(mm < m)
               {++mm;
               vin[mm] = v;vin[-mm] = w;
@@ -207,14 +218,17 @@ GraphContainer *GenerateRandomGraph(int a,int b)
               vin(mm) = v;vin(-mm) = w;
               }
           }
-      }    
+      }  
+      //cumul /= maxm;
   randomEnd();
   GC.setsize(n,mm);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
   for(tedge e= 0; e <=mm; e++)
     elabel[e]=e();
   TopologicalGraph TG(GC);
-  if(debug())DebugPrintf("\n%d -> %d",m,TG.ne());
+  
+  //if(debug())DebugPrintf("\n%d -> %d   %f:",m,TG.ne(),(double)cumul/randomMax()/.005 -100);
+  
   return &GC;
 }
 ///////////////// GEN OUTERPLANAR /////////////////////////////
@@ -318,8 +332,8 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   title() = titre;
   Prop<tvertex> vin(GC.PB(),PROP_VIN);
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);
-  Prop<long> elabel(GC.PE(),PROP_LABEL);
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);
+  Prop<int> elabel(GC.PE(),PROP_LABEL);
   tvertex v,w,k;
   tedge e=0;
   vlabel[0]=0;
@@ -331,7 +345,7 @@ GraphContainer * create_outerplanar(int *Dyck, int *add_edges, int i, int n, lon
   double angle = (3* 3.14) / 2;
   double x = cos(angle);
   double y = sin(angle);
-  stack<tvertex> Stk;
+  tstack<tvertex> Stk;
   tvertex P1 = 0;
 
   k=n;

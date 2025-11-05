@@ -14,10 +14,21 @@
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tmessage.h>
 
-static char LogName[] = "log.txt";
+#include <iomanip>
+#include <cstring>
+
+#ifdef OSX
+char *tmp = new char[100];
+char *LogName = strcat(strcpy(tmp,getenv("HOME")),"/pigalelog.txt");
+#else
+static char LogName[] = "pigalelog.txt";
+#endif
 static int Indent = 0;
 static bool first = true;
 static _Error MainError;
+
+const char * logfile()
+    {return (const char *)LogName;}
 
 _T_Error &ErrorPositioner(const char *f, int l)
      {MainError.file=f; MainError.line=l; return MainError.error;}
@@ -36,10 +47,11 @@ bool& debug()
   return i;
   }
 void DebugIndent(int i)
-  {Indent += i;} 
+  {Indent += i;
+  } 
 int CheckLogFile()
   {FILE *LogFile;
-  LogFile = fopen(LogName, "aw");
+  LogFile = fopen(LogName, "a");
   if(LogFile == NULL)return -1;
   fclose(LogFile);
   return 0;
@@ -49,7 +61,7 @@ void DebugPuts(const char *str)
   if(first)
       {LogFile = fopen(LogName, "w");first = false;}
   else
-      LogFile = fopen(LogName, "aw");
+      LogFile = fopen(LogName, "a");
   if(LogFile == NULL)return;
   fprintf(LogFile, "%*s%s\n", Indent*2, "", str);
   fclose(LogFile);
@@ -66,9 +78,10 @@ void DebugPrintf(const char *fmt,...)
   if(first)
       {LogFile = fopen(LogName, "w");first = false;}
   else
-      LogFile = fopen(LogName, "aw");
+      LogFile = fopen(LogName, "a");
   if(LogFile == NULL)return;
   fprintf(LogFile, "%*s%s\n", Indent*2, "", buff);
+  //cout<<setw(Indent*2)<<" "<<buff<<endl;
   Tprintf("%*s%s", Indent*2, "", buff);
   fclose(LogFile);
   }
@@ -85,7 +98,7 @@ void LogPrintf(const char *fmt,...)
   if(first)
       {LogFile = fopen(LogName, "w");first = false;}
   else
-      LogFile = fopen(LogName, "aw");
+      LogFile = fopen(LogName, "a");
   if(LogFile == NULL)return;
   fprintf(LogFile,"%s",buff);
   fclose(LogFile);

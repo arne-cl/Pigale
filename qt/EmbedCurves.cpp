@@ -79,23 +79,26 @@ int EmbedCurves(TopologicalGraph &G)
     if (Abs(Determinant(alpha-x,vec))>Abs(Determinant(beta-x,vec)))
       {tmp=alpha; alpha=beta; beta=tmp;}
     double a=0,aa=0,b=0;
-    bool ok;
+    //bool ok;
     // check if [x,y] intersects [alpha,beta]
-    ok=intersect(x,vec,alpha,beta-alpha,a,b);
+    //ok=intersect(x,vec,alpha,beta-alpha,a,b);
+    intersect(x,vec,alpha,beta-alpha,a,b);
     if ((a>=0) && (a<=1) && (b>=0) && (b<=1))
       {
 	Epoint1[e]=Epoint2[e]=Epoint3[e]=Tpoint(0,0);}
     else
       { Epoint2[e]=alpha;
       // find intersections of a parallel of (x,y) through alpha and [x,beta] (resp. [y,beta])
-      ok=intersect(alpha,vec,x,beta-x,a,b); 
+      //ok=intersect(alpha,vec,x,beta-x,a,b); 
+      intersect(alpha,vec,x,beta-x,a,b); 
       intersect(alpha,vec,x,ovec,aa,b);
       if (a*aa>=0 && Abs(aa)<Abs(a)) a=aa;
       Tpoint mvec; mvec.x()=x.y()-alpha.y(); mvec.y()=alpha.x()-x.x();
       if (intersect(alpha,vec,(x+alpha)*0.5,mvec,aa,b))
 	if (a*aa>=0 && Abs(aa)<Abs(a)) a=aa;
       Epoint1[e]=alpha+vec*a;
-      ok=intersect(alpha,vec,y,beta-y,a,b);
+      //ok=intersect(alpha,vec,y,beta-y,a,b);
+      intersect(alpha,vec,y,beta-y,a,b);
       intersect(alpha,vec,y,ovec,aa,b);
       if (a*aa>=0 && Abs(aa)<Abs(a)) a=aa; 
       Epoint3[e]=alpha+vec*a;

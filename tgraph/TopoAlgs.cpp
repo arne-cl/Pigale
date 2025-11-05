@@ -582,7 +582,8 @@ svector<tbrin> &TopologicalGraph::ComputeFpbrin()
 
   for(depart = -m;depart <= m;depart++)
       {if(met[depart])continue;
-      for(courant = depart;!met[courant];(courant = cir[-courant])!=0)
+//hub          for(courant = depart;!met[courant];(courant = cir[-courant])!=0)
+      for(courant = depart;courant() && !met[courant];(courant = cir[-courant]))
           met[courant] = (char)1;
       if(courant == depart)
           (*Fpbrin)[++NumberOrbits] = depart;     //[] -> ()
@@ -781,11 +782,11 @@ int TopologicalGraph::_VertexQuadrangulate(bool First)
           }
       }
   if(Set(tvertex()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
+      {Prop<int> vlabel(Set(tvertex()),PROP_LABEL);
       for(int i = v0() + 1;i <= nv();i++)vlabel[i] = i;
       }
   if(Set(tedge()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> elabel(Set(tedge()),PROP_LABEL);
+      {Prop<int> elabel(Set(tedge()),PROP_LABEL);
       for(int i  = m0 + 1;i <= ne();i++)elabel[i] = i;
       }
   return 0;
@@ -855,11 +856,11 @@ int TopologicalGraph::VertexTriangulate()
           }
       }
   if(Set(tvertex()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
+      {Prop<int> vlabel(Set(tvertex()),PROP_LABEL);
       for(int i = v0() + 1;i <= nv();i++)vlabel[i] = i;
       }
   if(Set(tedge()).exist(PROP_LABEL)) // Geometric Graph
-      {Prop<long> elabel(Set(tedge()),PROP_LABEL);
+      {Prop<int> elabel(Set(tedge()),PROP_LABEL);
       for(int i  = m0 + 1;i <= ne();i++)elabel[i] = i;
       }
   return 0;
@@ -1245,7 +1246,7 @@ bool TopologicalGraph::CheckTriconnected()
   {if(debug())DebugPrintf("   CheckTriconnected");
   if(Set().exist(PROP_TRICONNECTED))return true;
   if(!CheckConnected())return false;
-  if (nv()<=3 || ne()<=nv()+2 && nv() !=4) return false;
+  if (nv()<=3 || (ne()<=nv()+2 && nv() !=4)) return false;
   if(!FindPlanarMap())return false;
   if(debug())DebugPrintf("Executing CheckTriconnected");
   int nsinks;

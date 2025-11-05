@@ -85,7 +85,7 @@ class tstring
       return p[i];
     }
 
-  const int length() const {return (int)strlen(p);}
+  int length() const {return (int)strlen(p);}
     
   friend int operator == (tstring const &x, tstring const &y)
       {return strcmp(x.p, y.p) == 0;}

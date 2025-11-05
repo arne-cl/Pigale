@@ -14,7 +14,7 @@
 
 #ifndef _GRAPH_GL_H_INCLUDED_
 #define _GRAPH_GL_H_INCLUDED_
-
+#include <QSpinBox>
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QPushButton>
@@ -22,12 +22,14 @@
 #include <QEvent>
 #include <QTabWidget>
 #include <QLayout>
+#include <QPrinter>
+#include <QOpenGLFunctions>
 
 
 class GraphGLPrivate;
 class pigaleWindow; 
 
-class GraphGL : public QWidget
+class GraphGL : public QWidget,protected QOpenGLFunctions
 {
   Q_OBJECT
 public:
@@ -39,12 +41,14 @@ public slots:
   void image(QPrinter *printer,QString suffix);
   void print(QPrinter* printer);
   void delayChanged(int i);
+  void fogChanged(int i);
+  void trspChanged(int i);
 private slots:
   void Reload();
   void Reload(int i);
   void axisChanged(int i);
   void EdgeWidth(int i);
-  void VertexWidth(int i);
+  void VertexWidth(int i);  
 private:
   void resizeEvent(QResizeEvent*);
   GraphGLPrivate* d;

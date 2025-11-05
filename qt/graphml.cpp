@@ -10,21 +10,21 @@
 *****************************************************************************/
 
 
-#include <config.h> 
+#include <version.h> 
 #include <QT/graphml.h>
 
 
 
 MLKEY(V, PROP_COORD, Tpoint, "Coordinates");
 MLKEY(V, PROP_COLOR, short, "Color");
-MLKEY(V, PROP_LABEL, long, "Label");
+MLKEY(V, PROP_LABEL, int, "Label");
 MLKEY(E, PROP_COLOR, short, "Color");
 MLKEY(E, PROP_WIDTH, int, "Width");
 
 static key_desc key_tab[]={
   MLKEY2(V, PROP_COORD, Tpoint, "Coordinates"),
   MLKEY2(V, PROP_COLOR, short, "Color"),
-  MLKEY2(V, PROP_LABEL, long, "Label"),
+  MLKEY2(V, PROP_LABEL, int, "Label"),
   MLKEY2(E, PROP_COLOR, short, "Color"),
   MLKEY2(E, PROP_WIDTH, int, "Width")
 };
@@ -36,7 +36,7 @@ void GraphmlReader::ProcessNode(int v)
       if (current.data.contains(key_tab[ind].id()))
 	{ (*(key_tab[ind].init))(GA);
 	  PAccess pa=(*(key_tab[ind].access))(GA);
-	  pa.vp->fromstr(pa.v,v,(const char *)current.data[key_tab[ind].id()].toAscii());
+      pa.vp->fromstr(pa.v,v,(const char *)current.data[key_tab[ind].id()].toLatin1());
 	}
     }
 }
@@ -48,7 +48,7 @@ void GraphmlReader::ProcessEdge(int e)
       if (current.data.contains(key_tab[ind].id()))
 	{ (*(key_tab[ind].init))(GA);
 	  PAccess pa=(*(key_tab[ind].access))(GA);
-	  pa.vp->fromstr(pa.v,e,(const char *)current.data[key_tab[ind].id()].toAscii());
+      pa.vp->fromstr(pa.v,e,(const char *)current.data[key_tab[ind].id()].toLatin1());
 	}
     }
 }
@@ -88,7 +88,7 @@ tstring Taxi_FileIOGraphml::Title(tstring fname,int)
     if (!CallParse(fname,xreader)) return "???";
     QString title=xreader.Title();
     delete &xreader;
-    return (const char *)title.toAscii();
+    return (const char *)title.toLatin1();
   }
 
 int Taxi_FileIOGraphml::Read(GraphContainer& G,tstring fname,int& NR,int& index)
@@ -112,11 +112,11 @@ int Taxi_FileIOGraphml::Read(GraphContainer& G,tstring fname,int& NR,int& index)
 	version=inforeader.Version();
 	delete &inforeader2;
       }
-    if (version!="") LogPrintf("Graphml: Pigale version=%s\n",(const char *)version.toAscii());
+    if (version!="") LogPrintf("Graphml: Pigale version=%s\n",(const char *)version.toLatin1());
     G.clear();
     G.setsize(nv,ne);
     Prop1<tstring> Gtitle(G.Set(),PROP_TITRE);
-    Gtitle() = tstring((const char *)title.toAscii());
+    Gtitle() = tstring((const char *)title.toLatin1());
     GraphmlReader &graphreader=*new GraphmlReader(G,index);
     if (!CallParse(fname,graphreader)) return 1;
     return 0;
@@ -130,10 +130,10 @@ static QString xlabel(GraphAccess &G,tvertex v)
 	id=~(*(vslabel()[slabel[v]]));
       }
  //    else if (G.Set(tvertex()).exist(PROP_LABEL))
-//     {Prop<long> label(G.Set(tvertex()),PROP_LABEL);
+//     {Prop<int> label(G.Set(tvertex()),PROP_LABEL);
 //     id.sprintf("%ld",label[v]);
 //     }
-    else id.sprintf("n%d",v());
+    else id = QString("n%1").arg(v());
     return id;
   }
 
@@ -161,7 +161,7 @@ int  Taxi_FileIOGraphml::Save(GraphAccess& G,tstring fname)
     stream << "     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" << endl;
     stream << "  <key id=\"Pigale/version\" for=\"graph\"";
     stream << " attr.name=\"Pigale version\" attr.type=\"string\">"<<endl;
-    stream << "    <default>"<<PACKAGE_VERSION<<"</default>"<<endl;
+    stream << "    <default>"<<VERSION<<"</default>"<<endl;
     stream << "  </key>"<<endl;
     for (unsigned int ind=0; ind<sizeof(key_tab)/sizeof(key_desc); ind++)
       { if ((*(key_tab[ind].isdef))(G)) {

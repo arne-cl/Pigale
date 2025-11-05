@@ -1,56 +1,79 @@
+!macx0 {
 TEMPLATE = lib
+#cache()
 
 win32 {
-      include(..\wpigale.inc)
-      DESTDIR=.
-      QMAKE_CFLAGS_WARN_ON =  -Wall -Wextra
-      DEFINES += FREEGLUT_STATIC __MINGW32__ _WIN32
-      DEFINES -= UNICODE
+      DESTDIR="..\\lib"
+      DEFINES = FREEGLUT_STATIC WIN32 _LIB _CRT_SECURE_NO_WARNINGS
       }else{
-      include(../pigale.inc)
-      QMAKE_CFLAGS_WARN_ON = -pedantic  -Wall -Werror
-      QMAKE_CFLAGS_RELEASE += -O3 -fomit-frame-pointer
+      DESTDIR = ../lib
+      DEFINES = FREEGLUT_STATIC _LIB 
 }
 
-CONFIG = thread static
-CONFIG += create_prl
-INCLUDEPATH = ../incl
+CONFIG(release) {
+    TARGET = freeglut
+    OBJECTS_DIR = ./release
+    DEFINES += NDEBUG
+}    
+DESTDIR=../lib
+CONFIG += thread create_prl static $$MODE
+QMAKE_CFLAGS += -Wno-unused-parameter -Wno-unused-const-variable -Wno-implicit-fallthrough 
+QMAKE_CFLAGS += -Wno-dangling-else -Wno-maybe-uninitialized 
+INCLUDEPATH = ./include ./srv/util
 unix::INCLUDEPATH += /usr/X11R6/include
-DEPENDPATH = ../incl
+DEPENDPATH = ./include/GL
+QT += opengl
+QT -= qt
 
 SOURCES =\
-freeglut_callbacks.c\
-freeglut_display.c\
-freeglut_ext.c\
-freeglut_font.c\
-freeglut_font_data.c\
-freeglut_gamemode.c\
-freeglut_geometry.c\
-freeglut_glutfont_definitions.c\
-freeglut_cursor.c\
-freeglut_init.c\
-freeglut_main.c\
-freeglut_menu.c\
-freeglut_misc.c\
-freeglut_overlay.c\
-freeglut_state.c\
-freeglut_stroke_mono_roman.c\
-freeglut_stroke_roman.c\
-freeglut_structure.c\
-freeglut_teapot.c\
-freeglut_videoresize.c\
-freeglut_joystick.c\
-freeglut_window.c
+src/fg_callbacks.c\
+src/fg_cursor.c\
+src/fg_display.c\
+src/fg_ext.c\
+src/fg_font.c\
+src/fg_font_data.c\
+src/fg_gamemode.c\
+src/fg_geometry.c\
+src/fg_gl2.c\
+src/fg_init.c\
+src/fg_input_devices.c\
+src/fg_joystick.c\
+src/fg_main.c\
+src/fg_menu.c\
+src/fg_misc.c\
+src/fg_overlay.c\
+src/fg_spaceball.c\
+src/fg_state.c\
+src/fg_stroke_mono_roman.c\
+src/fg_stroke_roman.c\
+src/fg_structure.c\
+src/fg_teapot.c\
+src/fg_videoresize.c\
+src/fg_window.c\
+src/util/xparsegeometry_repl.c\
+src/mswin/fg_cursor_mswin.c\
+src/mswin/fg_display_mswin.c\
+src/mswin/fg_ext_mswin.c\
+src/mswin/fg_gamemode_mswin.c\
+src/mswin/fg_init_mswin.c\
+src/mswin/fg_input_devices_mswin.c\
+src/mswin/fg_joystick_mswin.c\
+src/mswin/fg_main_mswin.c\
+src/mswin/fg_menu_mswin.c\
+src/mswin/fg_spaceball_mswin.c\
+src/mswin/fg_state_mswin.c\
+src/mswin/fg_structure_mswin.c\
+src/mswin/fg_window_mswin.c
 
-
-TARGET = glut
-unix:OBJECTS_DIR = ./.opt
-win32:OBJECTS_DIR = ./opt
 
 unix {
      distdir.commands =
      QMAKE_EXTRA_TARGETS += distdir
-     DESTDIR=$$DISTPATH/lib
 }
 
-message(configuring the static library freeglut ($$OBJECTS_DIR))
+
+message(configuring the library $$TARGET)
+} else {
+TEMPLATE = subdirs
+message(FREEGLUT:Nothing to be done under MAC OSX)
+}

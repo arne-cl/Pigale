@@ -96,7 +96,7 @@ public:
         int iw2=OldToNew(Index(Second(ew)),b0);
         // (iv1,iv2) et (iw1,iw2) ne doivent pas etre entrelaces!
 #ifdef TDEBUG
-        if ((iv1<iw1) && (iv2<iw2) || (iw1<iv1) && (iw2<iv2))
+        if (((iv1<iw1) && (iv2<iw2)) || ((iw1<iv1) && (iw2<iv2)))
             {
             DPRINTF(("Interlaced Tree Pairs!!\n"));
             myabort();

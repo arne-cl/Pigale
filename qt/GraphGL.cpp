@@ -21,8 +21,14 @@
 #include <QT/Misc.h>
 #include <QT/pigaleQcolors.h>
 #include <TAXI/netcut.h>
-#include <GL/freeglut.h>
 
+#ifdef Q_OS_DARWIN
+#include <GLUT/glut.h>
+#else
+#include <GL/freeglut.h>
+#endif
+
+#include <QDesktopWidget>
 #include <QButtonGroup>
 #include <QBoxLayout>
 #include <QPainter>
@@ -38,8 +44,6 @@ class GraphGLPrivate
       pGC = 0;
       editor = 0;
       idelay = 1;
-      edge_width = 2.;  // -> *2 
-      vertex_width = 1.;// -> *5
       }
   ~GraphGLPrivate()
       {delete editor; delete pSG; delete pGC;}
@@ -48,11 +52,10 @@ class GraphGLPrivate
   int delay;
   int idelay;
   bool rX,rY,rZ;
-  double edge_width;
-  double vertex_width;
   QCheckBox* bt_facet;
   QCheckBox* bt_label;
   QCheckBox* bt_color;
+  QCheckBox* bt_fog;
   QSlider *Slider;
   QGroupBox* bt_group;
   pigaleWindow *mw;
@@ -91,44 +94,66 @@ int GraphGL::update()
       vb->addWidget(d->editor);
       QHBoxLayout* hb = new QHBoxLayout();       vb->addLayout(hb);
       QHBoxLayout* hb2 = new QHBoxLayout();      vb->addLayout(hb2);
+      
+  	   //QRect rec = QApplication::desktop()->screenGeometry();
+      //int ix = (rec.height()/900)*10;
+      QDesktopWidget *desktop = QApplication::desktop();
+      int Height = desktop->height();
+      int ix = (Height/900)*10;
+
 
       d->Slider = new QSlider(Qt::Horizontal);
-      d->Slider->setRange(2,100);d->Slider->setValue(2);
-      d->Slider->setMaximumHeight(10);
+      d->Slider->setRange(0,50);d->Slider->setValue(0);
+      d->Slider->setMaximumHeight(ix);
       connect(d->Slider,SIGNAL(valueChanged(int)),SLOT(delayChanged(int)));
       hb2->addWidget(d->Slider);
+      d->Slider = new QSlider(Qt::Horizontal);
+      d->Slider->setRange(0,10);d->Slider->setValue(2);
+      d->Slider->setMaximumHeight(ix);
+      connect(d->Slider,SIGNAL(valueChanged(int)),SLOT(trspChanged(int)));
+      hb2->addWidget(d->Slider);
+
 
       d->bt_facet = new QCheckBox("Facet",this); d->bt_facet->setChecked(false);
       d->bt_label = new QCheckBox("Label",this); d->bt_label->setChecked(true);
       d->bt_color = new QCheckBox("Color",this); d->bt_color->setChecked(false);
+      d->bt_fog   = new QCheckBox("Fog",this); d->bt_fog->setChecked(true);
       hb->addWidget(d->bt_facet); hb->addWidget(d->bt_label); hb->addWidget(d->bt_color);
-
+	  hb->addWidget(d->bt_fog);
+	  
       QSpinBox *spin_Edge = new QSpinBox();
       spin_Edge->setRange(1,10);
-      spin_Edge->setValue((int)d->edge_width*2); spin_Edge->setPrefix("Ew: ");
+      spin_Edge->setValue(staticData::Ew); spin_Edge->setPrefix("Ew: ");
       QSpinBox *spin_Vertex = new QSpinBox();
-      spin_Vertex->setRange(1,20);
-      spin_Vertex->setValue((int)d->vertex_width*5); spin_Vertex->setPrefix("Vw: ");
+      spin_Vertex->setRange(1,10);
+      spin_Vertex->setValue(staticData::Vw); spin_Vertex->setPrefix("Vw: ");
       hb->addWidget(spin_Edge);hb->addWidget(spin_Vertex);
 
       d->bt_group = new QGroupBox(this);
-      d->bt_group->setFlat(TRUE); 
+      d->bt_group->setFlat(true);
       d->bt_group->setPalette(d->mw->LightPalette);
-      d->bt_group->setMaximumHeight(30); 
-      d->bt_group->setMinimumWidth(120); 
+      d->bt_group->setMaximumHeight(ix*3); 
+      d->bt_group->setMinimumWidth(ix*12); 
       QPoint pos = d->bt_group->pos();
       QRadioButton* rb_x = new QRadioButton("X",d->bt_group);
-      rb_x->setGeometry(pos.x()+5,pos.y(),35,25);
+      rb_x->setGeometry(pos.x()+.5*ix,pos.y(),3.5*ix,2.5*ix);
+      QPalette Palette;
+      Palette.setColor(QPalette::WindowText,Qt::red);
+      rb_x->setPalette(Palette);
       QRadioButton* rb_y = new QRadioButton("Y",d->bt_group);
-      rb_y->setGeometry(pos.x()+45,pos.y(),35,25);
+      rb_y->setGeometry(pos.x()+4.5*ix,pos.y(),3.5*ix,2.5*ix);
+      Palette.setColor(QPalette::WindowText,Qt::darkGreen);
+      rb_y->setPalette(Palette);
       QRadioButton* rb_z = new QRadioButton("Z",d->bt_group);
-      rb_z->setGeometry(pos.x()+85,pos.y(),35,25);
+      rb_z->setGeometry(pos.x()+8.5*ix,pos.y(),3.5*ix,2.5*ix);
+      Palette.setColor(QPalette::WindowText,Qt::blue);
+      rb_z->setPalette(Palette);
       QButtonGroup *group1 = new QButtonGroup(d->bt_group); 
-      group1->setExclusive(TRUE);
+      group1->setExclusive(true);
       group1->addButton(rb_x);group1->setId(rb_x,0);
       group1->addButton(rb_y);group1->setId(rb_y,1);
       group1->addButton(rb_z);group1->setId(rb_z,2);
-      rb_z->setChecked(TRUE);
+      rb_z->setChecked(true);
       hb->addWidget(d->bt_group);
 
       spin_X = new QSpinBox();    spin_X->setRange(1,100);
@@ -148,6 +173,7 @@ int GraphGL::update()
       connect(d->bt_facet,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_color,SIGNAL(clicked()),SLOT(Reload()));
       connect(d->bt_label,SIGNAL(clicked()),SLOT(Reload()));
+      connect(d->bt_fog,SIGNAL(clicked()),SLOT(Reload()));
       connect(group1,SIGNAL(buttonClicked(int)),SLOT(axisChanged(int)));
       }
   else
@@ -182,11 +208,11 @@ int GraphGL::update()
   return 0;
   }
 void GraphGL:: EdgeWidth(int i)
-  {d->edge_width = i /2.;
+  {staticData::Ew = i; 
   d->editor->initialize(false);
   }
 void GraphGL:: VertexWidth(int i)
-  {d->vertex_width = i/5.;
+  {staticData::Vw = i; 
   d->editor->initialize(false);
   }
 void GraphGL::Reload()
@@ -209,9 +235,19 @@ void GraphGL::resizeEvent(QResizeEvent* e)
 void GraphGL::delayChanged(int i)
   {if(!d->is_init || d->isHidden)return;
   d->idelay = i;
-  d->delay = (d->idelay <= 2) ? -1 : 102 - d->idelay;
+  d->delay = (d->idelay <= 2) ? -1 : 51 - d->idelay;
   d->editor->setAnimationDelay(d->delay);
   }
+void GraphGL::trspChanged(int i)
+  {if(!d->is_init || d->isHidden)return;
+  staticData::trsp = i;
+  d->editor->initialize(false);
+  }
+void GraphGL::fogChanged(int i)
+  {if(!d->is_init || d->isHidden)return;
+  staticData::fog = i;
+  }
+  
 void GraphGL::axisChanged(int i)
   {if(i == 0)    // Rotate around X
       {d->rX = true;d->rY = d->rZ = false;}
@@ -229,67 +265,91 @@ GLWindow::GLWindow(GraphGLPrivate *g,QWidget * parent)
   object = 0;
   setAnimationDelay(-1);
   xRot = yRot = zRot = .0;
-  scale = 1.;	
+  scale = 1.;
   }
 GLWindow::~GLWindow()
   {makeCurrent();
   glDeleteLists(object,1);
   }
 void GLWindow::print(QPrinter *printer)
-  {QPixmap pixmap = renderPixmap(); 
+  {QRect geo = geometry();
+  resize(printer->width(),printer->width());
+  bool minimized = glp->mw->isMinimized(); 
+  if(minimized)glp->mw->showNormal();
+  qApp->processEvents();
+  //QPixmap pixmap = renderPixmap();
+  QImage image = grabFrameBuffer();
   QPainter pp(printer);
-  pp.drawPixmap(0,0,pixmap);
+  //pp.drawPixmap(0,0,pixmap);
+  pp.drawImage(0,0,image);
+  setGeometry(geo);
+  if(minimized)glp->mw->showMinimized();  
   }
 void GLWindow::image(QPrinter *printer,QString suffix)
   {QRect geo = geometry();
   resize(staticData::sizeImage,staticData::sizeImage);
+  bool minimized = glp->mw->isMinimized(); 
+  if(minimized)glp->mw->showNormal();
   qApp->processEvents();
-  QPixmap pixmap = renderPixmap(); 
+  //QPixmap pixmap = renderPixmap();
+  QImage image = grabFrameBuffer();
+  image = image.scaled(staticData::sizeImage,staticData::sizeImage,Qt::KeepAspectRatio,Qt::SmoothTransformation);
   if(suffix == "png" || suffix == "jpg")
-      pixmap.save(staticData::fileImage);
+      image.save(staticData::fileImage);
   else if(suffix == "svg") 
       {QSvgGenerator *svg = new QSvgGenerator();
       svg->setFileName(staticData::fileImage);
       svg->setResolution(90); 
       svg->setSize(QSize(width(),height()));
       QPainter pp(svg);
-      pp.drawPixmap(0,0,pixmap);
+      pp.drawImage(0,0,image);
+      //pp.drawPixmap(0,0,pixmap);
       }
   else if(suffix == "pdf" || suffix == "ps")
       {QPainter pp(printer);
-      pp.drawPixmap(0,0,pixmap);
+      pp.drawImage(0,0,image);
+      //pp.drawPixmap(0,0,pixmap);
       }
   setGeometry(geo);
+  if(minimized)glp->mw->showMinimized();
   }
 void GLWindow::initializeGL()
-  {setAutoBufferSwap(true); 
+  {//qDebug("beg initGL");
+  setAutoBufferSwap(true);
   glDepthFunc(GL_LESS);//hide features
   glEnable(GL_DEPTH_TEST);//hide features
   glEnable(GL_LINE_SMOOTH);//pas grand chose
-  //qglClearColor(color[Black]);GLfloat fog_color[] = {0.25, 0.25, 0.25, 1.0};
-  qglClearColor(color[White]);
+  glEnable (GL_BLEND); glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  //qglClearColor(color[Black]);
+  GLfloat fog_color[] = {0.95, 0.95, 0.95, 1.};//.95
+  //GLfloat fog_color[] = {1., 1., 1., 1.};//.95
+  glClearColor(1.f, 1.f, 1.f, .0f);
   glShadeModel(GL_FLAT);
   //fog
-  glEnable(GL_FOG);
+  if(glp->bt_fog->isChecked())glEnable(GL_FOG);
   glFogi(GL_FOG_MODE, GL_LINEAR);
-  //glFogi(GL_FOG_MODE, GL_EXP);glFogf(GL_FOG_DENSITY,.15);
-  glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,10.5);
-  //glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,12.);
-  GLfloat fog_color[] = {1.0,1.0,1.0, 1.0};
+  //glFogf(GL_FOG_START,8.);  glFogf(GL_FOG_END,10.5);
+  glFogf(GL_FOG_START,7.5);  glFogf(GL_FOG_END,10.5);
   glFogfv(GL_FOG_COLOR,fog_color);
-  CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
-  //hub
+  // CharSize = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)"0");
   if(object){makeCurrent();glDeleteLists(object,1);}
   object = load(false);
+  //qDebug("end initGL");
   }
 void GLWindow::initialize(bool init) 
-  {if(!is_init){is_init=true;initializeGL();return;}
+  {if(!is_init)
+    {is_init=true;
+    //qDebug("calling initGL %d %d",init,is_init);
+    initializeGL();
+    return;
+    }
   if(object){makeCurrent();glDeleteLists(object,1);}
   object = load(init);
   updateGL();
   }
 GLuint GLWindow::load(bool init)
-  {GLfloat ds = (1./40.)*glp->vertex_width;
+  {GLfloat ds = (1./40.)*(double)(staticData::Vw)*.2;
   if(init) // angles when first display
       {if(glp->mw->ServerExecuting)
           {xRot =  zRot = 15.0;
@@ -298,8 +358,9 @@ GLuint GLWindow::load(bool init)
       else
           xRot =  yRot =  zRot = 0.0;
       xTrans = yTrans = 0.0;
-      zTrans = -9.0;// -10
-      scale = 1.41;
+      //zTrans = -9.0;// -10
+      zTrans = -8.5;// -10
+      scale = (GLfloat)1.41;
       }
   RnEmbedding &embed = glp->embed();
   GeometricGraph G(glp->GC());
@@ -308,7 +369,7 @@ GLuint GLWindow::load(bool init)
   glNewList(list,GL_COMPILE);
 
   bool WithFaces = G.TestPlanar() && glp->bt_facet->isChecked();
-  glLineWidth(glp->edge_width);
+  glLineWidth(staticData::Ew);
   glBegin(GL_LINES);
   tvertex v0,v1;
   GLfloat x0,y0,z0,x1,y1,z1;
@@ -323,7 +384,9 @@ GLuint GLWindow::load(bool init)
       glVertex3f(x0,y0,z0);      glVertex3f(x1,y1,z1);
       }
   glEnd();
-  glColor3f(1.,1.,.0);
+  if(glp->bt_fog->isChecked())glEnable(GL_FOG);
+  else glDisable(GL_FOG);
+  //glutWireSphere(1,50,50);
   if(WithFaces)loadFaces();
   double dss = ds;
   drawCube(.0,.0,.0, .5*dss);
@@ -334,16 +397,15 @@ GLuint GLWindow::load(bool init)
   else
       for(tvertex  v = 1;v <= G.nv();v++)
           drawCube((GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),dss);
-  
 
   if(glp->bt_label->isChecked())
-      {glLineWidth(1.0);
+      {glLineWidth(4.0);
       for(tvertex  v = 1;v <= G.nv();v++)
           drawLabel(v,(GLfloat)embed.rx(v),(GLfloat)embed.ry(v),(GLfloat)embed.rz(v),ds);
-	  
-      }
-
- glLineWidth(1.0);
+      } 
+      
+     
+ glLineWidth(6.0);
  glBegin(GL_LINES);
  qglColor(Qt::red);   glVertex3f(.0,.0,.0);   glVertex3f(.25,0.,0.);
  qglColor(Qt::green); glVertex3f(.0,.0,.0);   glVertex3f(.0,.25,0.);
@@ -360,6 +422,7 @@ void GLWindow::loadFaces()
   svector<tbrin> & Fpbrin = G.ComputeFpbrin();
   GLfloat x1,y1,z1,x2,y2,z2,x3,y3,z3;
   tbrin b;
+  glColor4f(1.,1.,.0,1.- staticData::trsp/10.); //.7
   for (int i=1; i <= Fpbrin.n(); i++)
       {if(G.FaceWalkLength(Fpbrin[i]) != 3)continue;
       // add a triangle
@@ -375,7 +438,6 @@ void GLWindow::loadFaces()
       x3 = (GLfloat)embed.rx(G.vin[b]);
       y3 = (GLfloat)embed.ry(G.vin[b]);
       z3 = (GLfloat)embed.rz(G.vin[b]);
-      
       glBegin(GL_TRIANGLES);
       glVertex3f(x1,y1,z1); glVertex3f(x2,y2,z2); glVertex3f(x3,y3,z3);
       glEnd();
@@ -383,6 +445,8 @@ void GLWindow::loadFaces()
   delete &Fpbrin;
   for(tedge e = G.ne();e >m;e--)
       G.DeleteEdge(e);
+  //glColor4f(.5,.5,.5,.3);
+  //glutSolidSphere(1,50,50);
   }
 void GLWindow::setAnimationDelay(int ms)
   {GLControlWidget::setAnimationDelay(ms);
@@ -437,7 +501,7 @@ void GLWindow::resizeGL(int w,int h)
   glMatrixMode(GL_MODELVIEW);
   }
 void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
-  {GLfloat sat = .1  ;
+  {GLfloat sat = (GLfloat).1  ;
 
   glColor3f(sat,sat,1.);
   glBegin(GL_POLYGON);//bas
@@ -446,7 +510,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x+size,y+size,z-size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  glColor3f(sat,sat,.7);
+  glColor3f(sat,sat,(GLfloat).7);// jaune
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z+size);
   glVertex3f(x-size,y+size,z+size);
@@ -460,21 +524,21 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glVertex3f(x-size,y+size,z+size);
   glVertex3f(x-size,y+size,z-size);
   glEnd();
-  glColor3f(.7,sat,sat);
+  glColor3f((GLfloat).7,sat,sat);
   glBegin(GL_POLYGON);
   glVertex3f(x+size,y-size,z-size);
   glVertex3f(x+size,y-size,z+size);
   glVertex3f(x+size,y+size,z+size);
   glVertex3f(x+size,y+size,z-size);
   glEnd();
-  glColor3f(sat,1.,sat);
+  glColor3f(sat,(GLfloat)1.,sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z-size);
   glVertex3f(x-size,y-size,z+size);
   glVertex3f(x+size,y-size,z+size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  glColor3f(sat,.7,sat);
+  glColor3f(sat,(GLfloat).7,sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y+size,z-size);
   glVertex3f(x-size,y+size,z+size);
@@ -521,7 +585,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor 
   glVertex3f(x+size,y+size,z+size);
   glVertex3f(x+size,y+size,z-size);
   glEnd();
-  sat = .8;
+  sat = (GLfloat).8;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y-size,z-size);
@@ -529,7 +593,7 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor 
   glVertex3f(x+size,y-size,z+size);
   glVertex3f(x+size,y-size,z-size);
   glEnd();
-  sat =.8;
+  sat =(GLfloat).8;
   glColor3f(xr*sat,xg*sat,xb*sat);
   glBegin(GL_POLYGON);
   glVertex3f(x-size,y+size,z-size);
@@ -538,56 +602,58 @@ void GLWindow::drawCube(GLfloat x,GLfloat y,GLfloat z,GLfloat size,const QColor 
   glVertex3f(x+size,y+size,z-size);
   glEnd();
   }
+
 void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   {QString t =  getVertexLabel(glp->GC(),v);
   if(t.isEmpty())return;
-  int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t.toAscii()));
+  int len = glutStrokeLength(GLUT_STROKE_ROMAN,(unsigned char *)((const char *)t.toLatin1()));
   if(t.length() == 1)len *= 2;
-  qglColor(Qt::red);
+  
+  glColor3f(1.f, .5f, .5f);
   glPushMatrix();
-  glPushMatrix();
+  glPushMatrix();//trace sur face bleue
+  //glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
   glTranslatef(x-size*.85,y-size*.8,z+size*1.01);
   double xm = .9*size*2/len;
   glScalef(xm,xm*1.2,1);
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
 
-  //Second cube face
+  //Second cube face blue
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
   glTranslatef(x-size*.85,y+size*.8,z-size*1.01);
   glScalef(xm,xm*1.2,1);
   glRotatef(180., 1.0, 0.0, 0.0 );
-  
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
   
   //Third cube face
-  qglColor(Qt::blue);
+  //qglColor(Qt::blue);
+  glColor3f(.5f, 1.f, .5f);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
   glTranslatef(x-size*1.01,y-size*.8,z-size*.85);
   glScalef(xm,xm*1.2,xm);
   glRotatef(-90., 0.0, 1.0, 0.0 );
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
 
   //Fourth cube face
-  qglColor(Qt::blue);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
   glTranslatef(x+size*1.01,y-size*.8,z+size*.85);
   glScalef(xm,xm*1.2,xm);
   glRotatef(90., 0.0, 1.0, 0.0 );
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
@@ -600,29 +666,30 @@ void GLWindow::drawLabel(tvertex  v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
   glTranslatef(x-size*.85,y-size*1.1,z-size*.8);
   glScalef(xm,xm,1.2*xm);
   glRotatef(90., 1.0, 0.0, 0.0 );
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
 
   //Sith cube face
-  qglColor(Qt::yellow);
   glPushMatrix();
   glPushMatrix();
   glPushMatrix();
   glTranslatef(x-size*.85,y+size*1.1,z+size*.8);
   glScalef(xm,xm,1.2*xm);
   glRotatef(-90., 1.0, 0.0, 0.0 );
-  drawText(GLUT_STROKE_ROMAN,(const char *)t.toAscii());
+  drawText(GLUT_STROKE_ROMAN,(const char *)t.toLatin1());
   glPopMatrix();
   glPopMatrix();
   glPopMatrix();
-  }
-void GLWindow::drawText(void * font,const char *txt)
-  {for(int i = 0; txt[i];i++)
-      glutStrokeCharacter(font,txt[i]);
   }
 
+void GLWindow::drawText(void * font,const char *txt)
+  {
+  for(int i = 0; txt[i];i++)
+      glutStrokeCharacter(font,txt[i]); // deprecated
+  }
+  
 // void GLWindow::drawLabel(tvertex v,GLfloat x,GLfloat y,GLfloat z,GLfloat size)
 //   {QFont fnt = QFont("sans");
 //   fnt.setStyleStrategy(QFont::OpenGLCompatible); 

@@ -13,7 +13,7 @@
 #include <TAXI/Tdebug.h>
 #include <TAXI/Tsvector.h>
 #include <TAXI/Tbase.h>
-class MaxPath
+class MaxPath  
 {
    int n_max;
    int m_max;
@@ -51,6 +51,8 @@ class MaxPath
        { DPRINTF(("constraint between out of range value\n")); myabort();}
      if(m > m_max)
        {DPRINTF(("too many constraints\n")); myabort();}
+#else
+     if(m > m_max)LogPrintf("too many constraints/n");
 #endif
      length[m] = len;
      vin[m] = iv1;

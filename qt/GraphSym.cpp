@@ -26,6 +26,7 @@
 #include <QPainter>
 #include <QSvgGenerator>
 
+
 bool Equal(double x, double y)
   {if(fabs(x-y) < epsilon)return true;
   return false;
@@ -317,7 +318,7 @@ int FindSymetry(GeometricGraph &G,int ii1,int ii2,int ii3,int rotate
   // Tri des coordonnees
   int *heap = new int[n];
   HeapSort(cmp,1,n,heap);
-  Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL,0); symlabel[0] = 0;
+  Prop<int> symlabel(G.Set(tvertex()),PROP_SYMLABEL,0); symlabel[0] = 0;
   double xprev = 20.;  double yprev = 20.;
   double xk,yk;
   int kprev = 0;
@@ -467,7 +468,7 @@ void RecolorFixedPoint(GeometricGraph &G,int v)
       }
   }
 int RemoveFixedPoints(GeometricGraph &G,int *heap)
-  {Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
+  {Prop<int> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   double xprev = 20.;  
   double xk;
   int k = 0;
@@ -506,7 +507,7 @@ int RemoveFixedPoints(GeometricGraph &G,int *heap)
   return 0;
   }
 int RemoveConfusion(GeometricGraph &G,int *heap,int i0,int i1,int &label)
-  {Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
+  {Prop<int> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   svector<int> positif(i1-i0+1);
   svector<int> negatif(i1-i0+1);
   int npos = 0;
@@ -575,7 +576,7 @@ void SymColorEdges(GeometricGraph &G)
 int CheckSymmetry(GeometricGraph &G,int MaxLabel)
 // return 0 if fails
 // return > 1 if success -> # of fixed points that may be deplaced
-  {Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
+  {Prop<int> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   svector<tedge>link(1,G.ne()); link.clear();
   svector<tedge>top1(1,MaxLabel); top1.clear();
   svector<tedge>top1b(1,MaxLabel); top1b.clear();
@@ -583,7 +584,7 @@ int CheckSymmetry(GeometricGraph &G,int MaxLabel)
   svector<tedge>top2b(1,MaxLabel); top2b.clear();
   tvertex v;
   tedge e,next;
-  long label,lab,lab0,lab1;
+  int label,lab,lab0,lab1;
 
   //First sort edges not coloRed Green with respect to biggest label,
   for(e = 1;e <= G.ne();e++)
@@ -923,9 +924,11 @@ void SymWindow::update(QPainter *p)
       font = QFont("sans",10);
       p->setFont(font);
       pn.setColor(color[Violet]);p->setPen(pn);
-      t.sprintf("(%d)",axe1);
+      //t.sprintf("(%d)",axe1);
+      t = QString("(%1)").arg(axe1);
       p->drawText(QPoint(width()-18,height()-(int)ytr-3),t);//hor
-      t.sprintf("(%d)",axe2);
+      //t.sprintf("(%d)",axe2);
+      t = QString("(%1)").arg(axe2);
       p->drawText(QPoint((int)xtr+5,15),t); //ver
       }
   //Draw edges
@@ -940,10 +943,10 @@ void SymWindow::update(QPainter *p)
   QColor  col;
   font = QFont("sans",fs);p->setFont(font);
   QBrush pb = p->brush();pb.setStyle(Qt::SolidPattern);
-  Prop<long> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
+  Prop<int> symlabel(G.Set(tvertex()),PROP_SYMLABEL);
   for(tvertex v = 1; v <= G.nv();v++)
       {if(gsp->SymLabel)
-          t.sprintf("%2.2d",(int)symlabel(v));
+          t = QString("%1").arg((int)symlabel(v),2,10,QLatin1Char('0'));
       else
           t = getVertexLabel(G.Container(),v);
       QSize size = QFontMetrics(font).size(Qt::AlignCenter,t);
@@ -970,7 +973,8 @@ void SymWindow::Normalise()
   double y_max = height() - border;
   double min_used_x,max_used_x,min_used_y,max_used_y;
   fs = (int)((double)Min(width(),height())/50.); 
-  if((fs%2) == 1)++fs; fs = Min(fs,10);
+  if((fs%2) == 1)++fs; 
+  fs = Min(fs,10);
   max_used_x = min_used_x = xcoord[1]; 
   max_used_y = min_used_y = ycoord[1];
   for(int i = 2;i <= n;i++)
@@ -1003,17 +1007,28 @@ void SymWindow::Normalise()
       }
   }
 void SymWindow::print(QPrinter *printer)
-  {QPainter pp(printer);
+  {QRect geo = geometry();
+  resize(printer->width(),printer->width());
+  QPainter pp(printer);
   update(&pp);
+  setGeometry(geo);
   }
 void SymWindow::image(QPrinter* printer, QString suffix)
   {QRect geo = geometry();
   resize(staticData::sizeImage,staticData::sizeImage);
   qApp->processEvents();
+/*  
   if(suffix == "png" || suffix == "jpg")
       {QPixmap pixmap = QPixmap::grabWidget(this); 
       pixmap.save(staticData::fileImage);
       }
+*/      
+  if(suffix == "png" || suffix == "jpg")
+      {QPixmap *pixmap = new QPixmap(QSize(width(),height())); 
+      QPainter pp(pixmap);
+      update(&pp);
+      pixmap->save(staticData::fileImage);
+      }      
   else if(suffix == "svg") 
       {QSvgGenerator *svg = new QSvgGenerator();
       svg->setFileName(staticData::fileImage);

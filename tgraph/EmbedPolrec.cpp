@@ -88,8 +88,8 @@ int DoccGraph::makeDosLR()
   {Prop<bool> isTree(Set(tedge()),PROP_ISTREE_LR);
 #ifdef TDEBUG
   Prop<short> ecolor(Set(tedge()),PROP_COLOR);
-  Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
-  Prop<long> elabel(Set(tedge()),PROP_LABEL);
+  Prop<int> vlabel(Set(tvertex()),PROP_LABEL);
+  Prop<int> elabel(Set(tedge()),PROP_LABEL);
   Prop<int> ewidth(Set(tedge()),PROP_WIDTH);
   for(tedge a =1; a <= ne();a++) 
       {ecolor[a] = Black;
@@ -123,7 +123,7 @@ int DoccGraph::makeDosLR()
  
 #ifdef TDEBUG
   for(tvertex v = 1; v <= nv();v++)
-      vlabel[v] = (long) dfsnum[v];
+      vlabel[v] = (int) dfsnum[v];
  #endif
 
   // Relabel thes edges and compute Dos
@@ -183,7 +183,7 @@ int DoccGraph::makeDosLR()
 #ifdef TDEBUG
   // elabel < 0 <=> 1 occ up cotree
   for(tedge je = 1; je <= ne();je++)
-      elabel[je] = (long) nel[je].GetEdge()();
+      elabel[je] = (int) nel[je].GetEdge()();
       
   for(tedge je = 1; je <= ne();je++)
       if(nvin[je] > nvin[-je])ok = false;
@@ -205,8 +205,8 @@ int DoccGraph::makeDosBFS()
   svector<tbrin> nel(-ne(),ne());  nel.SetName("nel");
 #ifdef TDEBUG
   Prop<short> ecolor(Set(tedge()),PROP_COLOR);
-  Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
-  Prop<long> elabel(Set(tedge()),PROP_LABEL);
+  Prop<int> vlabel(Set(tvertex()),PROP_LABEL);
+  Prop<int> elabel(Set(tedge()),PROP_LABEL);
 #endif
   bfsnum.clear();nel.clear();
   iel[0] =  0;
@@ -218,7 +218,7 @@ int DoccGraph::makeDosBFS()
   ivl[1] = v;  
   stack[1] = v;
 #ifdef TDEBUG
-  vlabel[v] = 1L;
+  vlabel[v] = 1;
 #endif
   bfsnum[v]=1;
   int rank =0;
@@ -241,8 +241,8 @@ int DoccGraph::makeDosBFS()
               iel[-y] = -b;             nel[-b] = -y;
               stack[max_rank] = w;
 #ifdef TDEBUG
-              vlabel[w] = (long) bfsnum[w] ; 
-              elabel[b.GetEdge()] = (long)nel[b]();          
+              vlabel[w] = (int) bfsnum[w] ; 
+              elabel[b.GetEdge()] = (int)nel[b]();          
               ecolor[b.GetEdge()] = Red;
 #endif
               }
@@ -253,7 +253,7 @@ int DoccGraph::makeDosBFS()
               iel[z]=b;                 nel[b] = z; 
               iel[-z] = -b;             nel[-b] = -z;
 #ifdef TDEBUG
-              elabel[b.GetEdge()] = (long)z();
+              elabel[b.GetEdge()] = (int)z();
               ecolor[b.GetEdge()] = Blue;
 #endif
               }
@@ -282,8 +282,8 @@ int DoccGraph::makeDosDFS()
   svector<tbrin> nel(-ne(),ne());  nel.SetName("nel");
 #ifdef TDEBUG
   Prop<short> ecolor(Set(tedge()),PROP_COLOR);
-  Prop<long> vlabel(Set(tvertex()),PROP_LABEL);
-  Prop<long> elabel(Set(tedge()),PROP_LABEL);
+  Prop<int> vlabel(Set(tvertex()),PROP_LABEL);
+  Prop<int> elabel(Set(tedge()),PROP_LABEL);
 #endif
   iel[0] = nel[0] = 0;
   nvin[0]=0;
@@ -296,7 +296,7 @@ int DoccGraph::makeDosDFS()
   tvertex v = vin[b0];
   ivl[1] = v;  
 #ifdef TDEBUG
-  vlabel[v] = 1L;
+  vlabel[v] = 1;
 #endif
   tb[v]= b0;
   dfsnum[v]=1;
@@ -318,7 +318,7 @@ int DoccGraph::makeDosDFS()
               nvin[z]=dfsnum[w];              nvin[-z]=dfsnum[v];
               dos[++occ] = nel[b];
 #ifdef TDEBUG
-              elabel[b.GetEdge()] = (long)z();
+              elabel[b.GetEdge()] = (int)z();
 #endif
               z++;
               }
@@ -333,8 +333,8 @@ int DoccGraph::makeDosDFS()
           y = nvin[-y]() = dfsnum[w] = y()+1;
           ivl[y] = (tvertex) w;  
 #ifdef TDEBUG
-          vlabel[w] = (long) y(); 
-          elabel[b.GetEdge()] = (long)nel[b]();          
+          vlabel[w] = (int) y(); 
+          elabel[b.GetEdge()] = (int)nel[b]();          
           ecolor[b.GetEdge()] = Red;
 #endif
           v = w;

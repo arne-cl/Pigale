@@ -16,7 +16,6 @@
 
 #ifndef MOUSE_ACIONS_H
 #define MOUSE_ACIONS_H
-
 #include <QGroupBox>
 #include <QLayout>
 #include <QSlider>
@@ -24,6 +23,7 @@
 #include <QRadioButton>
 #include <QPushButton>
 #include <QCheckBox>
+#include "gprop.h"
 
 class GraphWidget;
 class GraphGL;
@@ -50,6 +50,7 @@ public:
   QRadioButton* ButtonContract;
   QRadioButton* ButtonLabel;
 
+  //QCheckBox* ButtonFitGrid;
   QCheckBox* ButtonFitGrid;
   QCheckBox* ButtonShowGrid;
   QPushButton* ButtonForceGrid;
@@ -59,6 +60,7 @@ public:
   QLCDNumber* LCDNumberX;
   QLCDNumber* LCDNumberY;
   QSlider* Slider;
+  QSlider* iSlider;
 
 
 private slots:

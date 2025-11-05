@@ -83,7 +83,7 @@
 /** @name Property numbers for V,B,E.
   */
 //@{ 
-#define PROP_LABEL            (0)    //!< \c long  Label
+#define PROP_LABEL            (0)    //!< \c int  Label
 #define PROP_COLOR            (1)    //!< \c short Color
 #define PROP_MARK             (2)    //!< \c bool  Various marks
 #define PROP_TYPE             (7)    //!< \c int   Associated type
@@ -115,7 +115,7 @@
 #define PROP_TSTATUS_THICK            3           //!< thick incoming tree edge
 #define PROP_DUALORDER        (22)   //!< \c int  DFS Dual Order (Kura)
 #define PROP_DEGREE           (25)   //!< \c int  vertex degree
-#define PROP_SYMLABEL         (26)   //!< \c long    label in the symetry
+#define PROP_SYMLABEL         (26)   //!< \c int    label in the symetry
 #define PROP_REDUCED          (28)   //!< \c tvertex class in reduced graph
 #define PROP_HYPEREDGE        (29)   //!< \c bool    vertex is an hyperedge
 #define PROP_NLOOPS           (30)   //!< \c int     # of attached loops

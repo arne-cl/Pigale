@@ -31,7 +31,8 @@ int TopologicalGraph:: DFS(svector<tvertex> &nvin,tbrin b0)
   }
 int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
   {if(debug())DebugPrintf("Executing Graph:GDFSRenum");
-  Prop<tbrin> iel (PE(),PROP_LABEL);
+  Prop<int> iel (PE(),PROP_LABEL);
+  
   Prop<bool> IsTree(Set(tedge()),PROP_ISTREE_LR); IsTree.SetName("IsTree");
   IsTree.clear();
   tvertex v;
@@ -60,7 +61,7 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
               v=w;
               }
           else if (dfsnum[v]<dfsnum[w]) // coarbre bas ?
-              {iel[z]=b;
+              {iel[z]=b();
               nvin[z.firsttbrin()]=dfsnum[v];
               nvin[z.secondtbrin()]=dfsnum[w];
               z--;
@@ -68,7 +69,7 @@ int Graph::GDFSRenum(const svector<tbrin> &cir, svector<tvertex> &nvin)
           }
       else                    // arbre bas ?
           {if (w==0) break;
-          iel[y]=b;
+          iel[y]=b();
           IsTree[b.GetEdge()] = true;
           b.cross();
           tb[w]=b;

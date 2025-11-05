@@ -29,7 +29,7 @@ _svector & Get(PSet &X, int num,int type)
       case 5: return Prop<double>::get(X,num);
       case 6: return Prop<bool>::get(X,num);
       }
-  return *(_svector *)0;
+  return *(_svector *)0; 
   }
 void *Get(PSet1 &X, int num,int type) 
   {switch(type) 

@@ -35,7 +35,6 @@ static int Cmp(int i,int j);
 const double Epsilon = 1.E-6;
 static double * coord;
 
-
 bool Equal(double x, double y)
   {if(fabs(x-y) <= Epsilon)return true;
   return false;
@@ -216,11 +215,12 @@ bool GraphEditor::InitGrid(Tgrid &g)
   int NeedNormalise = 0;
   int i,ns,n = G.nv();
   int m = G.ne();
-
+  int sizerect = sizeRectColor();
+  
   if(n == 0)
-      {x_min = y_min = BORDER;
-      x_max = gwp->canvas->width() -BORDER -space -sizerect;
-      y_max = gwp->canvas->height() - BORDER;
+      {x_min = y_min = sizeBorder();
+      x_max = gwp->canvas->width() -sizeBorder() -space -sizerect;
+      y_max = gwp->canvas->height() - sizeBorder();
       }
   xminstep = (x_max-x_min)/SizeGrid;  yminstep = (y_max-y_min)/SizeGrid;
   xepsilon = Epsilon / xminstep;  yepsilon = Epsilon / yminstep;
@@ -232,7 +232,7 @@ bool GraphEditor::InitGrid(Tgrid &g)
       ystep = yminstep; nystep = (int)(.5 + (max_used_y - min_used_y)/ystep);
       IsGrid = true;
       //Update the display
-      int nstep = Max(nxstep,nystep);nstep = Min(nstep,30);
+      int nstep = Max(nxstep,nystep);nstep = Min(nstep,30);//30
       mywindow->mouse_actions->LCDNumber->display(nstep);
       mywindow->mouse_actions->Slider->setValue(nstep);
       g = Tgrid(xstep,ystep,min_used_x,min_used_y);
@@ -419,9 +419,9 @@ void GraphEditor::ToGrid(tvertex &v)
   }
 void GraphEditor::Zoom(int dir)
   {double zoom_old = zoom;
-  if(dir == -1)zoom /= 1.1;
+  if(dir == -1)zoom /= 1.003;
   else if(dir == 0)zoom = 1.;
-  else zoom *= 1.1;
+  else zoom *= 1.003;
   double zz = zoom/zoom_old;
 
   DoNormalise = true;  Normalise();
@@ -446,10 +446,12 @@ void GraphEditor::Normalise()
   {//qDebug("normalise:%d",DoNormalise);
   if(!DoNormalise)return;
   GeometricGraph & G = *(gwp->pGG);
-  x_min = BORDER;
-  x_max = zoom*gwp->canvas->width() -BORDER -space -sizerect;
-  y_min = BORDER;
-  y_max = zoom*gwp->canvas->height() - BORDER;
+  int sizerect = sizeRectColor();
+  
+  x_min = sizeBorder();
+  x_max = zoom*gwp->canvas->width() -sizeBorder() -space -sizerect;
+  y_min = sizeBorder();
+  y_max = zoom*gwp->canvas->height() - sizeBorder();
   if(!G.nv())return;
 
   max_used_x = min_used_x = G.vcoord[1].x(); 

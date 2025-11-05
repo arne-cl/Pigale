@@ -16,7 +16,7 @@
 #define __TSTACK_H__
 
 #include <TAXI/Tarray.h>
-
+/*
 template<class T>
 class stack {
     private:
@@ -45,7 +45,37 @@ class stack {
 	 inline T peep() const { return table[head]; }
 	 inline void clear() { head = 0; }
 
-    inline const char * const class_name() const { return "stack"; }
+    inline const char *  class_name() const { return "stack"; }
 };
+*/
+template<class T>
+class tstack {
+    private:
 
+    tarray<T> table;
+    int head;
+
+    public:
+
+    tstack() : head(0) {}
+    ~tstack() {}
+
+
+    tstack<T> &operator =(const tstack<T> &s)
+        {if (this != &s) {table = s.table; head = s.head;}
+        return *this;
+        }
+	 inline int length() const { return head; }
+	 inline int empty() const { return (head == 0)? 1 : 0; }
+
+	 inline T pop()
+         {if(!head) {DPUTS("tstack is empty!!\n"); exit(1); }
+         head--; return table[head+1];
+         }
+	 inline void push(const T &obj) { head++; table(head) = obj; }
+	 inline T peep() const { return table[head]; }
+	 inline void clear() { head = 0; }
+
+    inline const char *  class_name() const { return "tstack"; }
+};
 #endif

@@ -22,6 +22,8 @@ void DebugPuts(const char *str);
 void DebugPrintf(const char *fmt,...);
 void LogPrintf(const char *fmt,...);
 void DebugIndent(int i);
+const char * logfile();
+
 
 struct _T_Error 
    {int code;

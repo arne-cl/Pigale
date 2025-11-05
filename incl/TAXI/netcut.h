@@ -140,10 +140,10 @@ struct Locals
 class EmbedRnGraph : public TopologicalGraph
 {public :
   Prop<short> vcolor;  //!< colors of the vertices
- Prop<long> vlabel; //!< labels of the vertices
+ Prop<int> vlabel; //!< labels of the vertices
  Prop<int> ewidth; //!< width of the edges 
  Prop<short> ecolor; //!< colors of the edges 
- Prop<long> elabel;  //!< labels of the edges 
+ Prop<int> elabel;  //!< labels of the edges 
  svector<int> degree; //!< degrees of the vertices 
  int **vvadj;                      //!< vertex/vertex sorted adjacency 
  int **inList;  //!< incoming adjacency lists 

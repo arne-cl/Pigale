@@ -1,20 +1,57 @@
-echo "Running qmake..."
+#!/bin/sh
 
-if test -f qt4dir ; then
-  QT4DIR=`cat qt4dir`
-  export QT4DIR
-fi
-if test -f system ; then
-  SYSTEM=`cat system`
-fi
-if [ $SYSTEM  = "ubuntu" ]; then
-    QMAKE=/usr/bin/qmake-qt4
-else
-    QMAKE=$QT4DIR/bin/qmake
+case "$OSTYPE" in
+  solaris*) SYSTEM"solaris" ;;
+  darwin*)  SYSTEM="osx" ;; 
+  linux*)   SYSTEM="linux" ;;
+  bsd*)     SYSTEM="bsd" ;;
+  msys*)    SYSTEM="windows" ;;
+  *)        SYSTEM"unknown: $OSTYPE" ;;
+esac
+
+echo $SYSTEM
+echo $QTDIR>qtdir
+echo $SYSTEM>systeme
+VERSION='1.3.24'
+export VERSIONH="#define VERSION \"$VERSION\""
+echo $VERSIONH > ./qt/version.h
+echo $VERSION > ./version
+
+#UBUNTU    QMAKE=/usr/bin/qmake-qt4
+QMAKE=$QTDIR/bin/qmake 
+
+if [ $SYSTEM  = "osx" ]; then
+    echo "Creating Xcode projects qtdir:$QTDIR"
+    ${QMAKE}  -spec macx-xcode  pigale.pro    
+    cd tgraph
+    ${QMAKE}  -spec macx-xcode  tgraph.pro
+    cd ../qt
+    ${QMAKE}  -spec macx-xcode  qt.pro
+    cd ../ClientServer
+    ${QMAKE}  -spec macx-xcode  ClientServer.pro
+    cd ../UsingTgraph
+    ${QMAKE}  -spec macx-xcode  UsingTgraph.pro
+    cd ../cgi
+    ${QMAKE}  -spec macx-xcode  cgi.pro
+    cd ..
 fi
 
-${QMAKE} -o tgraph/Makefile  tgraph/tgraph.pro
-${QMAKE} -o freeglut/Makefile  freeglut/freeglut.pro
-${QMAKE} -o qt/Makefile  qt/pigale.pro
-${QMAKE} -o ClientServer/Makefile  ClientServer/client.pro
-${QMAKE} -o cgi/Makefile  cgi/pigale.pro
+echo "Creating Makefiles"
+${QMAKE}  -o Makefile  pigale.pro
+echo $VERSIONH>version.h
+cd tgraph
+${QMAKE}  -o Makefile  tgraph.pro
+if [ $SYSTEM  != "osx" ]; then
+	cd ../freeglut
+	${QMAKE}  -o Makefile  freeglut.pro
+	fi
+cd ../qt
+echo $VERSIONH>version.h
+${QMAKE}  -o Makefile  qt.pro
+cd ../ClientServer
+${QMAKE}  -o Makefile  ClientServer.pro
+cd ../cgi
+${QMAKE}  -o Makefile  cgi.pro
+cd ../UsingTgraph
+${QMAKE}  -o Makefile  UsingTgraph.pro
+cd ..

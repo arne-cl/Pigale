@@ -269,6 +269,7 @@ public :
     int TestPlanar();
     int TestNewPlanar();
     int TestPlanar2();
+    int TestSinglePassPlanar();
     // in Jacquard.cpp
     GraphContainer * Vis_a_vis_Graph();
     GraphContainer * CrossingEdgesGraph();
@@ -293,12 +294,12 @@ class GeometricGraph : public TopologicalGraph
 public :
     Prop<Tpoint> vcoord;
     Prop<short> vcolor;
-    Prop<long> vlabel;
+    Prop<int> vlabel;
     Prop<int> ewidth;
     Prop<short> ecolor;
-    Prop<long> elabel;
-    long maxvlabel;
-    long maxelabel;
+    Prop<int> elabel;
+    int maxvlabel;
+    int maxelabel;
 private :
     void init();
  public:

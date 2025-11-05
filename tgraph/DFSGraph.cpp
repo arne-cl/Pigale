@@ -14,65 +14,76 @@
 #include <TAXI/DFSLow.h>
 #include <TAXI/Tdebug.h>
 
+#include <TAXI/graphs.h>
+
 int DFSGraph::DoDFS(tbrin b0)
   {if(debug())DebugPrintf("Executing DFSGraph:DoDFS");
-  if(ne() < 1)return 0;
-  tvertex v;
+  //cout<<"DoDFS nv:"<<nv()<<" ne:"<<ne()<<" v:"<<Gvin[b0]<< " "<<Gvin[-b0]<<endl;
+  if(ne() < 1)return 0;  
   Prop<tbrin> cir(G.Set(tbrin()),PROP_CIR);
   Prop<tbrin> acir(G.Set(tbrin()),PROP_ACIR);
+ /* 
+  TopologicalGraph TG(G);
+  if(!TG.DebugCir())
+  	{cout<<"BAD CIR"<<endl;myabort();}
+  else cout<<"CIR OK"<<endl;
+  */
+  // compute nvin, uptree
+  // modify cir to link b0 to 0
   cir[0] = b0; acir[0] = acir[b0]; cir[acir[b0]] = 0;
   svector<tbrin> tb(0,nv()); tb.clear(); tb.SetName("tb:DoDFS");
   svector<int> dfsnum(0,nv());dfsnum.SetName("dfsnum:DoDFS");
   svector<tedge> tout(0,nv()); tout.SetName("tout:DoDFS");
   svector<tedge> ue(0,ne()); ue.SetName("ue:DoDFS");
-  nvin[0]=0;
-  _ib[0]=0;
-  //iv[0]=0;
-  tbrin b=b0;
-  tedge y=1;
-  tedge z=ne();
+  nvin[0] = 0;
+  _ib[0] = 0; //initial brin value
+  tbrin b = b0;
+  tedge y = 1;
+  tedge z = ne();
+  tvertex v = Gvin[b0];
+  tb[v] = b0;
+  dfsnum[v] = 1;
   tvertex w;
-  //tvertex newv;
-  v = Gvin[b0];
-  tb[v]=(tbrin)b0;
-  dfsnum[v]=1;
-  //newv = 1;
   do
-      {w=Gvin[-b];
-      if (tb[w]!=0)            // w deja connu ?
-          {if (b==tb[v])    // on descend sur l'abre ?
-              { b.cross();
+      {w = Gvin[-b];
+      if (tb[w]!=0)            // w previously reached
+          {if(b == tb[v])    // backtrak on tree
+              {b.cross();
               v = w;
-              //newv = dfsnum[v];
               }
-          else if (dfsnum[v]<dfsnum[w]) // coarbre bas ?
-              {nvin[z.firsttbrin()]=dfsnum[v];
-              nvin[z.secondtbrin()]=dfsnum[w];
-              _ib[z]=b;
-              uptree[z]=ue[b.GetEdge()];
+          else if(dfsnum[v] < dfsnum[w]) // cotree low (secon time met)
+              {nvin[z.firsttbrin()] = dfsnum[v];
+              nvin[z.secondtbrin()] = dfsnum[w];
+              _ib[z] = b;
+              if(z<nv())
+                 {cout<<"z<nv b:"<<b()<< " v:"<<dfsnum[v]<< " w:"<<dfsnum[w]<<endl;
+                 myabort();
+                 }
+              uptree[z] = ue[b.GetEdge()];
               z--;
               }
-          else // coarbre haut ?
-	    { ue[b.GetEdge()]=tout[w];
-	    }
+          else // cotree high (first time discover)
+	          ue[b.GetEdge()] = tout[w]; // lowest tree edge in fondamental circuit
           }
-      else                    // arbre bas ?
+      else   // w has not yet been reached: define new tree edge
           {if (w==0) break;
-          _ib[y]=b;
+          _ib[y] = b;
           b.cross();
-          tb[w]=b;
-          tout[v]=y();
-          // tout[v] = y;
-          nvin[y.firsttbrin()]=dfsnum[v];
-          y=nvin[y.secondtbrin()]()=dfsnum[w]=y()+1;
+          tb[w] = b;
+          tout[v] = y(); // last outgoing tree edge from v
+          nvin[y.firsttbrin()] = dfsnum[v];
+          y = nvin[y.secondtbrin()]() = dfsnum[w] = y()+1;
           v = w;
-          //newv = y();
           }
       b = cir[b];
       } while(1);
+  // restore cir: remove 0 
   cir[0] = 0; cir[acir[0]] = b0; acir[0] = 0;
-  if(y != nv()) return 1;
+  if(y != nv()) 
+      {cout<<"DFSGraph::DoDFS: "<<y()<<" ERROR!= "<<nv()<<endl;return 1;}
   Prop1<int> connected(G.Set(),PROP_CONNECTED);
+  if(debug())DebugPrintf("    END DFSGraph:DoDFS");
+  //cout<<"END DoDFS"<<endl;
   return 0;
   }
 
@@ -97,17 +108,18 @@ int DFSGraph::bicon()
       if(!low[nfrom]){low[nfrom]=nfrom; elow[nfrom]=0;}
       nformer=0;
       while(!low[nto])
-          {
-          if(!nto)cout<<"hubert nto"<<endl;
-          status[nto-1]=PROP_TSTATUS_THIN; ++nbre_fine;
+          {status[nto-1]=PROP_TSTATUS_THIN; ++nbre_fine;
           low[nto]=nfrom; elow[nto]=z;
           nformer=nto; nto=nvin[nto-1];
           }
       if(nto==nfrom)//fin du backtrack
-          {if(!nformer)//impossible
+          {
+          
+          if(!nformer)//impossible
               {cout<<"hubert nformer nto:"<<nto()<<" m:"<<ne()<<endl; 
               abort();
               }
+          
           status[nformer-1]=PROP_TSTATUS_LEAF;
           nbre_fine--;
           }
@@ -190,8 +202,8 @@ void DFSGraph::ShrinkSubdivision()
       }
   newe--;
   // Calcul de PROP_NEW pour G
-  Prop<tedge> NewEdge(G.Set(tedge()),PROP_NEW);
-  NewEdge.clear();
+  Prop<tedge> NewEdgeShrink(G.Set(tedge()),PROP_NEW);
+  NewEdgeShrink.clear();
   // Cote racine
   tedge f=0;
   tedge cotree_root=0;
@@ -199,10 +211,10 @@ void DFSGraph::ShrinkSubdivision()
   for (e=G.nv(); e<=G.ne();e++)
       {f = e()-G.nv()+newv();
       if (nvin[e]==1) cotree_root=e;
-      NewEdge[e]=f;
+      NewEdgeShrink[e]=f;
       v = nvin[-e];
       while (degree[v]==2)
-          {NewEdge[v()-1]=f;
+          {NewEdgeShrink[v()-1]=f;
           v = nvin[v()-1];
           }
       }
@@ -210,16 +222,16 @@ void DFSGraph::ShrinkSubdivision()
       {f = cotree_root()-G.nv()+newv(); //new value
       v = 1;
       do 
-          {NewEdge[v()]=f;
+          {NewEdgeShrink[v()]=f;
           v++;
           }while (degree[v]==2);
       }
   // l'arbre qui reste.
   for (v = G.nv(); v >= 2; v--)
-      {if(NewEdge[v()-1] != 0) continue;
+      {if(NewEdgeShrink[v()-1] != 0) continue;
       else if (degree[nvin[1-v()]]!=2)
           f = Newv[v]()-1;
-      NewEdge[v()-1]=f;
+      NewEdgeShrink[v()-1]=f;
       }
   newvin[0] = 0;
   newvin.Tswap(nvin);
@@ -262,7 +274,13 @@ void DFSGraph::MarkFundTree()
               }
           }
       }
-  }
+/*
+   int k = 0;  
+   for (e=1; e<=ne(); e++)
+      {if (mark[e])++k;}
+   cout <<"MarkFundTree:"<<k<<endl;
+*/ 
+ }
 
 void DFSGraph::Shrink()
   {tedge e;
@@ -299,6 +317,7 @@ void DFSGraph::Shrink()
           _ib[newe]=_ib[e];
           }
   setsize(v(),newe());
+  //cout<<"shrink ne:"<<newe()<<endl;
   }
 
 int DFSLow::TestPlanar()
@@ -426,11 +445,22 @@ int DFSLow::Lralgo( _LrSort &LrSort, _FastHist &Hist)
   }
 int DFSGraph::MarkKuratowski()
   {// On suppose que l'on a un coarbre critique.
-  if ((nv()<6)|| (ne() <= 9)) return 0;
+  if ((nv() < 6) && (ne() < 9)) 
+  	{DebugPrintf("MarkKuratowski nv: ne:",nv(),ne());
+  	cout<<"nv:"<<nv()<<" ne:"<<ne()<<endl;
+  	setPigaleError(-1,"MarkKuratowski: PLANAR !!");
+  	return -1;
+  	}
   Prop<bool> keep(Set(tedge()),PROP_MARK);
   keep.SetName("keep:MarkKura");
-  tbrin b;
+  // K33 ou K5
   tedge e;
+  if ((nv() == 6) && ((ne() == 9)  || ((nv() == 5) && (ne() == 10)))) 
+      {for(e = 1;e <= ne();e++)keep[e] = true;
+      return 0;
+      }
+      
+  tbrin b;
   tvertex v,v1,v2;
   tbrin ibe;
   tvertex vv1,vv2;
@@ -439,8 +469,10 @@ int DFSGraph::MarkKuratowski()
   //if at most 8  vertices: use quadratic algo
   // take a copy of the graph
   if(debug())DebugPrintf("MarkKuratov:n=%d m=%d",nv(),ne());
+  
   if (nv() <= 8)
       {if(debug())DebugPrintf("MarkKuratov <= 8:n=%d m=%d",nv(),ne());
+      //cout<<"Q algo  nv:"<<nv()<<" ne:"<<ne()<<endl;
       GraphContainer GC(Container());
       TopologicalGraph G0(GC);
       for(e = 1;e <= G0.ne();e++)keep[e] = true;
@@ -463,17 +495,23 @@ int DFSGraph::MarkKuratowski()
           {DebugPrintf("Not Critical erased=%d",erased);return 3;}
       return 0;
       }
-
-  // find cotree edge whose fundamnetal cycle is of length > 3
+  //cout <<"Q  nv:"<<nv()<<" ne:"<<ne()<<endl; 
+  // find cotree edge whose fundamnetal cycle is of length > 4
   for (e = ne();e != 0;e--)
-      if(father(father(nvin[-e])) != nvin[e])break;
-  if(e == 0 )return -1;
-
-  v1 = nvin[e];    v2 = nvin[-e];
+      if( (father(father(nvin[-e])) != nvin[e]) && (father(father(father(nvin[-e]))) != nvin[e]))break;
+      
+  if(e == 0)   
+      {DebugPrintf("MarkKuratowski:zero edge");
+      setPigaleError(-1,"MarkKuratowski");
+  	  return -1;
+  	  }
   keep.clear();
+  v1 = nvin[e];    v2 = nvin[-e];
+  
   keep[e]=true;
   ibe = _ib[e];
   DeleteCotreeEdge(e);
+  // now the graph TG is planar
   Planarity();
   svector<int> mark(0,nv()); mark.clear();
   Forall_adj_brins(b,v1,TG)
@@ -486,6 +524,7 @@ int DFSGraph::MarkKuratowski()
           mark[nvin[-b]]=2;
       }
   int mrk,fl,f1,f2;
+  //cout<<"linear algo ********************************* nv:"<<nv()<<endl;
   for(e = 1; e <= ne();e++)
       {mrk = mark[nvin[-e]] | mark[nvin[e]];
       f1 = TG.FaceLength(e());
@@ -500,10 +539,11 @@ int DFSGraph::MarkKuratowski()
       if(mrk  == 3 &&  fl == nv())
           break;
       }
-  if(debug()) DebugPrintf("v1=%d v2=%d",v1(),v2());
-
+  //if(debug()) DebugPrintf("v1=%d v2=%d",v1(),v2());
   if(e > ne()) 
-      {if (debug()) DebugPrintf("No second edge");
+      {DebugPrintf("MarkKuratowski:No second edge");
+      setPigaleError(-2,"MarkKuratowski");
+      cout<<"e:"<<e<<" ne:"<<ne()<<endl;
       return -2;
       }
   if (mark[nvin[e]]==1)
@@ -536,7 +576,8 @@ int DFSGraph::MarkKuratowski()
           break;
       }
   if (e>ne()) 
-      {if (debug()) DebugPrintf("No last edge");
+      {DebugPrintf("No last edge");
+      setPigaleError(-3,"MarkKuratowski");
       return -3;
       }
   if (debug()) DebugPrintf("last edge : %d %d",vvv1(),vvv2());
@@ -545,20 +586,18 @@ int DFSGraph::MarkKuratowski()
   return 0;
   }
 int DFSGraph::Kuratowski()
+//mark a Kuratowski subdivision of a CotreeCritical graph
   {GraphContainer GC2;
+  //cout<<"DFSGraph::Kuratowski()"<<endl;
   DFSGraph DG2(GC2,*this);
-  Prop<Tpoint> vcoord(G.Set(tvertex()),PROP_COORD);
   DG2.ShrinkSubdivision();
-  int kret;
-  tedge e2,e,elim;
-  tvertex v,vto;
-  if((kret=DG2.MarkKuratowski())!=0)return -1;
-  Prop<bool> keep2(DG2.Set(tedge()),PROP_MARK,true);
+  int kret = DG2.MarkKuratowski();
+  if(kret!=0){DebugPrintf("MarKuratovski returned:%d",kret);return -1;}
   Prop<bool> keep(Set(tedge()),PROP_MARK); 
-  Prop<tedge> NewEdge(Set(tedge()),PROP_NEW);
-  keep2.SetName("keep2");
+  Prop<tedge> NewEdgeShrink(Set(tedge()),PROP_NEW); //computed in ShrinkSubdivision
+  Prop<bool> keep2(DG2.Set(tedge()),PROP_MARK,true); // computed in MarkKuratowsi 
   // Transfert sur le graphe de depart.
-  for (e=1; e<=ne(); e++)
-      keep[e]=keep2[NewEdge[e]];
+  for (tedge e=1; e<=ne(); e++)
+      keep[e]=keep2[NewEdgeShrink[e]];
   return 0;
   }

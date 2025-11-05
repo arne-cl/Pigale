@@ -21,21 +21,23 @@
       <b>L</b>ibrary and <b>E</b>ditor </font> <br>
       <br>
       <font size="-1"> <a
- href="http://www.ehess.fr/centres/cams/person/hf/"> H. de Fraysseix</a>&nbsp;
+ href="https://fraysseix.fr/MaPage/index.html"> H. de Fraysseix</a>&nbsp;
 &nbsp; &nbsp; <a href="http://www.ehess.fr/centres/cams/person/pom/">
 P. Ossona de Mendez</a> </font>
       </td>
-	  <!-- for sourceforge-->
+	  <!-- for sourceforge
 	  <td>
 	  <A href="http://sourceforge.net"> 
 	  <IMG src="http://sourceforge.net/sflogo.php?group_id=50880&type=5" width="210" height="62" 
 	  border="0" alt="SourceForge Logo"></A>
 	</td>
-	  <!-- for sourceforge -->
+	  for sourceforge -->
 	</tr>
       </tbody>
     </table>
     <hr>
+    
+<A HREF="index.html">HOME</A>
 
 <h1> Client Server </h1>
 
@@ -48,22 +50,26 @@ it should not be difficult for applications to communicate with the server.
 The server and client use a TCP connection on port 4242.
 The server should be allowed to write on /tmp or \tmp on Windows (CREATE it, if necessary).
 </p>
-<p>
-To launch the client/server application, first launch the server:<br>
-<tt>pigale -server</tt> (serves one client at a time)<br>
+
+
+To launch the client/server application,
+<br> First launch the server:
+ <ul>
+<li><tt>pigale -server</tt> (serves one client at a time)</li>
+
+<li><tt>pigale</tt> then in the menu file choose <tt>Start the server</tt></li>
+
+</ul>
 then the client:<br>
-<tt> client &lt data</tt><br> 
-or a pipe <br>
-<tt>cat data | client</tt>  (under Windows:  <tt>type data | client</tt>).<br>
-If the Client does not run on the same machine as the server:<br>
-<tt>client www.computer.com &lt data  </tt>
-</p>
-<p>
-An example file <b>Clientdata.txt</b>  and three graphs are provided.
-If you run <br>
-<tt>./client &lt Clientdata.txt </tt> <br>
-you should receive 8 png files and a graphml file containing the last graph created. 
-</p>
+<ul>
+
+<li>Windows<tt> client.exe &lt data</tt></li>
+<li>Mac<tt>./bin/client.app/Contents/MacOS/client &lt ./ClientServer/ClientData.txt</tt></li>
+<br>
+</ul>
+
+The example file <b>Clientdata.txt</b> produces 14 png files. 
+
 <h2> Main Commands </h2>
 <p>
 The commands that can be used are most of the ones found in QT/Action.h,
@@ -77,7 +83,7 @@ that is all the Pigale macros plus some specific ones:
 <tr><td class="opt">RC_GRAPH      	</td><td>graph filename</td><td> load a  graph  (from the client side)</td></tr> 
 <tr><td class="opt">N_GRAPH	 </td><td></td><td> creates an empty graph</td></tr> 
 <tr><td class="opt">N_V	     	</td><td>number of vertices</td><td> create n vertices</td></tr> 
-<tr><td class="opt">N_E	     	</td><td>pair of vertices</td><td> create an edge  </td></tr> 
+<tr><td class="opt"><br>N_E	     	</td><td>pair of vertices</td><td> create an edge  </td></tr> 
 <tr><td class="opt">PNG          	</td><td>size (1 int)</td><td> get a png image of the current drawing</td></tr> 
 <tr><td class="opt">PS          	</td><td></td><td> get a postscript file of the current drawing</td></tr> 
 <tr><td class="opt">RS_SAVE_GRAPH	</td><td>graph filename with extension</td><td> ask the server to save the current 
@@ -250,27 +256,88 @@ and then by the server (prepended by a <b>!</b>) when the command has been fully
 <h2>An example</h2>
 <h3>Input</h3>
 <tt>
-# debug mode
 <br>:D
-<br># ask to transfer the  file sym.graphml  from the client
-<br>RC_GRAPH;../tgf/sym.graphml
-<br># ask the general visibility drawing
-<br>GVISION
-<br># asks to create and transfer to the client a png file
+<br>#generate a  4-regular 3-connected graph
+<br>GEN_M;30
+<br>GEN_PLANAR_4R_3C
+<br>POLYLINE
 <br>PNG
-<br>EMBED-3d:PNG
-<br>:!
+<br>SCHNYDER_E
+<br>PNG
+<br>SPRING_PM
+<br>PNG
+<br>TUTTE_CIRCLE
+<br>CURVES
+<br>PNG
+<br>TRIANGLE_CONTACT
+<br>PNG
+<br>PNG
+<br>RC_GRAPH;../tgf/sym.graphml
+<br>EMBED-3d
+<br>PNG
+<br>#create a graph
+<br>N_GRAPH
+<br>#create 5 vertices
+<br>N_V;6
+<br>#add edges
+<br>N_E;1;2
+<br>N_E;1;3 
+<br>N_E;1;4
+<br>N_E;1;5
+<br>N_E;2;3
+<br>N_E;2;4
+<br>N_E;2;5
+<br>N_E;3;4
+<br>N_E;3;5
+<br>N_E;4;5
+<br>N_E;5;6
+<br>N_E;4;6
+<br>N_E;3;6
+<br>N_E;3;6
+<br>GVISION
+<br>PNG
+<br>#generate a  4-regular 3-connected graph
+<br>GEN_M;30
+<br>GEN_PLANAR_4R_3C
+<br>CCD
+<br>PNG
+<br>#generate a 3-connected bipartite graph
+<br>GEN_PLANAR_BIP_3C
+<br>CONTACT_BIPARTI
+<br>PNG
+<br>2_PAGES_BIPARTI
+<br>PNG
+<br>POLAR
+<br>PNG
+<br>FPP_RECTI
+<br>PNG
+<br>POLREC_BFS
+<br>PNG
+<br># close
+<br>:X 
 </tt>
 
 <h3>Output</h3>
-Below is a screen-shot of the client running the previous file.<br>
 
 <center>
-    <IMG SRC="./icones/client.png" HSPACE=60 VSPACE=50 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image001.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image002.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image003.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image004.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image005.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image006.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image007.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image008.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image009.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image010.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image011.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image012.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image013.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+    <IMG SRC="./imgClient/image014.png" width="180" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
 </center>
 
    <hr><!-- hhmts start -->
-Last modified: Thu Aug  3 19:41:06 CEST 2006
+Last modified: 23/02/2020
 <!-- hhmts end -->
 </body>
 

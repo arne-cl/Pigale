@@ -46,7 +46,7 @@
 #define TYPE_PROP_POINT_MIN    Tpoint
 #define TYPE_PROP_POINT_MAX    Tpoint
 #define TYPE_PROP_RNEMBED    RnEmbeddingPtr
-#define TYPE_PROP_LABEL    long
+#define TYPE_PROP_LABEL    int
 #define TYPE_PROP_COLOR    short
 #define TYPE_PROP_MARK    bool
 #define TYPE_PROP_TYPE    int
@@ -69,7 +69,7 @@
 #define TYPE_PROP_TSTATUS    char
 #define TYPE_PROP_DUALORDER    int
 #define TYPE_PROP_DEGREE    int
-#define TYPE_PROP_SYMLABEL    long
+#define TYPE_PROP_SYMLABEL    int
 #define TYPE_PROP_REDUCED    tvertex
 #define TYPE_PROP_HYPEREDGE    bool
 #define TYPE_PROP_NLOOPS    int

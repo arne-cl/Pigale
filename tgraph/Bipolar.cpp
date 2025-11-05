@@ -37,10 +37,11 @@ void BipExtend(TopologicalGraph &G, tbrin bst, svector<bool> &vmark)
   for (b=-m;b<0;b++)
       {
           if (Oriented[b.GetEdge()])
-              if (Reoriented[b.GetEdge()])
+              {if (Reoriented[b.GetEdge()])
                   din[G.vin[-b]]++;
               else
                   din[G.vin[b]]++;
+              }    
       }
   // only the source should be marked and have din=0
   #ifdef TDEBUG

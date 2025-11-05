@@ -20,14 +20,17 @@ The return value tells Pigale what to do after the completion of the function:<b
  3:(Drawing) 4:(3d) 5:symetrie 6-7-8:Springs Embedders<br><br>
 The  <b>initMenuTest() </b> allows the user to set the names of his functions in the main menu.
 */
+#ifndef _MSC_VER
+//inline  double abs(double x) noexcept(true) {if(x>=0) return x; else return -x;}
 
-inline double abs(double x) {if(x>=0) return x; else return -x;}
+#endif
+
 static int Test1(GraphContainer &GC,int &drawing);
 static int Test2(GraphContainer &GC,int &drawing);
 static int Test3(GraphContainer &GC,int &drawing);
 
 void pigaleWindow:: initMenuTest()
-  {setUserMenu(1,"Speed: TestPlanar/NewTestPlanar (1000x)");
+  {setUserMenu(1,"Speed: TestPlanar/TestSinglePassPlanar()  (1000x)");
   //setUserMenu(2,"1000xTesNewtPlanarity");
   setUserMenu(2,"Terminaux");
   setUserMenu(3,"Properties");
@@ -42,38 +45,41 @@ int Test(GraphContainer &GC,int action,int &drawing)
   if(debug())DebugPrintf("    END executing Test:%d",action);
   return ret;
   }
- 
+
 int Test1(GraphContainer &GC,int &drawing)
-  {drawing = 0;
+  {int repeat= 1000;
+  drawing = 0;
   TopologicalGraph G(GC);
-//   bool _debug = debug();
-//   QTime timer;timer.start();
-//   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestPlanar();}
-//   double Time1 = timer.elapsed(); // millisec
-//   if(Time1 < 10)
-//       {Tprintf("too short time to measure");
-//       debug() = _debug;
-//       return 1;
-//       }
-//   timer.start();
-//   for(int i = 0;i < 1000;i++){shuffleCir(G);G.TestNewPlanar();}
-//   double Time2 = timer.elapsed();
-//   Tprintf("speedup: %2.0f %% (>0 better)",100. - 100.*Time2/Time1);
-//   debug() = _debug;
-  QTime timer;timer.start();
-  for(int i = 0;i < 100;i++)
-      {G.TestPlanar();
+  bool _debug = debug(); 
+//  QTime timer;timer.start();
+  QElapsedTimer timer;timer.start();
+  int r0 = 0;
+  long seed = randomSetSeed();
+  for(int i = 0;i < repeat;i++){shuffleCir(G);r0 += G.TestPlanar();}
+  double Time1 = timer.elapsed(); // millisec
+  if(Time1 < 10)
+      {Tprintf("too short time to measure");
+      debug() = _debug;
+      return 0;
       }
+
+  timer.start();
+  int r1 = 0;
+  randomSetSeed() = seed; // to get same graphs
+  for(int i = 0;i < repeat;i++){shuffleCir(G);r1 += G.TestSinglePassPlanar();}
   double Time2 = timer.elapsed();
-  cout <<"time 100x:"<<Time2/1000<<endl;
-  return 1;
+  Tprintf("times:%f %f (%f)", Time1,Time2,Time2/Time1); 
+  if(r0 != r1){Tprintf("ERROR: %d %d",r0,r1);return 1;}
+  debug() = _debug;
+  return 0;
   }
+
 
 int DFSterminal(TopologicalGraph &G,tbrin b0,int & h)
   {// count terminal vertices of a DFS tree in a connected graph
-  tvertex v,w;
-  int n = G.nv();
-  int m = G.ne();
+  tvertex v,w; 
+  int n = G.nv(); 
+  int m = G.ne(); 
   svector<tvertex> nvin(-m,m); 
   svector<tbrin> tb(0,n); tb.clear(); 
   svector<int> dfsnum(0,n); 
@@ -148,12 +154,6 @@ int Test2(GraphContainer &GC,int &drawing)
   Tprintf("nter=%.2f / %d (%d,%d) prop=%2.2f",(double)nt/maxi,G.nv(),min_nter,max_nter,(100.*nt)/(maxi*G.nv()));
   Tprintf("hauteur %d %d (%d) prop=%2.2f",min_h,max_h,(int)(hauteur+.5),100.*hauteur/G.nv());
   if(isolated)Tprintf("isolated=%d",isolated);
-//   bool _debug = debug();
-//   shuffleCir(G);
-//   QTime timer;timer.start();
-//   for(int i = 0;i < 1000;i++)G.TestNewPlanar();
-//   Tprintf("Used time : %f",timer.elapsed()/1000.);
-//   debug() = _debug;
   return 1;
   }
 
@@ -165,27 +165,30 @@ int Test3(GraphContainer &GC,int &drawing)
   int i;
   for (i=G.Set(tvertex()).PStart(); i<G.Set(tvertex()).PEnd(); i++)
       if (G.Set(tvertex()).exist(i))
-          if (G.Set(tvertex()).defined(i)) 
+          {if (G.Set(tvertex()).defined(i)) 
               Tprintf("\n%d %s \n (%s) -> %d bytes",i,PropName(1,i),PropDesc(1,i),
                      (1+G.nv())*G.Set(tvertex())(i)->size_elmt());
           else
               Tprintf("\n%d %s \n (%s)",i,PropName(1,i),PropDesc(1,i));
+          }
   Tprintf("\nEdges:");
   for (i=G.Set(tedge()).PStart(); i<G.Set(tedge()).PEnd(); i++)
       if (G.Set(tedge()).exist(i))
-          if (G.Set(tedge()).defined(i)) 
+          {if (G.Set(tedge()).defined(i)) 
               Tprintf("\n%d %s \n (%s) -> %d bytes",i,PropName(2,i),PropDesc(2,i),
                      (1+G.ne())*G.Set(tedge())(i)->size_elmt());
           else
               Tprintf("\n%d %s \n (%s)",i,PropName(2,i),PropDesc(2,i));
+          }
   Tprintf("\nBrins (half-edges):");
   for (i=G.Set(tbrin()).PStart(); i<G.Set(tbrin()).PEnd(); i++)
       if (G.Set(tbrin()).exist(i))
-          if (G.Set(tbrin()).defined(i)) 
+          {if (G.Set(tbrin()).defined(i)) 
               Tprintf("\n%d %s \n (%s) -> %d bytes",i,PropName(3,i),PropDesc(3,i),
                      (1+2*G.ne())*G.Set(tbrin())(i)->size_elmt());
           else
               Tprintf("\n%d %s \n (%s)",i,PropName(3,i),PropDesc(3,i));
+          }
   Tprintf("\nGeneral:");
   for (i=G.Set().PStart(); i<G.Set().PEnd(); i++)
       if (G.Set().exist(i))

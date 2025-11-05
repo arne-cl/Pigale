@@ -1506,12 +1506,12 @@ int pmCheck1(pm_edge *Edge){
       Edg1->oppo->face->root  = Edg1->oppo;
     }
     for (Edg1 = Edge->oppo->Prev; Edg1->from->label == 0;
-	 Edg1 = Edg1->Prev);
+	 Edg1 = Edg1->Prev){;}
     for (; Edg1->oppo->from->label == 0;
 	 Edg1 = Edg1->Next){
       for (Edg2 = Edg1->oppo->Prev;
 	   Edg2->from->label == 0 && Edg2 != Edg1->oppo->Next;
-	   Edg2 = Edg2->Prev);
+	   Edg2 = Edg2->Prev){;}
       for (; Edg2 != Edg1->oppo; Edg2 = Edg2->Next)
 	if (Edg2->oppo->face->label == label &&
 	    Edge->oppo->from != Edg2->oppo->from &&
@@ -1789,7 +1789,7 @@ int pmCheck3(pm_edge *Edge){
       Edg1->oppo->face->root  = Edg1->oppo;
     }
     for (Edg1 = Edge->oppo->Prev; Edg1->from->label == 0;
-	 Edg1 = Edg1->Prev);
+	 Edg1 = Edg1->Prev){;}
     for (; Edg1 != Edge->oppo->Prev; Edg1 = Edg1->Next)
       if (Edg1->oppo->face->label == label &&
 	  Edge->from != Edg1->from){
@@ -2721,8 +2721,8 @@ GraphContainer *GenerateSchaeffer(int n_ask,int type,int e_connectivity
   maptype() = PROP_MAPTYPE_ARBITRARY;
   Prop1<tbrin> extbrin(GC.Set(),PROP_EXTBRIN); extbrin()=1;
   Prop<Tpoint> vcoord(GC.PV(),PROP_COORD);         vcoord.SetName("GEN:vcoord");         
-  Prop<long> vlabel(GC.PV(),PROP_LABEL);           vlabel.SetName("GEN:vlabel");
-  Prop<long> elabel(GC.PE(),PROP_LABEL);           elabel.SetName("GEN:elabel");
+  Prop<int> vlabel(GC.PV(),PROP_LABEL);           vlabel.SetName("GEN:vlabel");
+  Prop<int> elabel(GC.PE(),PROP_LABEL);           elabel.SetName("GEN:elabel");
   // compute the labels and coordinates
   vlabel[0]=0;
   double angle = 2.*acos(-1.)/n;

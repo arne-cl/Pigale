@@ -68,14 +68,14 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar,pigaleWindo
   LE_M->setReadOnly(true);  LE_N->setReadOnly(true);
   
   QLabel* TextLabelMin = new QLabel(this);
-  TextLabelMin->setText("Min:");
+  TextLabelMin->setText("Min°:");
   LayoutDegrees->addWidget(TextLabelMin);
   LE_Min = new QLineEdit(this);
   LE_Min->setMaximumSize(QSize(60,32767));
   LE_Min->setText("0");
   LayoutDegrees->addWidget(LE_Min);
   QLabel* TextLabelMax = new QLabel(this);
-  TextLabelMax->setText("Max:");
+  TextLabelMax->setText("Max°:");
   LayoutDegrees->addWidget(TextLabelMax);
   LE_Max = new QLineEdit(this);
   LE_Max->setMaximumSize(QSize(60,32767));
@@ -86,7 +86,7 @@ Graph_Properties::Graph_Properties(QWidget* parent,QMenuBar *menubar,pigaleWindo
   //***************************************************
   RBConnected = new RoRadioButton(this);
   RBConnected->setText(tr("Connected"));
-  RBConnected->setChecked(TRUE);
+  RBConnected->setChecked(true);
   LayoutLeftButtons->addWidget(RBConnected);
 
   RB2Connected = new RoRadioButton(this);
@@ -194,7 +194,7 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
 
   if(P && C2 && !C3) Serie = G.CheckSerieParallel();
   if(P  && !C3 && dmin <= 2 && TestOuterPlanar(G)) Outer = true;
-  if(G.nv() == 2 && G.ne() == 1 || C1 && dmax == 2) 
+  if((G.nv() == 2 && G.ne() == 1) || (C1 && dmax == 2)) 
       Serie = Outer = true;
 
   //Modify the enable menus
@@ -320,9 +320,15 @@ void Graph_Properties::update(GraphContainer & GC,bool print)
   
   //Print informations
   if(debug())DebugPrintf("\nn:%d m:%d",G.nv(),G.ne());
-  Tprintf("Name:%s",~title());
+  int NumRecords =IO_GetNumRecords(0,(const char *)mw->InputFileName.toLatin1());
+  int NumRecordsOut =IO_GetNumRecords(0,(const char *)mw->OutputFileName.toLatin1());
+  int *index = mw->pGraphIndex;
+ 
+  Tprintf("InputFile:\n%s ",(const char *)mw->InputFileName.toLatin1(),*index,NumRecords);
+  Tprintf("OutputFile:\n%s (%d)",(const char *)mw->OutputFileName.toLatin1(),NumRecordsOut);
+  Tprintf("Name:%s (%d/%d)",~title() ,*index,NumRecords);
 
-  if(getPigaleError())DebugPrintf("ERROR:%s",(const char *)getPigaleErrorString().toAscii());
+  if(getPigaleError())DebugPrintf("ERROR:%s",(const char *)getPigaleErrorString().toLatin1());
   if(G.nv() == 0 || G.ne() == 0) return;
   if(T && G.nv() == 3)
       ;

@@ -587,7 +587,7 @@ int Polar0(TopologicalGraph &G)
   svector<double> mybase(1,2*m+n+1);  mybase.SetName("my base");
   Prop1<double> nw(G.Set(),PROP_DRAW_DBLE_1);
 
-  double maxh,nbeta;
+  double maxh;
       
   tbrin b0=G.pbrin[1];
   DoubleOccurenceSequence Dos(G,b0);
@@ -597,7 +597,7 @@ int Polar0(TopologicalGraph &G)
 
   Dos.MoveStart();
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));
-  nbeta=pigaleComputeAngles(G, level, lmax,h, mybase, myangle);
+  pigaleComputeAngles(G, level, lmax,h, mybase, myangle);
   
   // recompute heights.
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));

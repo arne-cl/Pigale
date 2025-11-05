@@ -53,14 +53,18 @@ Client::Client(const QString &_host, quint16 _port)
   connect(qApp,SIGNAL(aboutToQuit()),SLOT(stop()));
   // create the socket and connect various of its signals
   socket = new QTcpSocket(this);
-  socket->connectToHost(host,port);
-  clo.setDevice(socket); clo.setVersion(QDataStream::Qt_4_3);
+  clo.setDevice(socket); clo.setVersion(QDataStream::Qt_5_14);
   connect(socket,SIGNAL(connected()),SLOT(socketConnected()));
-  connect(socket,SIGNAL(connectionClosed()),SLOT(socketConnectionClosed()));
+  connect(socket,SIGNAL(disconnected()),SLOT(socketConnectionClosed()));
   connect(socket,SIGNAL(readyRead()),SLOT(socketReadyRead()));
   connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),SLOT(socketError(QAbstractSocket::SocketError)));
   // connect to the server
-  infoText->append("Trying to connect to the server" );
+  socket->connectToHost(host,port);  
+  connection->hide();
+  infoText->append("Trying to connect to the server" ); 
+  socket->waitForConnected(10000);
+  connection->show();
+  qApp->processEvents();
   inputText->setFocus();
   }
 void Client::stop()
@@ -84,6 +88,9 @@ void Client::socketConnectionClosed()
   }
 void Client::askConnection()
   {socket->connectToHost(host,port);
+  connection->hide();
+  socket->waitForConnected(10000);
+  connection->show();
   }
 void Client::askCloseConnection()
   {if(socket->state() != QAbstractSocket::ConnectedState)return;
@@ -102,7 +109,7 @@ void Client::socketError(QAbstractSocket::SocketError e)
   else if(e  == QAbstractSocket::HostNotFoundError) 
       infoText->append(QString("Host not found")); 
   else if(e == QAbstractSocket::SocketTimeoutError)
-      ;//infoText->append(QString("Socket timeout"));
+      infoText->append(QString("Socket timeout"));
   else 
       infoText->append(QString("Socket error:%1").arg(e)); 
   }
@@ -125,7 +132,7 @@ void Client::customEvent(QEvent * e)
 void Client::writeClient(QString str)
 //messages in the client window
   {textEvent *e = new textEvent(str);
-  //cout<<"write:"<<(const char*)str.toAscii()<<endl;
+  //cout<<"write:"<<(const char*)str.toLatin1()<<endl;
   QApplication::postEvent(this,e);
   }
 void Client::writeServerEvent(QString str)
@@ -139,7 +146,7 @@ void Client::writeServerEvent(char * buf,uint size)
 void Client::writeServer(QString str)
   {QWriteLocker locker(&lock);
   QString t = str+'\n';
-  clo.writeBytes(t.toAscii(),t.length()); 
+  clo.writeBytes(t.toLatin1(),t.length());
   socket->waitForBytesWritten(-1); 
   }
 void Client::writeServer(char * buff,quint32 size)
@@ -150,7 +157,7 @@ void Client::writeServer(char * buff,quint32 size)
   }
 /*******************************************************/
 int Client::ChangeActionsToDo(int delta)
-  {int i;
+  {int i; 
   mutex.lock();
   i=(ActionsToDo += delta);
   mutex.unlock();
@@ -165,7 +172,7 @@ int Client::ChangeActionsToDo(int delta)
           }
       stack.pop(); 
       }
-  else //if(debug())
+  else //if(debug()) 
       {if(stack.isEmpty()){writeClient(QString("ERROR:+STACK EMPTY %1 ").arg(i));return i;}
       writeClient(QString("%1 (%2)").arg(stack.top()).arg(i));
       }
@@ -195,7 +202,7 @@ void Client::sendToServer(QString &str)
       }
   QStringList fields = str.split(ACTION_SEP);
   for(int i = 0; i < (int)fields.count();i++)
-      {fields[i].simplified();
+      {fields[i]= fields[i].simplified();
       if(fields[i].contains("RC_GRAPH"))
           sendToServerGraph(fields[i]); 
       //if the file exists sendToServerGraph will add the command on the stack
@@ -270,6 +277,7 @@ uint Client::readBuffer(char*  &buffer)
 */
 uint Client::readBuffer(char*  &buffer)
   {uint nb;
+
   while((nb = socket->bytesAvailable()) < (int)sizeof(uint))
       {if(socket->state() != QAbstractSocket::ConnectedState)
           {writeClient("client not connected");return 0;}
@@ -286,6 +294,7 @@ uint Client::readBuffer(char*  &buffer)
       }
   clo.readRawData(pbuff,size);
 
+
   if(nb == size)return size;
   cout<<"++++++++++++++nb:"<<nb<<" size:"<<size<<endl;
   return size;
@@ -295,7 +304,6 @@ void Client::socketReadyRead()
   {while(socket->canReadLine())
       {QString str = socket->readLine();
       str = str.simplified();
-      //cout<<"read:"<<(const char*) str.toLatin1()<<endl;
       if(str.at(0) == ':' || str.at(0) == '?' )
           writeClient(str.mid(1));
 
