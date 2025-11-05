@@ -7,11 +7,17 @@ win32:SUBDIRS= tgraph \
          UsingTgraph \
          ClientServer
 
-macx:SUBDIRS= tgraph \       
+macx:SUBDIRS= tgraph \
          UsingTgraph \
          ClientServer \
          cgi  \
-		 qt 
+		 qt
+
+unix:!macx:SUBDIRS= tgraph \
+         qt \
+         UsingTgraph \
+         ClientServer \
+         cgi
 
 CONFIG += ordered
 

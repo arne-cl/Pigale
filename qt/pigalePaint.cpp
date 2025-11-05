@@ -17,6 +17,7 @@
 
 #include <QPixmap>
 #include <QPainter>
+#include <QPainterPath>
 #include <QSvgGenerator>
 #include <QPrinter>
 

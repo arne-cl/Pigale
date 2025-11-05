@@ -79,14 +79,14 @@ CONFIG(debug, debug|release) {
     OBJECTS_DIR = ./release
     }
     
-macx {   
+macx {
      LIBS += -framework GLUT
      LIBS += -dead_strip
      DEFINES += GL_SILENCE_DEPRECATION
      } else {
-     DEFINES += FREEGLUT FREEGLUT_STATIC
-     unix:LIBS += ../lib//$$LIBGLUT
+     win32:DEFINES += FREEGLUT FREEGLUT_STATIC
      win32:LIBS +=../lib/$$LIBGLUT -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
+     unix:LIBS += -lglut -lGLU -lGL -lX11
      }
      
 QT += opengl network xml svg printsupport widgets
