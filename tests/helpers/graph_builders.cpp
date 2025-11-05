@@ -13,7 +13,7 @@ namespace TestHelpers {
 GraphContainer* BuildK4() {
     // Complete graph on 4 vertices
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(4, 6);
+    gc->setsize(4, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -30,7 +30,7 @@ GraphContainer* BuildK4() {
 GraphContainer* BuildK5() {
     // Complete graph on 5 vertices (non-planar)
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(5, 10);
+    gc->setsize(5, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -47,7 +47,7 @@ GraphContainer* BuildK5() {
 GraphContainer* BuildK33() {
     // Complete bipartite graph K_{3,3} (non-planar)
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(6, 9);
+    gc->setsize(6, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -64,7 +64,7 @@ GraphContainer* BuildK33() {
 GraphContainer* BuildPetersenGraph() {
     // Petersen graph (non-planar, 10 vertices, 15 edges)
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(10, 15);
+    gc->setsize(10, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -89,7 +89,7 @@ GraphContainer* BuildPetersenGraph() {
 GraphContainer* BuildWheelGraph(int spokes) {
     // Wheel graph: central vertex connected to cycle
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(spokes + 1, 2 * spokes);
+    gc->setsize(spokes + 1, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -116,7 +116,7 @@ GraphContainer* BuildGrid(int rows, int cols) {
 GraphContainer* BuildPath(int n) {
     // Path graph with n vertices
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, n - 1);
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -130,7 +130,7 @@ GraphContainer* BuildPath(int n) {
 GraphContainer* BuildCycle(int n) {
     // Cycle graph with n vertices
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, n);
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -144,7 +144,7 @@ GraphContainer* BuildCycle(int n) {
 GraphContainer* BuildTree(int n) {
     // Simple tree (star-like but more balanced)
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, n - 1);
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -162,7 +162,7 @@ GraphContainer* BuildTree(int n) {
 GraphContainer* BuildStar(int n) {
     // Star graph: one center connected to n leaves
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n + 1, n);
+    gc->setsize(n + 1, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -193,7 +193,7 @@ GraphContainer* BuildMaximalPlanar(int n) {
 
     // Start with a triangle and add vertices
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, 3 * n - 6);  // Maximal planar has 3n-6 edges
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -235,7 +235,7 @@ GraphContainer* BuildSingleVertex() {
 
 GraphContainer* BuildSingleEdge() {
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(2, 1);
+    gc->setsize(2, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
     G.NewEdge(tvertex(1), tvertex(2));
@@ -245,10 +245,9 @@ GraphContainer* BuildSingleEdge() {
 
 GraphContainer* BuildDisconnectedGraph(int components, int verticesPerComponent) {
     int totalVertices = components * verticesPerComponent;
-    int totalEdges = components * (verticesPerComponent - 1);  // Each component is a path
 
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(totalVertices, totalEdges);
+    gc->setsize(totalVertices, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -265,7 +264,7 @@ GraphContainer* BuildDisconnectedGraph(int components, int verticesPerComponent)
 
 GraphContainer* BuildGraphWithMultipleEdges() {
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(2, 2);
+    gc->setsize(2, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -278,7 +277,7 @@ GraphContainer* BuildGraphWithMultipleEdges() {
 
 GraphContainer* BuildGraphWithSelfLoops() {
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(2, 2);
+    gc->setsize(2, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -292,18 +291,8 @@ GraphContainer* BuildGraphWithSelfLoops() {
 GraphContainer* BuildFromAdjacencyMatrix(const std::vector<std::vector<int>>& adj) {
     int n = adj.size();
 
-    // Count edges
-    int m = 0;
-    for(int i = 0; i < n; i++) {
-        for(int j = i; j < n; j++) {
-            if(adj[i][j] > 0) {
-                m += adj[i][j];
-            }
-        }
-    }
-
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, m);
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -321,7 +310,7 @@ GraphContainer* BuildFromAdjacencyMatrix(const std::vector<std::vector<int>>& ad
 
 GraphContainer* BuildFromEdgeList(int n, const std::vector<std::pair<int, int>>& edges) {
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(n, edges.size());
+    gc->setsize(n, 0);  // Don't pre-allocate edges - NewEdge will create them
 
     TopologicalGraph G(*gc);
 
@@ -334,22 +323,24 @@ GraphContainer* BuildFromEdgeList(int n, const std::vector<std::pair<int, int>>&
 }
 
 void AddGridCoordinates(GeometricGraph& G) {
-    Prop<Tpoint>& vcoord = G.Set(PROP_COORD);
+    // Create Prop for coordinates
+    Prop<Tpoint> vcoord(G.Set(tvertex()), PROP_COORD);
 
     int n = G.nv();
     int cols = static_cast<int>(std::sqrt(n));
 
-    for(int v = 1; v <= n; v++) {
-        int row = (v - 1) / cols;
-        int col = (v - 1) % cols;
+    for(tvertex v = 1; v <= n; v++) {
+        int row = (v() - 1) / cols;
+        int col = (v() - 1) % cols;
         vcoord[v] = Tpoint(col * 100.0, row * 100.0);
     }
 }
 
 void AddRandomCoordinates(GeometricGraph& G) {
-    Prop<Tpoint>& vcoord = G.Set(PROP_COORD);
+    // Create Prop for coordinates
+    Prop<Tpoint> vcoord(G.Set(tvertex()), PROP_COORD);
 
-    for(int v = 1; v <= G.nv(); v++) {
+    for(tvertex v = 1; v <= G.nv(); v++) {
         double x = (rand() % 1000) / 10.0;
         double y = (rand() % 1000) / 10.0;
         vcoord[v] = Tpoint(x, y);

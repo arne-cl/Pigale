@@ -13,12 +13,12 @@ namespace TestHelpers {
 
 bool PropertyValidator::ValidateProperty(const PSet& pset, int propId) {
     // Check if property exists
-    return pset.Exist(propId);
+    return pset.exist(propId);
 }
 
-bool PropertyValidator::ValidateAllProperties(const GraphContainer& gc) {
+bool PropertyValidator::ValidateAllProperties(GraphContainer& gc) {
     // Validate that the basic properties are consistent
-    const PSet& pset = gc.Set();
+    PSet1& pset = gc.PG();
 
     // Check that PSet exists
     if(&pset == nullptr) {
@@ -29,25 +29,25 @@ bool PropertyValidator::ValidateAllProperties(const GraphContainer& gc) {
 }
 
 bool PropertyValidator::ValidateCirAcir(TopologicalGraph& G) {
-    if(!G.Exist(PROP_CIR) || !G.Exist(PROP_ACIR)) {
+    // Check if properties exist
+    if(!G.Set(tbrin()).exist(PROP_CIR) || !G.Set(tbrin()).exist(PROP_ACIR)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
-    Prop<tbrin> acir(G.Set(tbrin()), PROP_ACIR);
+    // Use G.cir and G.acir (existing members)
 
     // Check invariant for all brins
     for(tedge e = 1; e <= G.ne(); e++) {
         tbrin b = e();
 
         // Check positive brin
-        if(cir[acir[b]] != b || acir[cir[b]] != b) {
+        if(G.cir[G.acir[b]] != b || G.acir[G.cir[b]] != b) {
             return false;
         }
 
         // Check negative brin
         b = -e();
-        if(cir[acir[b]] != b || acir[cir[b]] != b) {
+        if(G.cir[G.acir[b]] != b || G.acir[G.cir[b]] != b) {
             return false;
         }
     }
@@ -56,16 +56,16 @@ bool PropertyValidator::ValidateCirAcir(TopologicalGraph& G) {
 }
 
 bool PropertyValidator::ValidateVinPbrin(TopologicalGraph& G) {
-    if(!G.Exist(PROP_VIN) || !G.Exist(PROP_PBRIN)) {
+    // Check if properties exist
+    if(!G.Set(tvertex()).exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
-    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
+    // Use G.vin and G.pbrin (existing members)
 
     // Check that pbrin points to a brin incident to the vertex
     for(tvertex v = 1; v <= G.nv(); v++) {
-        tbrin b = pbrin[v];
+        tbrin b = G.pbrin[v];
 
         if(b == 0) {
             // Vertex has no incident edges - should have degree 0
@@ -74,7 +74,7 @@ bool PropertyValidator::ValidateVinPbrin(TopologicalGraph& G) {
             }
         } else {
             // pbrin should point to a brin with vin[b] == v
-            if(vin[b] != v) {
+            if(G.vin[b] != v) {
                 return false;
             }
         }
@@ -84,10 +84,12 @@ bool PropertyValidator::ValidateVinPbrin(TopologicalGraph& G) {
 }
 
 bool PropertyValidator::ValidateCoordinates(GeometricGraph& G) {
-    if(!G.Exist(PROP_COORD)) {
+    // Check if coordinates exist
+    if(!G.Set(tvertex()).exist(PROP_COORD)) {
         return false;
     }
 
+    // Create Prop to access coordinates
     Prop<Tpoint> vcoord(G.Set(tvertex()), PROP_COORD);
 
     for(tvertex v = 1; v <= G.nv(); v++) {
@@ -105,7 +107,7 @@ bool PropertyValidator::ValidateCoordinates(GeometricGraph& G) {
     return true;
 }
 
-bool PropertyValidator::ValidatePropertyBounds(const GraphContainer& gc) {
+bool PropertyValidator::ValidatePropertyBounds(GraphContainer& gc) {
     // Ensure vertex and edge counts are non-negative
     if(gc.nv() < 0 || gc.ne() < 0) {
         return false;
@@ -119,16 +121,16 @@ bool CheckCircularInvariant(TopologicalGraph& G) {
 }
 
 bool CheckCircularCompleteness(TopologicalGraph& G) {
-    if(!G.Exist(PROP_CIR) || !G.Exist(PROP_PBRIN)) {
+    // Check if properties exist
+    if(!G.Set(tbrin()).exist(PROP_CIR) || !G.Set(tvertex()).exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
-    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
+    // Use G.cir and G.pbrin (existing members)
 
     // For each vertex, follow the circular order and verify it forms a complete cycle
     for(tvertex v = 1; v <= G.nv(); v++) {
-        tbrin first = pbrin[v];
+        tbrin first = G.pbrin[v];
 
         if(first == 0) {
             // No incident edges - OK if degree is 0
@@ -148,7 +150,7 @@ bool CheckCircularCompleteness(TopologicalGraph& G) {
                 return false;
             }
             visited.insert(b);
-            b = cir[b];
+            b = G.cir[b];
             count++;
 
             if(count > G.Degree(v) + 1) {
@@ -167,25 +169,24 @@ bool CheckCircularCompleteness(TopologicalGraph& G) {
 }
 
 bool CheckAllBrinsInCircularOrder(TopologicalGraph& G) {
-    if(!G.Exist(PROP_CIR) || !G.Exist(PROP_VIN) || !G.Exist(PROP_PBRIN)) {
+    // Check if properties exist
+    if(!G.Set(tbrin()).exist(PROP_CIR) || !G.Set(tvertex()).exist(PROP_PBRIN)) {
         return false;
     }
 
-    Prop<tbrin> cir(G.Set(tbrin()), PROP_CIR);
-    Prop<tvertex> vin(G.Set(tbrin()), PROP_VIN);
-    Prop<tbrin> pbrin(G.Set(tvertex()), PROP_PBRIN);
+    // Use G.cir, G.vin, G.pbrin (existing members)
 
     // Collect all brins in circular orders
     std::set<tbrin> brinsInOrders;
 
     for(tvertex v = 1; v <= G.nv(); v++) {
-        tbrin first = pbrin[v];
+        tbrin first = G.pbrin[v];
         if(first == 0) continue;
 
         tbrin b = first;
         do {
             brinsInOrders.insert(b);
-            b = cir[b];
+            b = G.cir[b];
         } while(b != first);
     }
 
@@ -202,18 +203,17 @@ bool CheckAllBrinsInCircularOrder(TopologicalGraph& G) {
     return true;
 }
 
-// Note: Template functions moved to header if needed
-// This was a placeholder - proper implementation would be type-specific
-
 bool AreCoordinatesFinite(GeometricGraph& G) {
     return PropertyValidator::ValidateCoordinates(G);
 }
 
 bool AreColorsValid(GeometricGraph& G) {
-    if(!G.Exist(PROP_COLOR)) {
+    // Check if color property exists
+    if(!G.Set(tvertex()).exist(PROP_COLOR)) {
         return true;  // No colors defined is OK
     }
 
+    // Create Prop to access colors
     Prop<short> vcolor(G.Set(tvertex()), PROP_COLOR);
 
     // Basic check - colors should be non-negative

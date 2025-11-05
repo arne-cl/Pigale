@@ -60,7 +60,15 @@ TEST_F(GraphContainerTest, SetSizeSingleVertex) {
 TEST_F(GraphContainerTest, IncSizeIncreasesVertexCount) {
     GraphContainer gc;
     gc.setsize(5, 5);
-    gc.incsize(3, 2);
+
+    // Add 3 vertices
+    gc.incsize(tvertex());
+    gc.incsize(tvertex());
+    gc.incsize(tvertex());
+
+    // Add 2 edges
+    gc.incsize(tedge());
+    gc.incsize(tedge());
 
     EXPECT_EQ(gc.nv(), 8);
     EXPECT_EQ(gc.ne(), 7);
@@ -69,7 +77,15 @@ TEST_F(GraphContainerTest, IncSizeIncreasesVertexCount) {
 TEST_F(GraphContainerTest, DecSizeDecreasesVertexCount) {
     GraphContainer gc;
     gc.setsize(10, 10);
-    gc.decsize(3, 2);
+
+    // Remove 3 vertices
+    gc.decsize(tvertex());
+    gc.decsize(tvertex());
+    gc.decsize(tvertex());
+
+    // Remove 2 edges
+    gc.decsize(tedge());
+    gc.decsize(tedge());
 
     EXPECT_EQ(gc.nv(), 7);
     EXPECT_EQ(gc.ne(), 8);
@@ -79,15 +95,16 @@ TEST_F(GraphContainerTest, IncrementalSizeChanges) {
     GraphContainer gc;
     gc.setsize(5, 5);
 
-    gc.incsize(1, 0);
+    gc.incsize(tvertex());
     EXPECT_EQ(gc.nv(), 6);
     EXPECT_EQ(gc.ne(), 5);
 
-    gc.incsize(0, 1);
+    gc.incsize(tedge());
     EXPECT_EQ(gc.nv(), 6);
     EXPECT_EQ(gc.ne(), 6);
 
-    gc.decsize(1, 1);
+    gc.decsize(tvertex());
+    gc.decsize(tedge());
     EXPECT_EQ(gc.nv(), 5);
     EXPECT_EQ(gc.ne(), 5);
 }
@@ -118,9 +135,13 @@ TEST_F(GraphContainerTest, PropertySetsExist) {
     GraphContainer gc;
     gc.setsize(5, 5);
 
-    // Check that we can access the property set
-    const PSet& pset = gc.Set();
-    EXPECT_NE(&pset, nullptr);
+    // Check that we can access the property sets
+    PSet& pset_v = gc.PV();
+    PSet& pset_e = gc.PE();
+    PSet& pset_b = gc.PB();
+    EXPECT_NE(&pset_v, nullptr);
+    EXPECT_NE(&pset_e, nullptr);
+    EXPECT_NE(&pset_b, nullptr);
 }
 
 TEST_F(GraphContainerTest, PropertySurvivesResize) {
@@ -128,11 +149,12 @@ TEST_F(GraphContainerTest, PropertySurvivesResize) {
     gc.setsize(5, 5);
 
     // Set a property
-    Prop<int> testProp(gc.Set(), PROP_COLOR);
+    Prop<int> testProp(gc.Set(tvertex()), PROP_COLOR);
     testProp[tvertex(1)] = 42;
 
-    // Increase size
-    gc.incsize(2, 0);
+    // Increase size by adding vertices one at a time
+    gc.incsize(tvertex());
+    gc.incsize(tvertex());
 
     EXPECT_EQ(gc.nv(), 7);
     // Property should still exist and have the old value
@@ -191,7 +213,9 @@ TEST_F(GraphContainerTest, ValidatesBasicInvariants) {
     GraphContainer gc;
     gc.setsize(10, 20);
 
-    EXPECT_TRUE(TestHelpers::VerifyVertexEdgeCounts(gc));
+    // Wrap in Graph to use validator
+    Graph G(gc);
+    EXPECT_TRUE(TestHelpers::VerifyVertexEdgeCounts(G));
 }
 
 TEST_F(GraphContainerTest, NegativeCountsNotAllowed) {
@@ -211,22 +235,24 @@ TEST_F(GraphContainerTest, WorksWithGraphClass) {
     GraphContainer* gc = new GraphContainer();
     gc->setsize(4, 6);
 
-    Graph G(gc);
-
-    EXPECT_EQ(G.nv(), 4);
-    EXPECT_EQ(G.ne(), 6);
+    {
+        Graph G(*gc);
+        EXPECT_EQ(G.nv(), 4);
+        EXPECT_EQ(G.ne(), 6);
+    }  // G must go out of scope before deleting gc
 
     delete gc;
 }
 
 TEST_F(GraphContainerTest, WorksWithTopologicalGraph) {
     GraphContainer* gc = new GraphContainer();
-    gc->setsize(4, 3);
+    gc->setsize(4, 0);  // Don't pre-allocate edges
 
-    TopologicalGraph G(gc);
-
-    EXPECT_EQ(G.nv(), 4);
-    EXPECT_EQ(G.ne(), 3);
+    {
+        TopologicalGraph G(*gc);
+        EXPECT_EQ(G.nv(), 4);
+        EXPECT_EQ(G.ne(), 0);  // No edges added yet
+    }  // G must go out of scope before deleting gc
 
     delete gc;
 }
@@ -250,9 +276,9 @@ TEST_F(GraphContainerTest, PropertyCleanupOnClear) {
     gc.setsize(10, 10);
 
     // Create multiple properties
-    Prop<int> prop1(gc.Set(), PROP_COLOR);
-    Prop<int> prop2(gc.Set(), PROP_LABEL);
-    Prop<Tpoint> prop3(gc.Set(), PROP_COORD);
+    Prop<int> prop1(gc.Set(tvertex()), PROP_COLOR);
+    Prop<int> prop2(gc.Set(tvertex()), PROP_LABEL);
+    Prop<Tpoint> prop3(gc.Set(tvertex()), PROP_COORD);
 
     gc.clear();
 

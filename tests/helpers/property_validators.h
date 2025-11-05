@@ -22,7 +22,7 @@ public:
     static bool ValidateProperty(const PSet& pset, int propId);
 
     // Check all properties in a graph container
-    static bool ValidateAllProperties(const GraphContainer& gc);
+    static bool ValidateAllProperties(GraphContainer& gc);
 
     // Property-specific validators
     static bool ValidateCirAcir(TopologicalGraph& G);
@@ -30,7 +30,7 @@ public:
     static bool ValidateCoordinates(GeometricGraph& G);
 
     // Check property bounds (values within expected ranges)
-    static bool ValidatePropertyBounds(const GraphContainer& gc);
+    static bool ValidatePropertyBounds(GraphContainer& gc);
 };
 
 /**

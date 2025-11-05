@@ -30,7 +30,7 @@ TEST_F(PlanarPipelineTest, GridGraphWorkflow) {
     GraphContainer* gc = GenerateGrid(5, 5);
     ASSERT_NE(gc, nullptr);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // Test planarity
     ASSERT_TRUE(G.TestPlanar()) << "5x5 grid should be planar";
@@ -49,7 +49,7 @@ TEST_F(PlanarPipelineTest, K4IsPlanarandEmbeddable) {
     GraphContainer* gc = TestHelpers::BuildK4();
     ASSERT_NE(gc, nullptr);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // K4 is planar
     EXPECT_TRUE(G.TestPlanar());
@@ -68,7 +68,7 @@ TEST_F(PlanarPipelineTest, K5IsNonPlanar) {
     GraphContainer* gc = TestHelpers::BuildK5();
     ASSERT_NE(gc, nullptr);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // K5 is non-planar
     EXPECT_FALSE(G.TestPlanar()) << "K5 should be non-planar";
@@ -80,7 +80,7 @@ TEST_F(PlanarPipelineTest, K33IsNonPlanar) {
     GraphContainer* gc = TestHelpers::BuildK33();
     ASSERT_NE(gc, nullptr);
 
-    TopologicalGraph G(gc);
+    TopologicalGraph G(*gc);
 
     // K_{3,3} is non-planar
     EXPECT_FALSE(G.TestPlanar()) << "K3,3 should be non-planar";
