@@ -1,0 +1,10 @@
+# debug mode
+:D
+# ask to transfer the file sym.graphml from the client
+RC_GRAPH;tgf/embed3d.graphml
+# ask the general visibility drawing
+GVISION
+# asks to create and transfer to the client a png file
+PNG
+EMBED-3d:PNG
+:!

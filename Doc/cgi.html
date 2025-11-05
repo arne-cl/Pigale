@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="Author" content="Hubert de Fraysseix">
+  <title>PIGALE Library</title>
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+</head>
+<body>
+<table align="center">
+  <tbody>
+    <tr>
+      <td><img src="./icones/misspost.jpg" hspace="0" border="1"
+ align="left" alt="logo"></td>
+      <td align="center"> <font size="+3"><b>P.I.G.A.L.E.</b></font> <br>
+      <font size="+2"><br>
+      <b>P</b>ublic <b>I</b>mplementation of a <b>G</b>raph <b>A</b>lgorithm
+      <br>
+      <b>L</b>ibrary and <b>E</b>ditor </font> <br>
+      <br>
+      <font size="-1"> <a
+ href="https://fraysseix.fr/MaPage/index.html"> H. de Fraysseix</a>&nbsp;
+&nbsp; &nbsp; <a href="http://www.ehess.fr/centres/cams/person/pom/">
+P. Ossona de Mendez</a> </font>
+      </td>
+	  <!-- for sourceforge
+	  <td>
+	  <A href="http://sourceforge.net"> 
+	  <IMG src="http://sourceforge.net/sflogo.php?group_id=50880&type=5" width="210" height="62" 
+	  border="0" alt="SourceForge Logo"></A>
+	</td>
+	  for sourceforge -->
+	</tr>
+      </tbody>
+    </table>
+    <hr>
+<A HREF="index.html">HOME</A>
+<h1> CGI </h1>
+
+<p>
+This is a simple example program showing how to create an html interface to Pigale using a cgi.
+The output program is called pigale.cgi to be placed in the cgi-bin directory of Apache.
+<br>
+The server and client use a TCP connection on port 4242.
+<br>
+The server should be allowed to write on /tmp or \tmp on Windows (Create it, if necessary).
+
+<h3>Usage</h3>
+</p>
+One must first start Pigale and starts its server mode (in the file menu), then open in a browser
+http://127.0.0.1/cgi-bin/pigale.cgi
+</p>
+
+<p>
+The user defines:
+<ul>
+<li> which graph generator to use,</li>
+<li>the desired number of edges,</li>
+<li> the type of drawing.</li>
+</ul>
+then the corresponding image is displayed.
+</p>
+
+<h3>Output</h3>
+Below is a screen-shot of the client running the previous file.<br>
+<br><br>
+<center>
+    <IMG SRC="cgi.png" width="500" HSPACE=6 VSPACE=5 BORDER=1   ALT="client">
+</center>
+
+   <hr><!-- hhmts start -->
+Last modified: 23/02/2020
+<!-- hhmts end -->
+</body>
+
+</html>
