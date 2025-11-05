@@ -26,3 +26,18 @@ _$*
 *.ln
 core
 # CVS default ignores end
+
+# Build artifacts
+Makefile
+Makefile.Debug
+Makefile.Release
+.qmake.stash
+.moc/
+lib/
+qtdir
+systeme
+version
+version.h
+qt/version.h
+qt/pigale
+*.qm
