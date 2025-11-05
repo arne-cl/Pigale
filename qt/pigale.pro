@@ -83,7 +83,7 @@ CONFIG(debug, debug|release) {
 
 DEFINES += FREEGLUT FREEGLUT_STATIC
 #unix:LIBS += $$DISTPATH/lib/libglut.a
-unix:LIBS += $$GLUTLIB
+unix:LIBS += $$GLUTLIB -lX11 -lXxf86vm -lXi
 win32:LIBS +=../freeglut/libglut.a -lopengl32 -lglu32 -lgdi32 -luser32 -lwinmm
 
 QT += opengl network xml svg printsupport
