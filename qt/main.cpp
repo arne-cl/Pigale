@@ -37,6 +37,11 @@
 #undef PACKAGE_PATH
 #define PACKAGE_PATH ".."
 #endif
+#ifdef __linux__
+#ifndef PACKAGE_PATH
+#define PACKAGE_PATH ".."
+#endif
+#endif
 
 
 int main(int argc,char * argv[])

@@ -1,0 +1,60 @@
+# Qt generated files
+Makefile
+Makefile.Debug
+Makefile.Release
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qm
+.qmake.stash
+moc/
+ui/
+
+# Build directories
+bin/
+lib/
+release/
+debug/
+build/
+dist/
+
+# Object files
+*.o
+*.obj
+*.lo
+*.slo
+*.ko
+*.elf
+
+# Libraries
+*.a
+*.la
+*.lib
+*.dll
+*.so
+*.so.*
+*.dylib
+*.prl
+
+# Executables
+*.exe
+*.out
+*.app
+usingtgraph
+
+# Qt MOC files
+moc/
+
+# Build configuration files
+qtdir
+systeme
+version.h
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store

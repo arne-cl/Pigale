@@ -18,7 +18,7 @@
 // Results:
 //    Window size -> Prop1<double> PROP_DRAW_DBLE_1 (x) and PROP_DRAW_DBLE_2 (y)
 //    Vertex coordinates -> Prop<Tpoint> PROP_DRAW_COORD
-//    Edge path ->           
+//    Edge path ->
 //             Epoint1 : PROP_DRAW_POINT_1
 //             Epoint2 : PROP_DRAW_POINT_2
 //             Epoint11: PROP_DRAW_POINT_3
@@ -44,7 +44,7 @@ static double vpush = .5;
 static double extpush=.1;
 
 static double eweight=extpush;
-static double beta=1.;
+static double beta_scale=1.;
 
 
 void InvertSomeCir(TopologicalGraph &G, svector<bool> &Invert)
@@ -74,20 +74,20 @@ double ComputeCotreeHeights(DoubleOccurenceSequence &Dos, svector<double> &h,
   int i;
   tbrin b;
   tedge ee,es;
-    
+
   // Compute succ
   svector<tedge> suc(-m,m);      suc.SetName("suc");
   Dos.ComputeSuc(suc);
 
   svector<double> inith(0,m);
-    
+
   // Init heights of cotree edges
   inith.clear();
   for(ee = 1;ee <= m;++ee)
       if(!Dos.IsTree(ee))
           inith[ee] = (double)Max(level[Dos.vin[ee.firsttbrin()]],
-                                  level[Dos.vin[ee.secondtbrin()]]); 
-    
+                                  level[Dos.vin[ee.secondtbrin()]]);
+
   h=inith;
   // second traversal: compute heights
   for(i = 1;i <= 2*m;++i)
@@ -97,18 +97,18 @@ double ComputeCotreeHeights(DoubleOccurenceSequence &Dos, svector<double> &h,
           {es = suc[b];
           if(es == 0)continue;
           if(Dos.vin[b] == Dos.vin[es] || Dos.vin[b] == Dos.vin[-es])
-              h[es] = Max((double)level[Dos.vin[b]],h[es]); 
+              h[es] = Max((double)level[Dos.vin[b]],h[es]);
           else
-              h[es] = Max((double)level[Dos.vin[b]] + vpush/beta,h[es]); 
+              h[es] = Max((double)level[Dos.vin[b]] + vpush/beta_scale,h[es]);
           }
       else if (Dos.IsSecond(b))
           {es = suc[ee];
           if (es==0)
               h[0]=Max(h[0],h[ee]);
           else if (h[ee]==inith[ee])
-              h[es] = Max(h[ee] + epush/beta,h[es]);
+              h[es] = Max(h[ee] + epush/beta_scale,h[es]);
           else
-              h[es]=Max(h[ee] + extpush/beta,h[es]);
+              h[es]=Max(h[ee] + extpush/beta_scale,h[es]);
           }
       }
   return h[0];
@@ -131,11 +131,11 @@ void ComputeWeights(TopologicalGraph &G, svector<int> &level,
   tbrin b,b0;
   svector<bool> reached(1,n); reached.SetName("reached");
   reached.clear();
-    
+
   v = 1;  b = b0 = G.pbrin[v]; reached[1]=true;
   do
       {if(IsTree[b.GetEdge()])
-          {b = -b;          
+          {b = -b;
           w=G.vin[b];
           if(reached[w])
               {//backtrack
@@ -148,7 +148,7 @@ void ComputeWeights(TopologicalGraph &G, svector<int> &level,
                       weightunder[w]+=weight[v];
               }
           else
-              {//montée
+              {//montÃ©e
                   reached[w]=true;
               }
           v=w;
@@ -178,14 +178,14 @@ void ComputeFather(TopologicalGraph &G, svector<tvertex> &father)
   v = 1;  b = b0 = G.pbrin[v]; father[1]=0; reached[1]=true;
   do
       {if(IsTree[b.GetEdge()])
-          {b = -b;          
+          {b = -b;
           w=G.vin[b];
-          if(reached[w])  
+          if(reached[w])
               {//backtrack
                   if (b==-b0) b=0;
               }
           else
-              {//montée
+              {//montÃ©e
                   father[w]=v;
                   reached[w]=true;
               }
@@ -206,20 +206,20 @@ void ComputeListe(TopologicalGraph &G, svector<int> &liste)
   reached.clear();
   tvertex v,w;
   tbrin b,b0;
-    
+
   int j=1;
   liste[1]=1; // on commence par le sommet 1
   v = 1;  b = b0 = G.pbrin[v]; reached[1]=true;
   do
       {if(IsTree[b.GetEdge()])
-          {b = -b;          
-          w=G.vin[b]; 
-          if(reached[w])  
+          {b = -b;
+          w=G.vin[b];
+          if(reached[w])
               {//backtrack
                   if (b==-b0) b=0;
               }
           else
-              {//montée
+              {//montÃ©e
                   liste[++j]=w();
                   reached[w]=true;
               }
@@ -227,7 +227,7 @@ void ComputeListe(TopologicalGraph &G, svector<int> &liste)
           }
       else // cotree
           {liste[++j]=m+n+1+b();
-          }      
+          }
       if(b()!=0)b = G.cir[b];
       }
   while(b()!=0);
@@ -239,9 +239,9 @@ void ComputeAngles(TopologicalGraph &G, svector<int> &level, int
                    svector<double> &weight, svector<double>&weightunder,
                    svector<double> &base, svector<double> &angle)
   {int n = G.nv(); int m=G.ne();
-    
-  // x occupe (avec ses fils) un angle de base[x] à base[x]+angle[x]
-    
+
+  // x occupe (avec ses fils) un angle de base[x] Ã  base[x]+angle[x]
+
   svector<double> basel(1,levelmax+1); basel.clear(); basel.SetName("basel");
   angle[1]=weightunder[1];
   base[1]=0;
@@ -251,16 +251,16 @@ void ComputeAngles(TopologicalGraph &G, svector<int> &level, int
   int l;
   int x;
   int i;
-    
+
   for (i=2; i<=2*m-n+2; i++)
       {x=liste[i];
       l=level[father[x]]+1;
-      // level n'est calculé que pour les sommets et x!=1
+      // level n'est calculÃ© que pour les sommets et x!=1
       if (l>ll)basel[l]=base[father[x]];//on augmente de niveau
       // base[x]=basel[l];
       //angle[x]=a (cf ->)
       a=weight[x]/weightunder[father[x]]*angle[father[x]];
-        
+
       // restrict !
       angle[x]=weight[x];
       base[x]=basel[l]+(a-angle[x])/2;
@@ -276,32 +276,32 @@ double pigaleComputeAngles(TopologicalGraph &G, svector<int> &level, int
                        levelmax,svector<double> &h,
                        svector<double> &base, svector<double> &angle)
   {int n = G.nv(); int m=G.ne();
-  
-  svector<double> weightunder(1,n); weightunder.SetName("weightunder");  
+
+  svector<double> weightunder(1,n); weightunder.SetName("weightunder");
   svector<double> weight(1,2*m+n+1); weight.SetName("weight");
   ComputeWeights(G,level,h,weight,weightunder);
-  
+
   svector<tvertex> father(1,2*m+n+1); father[1]=0; father.SetName("father");
   ComputeFather(G,father);
-  
+
   svector<int> liste(1,2*m-n+2); liste.SetName("liste");
   ComputeListe(G,liste);
 
   ComputeAngles(G,level,levelmax,liste,father,weight,weightunder,base,angle);
   // recomputes to normalize.
-  beta=1;
+  beta_scale=1;
   tvertex v;
-  
+
   for (v=2;v<=n;v++)
-      beta=Max(beta,angle[v]/(2*acos((double)level[v]/(level[v]+0.5))));
-  beta=Max(beta,angle[1]/(2*PI));
+      beta_scale=Max(beta_scale,angle[v]/(2*acos((double)level[v]/(level[v]+0.5))));
+  beta_scale=Max(beta_scale,angle[1]/(2*PI));
   int x;
-  
+
   for (x=1;x<=2*m+n+1;x++)
-      {angle[x]/=beta;
-      base[x]/=beta;      
+      {angle[x]/=beta_scale;
+      base[x]/=beta_scale;
       }
-  return beta; 
+  return beta_scale;
   }
 // 0 value is reserved!
 template <class T>
@@ -360,7 +360,7 @@ public:
         if (n==0)
             {DPRINTF(("Value 0 reserved (stack)!"));
             myabort();
-            }        
+            }
 #endif
         if (StackTop[n]==x) return true;
         bool found = false;
@@ -374,7 +374,7 @@ public:
     T Next(const T &x)  { return StackNext[x]; }
     T Top(int n)  { return StackTop[n]; }
     // cannot be used to remove the first!
-    T RemoveNext(const T &x) 
+    T RemoveNext(const T &x)
         { T y = StackNext[x];
         StackNext[x]=StackNext[y];
         StackNext[y]=T(0);
@@ -390,7 +390,7 @@ public:
         if (n==0)
             {DPRINTF(("Value 0 reserved (stack)!"));
             myabort();
-            }        
+            }
 #endif
         if (StackTop[n]==x)
             { StackTop[n]=StackNext[x];
@@ -466,7 +466,7 @@ public:
         if (StackNext[y]==x) StackNext[y]=y;
         Tswap(StackNext[x],StackNext[y]);
         return true;
-        }      
+        }
     bool IsEmpty(int n)
         {
 #ifdef TDEBUG
@@ -484,12 +484,12 @@ bool MarkBadCir(DoubleOccurenceSequence &Dos, svector<bool> &Bad)
   {int m=Dos.m;
   int n=Dos.n;
   bool BadExists=false;
-    
+
   PStack<tbrin> PS(1,n,-m,m);
   Bad.clear();
   tbrin b;
   int i;
-    
+
   for (i=1; i<=2*m; i++)
       { b = Dos[i];
       if (Dos.IsTree(b.GetEdge())) continue;
@@ -505,7 +505,7 @@ bool MarkBadCir(DoubleOccurenceSequence &Dos, svector<bool> &Bad)
           if (!PS.TryPop(Dos.vin[-b](),-b))
               {Bad[Dos.vin[-b]]=true;
               BadExists=true;
-              }      
+              }
           }
       }
   return BadExists;
@@ -516,12 +516,12 @@ bool SwapBadBrins(DoubleOccurenceSequence &Dos)
   {int m=Dos.m;
   int n=Dos.n;
   bool BadExists=false;
-    
+
   PStack<tbrin> PS(1,n,-m,m);
   tbrin b,b2,bb,bb2;
   int i;
   tvertex v;
-    
+
   for (i=1; i<=2*m; i++)
       { b = Dos[i];
       if (Dos.IsTree(b.GetEdge())) continue;
@@ -529,7 +529,7 @@ bool SwapBadBrins(DoubleOccurenceSequence &Dos)
           { PS.Push(Dos.vin[b](),b);
           PS.Push(Dos.vin[-b](),-b);
           // DPRINTF(("Push %d on vertex %d",b(),Dos.vin[b]()));
-          // DPRINTF(("Push %d on vertex %d",-b(),Dos.vin[-b]()));            
+          // DPRINTF(("Push %d on vertex %d",-b(),Dos.vin[-b]()));
           }
       else
           {//DPRINTF(("Now brins %d and %d",b(),-b()));
@@ -588,7 +588,7 @@ int Polar0(TopologicalGraph &G)
   Prop1<double> nw(G.Set(),PROP_DRAW_DBLE_1);
 
   double maxh;
-      
+
   tbrin b0=G.pbrin[1];
   DoubleOccurenceSequence Dos(G,b0);
 
@@ -598,25 +598,25 @@ int Polar0(TopologicalGraph &G)
   Dos.MoveStart();
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));
   pigaleComputeAngles(G, level, lmax,h, mybase, myangle);
-  
+
   // recompute heights.
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));
-  
+
   // compute node width
-  nw() = (.5+75./maxh/beta)/600.;
+  nw() = (.5+75./maxh/beta_scale)/600.;
 
   // Compute coords of vertices
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);
   Vcoord.SetName("Vcoord");
-  
+
   Vcoord[1].x() = Vcoord[1].y() = 0;
   for(v = 2;v <= n;v++)
       {Vcoord[v].x()=
-	 levelrho(level[v],maxh)*cos((mybase[v]+myangle[v]/2)); 
+	 levelrho(level[v],maxh)*cos((mybase[v]+myangle[v]/2));
       Vcoord[v].y()=
-	levelrho(level[v],maxh)*sin((mybase[v]+myangle[v]/2)); 
+	levelrho(level[v],maxh)*sin((mybase[v]+myangle[v]/2));
       }
-  
+
   // Prepare Drawing
 
   Prop<Tpoint> Epoint1(G.Set(tedge()),PROP_DRAW_POINT_1);
@@ -643,7 +643,7 @@ int Polar0(TopologicalGraph &G)
       w=Dos.vin[bw];
       Epoint1[ee]=Vcoord[v];
       Epoint2[ee]=Vcoord[w];
-      
+
       if (Dos.IsTree(ee))  // tree edges
           {
               Erho[ee]=-1;
@@ -651,7 +651,7 @@ int Polar0(TopologicalGraph &G)
           }
       Tpoint pi;
       double rhoi;
-      
+
       theta1 = mybase[m+n+1+bv()]+myangle[m+n+1+bv()]/2;
       rho = levelrho(h[ee],maxh);
       Tpoint p = Tpoint(rho*cos(theta1),rho*sin(theta1));
@@ -685,7 +685,7 @@ int Polar0(TopologicalGraph &G)
           {Epoint21[ee]=Epoint22[ee]=Tpoint(-1,-1);
           theta2 = mybase[w]+myangle[w]/2;
           }
-      
+
       if(theta2 < theta1) theta2 += 2*PI;
       Erho[ee]=rho;
       Etheta1[ee]=theta1;
@@ -697,16 +697,16 @@ int Polar0(TopologicalGraph &G)
   }
 
 int Polar(TopologicalGraph &G)
-  { 
+  {
   // Mark the edges of a BFS tree
   G.Set().erase(PROP_CONNECTED);
   if(!G.CheckConnected())
       {setPigaleError(-1,"Polar: graph not connected");
       return -1;
       }
-  
+
   //G.Planarity();
-  
+
   int n = G.nv();
   tbrin b0=G.pbrin[1];
   DoubleOccurenceSequence Dos(G,b0);
