@@ -202,27 +202,25 @@ bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G) {
     return true;
 }
 
-template<typename T>
-bool IsPropertyInitialized(const Prop<T>& prop, int index) {
-    // This is a generic check - implementation depends on type
-    // For now, just return true
-    return true;
-}
+// Note: Template functions moved to header if needed
+// This was a placeholder - proper implementation would be type-specific
 
 bool AreCoordinatesFinite(const GeometricGraph& G) {
     return PropertyValidator::ValidateCoordinates(G);
 }
 
 bool AreColorsValid(const GeometricGraph& G) {
-    if(!G.Exist(PROP_VCOLOR)) {
+    if(!G.Exist(PROP_COLOR)) {
         return true;  // No colors defined is OK
     }
 
-    Prop<tcolor> vcolor(G.Set(), PROP_VCOLOR);
+    Prop<short> vcolor(G.Set(), PROP_COLOR);
 
     // Basic check - colors should be non-negative
     for(tvertex v = 1; v <= G.nv(); v++) {
-        // tcolor validation would go here
+        if(vcolor[v] < 0) {
+            return false;
+        }
     }
 
     return true;

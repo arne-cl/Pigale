@@ -13,14 +13,19 @@
 namespace TestHelpers {
 
 bool IsIsomorphic(const Graph& G1, const Graph& G2) {
-    // Simple check: same vertex and edge counts
-    // Full isomorphism testing is NP-complete, so this is a basic check
+    // TODO: Full isomorphism testing is NP-complete
+    // This is a basic check only - just checks counts match
+    // For proper isomorphism testing, would need to implement
+    // graph isomorphism algorithm (e.g., VF2, Ullmann, etc.)
+
     if(G1.nv() != G2.nv() || G1.ne() != G2.ne()) {
         return false;
     }
 
-    // Could add degree sequence comparison here
-    return true;  // Placeholder
+    // Could add degree sequence comparison here for better filtering
+
+    // WARNING: This returns true if counts match, but graphs may not be isomorphic
+    return true;  // Placeholder - needs full implementation
 }
 
 bool HasSameEmbedding(const TopologicalGraph& G1, const TopologicalGraph& G2) {
@@ -97,8 +102,16 @@ bool ValidateCoordinates(const GeometricGraph& G) {
 }
 
 bool CheckNoEdgeCrossings(const GeometricGraph& G) {
-    // This is a complex geometric computation
-    // Placeholder for now
+    // TODO: Implement edge crossing detection
+    // This requires checking all pairs of non-adjacent edges for intersection
+    // Algorithm:
+    // 1. For each pair of edges (e1, e2) where e1 and e2 don't share a vertex
+    // 2. Get coordinates of endpoints: (p1,p2) for e1, (p3,p4) for e2
+    // 3. Check if line segments intersect using geometric test
+    // 4. If any pair intersects, return false
+
+    // WARNING: This is a placeholder that always returns true
+    // Actual crossing detection not yet implemented
     return true;
 }
 

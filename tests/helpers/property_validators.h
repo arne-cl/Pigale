@@ -50,14 +50,13 @@ bool CheckAllBrinsInCircularOrder(const TopologicalGraph& G);
  * @brief Property value checks
  */
 
-// Check that property values are initialized (not default/garbage)
-template<typename T>
-bool IsPropertyInitialized(const Prop<T>& prop, int index);
+// Note: IsPropertyInitialized removed - implementation was type-specific
+// and better handled by specific validators like AreCoordinatesFinite, etc.
 
 // Check that coordinates are finite (not NaN or infinity)
 bool AreCoordinatesFinite(const GeometricGraph& G);
 
-// Check that color values are valid
+// Check that color values are valid (non-negative)
 bool AreColorsValid(const GeometricGraph& G);
 
 } // namespace TestHelpers
