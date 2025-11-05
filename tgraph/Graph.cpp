@@ -29,10 +29,14 @@ bool  Graph::CheckBiconnected()
   PrepDFS(cir);
   isconnected = GDFS(cir,nvin);
   delete &cir;
-  delete &low;
-  if (!isconnected)return false;
+  if (!isconnected)
+    {
+    delete &low;
+    return false;
+    }
   _Bicon Bicon(n);
   int ret=bicon(n,m,nvin,Bicon,low);
+  delete &low;
   if(ret)
       {Prop1<int> isbicon(Set(),PROP_BICONNECTED);return true;}
   return false;

@@ -113,7 +113,9 @@ class _svector
 #endif
 
     if (start != finish) { // vector is not empty
-      memcpy((void*) (nbuff+(start-_start)*size_elmt), begin(), getsize());
+      int sz = getsize();
+      if (sz > 0)
+        memcpy((void*) (nbuff+(start-_start)*size_elmt), begin(), sz);
     }
     if (init) { // a default value has been set
       memcpy((void*) nbuff, buff, size_elmt);
@@ -197,7 +199,9 @@ class _svector
     vreserve(s.start-2, s.finish, s.size_elmt);
     start  = s.start;
     finish = s.finish;
-    memcpy(begin(), s.begin(), getsize());
+    int sz = getsize();
+    if (sz > 0)
+      memcpy(begin(), s.begin(), sz);
     return *this;
   }
 
@@ -296,7 +300,7 @@ public:
   void clear()
   {
     int s=getsize();
-    if (s!=0)
+    if (s > 0)
       memset(begin(), 0, s);
   }
   //! Fill vector [from:to] with @a byte values.
@@ -356,7 +360,7 @@ public:
     else
       init = 0;
   }
-  void SetName(const char* txt) {strncpy(name, txt, sizeof(name)-1);}
+  void SetName(const char* txt) {strncpy(name, txt, sizeof(name)-1); name[sizeof(name)-1] = '\0';}
   const char* GetName() const {return name;}
 
 #ifdef TDEBUG
@@ -417,9 +421,13 @@ public:
   _svector(a, b, sizeof(T), (const void*) &value) {}
   svector(int n): _svector(0, n-1, sizeof(T)) {}
   svector(const svector& v): _svector(v) {}
-  svector(int a, int b,const T *p): _svector(a,b,sizeof(T)) 
+  svector(int a, int b,const T *p): _svector(a,b,sizeof(T))
       {if(p == 0)myabort();
-      else memcpy(me().begin(),p,me().getsize());
+      else {
+        int sz = me().getsize();
+        if (sz > 0)
+          memcpy(me().begin(),p,sz);
+      }
       }
   ~svector() {}
 

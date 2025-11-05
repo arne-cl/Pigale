@@ -32,10 +32,10 @@ IFLAGS = -I$(PIGALEPATH)/incl
 
 #OPTIMIZED OPTIONS
 CFLAGSopt = -O3   $(PIC) $(CPU)
-CFLAGSopt += -Wall -Wpointer-arith -Werror -pipe
+CFLAGSopt += -Wall -Wpointer-arith -Werror -Wno-error=stringop-overflow -Wno-error=class-memaccess -pipe
 CFLAGSopt +=  -fomit-frame-pointer
 #DEBUGGING OPTIONS (-pg -a for sampling)
-CFLAGSdbg  =  -g -Wall -Wpointer-arith -Werror -pipe $(PIC) $(CPU)
+CFLAGSdbg  =  -g -Wall -Wpointer-arith -Werror -Wno-error=stringop-overflow -Wno-error=class-memaccess -pipe $(PIC) $(CPU)
 CFLAGSdbg +=  -DTDEBUG $(SAMPLING)
 #Grind profiler
 CFLAGSgri  =  -g -O3 -Wall -Wpointer-arith -Werror -pipe $(PIC) $(CPU)
@@ -52,7 +52,7 @@ FILES2  += $(SPECIAL)
 OBJECTS =  $(patsubst %.cpp,%.$(OPT), $(FILES2))
 OBJ =  $(patsubst %.$(OPT),$(VPATH)/%.$(OPT), $(OBJECTS))
 
-all : md depend $(DLIB)
+all : md $(DLIB)
 
 PropName.cpp : $(PIGALEPATH)/incl/TAXI/propdef.h
 	$(AWK) -f propname.awk $(PIGALEPATH)/incl/TAXI/propdef.h > PropName.cpp

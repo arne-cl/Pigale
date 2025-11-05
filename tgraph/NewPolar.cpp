@@ -44,7 +44,7 @@ static double vpush = .5;
 static double extpush=.1;
 
 static double eweight=extpush;
-static double beta=1.;
+static double pigale_beta=1.;
 
 
 void InvertSomeCir(TopologicalGraph &G, svector<bool> &Invert)
@@ -99,16 +99,16 @@ double ComputeCotreeHeights(DoubleOccurenceSequence &Dos, svector<double> &h,
           if(Dos.vin[b] == Dos.vin[es] || Dos.vin[b] == Dos.vin[-es])
               h[es] = Max((double)level[Dos.vin[b]],h[es]); 
           else
-              h[es] = Max((double)level[Dos.vin[b]] + vpush/beta,h[es]); 
+              h[es] = Max((double)level[Dos.vin[b]] + vpush/pigale_beta,h[es]); 
           }
       else if (Dos.IsSecond(b))
           {es = suc[ee];
           if (es==0)
               h[0]=Max(h[0],h[ee]);
           else if (h[ee]==inith[ee])
-              h[es] = Max(h[ee] + epush/beta,h[es]);
+              h[es] = Max(h[ee] + epush/pigale_beta,h[es]);
           else
-              h[es]=Max(h[ee] + extpush/beta,h[es]);
+              h[es]=Max(h[ee] + extpush/pigale_beta,h[es]);
           }
       }
   return h[0];
@@ -148,7 +148,7 @@ void ComputeWeights(TopologicalGraph &G, svector<int> &level,
                       weightunder[w]+=weight[v];
               }
           else
-              {//montée
+              {//montï¿½e
                   reached[w]=true;
               }
           v=w;
@@ -185,7 +185,7 @@ void ComputeFather(TopologicalGraph &G, svector<tvertex> &father)
                   if (b==-b0) b=0;
               }
           else
-              {//montée
+              {//montï¿½e
                   father[w]=v;
                   reached[w]=true;
               }
@@ -219,7 +219,7 @@ void ComputeListe(TopologicalGraph &G, svector<int> &liste)
                   if (b==-b0) b=0;
               }
           else
-              {//montée
+              {//montï¿½e
                   liste[++j]=w();
                   reached[w]=true;
               }
@@ -240,7 +240,7 @@ void ComputeAngles(TopologicalGraph &G, svector<int> &level, int
                    svector<double> &base, svector<double> &angle)
   {int n = G.nv(); int m=G.ne();
     
-  // x occupe (avec ses fils) un angle de base[x] à base[x]+angle[x]
+  // x occupe (avec ses fils) un angle de base[x] ï¿½ base[x]+angle[x]
     
   svector<double> basel(1,levelmax+1); basel.clear(); basel.SetName("basel");
   angle[1]=weightunder[1];
@@ -255,7 +255,7 @@ void ComputeAngles(TopologicalGraph &G, svector<int> &level, int
   for (i=2; i<=2*m-n+2; i++)
       {x=liste[i];
       l=level[father[x]]+1;
-      // level n'est calculé que pour les sommets et x!=1
+      // level n'est calculï¿½ que pour les sommets et x!=1
       if (l>ll)basel[l]=base[father[x]];//on augmente de niveau
       // base[x]=basel[l];
       //angle[x]=a (cf ->)
@@ -289,19 +289,19 @@ double pigaleComputeAngles(TopologicalGraph &G, svector<int> &level, int
 
   ComputeAngles(G,level,levelmax,liste,father,weight,weightunder,base,angle);
   // recomputes to normalize.
-  beta=1;
+  pigale_beta=1;
   tvertex v;
-  
+
   for (v=2;v<=n;v++)
-      beta=Max(beta,angle[v]/(2*acos((double)level[v]/(level[v]+0.5))));
-  beta=Max(beta,angle[1]/(2*PI));
+      pigale_beta=Max(pigale_beta,angle[v]/(2*acos((double)level[v]/(level[v]+0.5))));
+  pigale_beta=Max(pigale_beta,angle[1]/(2*PI));
   int x;
-  
+
   for (x=1;x<=2*m+n+1;x++)
-      {angle[x]/=beta;
-      base[x]/=beta;      
+      {angle[x]/=pigale_beta;
+      base[x]/=pigale_beta;
       }
-  return beta; 
+  return pigale_beta; 
   }
 // 0 value is reserved!
 template <class T>
@@ -603,7 +603,7 @@ int Polar0(TopologicalGraph &G)
   maxh=Max(lmax+0.2,ComputeCotreeHeights(Dos,h,level,lmax));
   
   // compute node width
-  nw() = (.5+75./maxh/beta)/600.;
+  nw() = (.5+75./maxh/pigale_beta)/600.;
 
   // Compute coords of vertices
   Prop<Tpoint> Vcoord(G.Set(tvertex()),PROP_DRAW_COORD);

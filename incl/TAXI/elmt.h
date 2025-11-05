@@ -20,7 +20,7 @@ class tbrin
 
     public:
 
-    tbrin() {}
+    tbrin() : value(0) {}
     tbrin(int i) : value(i) {}
     tbrin(const tbrin &i) : value(i.value) {}
     ~tbrin() {}
@@ -69,7 +69,7 @@ class tvertex
 
     public:
 
-    tvertex() {}
+    tvertex() : value(0) {}
     tvertex(int i) : value(i) {}
     tvertex(const tvertex &i) : value(i.value) {}
     ~tvertex() {}
@@ -114,7 +114,7 @@ class tedge
 
     public:
 
-    tedge() {}
+    tedge() : value(0) {}
     tedge(int i) : value(i) {}
     tedge(const tedge &i) : value(i.value) {}
     // tedge(const tbrin &b) : value((b() > 0)? b():-b()) {}
