@@ -24,8 +24,9 @@ This guide documents all the mistakes made during the Phase 1 test suite impleme
 9. [Mistake #8: PSet vs PSet1 Confusion](#mistake-8-pset-vs-pset1-confusion)
 10. [Mistake #9: Const-Correctness Assumptions](#mistake-9-const-correctness-assumptions)
 11. [Mistake #10: GitHub Actions Permissions](#mistake-10-github-actions-permissions)
-12. [Best Practices](#best-practices)
-13. [Code Review Checklist](#code-review-checklist)
+12. [Mistake #11: DFS nvin Indexing](#mistake-11-dfs-nvin-indexing)
+13. [Best Practices](#best-practices)
+14. [Code Review Checklist](#code-review-checklist)
 
 ---
 
@@ -915,6 +916,105 @@ When you see 403 Forbidden errors:
 
 ---
 
+## Mistake #11: DFS nvin Indexing
+
+### ❌ **The Mistake**
+
+**What I did**: Used vertex indexing for nvin svector in DFS calls:
+
+```cpp
+TEST_F(TraversalTest, DFSOnConnectedGraph) {
+    TopologicalGraph G(*gc);
+
+    // WRONG: Index by vertices (0 to nv)
+    svector<tvertex> nvin(0, G.nv());
+    int result = G.DFS(nvin);
+}
+```
+
+**What actually happened**:
+```
+munmap_chunk(): invalid pointer
+Aborted (core dumped)
+```
+
+Tests compiled successfully but crashed with memory corruption during execution. The crash occurred in `DFSOnConnectedGraph` - first test that used DFS.
+
+**Why this happens**:
+- DFS writes to `nvin[brin]` where brins range from `-m` to `m` (m = number of edges)
+- My svector was sized `(0, nv)` where nv = number of vertices
+- DFS tried to write to negative indices that don't exist → memory corruption
+- The nvin array maps **brins** (half-edges) to vertices, not vertices to vertices
+
+### ✅ **The Solution**
+
+**ALWAYS index nvin by brins (-m, m)**:
+
+```cpp
+TEST_F(TraversalTest, DFSOnConnectedGraph) {
+    TopologicalGraph G(*gc);
+
+    // CORRECT: Index by brins (-m to m)
+    int m = G.ne();
+    svector<tvertex> nvin(-m, m);
+    int result = G.DFS(nvin);
+}
+```
+
+**How to discover this**:
+1. Look at working examples in tgraph source code:
+```cpp
+// From tgraph/mark.cpp:
+int m = G.ne();
+svector<tvertex> nvin(-m, m);  // Indexed by brins
+svector<tbrin> tb(0, n);        // Indexed by vertices
+svector<int> dfsnum(0, n);      // Indexed by vertices
+if (!G.DFS(nvin, tb, dfsnum, b0))  // ...
+```
+
+2. Understand brin representation:
+   - Brins (half-edges) are numbered: ..., -3, -2, -1, 1, 2, 3, ...
+   - For m edges, brins range from -m to m (skipping 0)
+   - `nvin[b]` gives the vertex that brin `b` points to
+
+### 📋 **svector Index Ranges**
+
+**Graph structure indexing rules**:
+
+| svector | Index Range | Example |
+|---------|-------------|---------|
+| `nvin` (brin → vertex) | `(-m, m)` | `svector<tvertex> nvin(-m, m)` |
+| `tb` (DFS tree) | `(0, n)` | `svector<tbrin> tb(0, n)` |
+| `dfsnum` (DFS numbering) | `(0, n)` | `svector<int> dfsnum(0, n)` |
+| `comp` (BFS components) | `(1, n)` | `svector<int> comp(1, n)` |
+| `vcoord` (vertex coords) | `(1, n)` | Direct property access |
+
+**Key insight**: If the svector maps **from brins**, use `(-m, m)`. If it maps **from vertices**, use `(0, n)` or `(1, n)` depending on whether vertex 0 is used.
+
+### 🔍 **How to Debug This**
+
+**Symptoms**:
+- Tests compile successfully
+- Crash with "munmap_chunk(): invalid pointer"
+- Segmentation fault in traversal code
+- Memory corruption
+
+**Diagnosis**:
+1. Check svector initialization for all DFS/BFS parameters
+2. Verify: does this svector map FROM brins or FROM vertices?
+3. Check working examples in tgraph/*.cpp for correct pattern
+4. Use `G.ne()` for brin-indexed arrays, `G.nv()` for vertex-indexed arrays
+
+### 💥 **Impact**
+
+- Phase 3 tests initially crashed during execution
+- 22 tests written, 5 tests ran successfully, crash on 6th test
+- Memory corruption made debugging difficult (random crashes)
+- Once fixed: all 22 tests passed immediately
+- 30 minutes to identify and fix (could have been avoided by studying examples first)
+
+---
+
 ## Best Practices
 
 ### 1. Study Working Code First
@@ -1440,14 +1540,16 @@ Before submitting code that uses Pigale/tgraph API:
 - **Phase 1 Implementation**: 9 hours (27 tests, all patterns learned)
 - **Phase 2 Implementation Part 1**: 2 hours (35 tests: Graph + CircularOrder + PSet)
 - **Phase 2 Implementation Part 2**: 1.5 hours (53 tests: TopologicalGraph + GeometricGraph)
-- **CI/CD Fixes**: 30 minutes (MacOS + coverage)
-- **Total**: ~13 hours for 142 tests + comprehensive documentation
+- **Phase 3 Implementation**: 2 hours (22 tests: DFS/BFS/Biconnectivity)
+- **CI/CD Fixes**: 30 minutes (MacOS + Linux + coverage)
+- **Total**: ~15 hours for 160 tests + comprehensive documentation
 
-**Phase 2 Part 2 Success Rate**:
-- 53 new tests written (27 TopologicalGraph + 26 GeometricGraph)
+**Phase 3 Success Rate**:
+- 22 new tests written (BFS: 11 tests, DFS: 4 tests, Biconnectivity: 5 tests, Integration: 2 tests)
 - Compiled on first try (0 compilation errors)
-- All tests passed on first run
-- Demonstrates value of learning from Phase 1 mistakes
+- Runtime error discovered: nvin svector indexing (fixed in 30 minutes)
+- All 160 tests passing on both Linux and macOS
+- New critical lesson learned: brin-indexed vs vertex-indexed svectors
 
 ---
 
@@ -1466,5 +1568,5 @@ If you discover new mistakes or API quirks:
 ---
 
 **Last Updated**: 2025-11-06
-**Status**: Phase 2 In Progress - 62/62 Tests Passing (58 unit + 4 integration)
-**Next Update**: After Phase 2 completion or Phase 3 implementation
+**Status**: Phase 3 Complete - 160/160 Tests Passing (156 unit + 4 integration), 1 disabled
+**Next Update**: After Phase 4 implementation (Planarity algorithms)

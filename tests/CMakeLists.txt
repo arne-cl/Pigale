@@ -52,6 +52,7 @@ set(UNIT_TEST_SOURCES
     unit/core/test_geometric_graph.cpp
     unit/data_structures/test_circular_order.cpp
     unit/data_structures/test_pset.cpp
+    unit/algorithms/traversal/test_dfs_bfs.cpp
     # More test files will be added here
 )
 

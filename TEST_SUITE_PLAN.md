@@ -888,10 +888,17 @@ jobs:
 - All tests follow Phase 1 lessons: setsize(n, 0) with NewEdge(), proper API usage, no guessing
 - Zero compilation errors, all tests passed on first run after compilation
 
-### Phase 3: Traversal Algorithms (Week 5)
-- [ ] Test DFS/BFS implementations
-- [ ] Test biconnected component detection
-- [ ] Test component numbering
+### Phase 3: Traversal Algorithms (Week 5) ✅ COMPLETE
+- [x] Test DFS/BFS implementations
+- [x] Test biconnected component detection
+- [x] Test component numbering
+- **Result**: 160 tests passing (22 traversal tests added), 1 disabled
+- **Key Accomplishments**:
+  - BFS testing: component detection, disconnected graphs, paths, grids
+  - DFS testing: tree/numbering, disconnected detection, cycles
+  - Biconnectivity: CheckBiconnected, Biconnect augmentation, MakeConnected
+  - Critical fix: nvin svector must be indexed by brins (-m, m) not vertices (0, nv)
+  - All tests pass on both Linux and macOS
 
 ### Phase 4: Planarity (Weeks 6-7)
 - [ ] Test all planarity algorithms (LR, single-pass)
