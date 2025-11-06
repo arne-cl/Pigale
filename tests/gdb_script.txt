@@ -1,0 +1,14 @@
+break DFSGraph::MarkKuratowski
+run
+# When it hits the breakpoint, print values
+print this->nv()
+print this->ne()
+# Check the condition at line 458
+print (nv() == 6)
+print (ne() == 9)
+print (nv() == 5)
+print (ne() == 10)
+print ((nv() == 6) && ((ne() == 9) || ((nv() == 5) && (ne() == 10))))
+# Step through to see where it fails
+continue
+quit
