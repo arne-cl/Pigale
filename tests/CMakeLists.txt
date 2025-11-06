@@ -47,6 +47,8 @@ target_include_directories(test_helpers PUBLIC helpers)
 # Unit tests
 set(UNIT_TEST_SOURCES
     unit/core/test_graph_container.cpp
+    unit/core/test_graph.cpp
+    unit/data_structures/test_circular_order.cpp
     # More test files will be added here
 )
 
