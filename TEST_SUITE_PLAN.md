@@ -872,15 +872,21 @@ jobs:
 - [x] Set up CI/CD pipeline
 - **Result**: 27 tests passing (23 GraphContainer + 4 integration)
 
-### Phase 2: Core Data Structures (Weeks 3-4) 🔄 IN PROGRESS
+### Phase 2: Core Data Structures (Weeks 3-4) ✅ COMPLETE
 - [x] Complete core class tests for Graph class (18 tests)
 - [x] Test circular order invariants (17 tests)
 - [x] Implement graph validators (reused from Phase 1)
 - [x] Test PSet property system thoroughly (27 tests, 1 disabled)
-- [ ] Complete TopologicalGraph-specific tests (TODO)
-- [ ] Complete GeometricGraph tests (TODO)
-- **Current Status**: 89 tests passing (85 unit + 4 integration), 1 disabled
+- [x] Complete TopologicalGraph-specific tests (27 tests)
+- [x] Complete GeometricGraph tests (26 tests)
+- **Result**: 142 tests passing (138 unit + 4 integration), 1 disabled
 - **Note**: tstring property test disabled due to segfault (requires investigation)
+
+**Key Accomplishments**:
+- Comprehensive TopologicalGraph testing: edge/vertex operations, graph modifications, degree calculations, topological properties
+- GeometricGraph geometric and visual properties: coordinates, colors, labels, FindVertex, BissectEdge interpolation
+- All tests follow Phase 1 lessons: setsize(n, 0) with NewEdge(), proper API usage, no guessing
+- Zero compilation errors, all tests passed on first run after compilation
 
 ### Phase 3: Traversal Algorithms (Week 5)
 - [ ] Test DFS/BFS implementations
