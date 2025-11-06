@@ -196,13 +196,31 @@ jobs:
       run: |
         cd tests/build
         lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,gcov,source
-        lcov --remove coverage.info '/usr/*' '*/googletest/*' --output-file coverage.info --ignore-errors unused
-        lcov --list coverage.info
+        lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/googlemock/*' '*/_deps/*' --output-file coverage_filtered.info --ignore-errors unused
+
+        # Generate HTML report
+        genhtml coverage_filtered.info --output-directory coverage_html --title "Pigale Test Suite Coverage" --legend
+
+        # Display summary
+        echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        lcov --summary coverage_filtered.info 2>&1 | grep -E "lines|functions" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+        # List coverage info for logs
+        lcov --list coverage_filtered.info
+
+    - name: Upload coverage HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: tests/build/coverage_html/
+        retention-days: 30
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: tests/build/coverage.info
+        files: tests/build/coverage_filtered.info
         flags: unittests
         name: codecov-pigale
         fail_ci_if_error: false
