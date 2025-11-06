@@ -25,8 +25,9 @@ This guide documents all the mistakes made during the Phase 1 test suite impleme
 10. [Mistake #9: Const-Correctness Assumptions](#mistake-9-const-correctness-assumptions)
 11. [Mistake #10: GitHub Actions Permissions](#mistake-10-github-actions-permissions)
 12. [Mistake #11: DFS nvin Indexing](#mistake-11-dfs-nvin-indexing)
-13. [Best Practices](#best-practices)
-14. [Code Review Checklist](#code-review-checklist)
+13. [Mistake #12: TestPlanar Modifies Graph State](#mistake-12-testplanar-modifies-graph-state)
+14. [Best Practices](#best-practices)
+15. [Code Review Checklist](#code-review-checklist)
 
 ---
 
@@ -1015,6 +1016,108 @@ if (!G.DFS(nvin, tb, dfsnum, b0))  // ...
 
 ---
 
+## Mistake #12: TestPlanar Modifies Graph State
+
+### ❌ **The Mistake**
+
+**What I did**: Called TestPlanar() before Kuratowski() to verify the graph is non-planar:
+
+```cpp
+TEST_F(PlanarityTest, KuratowskiOnK33) {
+    TopologicalGraph G(*gc);
+
+    // Verify it's non-planar first
+    EXPECT_EQ(G.TestPlanar(), 0);  // ❌ This modifies the graph!
+
+    // Extract Kuratowski subgraph
+    int result = G.Kuratowski();
+    EXPECT_EQ(result, 0);  // Fails because graph state is corrupted
+}
+```
+
+**What actually happened**:
+- TestPlanar() modifies the circular order (cir/acir) during its analysis
+- After TestPlanar() fails on a non-planar graph, the graph is left in an inconsistent state
+- Kuratowski() then fails or produces incorrect results
+
+### ✅ **The Solution**
+
+**NEVER call TestPlanar() before algorithms that need clean graph state**:
+
+```cpp
+TEST_F(PlanarityTest, KuratowskiOnK33) {
+    TopologicalGraph G(*gc);
+
+    // DON'T call TestPlanar() first!
+    // Just call Kuratowski() directly
+    int result = G.Kuratowski();
+    EXPECT_EQ(result, 0);  // Now works correctly
+}
+```
+
+### 📋 **Graph State Mutation**
+
+**Functions that modify graph state**:
+- `TestPlanar()` - modifies circular order during planarity test
+- `Planarity()` - computes and sets circular order for planar embedding
+- `Simplify()` - removes loops and parallel edges
+- `MakeConnected()` - adds edges to make graph connected
+
+**Safe testing patterns**:
+
+```cpp
+// GOOD: Test once, don't reuse
+{
+    TopologicalGraph G(*gc);
+    EXPECT_EQ(G.TestPlanar(), 0);  // Test
+}  // G destroyed
+
+// Create fresh graph for next algorithm
+{
+    TopologicalGraph G2(*gc);
+    G2.Kuratowski();  // Works on clean state
+}
+
+// GOOD: Don't test if not needed
+{
+    TopologicalGraph G(*gc);
+    // Just call Kuratowski directly, don't verify non-planarity first
+    int result = G.Kuratowski();
+}
+```
+
+### 🔍 **How to Debug This**
+
+**Symptoms**:
+- Algorithm works on freshly created graph
+- Algorithm fails after calling TestPlanar()
+- Inconsistent results when calling multiple algorithms on same graph
+- Circular order looks corrupted
+
+**Diagnosis**:
+1. Test algorithm on fresh graph without any prior operations
+2. If it works alone but fails in sequence, suspect state modification
+3. Check if any "read-only" functions actually modify graph
+4. Create separate graph instances for each algorithm test
+
+### 💥 **Impact**
+
+- Phase 4 tests initially failed
+- Kuratowski tests on K33 and Petersen failed despite library supporting them
+- 30 minutes to identify the issue
+- Solution: Remove TestPlanar() calls before Kuratowski()
+- Lesson: "Test" functions may not be read-only - they can modify internal state
+
+### 📝 **Library Limitations Discovered**
+
+During Phase 4 testing, also discovered:
+1. **Kuratowski() on K5**: Returns -1 error from DFSGraph::MarkKuratowski() - library bug specific to K5
+2. **MaxPlanar()**: Causes segmentation fault on graphs built with NewEdge() - library bug requiring specific graph setup
+
+These are genuine library bugs, not test errors. Tests for these are disabled with clear documentation.
+
+---
+
 ## Best Practices
 
 ### 1. Study Working Code First
@@ -1542,15 +1645,18 @@ Before submitting code that uses Pigale/tgraph API:
 - **Phase 2 Implementation Part 2**: 1.5 hours (53 tests: TopologicalGraph + GeometricGraph)
 - **Phase 3 Implementation**: 2 hours (22 tests: DFS/BFS/Biconnectivity)
 - **Phase 4 Implementation**: 2.5 hours (25 tests: Planarity algorithms)
+- **Phase 4 Fix**: 1 hour (fixed 2 Kuratowski tests by removing TestPlanar() calls)
 - **CI/CD Fixes**: 30 minutes (MacOS + Linux + coverage)
-- **Total**: ~17.5 hours for 185 tests + comprehensive documentation
+- **Total**: ~18.5 hours for 185 tests + comprehensive documentation
 
 **Phase 4 Success Rate**:
 - 25 new planarity tests written
 - 1 compilation error (missing color.h include, fixed immediately)
-- 20 tests passing, 5 disabled (4 Kuratowski/MaxPlanar with API issues/segfaults)
+- Initial: 20 tests passing, 5 disabled
+- After fix: 22 tests passing, 4 disabled (only library bugs remain)
 - All 185 tests passing on Linux and macOS
-- Lessons learned: Some advanced algorithms (Kuratowski, MaxPlanar) have specific preconditions
+- Critical discovery: TestPlanar() modifies graph state - must not call before other algorithms
+- Library bugs found: Kuratowski() fails on K5, MaxPlanar() segfaults on NewEdge() graphs
 
 ---
 

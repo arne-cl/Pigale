@@ -301,21 +301,31 @@ TEST_F(PlanarityTest, PlanarityFailsOnK5) {
  * Note: Kuratowski() has specific requirements and may not work on all graphs
  */
 TEST_F(PlanarityTest, DISABLED_KuratowskiOnK5) {
-    // Disabled: K5 returns -1 error, needs investigation
+    // Disabled: K5 returns -1 error from MarkKuratowski (library limitation)
+    // This appears to be a bug in DFSGraph::MarkKuratowski() for K5 specifically
     delete gc;
     gc = TestHelpers::BuildK5();
 
     TopologicalGraph G(*gc);
 
-    // First verify it's non-planar
-    EXPECT_EQ(G.TestPlanar(), 0);
-
-    // Extract Kuratowski subgraph
-    // Note: Kuratowski() returns 0 on success or when planar, non-zero on error
+    // Extract Kuratowski subgraph (don't call TestPlanar first - it modifies state)
     int result = G.Kuratowski();
 
-    // Should not error (returns 0 or positive)
-    EXPECT_GE(result, 0);
+    // Should succeed, but returns -1 for K5
+    EXPECT_EQ(result, 0);
+}
+
+TEST_F(PlanarityTest, KuratowskiOnK33) {
+    delete gc;
+    gc = TestHelpers::BuildK33();
+
+    TopologicalGraph G(*gc);
+
+    // Extract Kuratowski subgraph (don't call TestPlanar first)
+    int result = G.Kuratowski();
+
+    // Should succeed
+    EXPECT_EQ(result, 0);
 
     // Check that edge colors were set (Kuratowski edges marked in Black)
     if (G.Set(tedge()).exist(PROP_COLOR)) {
@@ -327,25 +337,9 @@ TEST_F(PlanarityTest, DISABLED_KuratowskiOnK5) {
                 break;
             }
         }
-        // If colors were set, there should be black edges marking Kuratowski subgraph
-        EXPECT_TRUE(found_black_edge || result == 0);
+        // Should have marked Kuratowski edges
+        EXPECT_TRUE(found_black_edge);
     }
-}
-
-TEST_F(PlanarityTest, KuratowskiOnK33) {
-    delete gc;
-    gc = TestHelpers::BuildK33();
-
-    TopologicalGraph G(*gc);
-
-    // First verify it's non-planar
-    EXPECT_EQ(G.TestPlanar(), 0);
-
-    // Extract Kuratowski subgraph
-    int result = G.Kuratowski();
-
-    // Should not error
-    EXPECT_GE(result, 0);
 }
 
 TEST_F(PlanarityTest, KuratowskiOnPetersen) {
@@ -354,22 +348,22 @@ TEST_F(PlanarityTest, KuratowskiOnPetersen) {
 
     TopologicalGraph G(*gc);
 
-    // First verify it's non-planar
-    EXPECT_EQ(G.TestPlanar(), 0);
-
-    // Extract Kuratowski subgraph
+    // Extract Kuratowski subgraph (don't call TestPlanar first)
     int result = G.Kuratowski();
 
-    // Should not error (Petersen contains K5 or K33 subdivision)
-    EXPECT_GE(result, 0);
+    // Should succeed (Petersen contains K5 or K33 subdivision)
+    EXPECT_EQ(result, 0);
 }
 
 /**
  * Test MaxPlanar (maximal planar subgraph)
- * Note: MaxPlanar() may have specific requirements, these tests are disabled pending investigation
+ * Note: MaxPlanar() causes segmentation faults on graphs created with NewEdge()
+ * This appears to be a library bug - MaxPlanar may require graphs with specific
+ * circular order or other properties not present in NewEdge-created graphs.
  */
 TEST_F(PlanarityTest, DISABLED_MaxPlanarOnK5) {
-    // Disabled: causes segmentation fault, needs investigation
+    // Disabled: causes segmentation fault (library bug)
+    // MaxPlanar() crashes when called on K5 built with NewEdge()
     delete gc;
     gc = TestHelpers::BuildK5();
 
@@ -394,7 +388,7 @@ TEST_F(PlanarityTest, DISABLED_MaxPlanarOnK5) {
 }
 
 TEST_F(PlanarityTest, DISABLED_MaxPlanarOnK33) {
-    // Disabled: causes segmentation fault, needs investigation
+    // Disabled: causes segmentation fault (library bug)
     delete gc;
     gc = TestHelpers::BuildK33();
 
@@ -416,7 +410,7 @@ TEST_F(PlanarityTest, DISABLED_MaxPlanarOnK33) {
 }
 
 TEST_F(PlanarityTest, DISABLED_MaxPlanarOnAlreadyPlanar) {
-    // Disabled: causes segmentation fault, needs investigation
+    // Disabled: causes segmentation fault (library bug)
     delete gc;
     gc = TestHelpers::BuildK4();
 

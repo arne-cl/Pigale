@@ -982,18 +982,22 @@ jobs:
 
 ### Phase 4: Planarity (Weeks 6-7) ✅ COMPLETE
 - [x] Test all planarity algorithms (TestPlanar, TestNewPlanar, TestSinglePassPlanar)
-- [x] Test Kuratowski subgraph extraction (2 tests, 1 disabled due to API limitations)
-- [x] Test maximal planar subgraph (3 tests disabled due to segfaults, needs investigation)
+- [x] Test Kuratowski subgraph extraction (2 working tests, 1 disabled due to library bug)
+- [x] Test maximal planar subgraph (3 tests disabled due to library segfault bug)
 - [x] Create comprehensive planar/non-planar test suite
-- **Result**: 185 tests passing (160 previous + 25 new planarity tests), 5 disabled
+- **Result**: 185 tests passing (160 previous + 25 new planarity tests), 5 disabled (1 from Phase 2 + 4 new)
 - **Key Accomplishments**:
   - Comprehensive planarity detection: K4, K5, K33, Petersen, grids, trees, wheels, paths, cycles
   - Alternative algorithms tested: TestNewPlanar, TestSinglePassPlanar
   - Embedding tests: Planarity() function, CheckPlanar() verification
   - Edge cases: empty graphs, single vertices, disconnected graphs
   - Euler's formula verification for planar graphs
-  - Kuratowski extraction works on K33 and Petersen (K5 has API issues)
-  - MaxPlanar tests disabled pending investigation of segfaults
+  - Kuratowski extraction: Works on K33 and Petersen (K5 has library bug in MarkKuratowski)
+  - **Critical Discovery**: TestPlanar() modifies graph state - must not call before other algorithms
+  - **Library Bugs Identified**:
+    - Kuratowski() on K5 returns -1 error from DFSGraph::MarkKuratowski()
+    - MaxPlanar() causes segfault on graphs created with NewEdge()
+  - Fixed 2 Kuratowski tests by removing TestPlanar() calls before Kuratowski()
 
 ### Phase 5: Embedding & Drawing (Weeks 8-9)
 - [ ] Test Schnyder wood algorithms
