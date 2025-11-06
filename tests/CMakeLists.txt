@@ -65,9 +65,11 @@ target_link_libraries(unit_tests
     test_helpers
 )
 
-# Integration tests (placeholder for now)
+# Integration tests
 set(INTEGRATION_TEST_SOURCES
     integration/test_planar_pipeline.cpp
+    integration/test_property_persistence.cpp
+    integration/test_graph_invariants.cpp
 )
 
 add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
