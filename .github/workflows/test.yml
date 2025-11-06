@@ -205,3 +205,154 @@ jobs:
         flags: unittests
         name: codecov-pigale
         fail_ci_if_error: false
+
+  build-linux:
+    name: Build Linux Binaries
+    runs-on: ubuntu-latest
+    needs: test-linux
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Qt5 and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          qtbase5-dev \
+          qt5-qmake \
+          libqt5svg5-dev \
+          libqt5opengl5-dev \
+          build-essential \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev
+
+    - name: Build tgraph library
+      run: |
+        cd tgraph
+        qmake tgraph.pro CONFIG+=release
+        make -j$(nproc)
+        cd ..
+
+    - name: Build pigale application
+      run: |
+        cd qt
+        qmake qt.pro CONFIG+=release
+        make -j$(nproc)
+        cd ..
+
+    - name: Verify binaries
+      run: |
+        echo "=== Library ==="
+        ls -lh lib/
+        file lib/libtgraph*.a
+        echo ""
+        echo "=== Application ==="
+        ls -lh bin/
+        file bin/pigale
+        ldd bin/pigale
+
+    - name: Create distribution directory
+      run: |
+        mkdir -p dist/pigale-linux-x64
+        cp bin/pigale dist/pigale-linux-x64/
+        cp README.md dist/pigale-linux-x64/ || echo "No README"
+        cp -r incl dist/pigale-linux-x64/ || echo "No headers needed for binary distribution"
+
+    - name: Create tarball
+      run: |
+        cd dist
+        tar czf pigale-linux-x64.tar.gz pigale-linux-x64/
+
+    - name: Upload Linux binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: pigale-linux-x64
+        path: dist/pigale-linux-x64.tar.gz
+        retention-days: 90
+
+  build-macos:
+    name: Build macOS Binaries
+    runs-on: macos-latest
+    needs: test-macos
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Qt5 and dependencies
+      run: |
+        brew install qt@5
+
+    - name: Set up Qt environment
+      run: |
+        echo "Qt5_DIR=$(brew --prefix qt@5)" >> $GITHUB_ENV
+        echo "$(brew --prefix qt@5)/bin" >> $GITHUB_PATH
+
+    - name: Build tgraph library
+      run: |
+        cd tgraph
+        qmake tgraph.pro CONFIG+=release
+        make -j$(sysctl -n hw.ncpu)
+        cd ..
+
+    - name: Build pigale application
+      run: |
+        cd qt
+        qmake qt.pro CONFIG+=release
+        make -j$(sysctl -n hw.ncpu)
+        cd ..
+
+    - name: Verify binaries
+      run: |
+        echo "=== Library ==="
+        ls -lh lib/
+        file lib/libtgraph*.a
+        echo ""
+        echo "=== Application ==="
+        ls -lh bin/
+        if [ -d bin/pigale.app ]; then
+          echo "Found pigale.app bundle"
+          ls -lh bin/pigale.app/Contents/MacOS/
+          file bin/pigale.app/Contents/MacOS/pigale
+        else
+          echo "Found standalone binary"
+          file bin/pigale
+        fi
+
+    - name: Run macdeployqt (if app bundle exists)
+      run: |
+        if [ -d bin/pigale.app ]; then
+          $(brew --prefix qt@5)/bin/macdeployqt bin/pigale.app
+        fi
+
+    - name: Create distribution directory
+      run: |
+        mkdir -p dist/pigale-macos-x64
+        if [ -d bin/pigale.app ]; then
+          cp -R bin/pigale.app dist/pigale-macos-x64/
+        else
+          cp bin/pigale dist/pigale-macos-x64/
+        fi
+        cp README.md dist/pigale-macos-x64/ || echo "No README"
+
+    - name: Create DMG (if app bundle exists)
+      run: |
+        if [ -d bin/pigale.app ]; then
+          # Create DMG for easy distribution
+          cd dist
+          hdiutil create -volname "Pigale" -srcfolder pigale-macos-x64 -ov -format UDZO pigale-macos-x64.dmg
+        else
+          # Create tarball for standalone binary
+          cd dist
+          tar czf pigale-macos-x64.tar.gz pigale-macos-x64/
+        fi
+
+    - name: Upload macOS binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: pigale-macos-x64
+        path: |
+          dist/*.dmg
+          dist/*.tar.gz
+        retention-days: 90
