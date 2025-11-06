@@ -1595,6 +1595,71 @@ Before submitting code that uses Pigale/tgraph API:
 
 ---
 
+## Key API Return Values
+
+Understanding return values is critical for writing correct tests. The Pigale API is not always consistent:
+
+### Embedding & Drawing Algorithms
+
+**Tutte()** - Tutte embedding using barycentric coordinates:
+- Returns: `1` on success (matrix inversion succeeded), `0` on failure
+- Requires: Connected planar graph with valid embedding
+- Example:
+```cpp
+GeometricGraph G(*gc);
+G.Planarity();
+int result = G.Tutte();
+EXPECT_EQ(result, 1);  // Success
+```
+
+**BipolarPlan()** - Computes bipolar orientation:
+- Returns: `0` or positive on success, `-1` on failure
+- Requires: Graph must be **biconnected** (CheckBiconnected() returns true)
+- Fails on: Paths, trees, single edges, disconnected graphs
+- Example:
+```cpp
+TopologicalGraph G(*gc);  // Must be biconnected!
+G.Planarity();
+int result = G.BipolarPlan(tbrin(1));
+EXPECT_GE(result, 0);  // Success
+```
+
+**ColorExteriorface()** - Colors edges on the exterior face:
+- Returns: **Size of exterior face** on success, `-1` on failure
+- Does NOT return 0 on success!
+- Example:
+```cpp
+GeometricGraph G(*gc);
+G.Planarity();
+int result = G.ColorExteriorface();
+EXPECT_GT(result, 0);  // Returns face size, e.g., 3 for K4
+```
+
+### Planarity Algorithms
+
+**TestPlanar()** - Tests if graph is planar:
+- Returns: Positive value if planar, `0` if non-planar
+- **WARNING**: Modifies graph state (circular order) - see Mistake #12
+
+**Planarity()** - Computes planar embedding:
+- Returns: Positive value if planar, `0` if non-planar
+- Sets circular order (cir/acir) for planar graphs
+
+**Kuratowski()** - Extracts Kuratowski subgraph:
+- Returns: `0` on success, `-1` on failure
+- Do NOT call TestPlanar() first (corrupts state)
+- Known bug: Fails on K5 (returns -1)
+
+### General Pattern
+
+When testing new algorithms:
+1. Check return value in implementation (e.g., `grep -A 20 "::FunctionName" tgraph/*.cpp`)
+2. Look for what values mean success vs failure
+3. Test with simple graph first to confirm behavior
+4. Document expected return values in test comments
+
+---
+
 ## Summary
 
 ### Top Mistakes to Avoid
@@ -1646,8 +1711,9 @@ Before submitting code that uses Pigale/tgraph API:
 - **Phase 3 Implementation**: 2 hours (22 tests: DFS/BFS/Biconnectivity)
 - **Phase 4 Implementation**: 2.5 hours (25 tests: Planarity algorithms)
 - **Phase 4 Fix**: 1 hour (fixed 2 Kuratowski tests by removing TestPlanar() calls)
+- **Phase 5 Implementation**: 1.5 hours (14 tests: Embedding & Drawing algorithms)
 - **CI/CD Fixes**: 30 minutes (MacOS + Linux + coverage)
-- **Total**: ~18.5 hours for 185 tests + comprehensive documentation
+- **Total**: ~20 hours for 199 tests + comprehensive documentation
 
 **Phase 4 Success Rate**:
 - 25 new planarity tests written
@@ -1657,6 +1723,17 @@ Before submitting code that uses Pigale/tgraph API:
 - All 185 tests passing on Linux and macOS
 - Critical discovery: TestPlanar() modifies graph state - must not call before other algorithms
 - Library bugs found: Kuratowski() fails on K5, MaxPlanar() segfaults on NewEdge() graphs
+
+**Phase 5 Success Rate**:
+- 14 new embedding tests written
+- 1 syntax error (space in test name, fixed immediately)
+- Initial: 3 tests passing, 11 failing (wrong API expectations)
+- After fixing API expectations: 14 tests passing, 0 disabled
+- All 199 tests passing
+- Key discoveries:
+  - Tutte() returns 1 on success (matrix inversion result), 0 on failure
+  - BipolarPlan() requires biconnected graphs, returns -1 otherwise
+  - ColorExteriorface() returns exterior face size, not 0 on success
 
 ---
 
@@ -1675,5 +1752,5 @@ If you discover new mistakes or API quirks:
 ---
 
 **Last Updated**: 2025-11-06
-**Status**: Phase 4 Complete - 185/185 Tests Passing (181 unit + 4 integration), 5 disabled
-**Next Update**: After Phase 5 implementation (Embedding & Drawing algorithms)
+**Status**: Phase 5 Complete - 199/199 Tests Passing (195 unit + 4 integration), 5 disabled
+**Next Update**: After Phase 6 implementation (Integration & Property-Based Tests)

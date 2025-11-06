@@ -999,11 +999,19 @@ jobs:
     - MaxPlanar() causes segfault on graphs created with NewEdge()
   - Fixed 2 Kuratowski tests by removing TestPlanar() calls before Kuratowski()
 
-### Phase 5: Embedding & Drawing (Weeks 8-9)
-- [ ] Test Schnyder wood algorithms
-- [ ] Test bipolar orientations
-- [ ] Test Tutte embedding
-- [ ] Test FPP and other drawing algorithms
+### Phase 5: Embedding & Drawing (Weeks 8-9) ✅ COMPLETE
+- [x] Test Schnyder wood algorithms (SchnyderOrient)
+- [x] Test bipolar orientations (BipolarPlan - requires biconnected graphs)
+- [x] Test Tutte embedding (returns 1 on success, 0 on failure)
+- [x] Test ColorExteriorface (returns face size, not 0)
+- [x] Test ComputeGeometricCir
+- [x] Test full embedding pipelines (planarity → Tutte → color exterior)
+- **Result**: 199 tests passing (14 new embedding tests), 5 disabled (from previous phases)
+- **Key Discoveries**:
+  - **Tutte()** returns 1 on success (matrix inversion succeeded), 0 on failure
+  - **BipolarPlan()** requires biconnected graphs, returns -1 for non-biconnected
+  - **ColorExteriorface()** returns exterior face size on success, -1 on failure
+  - Changed test graphs from paths/trees to cycles/K4 for biconnectivity requirement
 
 ### Phase 6: Integration & Property-Based Tests (Week 10)
 - [ ] Write integration test scenarios
