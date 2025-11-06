@@ -194,8 +194,8 @@ jobs:
     - name: Generate coverage report
       run: |
         cd tests/build
-        lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' '*/googletest/*' --output-file coverage.info
+        lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,gcov,source
+        lcov --remove coverage.info '/usr/*' '*/googletest/*' --output-file coverage.info --ignore-errors unused
         lcov --list coverage.info
 
     - name: Upload coverage to Codecov

@@ -231,6 +231,8 @@ void BFSTree(TopologicalGraph &G, tvertex v0, svector<int> &order, int maxo)
         }
     }
 }
+// Use anonymous namespace to avoid collision with std::queue on newer compilers
+namespace {
 template <class T>
 class queue {
 private:
@@ -250,7 +252,9 @@ public:
             }
         else return false;
         }
-};          
+};
+} // anonymous namespace
+
         
 
 // BFS which traverses directed edges only.
