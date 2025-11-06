@@ -53,6 +53,7 @@ set(UNIT_TEST_SOURCES
     unit/data_structures/test_circular_order.cpp
     unit/data_structures/test_pset.cpp
     unit/algorithms/traversal/test_dfs_bfs.cpp
+    unit/algorithms/planarity/test_planarity.cpp
     # More test files will be added here
 )
 

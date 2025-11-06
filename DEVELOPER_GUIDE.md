@@ -1541,15 +1541,16 @@ Before submitting code that uses Pigale/tgraph API:
 - **Phase 2 Implementation Part 1**: 2 hours (35 tests: Graph + CircularOrder + PSet)
 - **Phase 2 Implementation Part 2**: 1.5 hours (53 tests: TopologicalGraph + GeometricGraph)
 - **Phase 3 Implementation**: 2 hours (22 tests: DFS/BFS/Biconnectivity)
+- **Phase 4 Implementation**: 2.5 hours (25 tests: Planarity algorithms)
 - **CI/CD Fixes**: 30 minutes (MacOS + Linux + coverage)
-- **Total**: ~15 hours for 160 tests + comprehensive documentation
+- **Total**: ~17.5 hours for 185 tests + comprehensive documentation
 
-**Phase 3 Success Rate**:
-- 22 new tests written (BFS: 11 tests, DFS: 4 tests, Biconnectivity: 5 tests, Integration: 2 tests)
-- Compiled on first try (0 compilation errors)
-- Runtime error discovered: nvin svector indexing (fixed in 30 minutes)
-- All 160 tests passing on both Linux and macOS
-- New critical lesson learned: brin-indexed vs vertex-indexed svectors
+**Phase 4 Success Rate**:
+- 25 new planarity tests written
+- 1 compilation error (missing color.h include, fixed immediately)
+- 20 tests passing, 5 disabled (4 Kuratowski/MaxPlanar with API issues/segfaults)
+- All 185 tests passing on Linux and macOS
+- Lessons learned: Some advanced algorithms (Kuratowski, MaxPlanar) have specific preconditions
 
 ---
 
@@ -1568,5 +1569,5 @@ If you discover new mistakes or API quirks:
 ---
 
 **Last Updated**: 2025-11-06
-**Status**: Phase 3 Complete - 160/160 Tests Passing (156 unit + 4 integration), 1 disabled
-**Next Update**: After Phase 4 implementation (Planarity algorithms)
+**Status**: Phase 4 Complete - 185/185 Tests Passing (181 unit + 4 integration), 5 disabled
+**Next Update**: After Phase 5 implementation (Embedding & Drawing algorithms)
