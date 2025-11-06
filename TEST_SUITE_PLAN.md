@@ -17,13 +17,13 @@ This document outlines a comprehensive testing strategy for the Pigale tgraph li
 The testing approach will follow a **layered pyramid strategy**:
 
 ```
-              ┌─────────────┐
-              │   BDD/E2E   │  (10% - High-level behaviors)
-              ├─────────────┤
-              │ Integration │  (30% - Algorithm combinations)
-              ├─────────────┤
-              │ Unit Tests  │  (60% - Core components)
-              └─────────────┘
+              ┌──────────────┐
+              │  Property    │  (10% - Invariant verification)
+              ├──────────────┤
+              │ Integration  │  (30% - Algorithm combinations)
+              ├──────────────┤
+              │ Unit Tests   │  (60% - Core components)
+              └──────────────┘
 ```
 
 ### 1.2 Test Framework Selection
@@ -94,13 +94,11 @@ Pigale/
 │   │   ├── test_drawing_pipeline.cpp
 │   │   ├── test_graph_modifications.cpp
 │   │   └── test_property_persistence.cpp
-│   ├── bdd/                   # Behavior-driven tests
-│   │   ├── features/
-│   │   │   ├── planarity_detection.feature
-│   │   │   ├── graph_embedding.feature
-│   │   │   └── graph_drawing.feature
-│   │   └── step_definitions/
-│   │       └── graph_steps.cpp
+│   ├── property/              # Property-based tests
+│   │   ├── test_graph_invariants.cpp
+│   │   ├── test_planarity_properties.cpp
+│   │   ├── test_embedding_properties.cpp
+│   │   └── test_algorithm_properties.cpp
 │   ├── fixtures/              # Test data
 │   │   ├── graphs/
 │   │   │   ├── planar/
@@ -471,61 +469,143 @@ Test Scenarios:
 
 ---
 
-### 2.3 Behavior-Driven Tests (Priority: LOW)
+### 2.3 Property-Based Tests (Priority: MEDIUM)
 
-**Goal**: High-level user scenarios in readable format
+**Goal**: Verify graph properties and invariants hold for randomly generated inputs
 
-**Framework**: Cucumber-cpp or custom Gherkin parser
+**Framework**: RapidCheck (property-based testing for C++)
 
-**File**: `tests/bdd/features/planarity_detection.feature`
-
-```gherkin
-Feature: Planarity Detection
-  As a graph theorist
-  I want to test if a graph is planar
-  So that I can determine if it can be drawn without edge crossings
-
-  Scenario: Testing a planar graph
-    Given I have a graph K4
-    When I test planarity
-    Then the result should be "planar"
-    And I can compute an embedding
-
-  Scenario: Testing a non-planar graph
-    Given I have a graph K5
-    When I test planarity
-    Then the result should be "non-planar"
-    And I can extract a Kuratowski subgraph
-
-  Scenario: Generating random planar graphs
-    Given I generate a random planar graph with 100 vertices
-    When I test planarity
-    Then the result should be "planar"
-```
-
-**File**: `tests/bdd/step_definitions/graph_steps.cpp`
+**File**: `tests/property/test_graph_invariants.cpp`
 
 ```cpp
 #include <gtest/gtest.h>
-#include <cucumber-cpp/autodetect.hpp>
+#include <rapidcheck.h>
+#include <rapidcheck/gtest.h>
+#include <TAXI/graphs.h>
 
-GIVEN("^I have a graph (K\\d+|K\\d+,\\d+|grid_\\d+x\\d+)$") {
-    REGEX_PARAM(std::string, graphName);
-    currentGraph = BuildGraphByName(graphName);
+// Property: For any graph, nv() vertices means vertex indices 1..nv()
+RC_GTEST_PROP(GraphInvariants, VertexCountMatchesIndices, ()) {
+    auto n = *rc::gen::inRange(1, 100);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+
+    RC_ASSERT(gc.nv() == n);
+    // All vertices 1..n should be valid
+    for (int i = 1; i <= n; i++) {
+        RC_ASSERT(tvertex(i)() == i);
+    }
 }
 
-WHEN("^I test planarity$") {
-    isPlanar = currentGraph->TestPlanar();
+// Property: For any planar graph, m <= 3n - 6 (when n >= 3)
+RC_GTEST_PROP(PlanarityProperties, EulerFormulaHolds, ()) {
+    auto n = *rc::gen::inRange(3, 50);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+    TopologicalGraph G(gc);
+
+    // Generate random planar graph
+    G.Planarity();  // Make it planar
+
+    int m = G.ne();
+    int nv = G.nv();
+
+    RC_ASSERT(m <= 3 * nv - 6);
 }
 
-THEN("^the result should be \"(planar|non-planar)\"$") {
-    REGEX_PARAM(std::string, expected);
-    if (expected == "planar")
-        EXPECT_TRUE(isPlanar);
-    else
-        EXPECT_FALSE(isPlanar);
+// Property: DFS on connected graph visits all vertices
+RC_GTEST_PROP(TraversalProperties, DFSVisitsAllVertices, ()) {
+    auto n = *rc::gen::inRange(2, 50);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+    TopologicalGraph G(gc);
+
+    // Create connected graph (add random edges)
+    for (int i = 1; i < n; i++) {
+        G.NewEdge(tvertex(i), tvertex(i + 1));
+    }
+
+    int m = G.ne();
+    svector<tvertex> nvin(-m, m);
+    svector<tbrin> tb(0, n);
+    svector<int> dfsnum(0, n);
+
+    int result = G.DFS(nvin, tb, dfsnum);
+
+    RC_ASSERT(result != 0);  // Connected
+    // All vertices should have DFS number > 0
+    for (tvertex v = 1; v <= n; v++) {
+        RC_ASSERT(dfsnum[v] > 0);
+    }
+}
+
+// Property: Adding edges never decreases edge count
+RC_GTEST_PROP(GraphProperties, NewEdgeIncreasesCount, ()) {
+    auto n = *rc::gen::inRange(2, 20);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+    TopologicalGraph G(gc);
+
+    int m_before = G.ne();
+    auto v1 = *rc::gen::inRange(1, n);
+    auto v2 = *rc::gen::inRange(1, n);
+
+    G.NewEdge(tvertex(v1), tvertex(v2));
+    int m_after = G.ne();
+
+    RC_ASSERT(m_after == m_before + 1);
 }
 ```
+
+**File**: `tests/property/test_planarity_properties.cpp`
+
+```cpp
+// Property: Biconnecting a planar graph keeps it planar
+RC_GTEST_PROP(BiconnectProperties, BiconnectPreservesPlanarity, ()) {
+    auto n = *rc::gen::inRange(4, 30);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+    TopologicalGraph G(gc);
+
+    // Create planar graph
+    for (int i = 1; i < n; i++) {
+        G.NewEdge(tvertex(i), tvertex(i + 1));
+    }
+
+    RC_ASSERT(G.TestPlanar() > 0);  // Is planar
+
+    G.Biconnect();
+
+    RC_ASSERT(G.TestPlanar() > 0);  // Still planar
+    RC_ASSERT(G.CheckBiconnected());  // Now biconnected
+}
+
+// Property: K_n is planar iff n <= 4
+RC_GTEST_PROP(PlanarityProperties, CompleteGraphPlanarity, ()) {
+    auto n = *rc::gen::inRange(1, 10);
+    GraphContainer gc;
+    gc.setsize(n, 0);
+    TopologicalGraph G(gc);
+
+    // Create K_n
+    for (int i = 1; i <= n; i++) {
+        for (int j = i + 1; j <= n; j++) {
+            G.NewEdge(tvertex(i), tvertex(j));
+        }
+    }
+
+    bool is_planar = G.TestPlanar() > 0;
+    bool should_be_planar = (n <= 4);
+
+    RC_ASSERT(is_planar == should_be_planar);
+}
+```
+
+**Benefits**:
+- Automatically generates hundreds/thousands of test cases
+- Finds edge cases developers might miss
+- Shrinks failing inputs to minimal examples
+- Verifies mathematical properties and invariants
+- Complements example-based unit tests
 
 ---
 
@@ -912,9 +992,10 @@ jobs:
 - [ ] Test Tutte embedding
 - [ ] Test FPP and other drawing algorithms
 
-### Phase 6: Integration & BDD (Week 10)
+### Phase 6: Integration & Property-Based Tests (Week 10)
 - [ ] Write integration test scenarios
-- [ ] Implement BDD features (if desired)
+- [ ] Implement property-based tests with RapidCheck
+- [ ] Test graph invariants and mathematical properties
 - [ ] Test full pipelines
 
 ### Phase 7: Performance & Documentation (Week 11-12)
@@ -1067,17 +1148,17 @@ When bugs are found:
 
 ### 11.1 Questions to Resolve:
 1. Should we use Catch2 instead of Google Test? (More modern, header-only)
-2. Do we need BDD tests, or are integration tests sufficient?
-3. What's the target code coverage percentage?
-4. Should we integrate with SonarQube for code quality?
-5. Do we need mutation testing (e.g., using Stryker)?
+2. What's the target code coverage percentage? (Currently aiming for 80%+)
+3. Should we integrate with SonarQube for code quality?
+4. Do we need mutation testing (e.g., using Stryker)?
+5. Which property-based testing framework: RapidCheck or Hypothesis-cpptest?
 
 ### 11.2 Future Enhancements:
-- [ ] Property-based testing (e.g., using RapidCheck)
 - [ ] Fuzzing for robustness (e.g., using libFuzzer)
 - [ ] Visual regression testing for drawing algorithms
-- [ ] Performance regression detection
+- [ ] Performance regression detection with automated benchmarks
 - [ ] Test parallelization for faster CI/CD
+- [ ] Mutation testing to verify test suite quality
 
 ### 11.3 Advanced Testing Techniques:
 
