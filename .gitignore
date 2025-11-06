@@ -58,3 +58,10 @@ version.h
 *.swo
 *~
 .DS_Store
+
+# Test executables and logs
+tests/debug_*
+!tests/debug_*.cpp
+tests/pigalelog.txt
+tests/*.txt
+!tests/gdb_script.txt
