@@ -1013,27 +1013,34 @@ jobs:
   - **ColorExteriorface()** returns exterior face size on success, -1 on failure
   - Changed test graphs from paths/trees to cycles/K4 for biconnectivity requirement
 
-### Phase 6: Integration & Property-Based Tests (Week 10) ✅ COMPLETE
+### Phase 6: Integration Tests (Week 10) ✅ COMPLETE
 - [x] Write integration test scenarios (53 comprehensive integration tests)
 - [x] Test graph invariants and mathematical properties (Euler's formula, handshaking lemma, tree/cycle properties)
 - [x] Test full pipelines (planarity → embedding → drawing workflows)
 - [x] Test property persistence across graph modifications
-- [ ] Implement property-based tests with RapidCheck (deferred - would require new dependency)
 - **Result**: 252 tests passing total (199 unit + 53 integration), 5 disabled
 - **Test Coverage**:
   - **Planar Pipeline** (14 tests): Full embedding workflows, graph modifications, property verification
   - **Property Persistence** (10 tests): Properties across edge/vertex operations, Keep mechanism, coordinates
   - **Graph Invariants** (29 tests): Euler's formula, handshaking lemma, tree/cycle/path properties, degree sequences, planarity bounds
 
-### Phase 7: Performance & Documentation (Week 11-12) ✅ COMPLETE
+### Phase 7: Generation, I/O, and Coverage (Week 11) ✅ COMPLETE
 - [x] Document test coverage (comprehensive 297 tests across all major components)
 - [x] Identify gaps and verify coverage
 - [x] Add generation tests (45 tests for graph generation functions)
 - [x] Add I/O tests (13 tests enabled, 4 disabled due to library bugs)
 - [x] Generate coverage reports with lcov (**93.3% line coverage, 91.8% function coverage**)
+- **Result**: 297 tests covering all critical functionality (244 unit + 53 integration, 9 disabled)
+
+### Phase 8: Property-Based Tests (Week 12) ✅ COMPLETE
+- [x] Add RapidCheck dependency via CMake FetchContent
+- [x] Implement property-based tests for graph invariants (13 tests)
+- [x] Implement property-based tests for planarity properties (15 tests)
+- [x] Test mathematical properties (handshaking lemma, Euler's formula)
+- [x] Test graph theory invariants (K_n planarity, tree properties, edge bounds)
 - [ ] Add performance benchmarks (deferred - current focus on correctness)
 
-**Result**: Comprehensive test suite with 297 tests covering all critical functionality
+**Result**: Comprehensive test suite with **325 tests** covering all critical functionality (244 unit + 53 integration + 28 property, 9 disabled)
 
 **Test Coverage Summary**:
 - **Unit Tests** (244 tests, 9 disabled):
@@ -1053,6 +1060,10 @@ jobs:
   - Planar Pipeline: 14 tests - complete workflows, graph modifications
   - Property Persistence: 10 tests - properties across operations
   - Graph Invariants: 29 tests - mathematical properties (Euler, handshaking lemma)
+
+- **Property-Based Tests** (28 tests):
+  - Graph Invariants: 13 tests - vertex/edge counts, handshaking lemma, tree/cycle properties, DFS/BFS, connectivity
+  - Planarity Properties: 15 tests - Euler's formula, planar edge bounds, K_n planarity, bipartite graphs, outerplanar graphs
 
 **Coverage Assessment**:
 - ✅ Core graph classes: Comprehensive coverage

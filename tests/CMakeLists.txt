@@ -16,6 +16,16 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# RapidCheck setup (property-based testing)
+FetchContent_Declare(
+  rapidcheck
+  GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+  GIT_TAG        ff6af6fc683159deb51c543b065eba14dfcf329b  # master as of 2023
+)
+set(RC_ENABLE_GTEST ON CACHE BOOL "" FORCE)
+set(RC_ENABLE_GMOCK OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(rapidcheck)
+
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/../incl)
 
@@ -80,17 +90,33 @@ target_link_libraries(integration_tests
     test_helpers
 )
 
+# Property-based tests
+set(PROPERTY_TEST_SOURCES
+    property/test_graph_properties.cpp
+    property/test_planarity_properties.cpp
+)
+
+add_executable(property_tests ${PROPERTY_TEST_SOURCES})
+target_link_libraries(property_tests
+    GTest::gtest_main
+    rapidcheck
+    rapidcheck_gtest
+    tgraph
+    test_helpers
+)
+
 # Enable testing
 enable_testing()
 include(GoogleTest)
 
 gtest_discover_tests(unit_tests)
 gtest_discover_tests(integration_tests)
+gtest_discover_tests(property_tests)
 
 # Optional: Add custom test target for convenience
 add_custom_target(check
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-    DEPENDS unit_tests integration_tests
+    DEPENDS unit_tests integration_tests property_tests
 )
 
 # Optional: Code coverage support
@@ -101,5 +127,7 @@ if(ENABLE_COVERAGE)
         target_link_options(unit_tests PRIVATE --coverage)
         target_compile_options(integration_tests PRIVATE --coverage)
         target_link_options(integration_tests PRIVATE --coverage)
+        target_compile_options(property_tests PRIVATE --coverage)
+        target_link_options(property_tests PRIVATE --coverage)
     endif()
 endif()
