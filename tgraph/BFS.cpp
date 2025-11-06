@@ -231,10 +231,9 @@ void BFSTree(TopologicalGraph &G, tvertex v0, svector<int> &order, int maxo)
         }
     }
 }
-// Use anonymous namespace to avoid collision with std::queue on newer compilers
-namespace {
+// Local queue class renamed to avoid collision with std::queue on newer MacOS/compilers
 template <class T>
-class queue {
+class bfs_queue {
 private:
     svector<T> q;
     int botq;
@@ -243,7 +242,7 @@ private:
 public:
     void reset() {botq=topq=0;}
     bool empty() {return botq==topq;}
-    queue(int size):q(0,size)  {reset(); }
+    bfs_queue(int size):q(0,size)  {reset(); }
     void put (const T& elmt)    {  q[topq++]=elmt;  }
     bool get (T &elmt)
         { if (topq>botq)
@@ -253,7 +252,6 @@ public:
         else return false;
         }
 };
-} // anonymous namespace
 
         
 
@@ -266,7 +264,7 @@ void BFSDirectedTree(TopologicalGraph &G, tvertex v0)
   Prop<bool> oriented(G.Set(tedge()),PROP_ORIENTED,false);
   Prop<bool> istree(G.Set(tedge()),PROP_ISTREE); istree.clear();
   Prop<bool> seen(G.Set(tvertex()),PROP_MARK); seen.clear();
-  queue<tbrin> q(m);
+  bfs_queue<tbrin> q(m);
   tvertex v=v0;
   tbrin b,bb;
   while (v!=0)
@@ -305,7 +303,7 @@ void BFSOrientTree(TopologicalGraph &G, tvertex v0)
   Prop<bool> reoriented(G.Set(tedge()),PROP_REORIENTED,false); reoriented.clear();
   Prop<bool> istree(G.Set(tedge()),PROP_ISTREE); istree.clear();
   Prop<bool> seen(G.Set(tvertex()),PROP_MARK); seen.clear();
-  queue<tbrin> q(m);
+  bfs_queue<tbrin> q(m);
   //svector<tbrin> qlink(-m,m); qlink.clear();
   tvertex v=v0;
   tbrin b,bb;

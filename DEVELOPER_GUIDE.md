@@ -1164,41 +1164,67 @@ BFS.cpp:235:7: note: candidate found by name lookup is 'queue'
 
 ### ✅ **The Solution**
 
-**Wrap local classes in anonymous namespace to prevent collisions**:
+**Rename the local class to avoid collision**:
 
 ```cpp
 // BEFORE (causes collision on MacOS)
 template <class T>
 class queue {
+    svector<T> q;
     // ... implementation
+    queue(int size) : q(0, size) { reset(); }
+    void put(const T& elmt) { q[topq++] = elmt; }
+    bool get(T& elmt) { /* ... */ }
 };
 
+// Usage:
+queue<tbrin> q(m);
+q.put(-b);
+
 // AFTER (fixed)
-namespace {
 template <class T>
-class queue {
+class bfs_queue {
+    svector<T> q;
     // ... implementation
+    bfs_queue(int size) : q(0, size) { reset(); }
+    void put(const T& elmt) { q[topq++] = elmt; }
+    bool get(T& elmt) { /* ... */ }
 };
-} // anonymous namespace
+
+// Usage updated:
+bfs_queue<tbrin> q(m);
+q.put(-b);
 ```
 
 **Why this works**:
-- Anonymous namespace creates internal linkage
-- The local `queue` class is no longer in global scope
-- No collision with `std::queue`
-- Code that uses `queue` in the same file still works
-- No changes needed to usage code
+- Simple rename eliminates ambiguity completely
+- No namespace tricks needed
+- Clear and explicit solution
+- Works on all compilers and platforms
+- Easy to understand and maintain
 
-### 📋 **When to Use This Pattern**
+**Note**: Initially tried wrapping in anonymous namespace, but that didn't work because the usage sites were outside the namespace scope. Direct renaming is the most reliable solution.
 
-Use anonymous namespace for:
-- ✅ Helper classes used only in one .cpp file
-- ✅ Classes with names that might collide with standard library
-- ✅ Internal implementation details
+### 📋 **Preventing Name Collisions**
 
-Don't use for:
-- ❌ Classes declared in headers (breaks linking)
-- ❌ Classes that need to be used in multiple files
+**Best practices for avoiding collisions**:
+
+1. **Rename conflicting identifiers** (preferred for local classes)
+   - Clear and unambiguous
+   - Works in all contexts
+   - Example: `queue` → `bfs_queue`
+
+2. **Use anonymous namespace** (for helper functions/variables)
+   - Good for file-local utilities
+   - Note: Doesn't help if usage is outside the namespace
+
+3. **Avoid generic names** (proactive prevention)
+   - Don't use `queue`, `stack`, `list`, `vector`, `map`, etc.
+   - Prefer descriptive names: `BfsQueue`, `LocalStack`, etc.
+
+**When renaming isn't possible**:
+- Use fully qualified names: `::queue` (global) vs `std::queue`
+- But renaming is almost always better
 
 ### 🔍 **How to Detect Similar Issues**
 
