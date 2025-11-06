@@ -55,7 +55,8 @@ set(UNIT_TEST_SOURCES
     unit/algorithms/traversal/test_dfs_bfs.cpp
     unit/algorithms/planarity/test_planarity.cpp
     unit/algorithms/embedding/test_embedding.cpp
-    # More test files will be added here
+    unit/generation/test_generate.cpp
+    unit/io/test_tgf.cpp
 )
 
 add_executable(unit_tests ${UNIT_TEST_SOURCES})

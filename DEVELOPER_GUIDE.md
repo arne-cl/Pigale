@@ -1794,6 +1794,15 @@ These are confirmed bugs in the Pigale library itself:
    - May require specific initialization not available through NewEdge pattern
    - Workaround: Tests disabled, use alternative planarity methods
 
+3. **I/O functions lose edges with NewEdge() graphs**
+   - `SaveGraphTgf()` and `ReadTgfGraph()` don't correctly round-trip graphs created with `NewEdge()`
+   - Graphs consistently lose one edge during the save/load cycle
+   - Example: Save 4-vertex cycle (4 edges) → Load back only 3 edges
+   - **Root cause**: Library's own generation functions (e.g., `GenerateGrid()`) use `setsize(n, m)` with manual property setup, NOT `NewEdge()`
+   - **I/O functions expect** the manual setup approach, not NewEdge-created graphs
+   - **Workaround**: For graphs that need to be saved/loaded, use library generation functions or manually set properties like GenerateGrid does
+   - **Impact**: 4 I/O tests disabled due to this incompatibility
+
 ---
 
 ## Contributing to This Guide

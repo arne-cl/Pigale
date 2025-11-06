@@ -1026,15 +1026,17 @@ jobs:
   - **Graph Invariants** (29 tests): Euler's formula, handshaking lemma, tree/cycle/path properties, degree sequences, planarity bounds
 
 ### Phase 7: Performance & Documentation (Week 11-12) ✅ COMPLETE
-- [x] Document test coverage (comprehensive 252 tests across all major components)
+- [x] Document test coverage (comprehensive 297 tests across all major components)
 - [x] Identify gaps and verify coverage
+- [x] Add generation tests (45 tests for graph generation functions)
+- [x] Add I/O tests (13 tests enabled, 4 disabled due to library bugs)
 - [ ] Add performance benchmarks (deferred - current focus on correctness)
 - [ ] Generate coverage reports with lcov (tooling not installed, can be added later)
 
-**Result**: Comprehensive test suite with 252 tests covering all critical functionality
+**Result**: Comprehensive test suite with 297 tests covering all critical functionality
 
 **Test Coverage Summary**:
-- **Unit Tests** (199 tests):
+- **Unit Tests** (244 tests, 9 disabled):
   - GraphContainer: 23 tests - memory management, size operations, property initialization
   - Graph: 18 tests - basic graph operations, vin tracking, iteration
   - TopologicalGraph: 27 tests - edge/vertex operations, degrees, circular order
@@ -1044,6 +1046,8 @@ jobs:
   - Traversal: 22 tests - DFS, BFS, connectivity, biconnectivity
   - Planarity: 25 tests - all planarity algorithms, Kuratowski, edge bounds
   - Embedding: 14 tests - Tutte, Schnyder, BipolarPlan, pipelines
+  - **Generation: 45 tests** - grid, complete, bipartite, random graphs
+  - **I/O: 13 tests** (4 disabled) - TGF file save/load, round-trip verification
 
 - **Integration Tests** (53 tests):
   - Planar Pipeline: 14 tests - complete workflows, graph modifications
@@ -1057,13 +1061,20 @@ jobs:
 - ✅ Property system: Thorough testing
 - ✅ Graph operations: Extensive coverage
 - ✅ Mathematical invariants: Well-tested
-- ⚠️ I/O operations: Not covered (file read/write operations)
+- ✅ **Generation functions: Complete coverage** (grid, complete, bipartite, random, outerplanar)
+- ✅ **I/O operations: Basic coverage** (TGF format save/load, library-generated graphs work correctly)
 - ⚠️ GUI/Qt integration: Not covered (out of scope for unit tests)
 - ⚠️ Performance benchmarks: Not implemented (correctness priority)
 
 **Known Limitations**:
-- 5 tests disabled due to library bugs (Kuratowski on K5, MaxPlanar segfaults)
-- No file I/O testing (would require test fixtures/temporary files)
+- 9 tests disabled due to library bugs:
+  - 1 tstring property test (Phase 2 - segfault)
+  - 4 planarity tests (Phase 4 - Kuratowski on K5, MaxPlanar segfaults)
+  - 4 I/O tests (Phase 7 - NewEdge() graphs lose edges during save/load)
+- **Critical Discovery**: I/O functions don't work correctly with NewEdge()-created graphs
+  - Library's own generation functions use manual property setup approach
+  - SaveGraphTgf/ReadTgfGraph expect this manual approach, not NewEdge()
+  - Workaround: Use library generation functions for graphs that need I/O
 - No performance/stress testing
 - Coverage tooling (lcov) not configured (can be added when needed)
 
