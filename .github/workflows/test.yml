@@ -102,6 +102,7 @@ jobs:
         brew install qt@5
         brew install cmake
         brew install googletest
+        brew install gawk
 
     - name: Set up Qt environment
       run: |
