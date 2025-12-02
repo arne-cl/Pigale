@@ -58,3 +58,8 @@ version.h
 *.swo
 *~
 .DS_Store
+.coverage
+.hypothesis/
+*.egg-info/
+venv/
+__pycache__
