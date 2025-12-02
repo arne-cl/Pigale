@@ -1,0 +1,1382 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d9" for="edge" attr.name="label" attr.type="string" />
+  <key id="d8" for="edge" attr.name="reaction_id" attr.type="string" />
+  <key id="d7" for="edge" attr.name="reaction_idx" attr.type="long" />
+  <key id="d6" for="node" attr.name="y" attr.type="double" />
+  <key id="d5" for="node" attr.name="x" attr.type="double" />
+  <key id="d4" for="node" attr.name="label" attr.type="string" />
+  <key id="d3" for="node" attr.name="atom_index" attr.type="string" />
+  <key id="d2" for="node" attr.name="metabolite" attr.type="string" />
+  <key id="d1" for="node" attr.name="element" attr.type="string" />
+  <key id="d0" for="node" attr.name="atom_id" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="13341">
+      <data key="d0">569_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">2760.0</data>
+    </node>
+    <node id="13342">
+      <data key="d0">569_1</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">1</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">1840.0</data>
+      <data key="d6">2530.0</data>
+    </node>
+    <node id="13343">
+      <data key="d0">569_2</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">2</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">1610.0</data>
+      <data key="d6">0.0</data>
+    </node>
+    <node id="13344">
+      <data key="d0">569_3</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">3</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">5520.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="13345">
+      <data key="d0">569_4</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">4</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">2300.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="13346">
+      <data key="d0">569_5</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">5</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">0.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="13348">
+      <data key="d0">569_7</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">7</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">920.0</data>
+      <data key="d6">5750.0</data>
+    </node>
+    <node id="13352">
+      <data key="d0">569_11</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-9649</data>
+      <data key="d3">11</data>
+      <data key="d4">CPD-9649\nC</data>
+      <data key="d5">6900.0</data>
+      <data key="d6">4830.0</data>
+    </node>
+    <node id="26207">
+      <data key="d0">958_0</data>
+      <data key="d1">C</data>
+      <data key="d2">HYDROXY-METHYL-BUTENYL-DIP</data>
+      <data key="d3">0</data>
+      <data key="d4">HYDROXY-METHYL-BUTENYL-DIP\nC</data>
+      <data key="d5">920.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="20080">
+      <data key="d0">789_0</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">0</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">2070.0</data>
+      <data key="d6">2300.0</data>
+    </node>
+    <node id="20081">
+      <data key="d0">789_1</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">1</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">3680.0</data>
+      <data key="d6">460.0</data>
+    </node>
+    <node id="20082">
+      <data key="d0">789_2</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">2</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">6440.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="20083">
+      <data key="d0">789_3</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">3</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">5290.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="20084">
+      <data key="d0">789_4</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">4</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">3450.0</data>
+      <data key="d6">3680.0</data>
+    </node>
+    <node id="20085">
+      <data key="d0">789_5</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">5</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">230.0</data>
+      <data key="d6">5060.0</data>
+    </node>
+    <node id="20087">
+      <data key="d0">789_7</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">7</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">7130.0</data>
+      <data key="d6">5520.0</data>
+    </node>
+    <node id="20091">
+      <data key="d0">789_11</data>
+      <data key="d1">C</data>
+      <data key="d2">eca4und</data>
+      <data key="d3">11</data>
+      <data key="d4">eca4und\nC</data>
+      <data key="d5">6900.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="6346">
+      <data key="d0">303_1</data>
+      <data key="d1">C</data>
+      <data key="d2">DELTA3-ISOPENTENYL-PP</data>
+      <data key="d3">1</data>
+      <data key="d4">DELTA3-ISOPENTENYL-PP\nC</data>
+      <data key="d5">1610.0</data>
+      <data key="d6">4830.0</data>
+    </node>
+    <node id="7422">
+      <data key="d0">352_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD-4211</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD-4211\nC</data>
+      <data key="d5">920.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="22312">
+      <data key="d0">840_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">2530.0</data>
+      <data key="d6">1150.0</data>
+    </node>
+    <node id="22313">
+      <data key="d0">840_1</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">1</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">3220.0</data>
+      <data key="d6">1150.0</data>
+    </node>
+    <node id="22314">
+      <data key="d0">840_2</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">2</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">5750.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="22315">
+      <data key="d0">840_3</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">3</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">4830.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="22316">
+      <data key="d0">840_4</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">4</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">3680.0</data>
+    </node>
+    <node id="22317">
+      <data key="d0">840_5</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">5</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">690.0</data>
+      <data key="d6">5980.0</data>
+    </node>
+    <node id="22319">
+      <data key="d0">840_7</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">7</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">1150.0</data>
+      <data key="d6">5290.0</data>
+    </node>
+    <node id="22323">
+      <data key="d0">840_11</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2280</data>
+      <data key="d3">11</data>
+      <data key="d4">CPD0-2280\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="6466">
+      <data key="d0">306_0</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">0</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">2990.0</data>
+      <data key="d6">230.0</data>
+    </node>
+    <node id="6468">
+      <data key="d0">306_1</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">1</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">2530.0</data>
+      <data key="d6">2530.0</data>
+    </node>
+    <node id="6470">
+      <data key="d0">306_2</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">2</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">6210.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="6472">
+      <data key="d0">306_3</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">3</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">5290.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="6474">
+      <data key="d0">306_4</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">4</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">3680.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="6476">
+      <data key="d0">306_5</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">5</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">230.0</data>
+      <data key="d6">5520.0</data>
+    </node>
+    <node id="6480">
+      <data key="d0">306_7</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">7</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">5750.0</data>
+    </node>
+    <node id="6488">
+      <data key="d0">306_11</data>
+      <data key="d1">C</data>
+      <data key="d2">C55-PP-GLCNAC-MANNACA-FUC4NAC</data>
+      <data key="d3">11</data>
+      <data key="d4">C55-PP-GLCNAC-MANNACA-FUC4NAC\nC</data>
+      <data key="d5">7130.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="17807">
+      <data key="d0">728_1</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">1</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">2530.0</data>
+      <data key="d6">1380.0</data>
+    </node>
+    <node id="17808">
+      <data key="d0">729_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">2530.0</data>
+      <data key="d6">920.0</data>
+    </node>
+    <node id="17809">
+      <data key="d0">728_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">3220.0</data>
+      <data key="d6">1380.0</data>
+    </node>
+    <node id="17810">
+      <data key="d0">729_1</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">1</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">3220.0</data>
+      <data key="d6">1610.0</data>
+    </node>
+    <node id="17811">
+      <data key="d0">728_2</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">2</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">5750.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="17812">
+      <data key="d0">729_2</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">2</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">5750.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="17813">
+      <data key="d0">728_3</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">3</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">4830.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="17814">
+      <data key="d0">729_3</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">3</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">4830.0</data>
+      <data key="d6">3680.0</data>
+    </node>
+    <node id="17815">
+      <data key="d0">728_4</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">4</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="17816">
+      <data key="d0">729_4</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">4</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">4140.0</data>
+      <data key="d6">3450.0</data>
+    </node>
+    <node id="17817">
+      <data key="d0">728_5</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">5</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">690.0</data>
+      <data key="d6">5750.0</data>
+    </node>
+    <node id="17818">
+      <data key="d0">729_5</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">5</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">0.0</data>
+      <data key="d6">5750.0</data>
+    </node>
+    <node id="17821">
+      <data key="d0">728_7</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">7</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">1380.0</data>
+      <data key="d6">5290.0</data>
+    </node>
+    <node id="17822">
+      <data key="d0">729_7</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">7</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">7590.0</data>
+      <data key="d6">5060.0</data>
+    </node>
+    <node id="17829">
+      <data key="d0">728_11</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2279</data>
+      <data key="d3">11</data>
+      <data key="d4">CPD0-2279\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">4830.0</data>
+    </node>
+    <node id="17830">
+      <data key="d0">729_11</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2268</data>
+      <data key="d3">11</data>
+      <data key="d4">CPD0-2268\nC</data>
+      <data key="d5">7590.0</data>
+      <data key="d6">4830.0</data>
+    </node>
+    <node id="22952">
+      <data key="d0">853_0</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">0</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">3910.0</data>
+      <data key="d6">1840.0</data>
+    </node>
+    <node id="22953">
+      <data key="d0">855_0</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">0</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">4140.0</data>
+      <data key="d6">1840.0</data>
+    </node>
+    <node id="22954">
+      <data key="d0">853_1</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">1</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">4140.0</data>
+      <data key="d6">2300.0</data>
+    </node>
+    <node id="22955">
+      <data key="d0">855_1</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">1</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">4140.0</data>
+      <data key="d6">2070.0</data>
+    </node>
+    <node id="22956">
+      <data key="d0">853_2</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">2</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">6670.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="22957">
+      <data key="d0">855_2</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">2</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">6670.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="22958">
+      <data key="d0">853_3</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">3</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">3220.0</data>
+    </node>
+    <node id="22959">
+      <data key="d0">855_3</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">3</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">4140.0</data>
+      <data key="d6">3220.0</data>
+    </node>
+    <node id="22960">
+      <data key="d0">853_4</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">4</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">3680.0</data>
+      <data key="d6">3220.0</data>
+    </node>
+    <node id="22961">
+      <data key="d0">855_4</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">4</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">3680.0</data>
+      <data key="d6">2990.0</data>
+    </node>
+    <node id="22962">
+      <data key="d0">853_5</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">5</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">460.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="22963">
+      <data key="d0">855_5</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">5</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">460.0</data>
+      <data key="d6">4370.0</data>
+    </node>
+    <node id="22966">
+      <data key="d0">853_7</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">7</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">7820.0</data>
+      <data key="d6">5750.0</data>
+    </node>
+    <node id="22967">
+      <data key="d0">855_7</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">7</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">7820.0</data>
+      <data key="d6">5520.0</data>
+    </node>
+    <node id="22974">
+      <data key="d0">853_11</data>
+      <data key="d1">C</data>
+      <data key="d2">UNDECAPRENYL-P</data>
+      <data key="d3">11</data>
+      <data key="d4">UNDECAPRENYL-P\nC</data>
+      <data key="d5">7130.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <node id="22975">
+      <data key="d0">855_11</data>
+      <data key="d1">C</data>
+      <data key="d2">CPD0-2153</data>
+      <data key="d3">11</data>
+      <data key="d4">CPD0-2153\nC</data>
+      <data key="d5">7130.0</data>
+      <data key="d6">3680.0</data>
+    </node>
+    <node id="20438">
+      <data key="d0">788_0</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">0</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">2300.0</data>
+      <data key="d6">460.0</data>
+    </node>
+    <node id="20439">
+      <data key="d0">788_1</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">1</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">3450.0</data>
+      <data key="d6">1840.0</data>
+    </node>
+    <node id="20440">
+      <data key="d0">788_2</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">2</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">6210.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="20441">
+      <data key="d0">788_3</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">3</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">5520.0</data>
+      <data key="d6">3680.0</data>
+    </node>
+    <node id="20442">
+      <data key="d0">788_4</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">4</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">3910.0</data>
+      <data key="d6">3450.0</data>
+    </node>
+    <node id="20443">
+      <data key="d0">788_5</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">5</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">690.0</data>
+      <data key="d6">5290.0</data>
+    </node>
+    <node id="16860">
+      <data key="d0">701_0</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">0</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">3680.0</data>
+      <data key="d6">1840.0</data>
+    </node>
+    <node id="20445">
+      <data key="d0">788_7</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">7</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">5980.0</data>
+    </node>
+    <node id="16861">
+      <data key="d0">701_1</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">1</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">2300.0</data>
+    </node>
+    <node id="16862">
+      <data key="d0">701_2</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">2</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">6670.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="16863">
+      <data key="d0">701_3</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">3</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">4370.0</data>
+      <data key="d6">2990.0</data>
+    </node>
+    <node id="20449">
+      <data key="d0">788_11</data>
+      <data key="d1">C</data>
+      <data key="d2">eca3und</data>
+      <data key="d3">11</data>
+      <data key="d4">eca3und\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">4140.0</data>
+    </node>
+    <node id="16864">
+      <data key="d0">701_4</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">4</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">3910.0</data>
+      <data key="d6">3220.0</data>
+    </node>
+    <node id="16865">
+      <data key="d0">701_5</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">5</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">690.0</data>
+      <data key="d6">4600.0</data>
+    </node>
+    <node id="16867">
+      <data key="d0">701_7</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">7</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">7820.0</data>
+      <data key="d6">5980.0</data>
+    </node>
+    <node id="16871">
+      <data key="d0">701_11</data>
+      <data key="d1">C</data>
+      <data key="d2">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE</data>
+      <data key="d3">11</data>
+      <data key="d4">ACETYL-D-GLUCOSAMINYLDIPHOSPHO-UNDECAPRE\nC</data>
+      <data key="d5">7360.0</data>
+      <data key="d6">3910.0</data>
+    </node>
+    <edge source="13341" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13341" target="6466">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13342" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13342" target="6468">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13343" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13343" target="6470">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13344" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13344" target="6472">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13345" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13345" target="6474">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13346" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13346" target="6476">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13348" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13348" target="6480">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="13352" target="6346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="13352" target="6488">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="26207" target="6346">
+      <data key="d7">1351</data>
+      <data key="d8">PDPS</data>
+      <data key="d9">PDPS</data>
+    </edge>
+    <edge source="26207" target="7422">
+      <data key="d7">1443</data>
+      <data key="d8">MPPS</data>
+      <data key="d9">MPPS</data>
+    </edge>
+    <edge source="6346" target="7422">
+      <data key="d7">403</data>
+      <data key="d8"> IPPISOM-RXN</data>
+      <data key="d9"> IPPISOM-RXN</data>
+    </edge>
+    <edge source="6346" target="13341">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13342">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13343">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13344">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13345">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13346">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13348">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="6346" target="13352">
+      <data key="d7">680</data>
+      <data key="d8"> RXN-9138</data>
+      <data key="d9"> RXN-9138</data>
+    </edge>
+    <edge source="7422" target="6346">
+      <data key="d7">403</data>
+      <data key="d8"> IPPISOM-RXN</data>
+      <data key="d9"> IPPISOM-RXN</data>
+    </edge>
+    <edge source="6466" target="20081">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6466" target="22952">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6466" target="13342">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6466" target="6466">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6466" target="20439">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6468" target="20080">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6468" target="22954">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6468" target="13341">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6468" target="6468">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6468" target="20438">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6470" target="20082">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6470" target="22956">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6470" target="13343">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6470" target="6470">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6470" target="20440">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6472" target="20083">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6472" target="22958">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6472" target="13344">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6472" target="6472">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6472" target="20441">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6474" target="20084">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6474" target="22960">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6474" target="13345">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6474" target="6474">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6474" target="20442">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6476" target="20085">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6476" target="22962">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6476" target="13346">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6476" target="6476">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6476" target="20443">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6480" target="20087">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6480" target="22966">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6480" target="13348">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6480" target="6480">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6480" target="20445">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="6488" target="20091">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="6488" target="22974">
+      <data key="d7">1398</data>
+      <data key="d8">DCPDPpp</data>
+      <data key="d9">DCPDPpp</data>
+    </edge>
+    <edge source="6488" target="13352">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6488" target="6488">
+      <data key="d7">1315</data>
+      <data key="d8">CAP1pp</data>
+      <data key="d9">CAP1pp</data>
+    </edge>
+    <edge source="6488" target="20449">
+      <data key="d7">1479</data>
+      <data key="d8">CAP2pp</data>
+      <data key="d9">CAP2pp</data>
+    </edge>
+    <edge source="17807" target="17808">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17807" target="6468">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17807" target="22312">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17808" target="6466">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17809" target="17810">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17809" target="6466">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17809" target="22313">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17810" target="6468">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17811" target="17812">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17811" target="6470">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17811" target="22314">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17812" target="6470">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17813" target="17814">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17813" target="6472">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17813" target="22315">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17814" target="6472">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17815" target="17816">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17815" target="6474">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17815" target="22316">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17816" target="6474">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17817" target="17818">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17817" target="6476">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17817" target="22317">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17818" target="6476">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17821" target="17822">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17821" target="6480">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17821" target="22319">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17822" target="6480">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17829" target="17830">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17829" target="6488">
+      <data key="d7">998</data>
+      <data key="d8">16AP1pp</data>
+      <data key="d9">16AP1pp</data>
+    </edge>
+    <edge source="17829" target="22323">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="17830" target="6488">
+      <data key="d7">1114</data>
+      <data key="d8">16AP2pp</data>
+      <data key="d9">16AP2pp</data>
+    </edge>
+    <edge source="22952" target="22953">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22952" target="16860">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22954" target="22955">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22954" target="16861">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22956" target="22957">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22956" target="16862">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22958" target="22959">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22958" target="16863">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22960" target="22961">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22960" target="16864">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22962" target="22963">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22962" target="16865">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22966" target="22967">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22966" target="16867">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="22974" target="22975">
+      <data key="d7">1137</data>
+      <data key="d8">PLA4FNT</data>
+      <data key="d9">PLA4FNT</data>
+    </edge>
+    <edge source="22974" target="16871">
+      <data key="d7">1311</data>
+      <data key="d8">CGAMT</data>
+      <data key="d9">CGAMT</data>
+    </edge>
+    <edge source="20438" target="6466">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20439" target="6468">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20440" target="6470">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20441" target="6472">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20442" target="6474">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20443" target="6476">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20445" target="6480">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+    <edge source="20449" target="6488">
+      <data key="d7">1058</data>
+      <data key="d8">CAP3pp</data>
+      <data key="d9">CAP3pp</data>
+    </edge>
+  </graph>
+</graphml>
